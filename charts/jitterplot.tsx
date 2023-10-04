@@ -138,7 +138,7 @@ const Jitterplot: FunctionComponent<JitterplotProps> = ({
     ({ raw }: ScriptableContext<"bubble">) => {
       if (active.toLowerCase().includes((raw as JitterDatum)?.area.toLowerCase()))
         return {
-          backgroundColor: theme === "light" ? COLOR.BLACK : COLOR.GREEN,
+          backgroundColor: theme === "light" ? COLOR.BLACK : COLOR.SUCCESS,
           radius: 6,
           hoverRadius: 1,
         };
