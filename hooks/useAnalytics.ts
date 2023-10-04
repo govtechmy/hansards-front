@@ -17,7 +17,7 @@ export const useAnalytics = (dataset: any) => {
       ext,
     };
     mixpanel_track(["svg", "png"].includes(ext) ? "file_download" : "image_download", meta);
-    realtime_track(dataset.meta.unique_id, "catalogue", `download_${ext}`);
+    realtime_track(dataset.meta.unique_id, "data-catalogue", `download_${ext}`);
   };
   return { result, track };
 };
