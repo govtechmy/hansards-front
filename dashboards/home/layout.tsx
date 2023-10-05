@@ -73,7 +73,15 @@ const HomeDashboard: FunctionComponent<HomeProps> = ({ children }) => {
                   )}
                 >
                   <div className="flex gap-1.5 items-center">
-                    {tab.icon}
+                    <div
+                      className={clx(
+                        data.tab === tab.value
+                          ? "dark:text-white text-zinc-800"
+                          : "text-dim"
+                      )}
+                    >
+                      {tab.icon}
+                    </div>
                     <div
                       className={clx(
                         "flex items-center gap-2",
