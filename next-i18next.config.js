@@ -14,18 +14,18 @@ const defineConfig = (namespace, autoloadNs) => {
   return {
     i18n: {
       defaultLocale: "ms-MY",
-      locales: ["en-GB", "ms-MY"],
+      locales: ["ms-MY", "en-GB"],
       backend: {
-        loadPath: `${process.env.I18N_URL}/${process.env.APP_ENV}/{{lng}}/{{ns}}.json`,
+        loadPath: `${process.env.NEXT_PUBLIC_I18N_URL}/${process.env.NEXT_PUBLIC_APP_ENV}/{{lng}}/{{ns}}.json`,
         crossDomain: true,
         allowMultiLoading: true,
       },
     },
-    debug: false,
+    debug: true,
     ns: namespace,
     autoloadNs: autoloadNs,
     load: "currentOnly",
-    preload: ["en-GB", "ms-MY"],
+    preload: ["ms-MY", "en-GB"],
     serializeConfig: false,
     reloadOnPrerender: true,
     use: [I18NextHttpBackend],

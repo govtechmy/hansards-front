@@ -3,8 +3,8 @@ import { MALAYSIA, STATES } from "./constants";
 import { sortMsiaFirst } from "./helpers";
 
 export const languages: OptionType[] = [
-  { label: "English", value: "en-GB" },
   { label: "Malay", value: "ms-MY" },
+  { label: "English", value: "en-GB" },
 ];
 
 /**
