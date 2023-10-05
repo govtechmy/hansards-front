@@ -5,11 +5,11 @@ import { get } from "@lib/api";
 import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const Sejarah: Page = ({
   meta,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation("sejarah");
 
   return (
@@ -24,7 +24,7 @@ const Sejarah: Page = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = withi18n(
+export const getStaticProps: GetStaticProps = withi18n(
   "sejarah",
   async () => {
     return {
