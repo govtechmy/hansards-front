@@ -19,7 +19,7 @@ const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
         background="bg-white dark:bg-zinc-900"
         className="flex items-center gap-4 py-[11px]"
       >
-        <div className="flex w-full items-center gap-4">
+        <div className="flex w-full items-center gap-1">
           <Link href="/">
             <div className="flex cursor-pointer gap-2.5">
               <div className="flex w-8 items-center justify-center">
