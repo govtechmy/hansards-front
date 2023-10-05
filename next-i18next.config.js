@@ -3,6 +3,7 @@ const I18NextHttpBackend = require("i18next-http-backend/cjs");
 const namespaces = [
   "catalogue",
   "common",
+  "enum",
   "error",
   "home",
   "kehadiran",
@@ -21,7 +22,7 @@ const defineConfig = (namespace, autoloadNs) => {
         allowMultiLoading: true,
       },
     },
-    debug: true,
+    debug: false,
     ns: namespace,
     autoloadNs: autoloadNs,
     load: "currentOnly",
