@@ -1,5 +1,8 @@
-import { Container } from "@components/index";
+import { At, Container, Section } from "@components/index";
 import { FunctionComponent } from "react";
+import ExcerptCard, { Excerpt } from "./excerpt-card";
+import { useTranslation } from "@hooks/useTranslation";
+import Excerpts from "./excerpt";
 
 /**
  * What Did X Say Dashboard
@@ -7,9 +10,13 @@ import { FunctionComponent } from "react";
  */
 
 const WhatDidXSay: FunctionComponent = () => {
+  const { t } = useTranslation();
+
   return (
     <>
-      <Container className="min-h-screen"></Container>
+      <Container className="min-h-screen">
+        <Excerpts />
+      </Container>
     </>
   );
 };

@@ -39,7 +39,7 @@ const Home: Page = ({}: InferGetServerSidePropsType<
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  "home",
+  ["enum", "home"],
   async ({ query }) => {
     try {
       const [name, type] =
