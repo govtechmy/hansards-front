@@ -23,7 +23,7 @@ function App({ Component, pageProps }: AppPropsLayout) {
 
   // Mixpanel initialisation
   useEffect(() => {
-    const is_development = process.env.APP_ENV === "development";
+    const is_development = process.env.NEXT_PUBLIC_APP_ENV === "development";
     window.mixpanel.init(
       mixpanelConfig.token,
       {

@@ -26,8 +26,8 @@ const nextConfig = {
     META_THEME: "#13293D",
     META_KEYWORDS: "hansard parlimen malaysia",
     META_DOMAIN: "hansard.parlimen.gov.my",
-    META_URL: process.env.APP_URL,
-    META_IMAGE: `${process.env.APP_URL}/static/images/og_{{lang}}.png`,
+    META_URL: process.env.NEXT_PUBLIC_APP_URL,
+    META_IMAGE: `${process.env.NEXT_PUBLIC_APP_URL}/static/images/og_{{lang}}.png`,
   },
   webpack: (config) => {
     config.module.rules.push({

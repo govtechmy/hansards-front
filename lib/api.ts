@@ -9,18 +9,18 @@ type BaseURL = "api" | "app" | string;
  * @param {Record<string, string>} headers Additional headers
  * @returns Base of URL
  *
- * @example "api"   -> "https://[API_URL]/"
- * @example "app" -> "https://[APP_URL]/"
+ * @example "api"   -> "https://[NEXT_PUBLIC_API_URL]/"
+ * @example "app" -> "https://[NEXT_PUBLIC_APP_URL]/"
  */
 const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const urls: Record<BaseURL, string> = {
-    api: process.env.API_URL,
-    app: process.env.APP_URL,
+    api: process.env.NEXT_PUBLIC_API_URL,
+    app: process.env.NEXT_PUBLIC_APP_URL,
   };
   const BROWSER_RUNTIME = typeof window === "object";
 
   const authorization = !BROWSER_RUNTIME
-    ? process.env.AUTHORIZATION_TOKEN
+    ? process.env.NEXT_PUBLIC_AUTHORIZATION_TOKEN
     : parseCookies(document.cookie).rolling_token;
 
   const config: AxiosRequestConfig = {

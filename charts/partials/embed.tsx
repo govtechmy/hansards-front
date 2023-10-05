@@ -39,7 +39,7 @@ const CatalogueEmbed: ForwardRefExoticComponent<CatalogueEmbedProps> = forwardRe
 
     const EMBED = useMemo<{ url: string; params: URLSearchParams }>(() => {
       const embed = new URL(
-        `${process.env.APP_URL}${
+        `${process.env.NEXT_PUBLIC_APP_URL}${
           language?.value === "en-GB" ? "/en-GB" : ""
         }/katalog/embed/${uid}`
       );

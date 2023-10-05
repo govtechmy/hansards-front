@@ -2,21 +2,24 @@ declare namespace NodeJS {
   export interface ProcessEnv {
     APP_URL: string;
     APP_ENV: string;
-    API_URL: string;
-    I18N_URL: string;
-    
-    AUTHORIZATION_TOKEN: string;
+    NEXT_PUBLIC_APP_URL: string;
+    NEXT_PUBLIC_APP_ENV: string;
+    NEXT_PUBLIC_API_URL: string;
+    NEXT_PUBLIC_I18N_URL: string;
+    NEXT_PUBLIC_AUTHORIZATION_TOKEN: string;
+
     REVALIDATE_TOKEN: string;
     AUTH_TOKEN: string;
     ANALYZE: boolean;
 
-    TILESERVER_URL: string;
-    GA_TAG: string;
+    NEXT_PUBLIC_TILESERVER_URL: string;
+    NEXT_PUBLIC_GA_TAG: string;
 
     MIXPANEL_TOKEN: string;
     MIXPANEL_PROJECT_ID: string;
     MIXPANEL_SA_USER: string;
     MIXPANEL_SA_SECRET: string;
+    NEXT_PUBLIC_MIXPANEL_TOKEN: string;
   }
 }
 

@@ -21,5 +21,5 @@ export const init_session = (): void => {
  * @param url URL path
  */
 export const ga_track = (url: string): void => {
-  if (window.gtag) window.gtag("config", process.env.GA_TAG, { page_path: url });
+  if (window.gtag) window.gtag("config", process.env.NEXT_PUBLIC_GA_TAG, { page_path: url });
 };

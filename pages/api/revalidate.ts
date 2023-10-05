@@ -60,8 +60,10 @@ const rebuild = async (res: NextApiResponse, route: string, routes: string[]) =>
   new Promise(async (resolve, reject) => {
     switch (route) {
       // For routes with dynamic /[state] pages
-      case "/trivia":
-      case "/en-GB/trivia":
+      case "/kehadiran":
+      case "/sejarah":
+      case "/en-GB/kehadiran":
+      case "/en-GB/sejarah":
         await res.revalidate(route);
         const result = revalidateWithStates(res, route);
         routes.push.apply(routes, result);
