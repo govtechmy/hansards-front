@@ -35,7 +35,7 @@ export const UpDownIcon: FunctionComponent<IconProps> = ({
   );
 };
 
-export function ParlimenIcon(props: ComponentProps<"svg">) {
+export const ParlimenIcon = (props: ComponentProps<"svg">) => {
   return (
     <svg
       width="27"
@@ -165,7 +165,7 @@ export function ParlimenIcon(props: ComponentProps<"svg">) {
   );
 }
 
-export function MenuIcon(props: ComponentProps<"svg">) {
+export const MenuIcon = (props: ComponentProps<"svg">) => {
   return (
     <svg
       fill="none"
