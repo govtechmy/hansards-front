@@ -48,7 +48,7 @@ const ExcerptCard = ({ excerpt, keyword }: ExcerptCardProps) => {
         <div className="flex flex-col gap-3 relative">
           <ArrowUpRightIcon className="absolute right-2 h-5 w-5 text-dim opacity-0 transition-[opacity_transform] duration-0 group-hover:translate-x-2 group-hover:opacity-100 group-hover:duration-300" />
           <div className="flex gap-3 lg:gap-6">
-            <CalendarCard date={excerpt.date} />
+            <CalendarCard date={excerpt.date} size="sm" />
 
             <div className="flex flex-col w-[calc(100%-94px)]">
               <span className="text-zinc-900 dark:text-white font-bold text-lg truncate">
