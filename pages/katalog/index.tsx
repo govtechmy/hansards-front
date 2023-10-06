@@ -9,16 +9,17 @@ import { Page } from "@lib/types";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const CatalogueIndex: Page = ({
-  query,
-  collection,
-  sources,
+  // query,
+  // collection,
+  // sources,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation(["catalogue", "common"]);
 
   return (
     <>
       <Metadata title={t("header")} description={t("description")} keywords={""} />
-      <DataCatalogue query={query} collection={collection} sources={sources} />
+      {/* <DataCatalogue query={query} collection={collection} sources={sources} /> */}
+      <DataCatalogue  />
     </>
   );
 };
@@ -40,12 +41,12 @@ export const getServerSideProps: GetServerSideProps = withi18n(
   "catalogue",
   async ({ locale, query }) => {
     try {
-      const { data } = await get("/data-catalog/", {
-        lang: SHORT_LANG[locale! as keyof typeof SHORT_LANG],
-        ...query,
-      });
+      // const { data } = await get("/data-catalog/", {
+      //   lang: SHORT_LANG[locale! as keyof typeof SHORT_LANG],
+      //   ...query,
+      // });
 
-      const collection = recurSort(data.dataset);
+      // const collection = recurSort(data.dataset);
 
       return {
         props: {
@@ -53,9 +54,9 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             id: "catalogue-index",
             type: "misc",
           },
-          query: query ?? {},
-          sources: data.source_filters.sort((a: string, b: string) => a.localeCompare(b)),
-          collection,
+          // query: query ?? {},
+          // sources: data.source_filters.sort((a: string, b: string) => a.localeCompare(b)),
+          // collection,
         },
       };
     } catch (error) {

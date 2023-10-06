@@ -36,50 +36,50 @@ export type Catalogue = {
 };
 
 interface CatalogueIndexProps {
-  query: Record<string, string>;
-  collection: Record<string, any>;
-  sources: string[];
+  // query: Record<string, string>;
+  // collection: Record<string, any>;
+  // sources: string[];
 }
 
 const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
-  query,
-  collection,
-  sources,
+  // query,
+  // collection,
+  // sources,
 }) => {
   const { t } = useTranslation(["catalogue", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const filterRef = useRef<CatalogueFilterRef>(null);
   const { size } = useContext(WindowContext);
-  const sourceOptions = sources.map((source) => ({
-    label: source,
-    value: source,
-  }));
+  // const sourceOptions = sources.map((source) => ({
+  //   label: source,
+  //   value: source,
+  // }));
 
-  const _collection = useMemo<Array<[string, any]>>(() => {
-    const resultCollection: Array<[string, Catalogue[]]> = [];
-    Object.entries(collection).forEach(([category, subcategory]) => {
-      Object.entries(subcategory).forEach(([subcategory_title, datasets]) => {
-        resultCollection.push([
-          `${category}: ${subcategory_title}`,
-          datasets as Catalogue[],
-        ]);
-      });
-    });
+  // const _collection = useMemo<Array<[string, any]>>(() => {
+  //   const resultCollection: Array<[string, Catalogue[]]> = [];
+  //   Object.entries(collection).forEach(([category, subcategory]) => {
+  //     Object.entries(subcategory).forEach(([subcategory_title, datasets]) => {
+  //       resultCollection.push([
+  //         `${category}: ${subcategory_title}`,
+  //         datasets as Catalogue[],
+  //       ]);
+  //     });
+  //   });
 
-    return resultCollection;
-  }, [collection]);
+  //   return resultCollection;
+  // }, [collection]);
 
   return (
     <>
       <Hero
-        background="blue"
-        category={[t("category"), "text-primary dark:text-secondary"]}
+        background="gold"
+        category={[t("category"), "text-secondary"]}
         header={[t("header")]}
-        description={[<Trans>{t("description")}</Trans>]}
+        description={[t("description")]}
       />
 
       <Container className="min-h-screen">
-        <Sidebar
+        {/* <Sidebar
           categories={Object.entries(collection).map(
             ([category, subcategory]) => [category, Object.keys(subcategory)]
           )}
@@ -90,14 +90,14 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
               inline: "end",
             })
           }
-        >
-          <CatalogueFilter
+        > */}
+          {/* <CatalogueFilter
             ref={filterRef}
             query={query}
             sources={sourceOptions}
-          />
+          /> */}
 
-          {_collection.length > 0 ? (
+          {/* {_collection.length > 0 ? (
             _collection.map(([title, datasets]) => {
               return (
                 <Section
@@ -126,8 +126,8 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
             <p className="text-zinc-500 p-2 pt-16 lg:p-8">
               {t("common:no_entries")}.
             </p>
-          )}
-        </Sidebar>
+          )} */}
+        {/* </Sidebar> */}
       </Container>
     </>
   );
