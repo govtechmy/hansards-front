@@ -30,3 +30,15 @@
 .markdown a {
   @apply text-primary dark:text-secondary [text-underline-position:from-font] hover:underline;
 }
+
+.markdown > table td, th{
+  @apply tabular-nums px-3 py-1.5;
+}
+
+.markdown > table > thead > tr{
+  @apply border-slate-200 dark:border-zinc-800 border-b-2;
+}
+
+.markdown > table > tbody > tr {
+  @apply border-slate-200 dark:border-zinc-800 border-b;
+} 
