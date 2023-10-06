@@ -1,6 +1,6 @@
-import { At, Container, Section } from "@components/index";
+import { At, Section } from "@components/index";
 import { FunctionComponent } from "react";
-import ExcerptCard, { Excerpt } from "./excerpt-card";
+import ExcerptCard, { Excerpt } from "@components/Card/excerpt-card";
 import { useTranslation } from "@hooks/useTranslation";
 
 /**
