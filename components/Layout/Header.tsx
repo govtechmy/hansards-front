@@ -53,7 +53,7 @@ const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
                 <Nav.Item
                   title={t("nav.katalog")}
                   key="/katalog"
-                  link="/katalog"
+                  link="/katalog/dewan-rakyat"
                   onClick={close}
                 />
               </>
