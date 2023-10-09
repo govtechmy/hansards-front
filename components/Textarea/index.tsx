@@ -1,4 +1,4 @@
-import { clx } from "../../lib/helpers";
+import { cn } from "../../lib/helpers";
 import type { ComponentProps, ReactNode } from "react";
 import { forwardRef } from "react";
 
@@ -10,7 +10,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       <textarea
         ref={forwardedRef}
         spellCheck={false}
-        className={clx(
+        className={cn(
           "block w-full appearance-none rounded-lg px-3 py-3 transition-colors",
           "text-base leading-tight md:text-sm",
           "dark:border-zinc-700 dark:bg-[#121212] ",

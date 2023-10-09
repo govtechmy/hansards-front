@@ -33,7 +33,7 @@ import {
 import { CrosshairPlugin } from "chartjs-plugin-crosshair";
 import AnnotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
 import { Chart } from "react-chartjs-2";
-import { clx, numFormat } from "@lib/helpers";
+import { cn, numFormat } from "@lib/helpers";
 import "chartjs-adapter-luxon";
 import { ChartCrosshairOption } from "@lib/types";
 import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
@@ -440,7 +440,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
   return (
     <div>
       {isLoading ? (
-        <div className={clx("flex items-center justify-center", className)}>
+        <div className={cn("flex items-center justify-center", className)}>
           <Spinner loading={isLoading} />
         </div>
       ) : (
@@ -534,7 +534,7 @@ export type StatProps = {
 
 export const Stats: FunctionComponent<StatsProps> = ({ data, className }) => {
   return (
-    <div className={clx("flex flex-row space-x-6 lg:space-x-8", className)}>
+    <div className={cn("flex flex-row space-x-6 lg:space-x-8", className)}>
       {data.map(({ title, value, tooltip }: StatProps) => (
         <div key={`${title}_${value}`}>
           <p className="text-zinc-500 text-sm">{title}</p>

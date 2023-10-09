@@ -2,7 +2,7 @@ import { CSSProperties, FunctionComponent, useRef } from "react";
 import { Transition, Popover } from "@headlessui/react";
 import { CheckCircleIcon, ChevronDownIcon, ClockIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useTranslation } from "next-i18next";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { FixedSizeList as List } from "react-window";
 import Button from "@components/Button";
 
@@ -55,7 +55,7 @@ const YearRange: FunctionComponent<DaterangeProps> = ({
     <li
       key={`${type}_${index}`}
       style={style}
-      className={clx(
+      className={cn(
         "flex select-none items-center justify-between px-4 py-1.5",
         (type === "begin" && year === selectedStart) || (type === "end" && year === selectedEnd)
           ? "bg-slate-100 dark:bg-zinc-800"
@@ -100,7 +100,7 @@ const YearRange: FunctionComponent<DaterangeProps> = ({
         return (
           <>
             <Popover.Button
-              className={clx(
+              className={cn(
                 "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-zinc-900 dark:text-white",
                 "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-white dark:bg-zinc-900",
                 "border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:dark:border-zinc-700 border outline-none",
@@ -123,7 +123,7 @@ const YearRange: FunctionComponent<DaterangeProps> = ({
               leaveTo="opacity-0"
             >
               <Popover.Panel
-                className={clx(
+                className={cn(
                   "max-h-100 dark:ring-slate-800  shadow-floating absolute z-20 mt-1 min-w-full overflow-clip rounded-md bg-white text-sm ring-1 ring-zinc-900 ring-opacity-5 focus:outline-none dark:bg-zinc-900",
                   anchor === "right" ? "right-0" : anchor === "left" ? "left-0" : anchor
                 )}

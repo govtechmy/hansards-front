@@ -1,4 +1,4 @@
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { FunctionComponent, ReactNode } from "react";
 
 export interface ChartHeaderProps {
@@ -12,7 +12,7 @@ const ChartHeader: FunctionComponent<ChartHeaderProps> = ({ title, menu, control
   return (
     <>
       {[title, controls, menu].some(Boolean) && (
-        <div className={clx("flex flex-wrap items-start justify-between gap-2", className)}>
+        <div className={cn("flex flex-wrap items-start justify-between gap-2", className)}>
           {title && typeof title === "string" ? <h5>{title}</h5> : title}
           {menu && <div className="block md:hidden">{menu}</div>}
           {controls && (

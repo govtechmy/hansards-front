@@ -1,4 +1,4 @@
-import { clx, toDate } from "@lib/helpers";
+import { cn, toDate } from "@lib/helpers";
 import { useTranslation } from "@hooks/useTranslation";
 import { FunctionComponent, ReactNode, forwardRef, LegacyRef, ForwardedRef, useMemo } from "react";
 import { DateTime } from "luxon";
@@ -45,7 +45,7 @@ const Section: FunctionComponent<SectionProps> = forwardRef(
               </div>
               {(description || menu) && (
                 <div
-                  className={clx(
+                  className={cn(
                     "text-zinc-500 flex w-full flex-wrap justify-between gap-y-3 md:flex-nowrap md:items-start",
                     description && menu && "gap-x-6"
                   )}

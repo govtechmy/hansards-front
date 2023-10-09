@@ -5,7 +5,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { useRouter } from "next/router";
 import { FunctionComponent, useContext, useMemo } from "react";
 import { default as Dropdown } from ".";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 
 interface StateDropdownProps {
   anchor?: string;
@@ -50,9 +50,9 @@ const StateDropdown: FunctionComponent<StateDropdownProps> = ({
   const options = include ? statesOptions.concat(include) : statesOptions;
 
   return (
-    <div className={clx(!hideOnScroll ? `block ${width}` : show ? "hidden lg:block" : "hidden")}>
+    <div className={cn(!hideOnScroll ? `block ${width}` : show ? "hidden lg:block" : "hidden")}>
       <Dropdown
-        className={clx("flex-row items-center", className)}
+        className={cn("flex-row items-center", className)}
         onChange={selected => (onChange ? onChange(selected) : redirect(selected))}
         disabled={disabled}
         selected={options.find(state => state.value === currentState)}

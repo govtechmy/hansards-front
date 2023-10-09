@@ -8,7 +8,7 @@ import {
   MagnifyingGlassIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { matchSorter } from "match-sorter";
 import { useTranslation } from "next-i18next";
 import { default as Image } from "next/image";
@@ -117,7 +117,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       key={index}
       style={style}
       className={({ active }) =>
-        clx(
+        cn(
           "relative flex w-full cursor-default select-none items-center gap-2 py-2 pr-4",
           multiple ? "pl-10" : "pl-4",
           active && "bg-slate-100 dark:bg-zinc-800"
@@ -138,7 +138,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
 
       {/* Option label */}
       <span
-        className={clx(
+        className={cn(
           "block flex-grow truncate",
           option === selected ? "font-medium" : "font-normal"
         )}
@@ -167,7 +167,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   );
 
   return (
-    <div className={clx("space-y-3", width)}>
+    <div className={cn("space-y-3", width)}>
       {label && <Label label={label}></Label>}
       <Listbox
         value={selected}
@@ -177,7 +177,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       >
         <div className="relative text-sm">
           <Listbox.Button
-            className={clx(
+            className={cn(
               "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5",
               "text-start text-sm font-medium text-zinc-900 dark:text-white",
               "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-white dark:bg-zinc-900",
@@ -232,7 +232,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
           >
             <Listbox.Options
               ref={optionsRef}
-              className={clx(
+              className={cn(
                 "dark:ring-slate-800  shadow-floating absolute z-20 mt-1 min-w-full rounded-md bg-white text-zinc-900 ring-1 ring-zinc-900 ring-opacity-5 focus:outline-none dark:bg-zinc-900 dark:text-white",
                 availableOptions.length <= 100 && "max-h-60 overflow-auto",
                 anchor === "right" ? "right-0" : anchor === "left" ? "left-0" : anchor

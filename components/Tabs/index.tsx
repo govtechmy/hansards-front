@@ -1,6 +1,6 @@
 import { FunctionComponent, ReactElement, ReactNode, useMemo } from "react";
 import { Tab } from "@headlessui/react";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 
 interface TabsProps {
   children: ReactNode;
@@ -35,11 +35,11 @@ const Panel: FunctionComponent<PanelProps> = ({ children, className, name }) => 
 
 const List: FunctionComponent<ListProps> = ({ options, current, onChange, icons, className }) => {
   return (
-    <ul className={clx("flex flex-wrap", className)}>
+    <ul className={cn("flex flex-wrap", className)}>
       {options.map((option, index) => (
         <li
           key={option}
-          className={clx(
+          className={cn(
             "flex cursor-pointer select-none self-center whitespace-nowrap rounded-full px-2.5 py-1 text-sm outline-none transition-colors",
             current === index
               ? "bg-slate-200 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-white"
@@ -71,7 +71,7 @@ const Tabs: FunctionComponent<TabsProps> & { Panel: typeof Panel; List: typeof L
   return (
     <>
       <Tab.Group selectedIndex={current} onChange={onChange}>
-        <div className={clx("flex flex-wrap items-end justify-between gap-3", className)}>
+        <div className={cn("flex flex-wrap items-end justify-between gap-3", className)}>
           <div>
             {title && typeof title === "string" ? (
               <span className="text-base font-bold">{title}</span>
@@ -81,7 +81,7 @@ const Tabs: FunctionComponent<TabsProps> & { Panel: typeof Panel; List: typeof L
           </div>
 
           <Tab.List
-            className={clx(
+            className={cn(
               "flex flex-wrap items-center justify-between gap-2.5",
               hidden && "hidden"
             )}
@@ -92,7 +92,7 @@ const Tabs: FunctionComponent<TabsProps> & { Panel: typeof Panel; List: typeof L
                 <Tab
                   key={index}
                   className={({ selected }) =>
-                    clx(
+                    cn(
                       "group flex flex-row rounded-full px-[10px] py-1 text-sm outline-none transition-colors",
                       selected
                         ? "bg-slate-200 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-white"

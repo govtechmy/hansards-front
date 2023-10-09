@@ -5,7 +5,7 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import Modal from ".";
 import { WindowContext } from "@lib/contexts/window";
 import { useTranslation } from "@hooks/useTranslation";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 
 interface StateModalProps {
   state: string;
@@ -33,7 +33,7 @@ const StateModal: FunctionComponent<StateModalProps> = ({ state, exclude, url, t
     <Modal
       trigger={open => (
         <button
-          className={clx(
+          className={cn(
             "border-slate-200 dark:border-zinc-700 fixed bottom-0 right-4 z-30 flex h-14 w-14 transform items-center justify-center rounded-full border bg-white shadow-2xl transition-all dark:bg-zinc-900 lg:hidden",
             show ? "-translate-y-4" : "translate-y-12"
           )}
@@ -56,7 +56,7 @@ const StateModal: FunctionComponent<StateModalProps> = ({ state, exclude, url, t
             .map(state => (
               <li
                 key={state.value}
-                className={clx(
+                className={cn(
                   "mt-1 px-4 py-2",
                   state.value === currentState && "bg-slate-100 dark:bg-zinc-800"
                 )}

@@ -18,7 +18,7 @@ import { Color, useColor } from "@hooks/useColor";
 import { DeepPartial } from "chart.js/types/utils";
 import "chartjs-adapter-luxon";
 import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
-import { clx, minMax, normalize, numFormat } from "@lib/helpers";
+import { cn, minMax, normalize, numFormat } from "@lib/helpers";
 
 type HeatmapProps = ChartHeaderProps & {
   className?: string;
@@ -225,7 +225,7 @@ const Heatmap: FunctionComponent<HeatmapProps> = ({
     <div>
       <ChartHeader title={title} menu={menu} controls={controls} />
 
-      <div className={clx("overflow-x-auto", className)}>
+      <div className={cn("overflow-x-auto", className)}>
         <Chart
           ref={_ref}
           type="matrix"

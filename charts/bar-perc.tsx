@@ -1,5 +1,5 @@
 import { FunctionComponent, ReactNode } from "react";
-import { clx, limitMax, numFormat } from "@lib/helpers";
+import { cn, limitMax, numFormat } from "@lib/helpers";
 
 type BarPercProps = {
   label?: ReactNode;
@@ -45,7 +45,7 @@ const BarPerc: FunctionComponent<BarPercProps> = ({
       )}
 
       <div
-        className={clx("bg-slate-100 dark:bg-zinc-800 flex overflow-x-hidden rounded-full", size)}
+        className={cn("bg-slate-100 dark:bg-zinc-800 flex overflow-x-hidden rounded-full", size)}
       >
         <div
           className="h-full items-center overflow-hidden rounded-full bg-slate-900 dark:bg-white"

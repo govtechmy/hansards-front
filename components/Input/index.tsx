@@ -1,5 +1,5 @@
 import Label, { LabelProps } from "../Label";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { FunctionComponent, HTMLInputTypeAttribute, ReactElement, useEffect, useRef } from "react";
 
 interface InputProps extends LabelProps {
@@ -47,7 +47,7 @@ const Input: FunctionComponent<InputProps> = ({
     <div className="relative flex w-full flex-col gap-2">
       {label && <Label name={name} label={label} />}
       <div
-        className={clx(
+        className={cn(
           "text-zinc-500 absolute left-3 h-full",
           !label ? "translate-y-[25%]" : "translate-y-[65%]"
         )}
@@ -64,7 +64,7 @@ const Input: FunctionComponent<InputProps> = ({
         type={type as HTMLInputTypeAttribute}
         min={min}
         max={max}
-        className={clx(
+        className={cn(
           "placeholder:text-zinc-500 focus:ring-zinc-500 w-full rounded-md px-3 text-sm dark:bg-zinc-900 dark:text-white",
           "focus:ring-primary dark:focus:ring-secondary focus:outline-none",
           icon ? "pl-10" : "",

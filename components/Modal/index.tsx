@@ -9,7 +9,7 @@ import {
 } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { body, header } from "@lib/configs/font";
 import Button from "@components/Button";
 
@@ -62,7 +62,7 @@ const Modal: ForwardRefExoticComponent<ModalProps> = forwardRef(
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
-                  className={clx(
+                  className={cn(
                     header.variable,
                     body.variable,
                     "flex h-full w-full max-w-5xl flex-col overflow-auto rounded-t-xl font-sans lg:h-fit lg:justify-center lg:rounded-xl",

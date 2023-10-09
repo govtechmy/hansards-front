@@ -1,7 +1,7 @@
 import { BREAKPOINTS, CATALOGUE_COLORS } from "@lib/constants";
 import { CatalogueContext } from "@lib/contexts/catalogue";
 import { WindowContext } from "@lib/contexts/window";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { ChartDataset } from "chart.js";
 import { default as dynamic } from "next/dynamic";
 import { FunctionComponent, useContext, useMemo } from "react";
@@ -41,7 +41,7 @@ const CatalogueBar: FunctionComponent<CatalogueBarProps> = ({
   return (
     <Bar
       _ref={ref => bind.chartjs(ref)}
-      className={clx(
+      className={cn(
         className
           ? className
           : bar_layout === "vertical"

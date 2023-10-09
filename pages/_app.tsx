@@ -4,7 +4,7 @@ import Layout from "@components/Layout";
 import Progress from "@components/Progress";
 import { header, body } from "@lib/configs/font";
 import mixpanelConfig from "@lib/configs/mixpanel";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { ga_track, track } from "@lib/mixpanel";
 import { AppPropsLayout } from "@lib/types";
 import { appWithTranslation } from "next-i18next";
@@ -17,7 +17,7 @@ function App({ Component, pageProps }: AppPropsLayout) {
   const layout =
     Component.layout ||
     ((page: ReactNode) => (
-      <Layout className={clx(body.variable, "font-sans")}>{page}</Layout>
+      <Layout className={cn(body.variable, "font-sans")}>{page}</Layout>
     ));
   // const router = useRouter();
 
@@ -49,7 +49,7 @@ function App({ Component, pageProps }: AppPropsLayout) {
 
   return (
     <div
-      className={clx(
+      className={cn(
         body.variable,
         header.variable,
         "font-sans dark:bg-zinc-900"

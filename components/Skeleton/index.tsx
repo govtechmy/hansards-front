@@ -1,4 +1,4 @@
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { FunctionComponent } from "react";
 import { Spinner } from "..";
 
@@ -15,7 +15,7 @@ const Skeleton: FunctionComponent<SkeletonProps> = ({
 }) => {
   return (
     <div
-      className={clx(
+      className={cn(
         "flex items-center justify-center",
         height,
         width,

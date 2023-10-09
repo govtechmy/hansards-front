@@ -1,4 +1,4 @@
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { FunctionComponent, ReactNode } from "react";
 
 interface CardProps {
@@ -10,7 +10,7 @@ interface CardProps {
 const Card: FunctionComponent<CardProps> = ({ children, className, onClick }) => {
   return (
     <div
-      className={clx(
+      className={cn(
         "border-slate-200 dark:border-zinc-800 rounded-xl border transition",
         onClick && "cursor-pointer transition",
         className

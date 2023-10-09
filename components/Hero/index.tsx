@@ -2,7 +2,7 @@ import Container from "@components/Container";
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { ParlimenIcon } from "@icons/index";
 import { AnalyticsContext } from "@lib/contexts/analytics";
-import { clx, numFormat, toDate } from "@lib/helpers";
+import { cn, numFormat, toDate } from "@lib/helpers";
 import { useTranslation } from "next-i18next";
 import { FunctionComponent, ReactNode, useContext, useMemo } from "react";
 
@@ -55,8 +55,8 @@ const Hero: FunctionComponent<HeroProps> = ({
 
   return (
     <Container
-      background={clx(background_style, "border-b dark:border-zinc-800")}
-      className={clx("relative", className)}
+      background={cn(background_style, "border-b dark:border-zinc-800")}
+      className={cn("relative", className)}
     >
       <>
         {children ? (
@@ -68,7 +68,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                 <div className="relative flex justify-between">
                   {category && (
                     <span
-                      className={clx("font-semibold uppercase", category[1])}
+                      className={cn("font-semibold uppercase", category[1])}
                       data-testid="hero-category"
                     >
                       {category[0]}
@@ -81,7 +81,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                 <div className="space-y-3">
                   {header && (
                     <h2
-                      className={clx("text-zinc-900", header[1])}
+                      className={cn("text-zinc-900", header[1])}
                       data-testid="hero-header"
                     >
                       {header[0]}
@@ -90,7 +90,7 @@ const Hero: FunctionComponent<HeroProps> = ({
 
                   {description && Array.isArray(description) ? (
                     <p
-                      className={clx(
+                      className={cn(
                         "text-zinc-500 max-xl:max-w-prose xl:w-2/3",
                         description[1]
                       )}

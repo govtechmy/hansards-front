@@ -6,7 +6,7 @@ import { useWatch } from "@hooks/useWatch";
 import { CATALOGUE_COLORS, SHORT_PERIOD } from "@lib/constants";
 import { CatalogueContext } from "@lib/contexts/catalogue";
 import { SliderProvider } from "@lib/contexts/slider";
-import { clx, numFormat } from "@lib/helpers";
+import { cn, numFormat } from "@lib/helpers";
 import { Precision } from "@lib/types";
 import { ChartDataset, ChartTypeRegistry } from "chart.js";
 import isEmpty from "lodash/isEmpty";
@@ -131,7 +131,7 @@ const CatalogueTimeseries: FunctionComponent<CatalogueTimeseriesProps> = ({
             />
           </>
         ) : (
-          <div className={clx(className, "flex items-center justify-center")}>
+          <div className={cn(className, "flex items-center justify-center")}>
             <Spinner loading={isEmpty(dataset.chart.x)} />
           </div>
         )

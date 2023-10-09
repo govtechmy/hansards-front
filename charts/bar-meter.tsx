@@ -1,6 +1,6 @@
 import { default as ChartHeader, ChartHeaderProps } from "./chart-header";
 import { CountryAndStates } from "@lib/constants";
-import { clx, limitMax, maxBy, numFormat } from "@lib/helpers";
+import { cn, limitMax, maxBy, numFormat } from "@lib/helpers";
 import Image from "next/image";
 import { FunctionComponent, ReactNode, useMemo } from "react";
 
@@ -177,7 +177,7 @@ const BarMeter: FunctionComponent<BarMeterProps> = ({
   return (
     <div className="space-y-6">
       <ChartHeader title={title} menu={menu} controls={controls} />
-      <div className={clx(layout_style[layout], className)}>
+      <div className={cn(layout_style[layout], className)}>
         {_data?.map((item, index) => {
           return (
             <div className="h-full" key={index}>

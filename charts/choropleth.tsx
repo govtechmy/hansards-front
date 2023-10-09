@@ -4,7 +4,7 @@ import { ChartHeaderProps, default as ChartHeader } from "./chart-header";
 // import { ArrowPathIcon, MinusSmallIcon, PlusSmallIcon } from "@heroicons/react/24/outline";
 import { FeatureCollection } from "geojson";
 import { Color } from "@hooks/useColor";
-import { clx, numFormat } from "@lib/helpers";
+import { cn, numFormat } from "@lib/helpers";
 import { ChartCrosshairOption, Geotype } from "@lib/types";
 import { useTheme } from "next-themes";
 import { Chart } from "react-chartjs-2";
@@ -119,7 +119,7 @@ const Choropleth: FunctionComponent<ChoroplethProps> = ({
   return (
     <div className="relative">
       <ChartHeader title={title} menu={menu} controls={controls} />
-      <div className={clx("p-4 transition-all", className)}>
+      <div className={cn("p-4 transition-all", className)}>
         {desktopMap && (
           <div className="hidden h-full w-full lg:block">
             <Chart

@@ -3,7 +3,7 @@
  * @overview Status: In-development
  */
 
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 
 interface CalendarCardProps {
   className?: string;
@@ -17,14 +17,14 @@ const CalendarCard = ({ className, date, size }: CalendarCardProps) => {
   return (
     <>
       <div
-        className={clx(
+        className={cn(
           "shadow-button p-1.5 w-[60px] h-auto max-sm:max-h-20 flex-col flex justify-center text-center border border-slate-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900",
           size == "lg" && "lg:w-[80px]",
           className
         )}
       >
         <span
-          className={clx(
+          className={cn(
             "uppercase text-xs text-[#AE2929]",
             size == "lg" && "lg:text-sm lg:font-medium"
           )}
@@ -32,7 +32,7 @@ const CalendarCard = ({ className, date, size }: CalendarCardProps) => {
           {_date[1]}
         </span>
         <span
-          className={clx(
+          className={cn(
             "font-semibold text-xl text-zinc-900 dark:text-white",
             size == "lg" && "lg:text-[32px] lg:leading-tight"
           )}
@@ -40,7 +40,7 @@ const CalendarCard = ({ className, date, size }: CalendarCardProps) => {
           {_date[2]}
         </span>
         <span
-          className={clx(
+          className={cn(
             "text-xs text-dim",
             size == "lg" && "lg:text-sm lg:font-medium"
           )}

@@ -1,6 +1,6 @@
 import Markdown from "@components/Markdown";
 import { UserIcon } from "@heroicons/react/24/solid";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { useMemo } from "react";
 
 /**
@@ -44,7 +44,7 @@ const SpeechBubble = ({ party, position, speaker, speech }: SpeechBubbleProps) =
   return (
     <>
       <div
-        className={clx(
+        className={cn(
           "flex gap-x-3",
           position === "left" ? "flex-row pr-12" : "flex-row-reverse pl-12"
         )}
@@ -57,14 +57,14 @@ const SpeechBubble = ({ party, position, speaker, speech }: SpeechBubbleProps) =
         <div className="flex flex-col gap-y-2">
           {_speech.map((speech, i) => (
             <div
-              className={clx(
+              className={cn(
                 "shadow-button border rounded-xl dark:border-zinc-800 px-4.5 py-3 flex flex-col gap-y-1 bg-white dark:bg-[#000000]",
                 speech.length > 100 && "w-full"
               )}
             >
               {i === 0 && (
                 <div className="flex gap-2">
-                  <p className={clx("font-bold text-sm", colour)}>
+                  <p className={cn("font-bold text-sm", colour)}>
                     {speaker.name}
                   </p>
                   <p className="text-sm text-zinc-500">{speaker.designation}</p>

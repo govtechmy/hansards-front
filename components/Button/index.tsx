@@ -1,5 +1,5 @@
 import { ComponentProps, FunctionComponent, MouseEventHandler, ReactNode } from "react";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 
 interface ButtonProps extends ComponentProps<"button"> {
   className?: string;
@@ -37,7 +37,7 @@ const Button: FunctionComponent<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       type={type}
-      className={clx(variant !== "reset" && style.base, style[variant], className)}
+      className={cn(variant !== "reset" && style.base, style[variant], className)}
       {...props}
     >
       {icon}

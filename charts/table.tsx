@@ -29,7 +29,7 @@ import Image from "next/image";
 import { useTranslation } from "@hooks/useTranslation";
 import { default as debounce } from "lodash/debounce";
 import { DebouncedFunc } from "lodash";
-import { clx, numFormat } from "@lib/helpers";
+import { cn, numFormat } from "@lib/helpers";
 import { UpDownIcon } from "@icons/index";
 import Button from "@components/Button";
 import { Precision } from "@lib/types";
@@ -177,9 +177,9 @@ const Table: FunctionComponent<TableProps> = ({
           {search && search(onSearch)}
         </div>
       )}
-      <div className={clx(responsive && "relative overflow-x-auto")}>
+      <div className={cn(responsive && "relative overflow-x-auto")}>
         <table
-          className={clx(
+          className={cn(
             "relative mx-auto w-full table-auto border-separate border-spacing-0 whitespace-nowrap md:w-fit",
             className
           )}
@@ -194,7 +194,7 @@ const Table: FunctionComponent<TableProps> = ({
                       key={header.id}
                       id={header.id}
                       colSpan={header.colSpan}
-                      className={clx(
+                      className={cn(
                         freeze?.includes(header.id) &&
                           "sticky z-10 bg-inherit max-lg:border-r-2",
                         "border-slate-200 dark:border-zinc-800 border-b-2 py-[10px] font-medium"
@@ -207,7 +207,7 @@ const Table: FunctionComponent<TableProps> = ({
                     >
                       {header.isPlaceholder ? null : (
                         <div
-                          className={clx(
+                          className={cn(
                             header.subHeaders.length < 1
                               ? "flex select-none items-center justify-between gap-1 px-2 text-left text-sm"
                               : !header.column.columnDef.header
@@ -275,7 +275,7 @@ const Table: FunctionComponent<TableProps> = ({
                 return (
                   <tr
                     key={row.id}
-                    className={clx(
+                    className={cn(
                       stripe ?
                         "even:bg-slate-50 even:dark:bg-zinc-800 odd:bg-white odd:dark:bg-zinc-900"
                         : "bg-white dark:bg-zinc-900"
@@ -304,7 +304,7 @@ const Table: FunctionComponent<TableProps> = ({
                         else return precision.default;
                       };
 
-                      const classNames = clx(
+                      const classNames = cn(
                         "border-slate-200 dark:border-zinc-800 border-b px-2 py-2.5 max-sm:max-w-[150px] truncate",
                         typeof value === "number" && "tabular-nums text-right",
                         lastCellInGroup.id === cell.column.id && "text-sm",

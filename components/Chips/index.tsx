@@ -1,5 +1,5 @@
 import { useTranslation } from "@hooks/useTranslation";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { OptionType } from "@lib/types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { FunctionComponent } from "react";
@@ -23,7 +23,7 @@ const Chips: FunctionComponent<ChipsProps> = ({
   const { t } = useTranslation();
 
   return (
-    <ul className={clx("item-center flex flex-wrap gap-1.5", className)}>
+    <ul className={cn("item-center flex flex-wrap gap-1.5", className)}>
       {data.map((option: OptionType, index: number) => (
         <li
           key={option.value}

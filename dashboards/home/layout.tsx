@@ -12,7 +12,7 @@ import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
 import { get } from "@lib/api";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { FunctionComponent, ReactNode } from "react";
@@ -67,14 +67,14 @@ const HomeDashboard: FunctionComponent<HomeProps> = ({ children }) => {
                 onClick={() => setData("tab", tab.value)}
               >
                 <div
-                  className={clx(
+                  className={cn(
                     data.tab === tab.value && "dark:bg-zinc-800",
                     "relative flex h-full flex-col items-center justify-center p-4"
                   )}
                 >
                   <div className="flex gap-1.5 items-center">
                     <div
-                      className={clx(
+                      className={cn(
                         data.tab === tab.value
                           ? "dark:text-white text-zinc-800"
                           : "text-dim"
@@ -83,7 +83,7 @@ const HomeDashboard: FunctionComponent<HomeProps> = ({ children }) => {
                       {tab.icon}
                     </div>
                     <div
-                      className={clx(
+                      className={cn(
                         "flex items-center gap-2",
                         data.tab === tab.value
                           ? "text-black dark:text-white"

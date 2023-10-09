@@ -18,7 +18,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { SHORT_PERIOD, SHORT_PERIOD_FORMAT } from "@lib/constants";
 import { CatalogueContext } from "@lib/contexts/catalogue";
 import { WindowProvider } from "@lib/contexts/window";
-import { clx, interpolate, numFormat, toDate } from "@lib/helpers";
+import { cn, interpolate, numFormat, toDate } from "@lib/helpers";
 import {
   METADATA_TABLE_SCHEMA,
   UNIVERSAL_TABLE_SCHEMA,
@@ -295,12 +295,12 @@ const CatalogueShow: FunctionComponent<CatalogueShowProps> = ({
         >
           {/* Dataset Filters & Chart / Table */}
           <div
-            className={clx(
+            className={cn(
               "flex gap-3 pb-3",
               config.options !== null ? "justify-between" : "justify-end"
             )}
           >
-            <div className={clx("flex gap-2")}>
+            <div className={cn("flex gap-2")}>
               {config?.options?.map((item: FilterDefault, index: number) => (
                 <Dropdown
                   key={item.key}
@@ -319,7 +319,7 @@ const CatalogueShow: FunctionComponent<CatalogueShowProps> = ({
 
           {/* Chart */}
           <div
-            className={clx(
+            className={cn(
               show.value === "chart" ? "block" : "hidden",
               "space-y-2"
             )}
@@ -330,14 +330,14 @@ const CatalogueShow: FunctionComponent<CatalogueShowProps> = ({
           {/* Table */}
           {dataset.table && (
             <div
-              className={clx(
+              className={cn(
                 dataset.type !== "TABLE" &&
                   "mx-auto max-h-[500px] overflow-auto",
                 show.value === "table" ? "block" : "hidden"
               )}
             >
               <Table
-                className={clx(
+                className={cn(
                   "table-default table-sticky-header"
                 )}
                 stripe={true}

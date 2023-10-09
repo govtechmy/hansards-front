@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon as SearchIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "@hooks/useTranslation";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { FunctionComponent, useEffect, useRef } from "react";
 
 type SearchProps = {
@@ -30,7 +30,7 @@ const Search: FunctionComponent<SearchProps> = ({ query, onChange, className, pl
   }, []);
 
   return (
-    <div className={clx("relative flex items-center", className)}>
+    <div className={cn("relative flex items-center", className)}>
       <input
         ref={searchRef}
         id="search"

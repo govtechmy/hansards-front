@@ -1,4 +1,4 @@
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { OptionType } from "@lib/types";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { ForwardedRef, forwardRef, ReactNode } from "react";
@@ -45,21 +45,21 @@ function ComboOptionInner<T>(
       // how many options there are total without looking at the DOM.
       aria-setsize={total}
       aria-posinset={index + 1}
-      className={clx(
+      className={cn(
         "relative flex w-full cursor-pointer select-none flex-row gap-2 px-4 py-2",
         active && "bg-slate-100 dark:bg-zinc-800"
       )}
     >
       <>
         {format ? (
-          <p className={clx("flex gap-x-1 truncate", isSelected ? "font-medium" : "font-normal")}>
+          <p className={cn("flex gap-x-1 truncate", isSelected ? "font-medium" : "font-normal")}>
             {format(option)}
           </p>
         ) : (
           <>
             {image && image(option.value)}
             <p
-              className={clx("block grow self-center", isSelected ? "font-medium" : "font-normal")}
+              className={cn("block grow self-center", isSelected ? "font-medium" : "font-normal")}
             >
               {option.label}
             </p>

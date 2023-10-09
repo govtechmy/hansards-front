@@ -3,7 +3,7 @@ import { default as Label, LabelProps } from "../Label";
 import { Fragment, FunctionComponent, ReactNode } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 
 type CommonProps = {
   className?: string;
@@ -122,9 +122,9 @@ const Select: FunctionComponent<SelectProps> = ({
       >
         {({ open }) => (
           <>
-            <div className={clx("relative text-sm", disabled ? "cursor-not-allowed" : "")}>
+            <div className={cn("relative text-sm", disabled ? "cursor-not-allowed" : "")}>
               <Listbox.Button
-                className={clx(
+                className={cn(
                   "dark:border-zinc-800 shadow-button relative flex w-full flex-col items-start gap-1.5 rounded-md border py-1.5 pl-3 pr-8 text-left dark:bg-zinc-900 lg:w-fit lg:flex-row lg:items-center",
                   className,
                   disabled
@@ -153,7 +153,7 @@ const Select: FunctionComponent<SelectProps> = ({
                 leaveTo="opacity-0"
               >
                 <Listbox.Options
-                  className={clx(
+                  className={cn(
                     "shadow-floating absolute z-20 mt-1 max-h-80 w-full overflow-auto rounded-md ring-1 ring-zinc-900 ring-opacity-5 focus:outline-none lg:w-auto",
                     anchor === "right" ? "right-0" : anchor === "left" ? "left-0" : anchor
                   )}

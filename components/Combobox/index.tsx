@@ -1,7 +1,7 @@
 import ComboOption, { ComboOptionProp, ComboOptionProps } from "./option";
 import { Button, Spinner } from "..";
 import { useTranslation } from "@hooks/useTranslation";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import {
   autoUpdate,
@@ -122,7 +122,7 @@ const ComboBox = <T extends unknown>({
         )}
       </span>
       <input
-        className={clx(
+        className={cn(
           "w-full truncate border-none bg-white py-3 pl-2 pr-10 text-base focus:outline-none focus:ring-0 dark:bg-zinc-900"
         )}
         spellCheck={false}
@@ -178,7 +178,7 @@ const ComboBox = <T extends unknown>({
         <FloatingPortal>
           <FloatingFocusManager context={context} initialFocus={-1} visuallyHiddenDismiss>
             <div
-              className={clx(
+              className={cn(
                 body.variable,
                 "font-body border-slate-200 dark:border-zinc-800 shadow-floating absolute z-20 max-h-60 w-full overflow-auto rounded-md border bg-white text-sm focus:outline-none dark:bg-zinc-900"
               )}

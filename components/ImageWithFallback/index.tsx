@@ -1,4 +1,4 @@
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import Image, { ImageProps } from "next/image";
 import { FunctionComponent, ReactNode, useEffect, useState } from "react";
 
@@ -9,7 +9,7 @@ interface FallbackProps {
 const Fallback: FunctionComponent<FallbackProps> = ({ children, inline = false }) => {
   return (
     <div
-      className={clx(
+      className={cn(
         "border-slate-200 dark:border-zinc-700 h-5 w-8 rounded border bg-white",
         inline && "mr-2 inline-block"
       )}

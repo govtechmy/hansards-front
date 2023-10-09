@@ -2,7 +2,7 @@ import { FunctionComponent, ReactNode, useContext, useRef, useState } from "reac
 import { PlayIcon, PauseIcon } from "@heroicons/react/20/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { useWatch } from "@hooks/useWatch";
-import { clx, toDate } from "@lib/helpers";
+import { cn, toDate } from "@lib/helpers";
 import { Root, Track, Range, Thumb } from "@radix-ui/react-slider";
 import { SliderContext } from "@lib/contexts/slider";
 import { Periods } from "../../charts/timeseries";
@@ -76,7 +76,7 @@ const Slider: FunctionComponent<SliderProps> = ({
 
   if (type === "single")
     return (
-      <div className={clx("group flex w-full items-center gap-x-3", className)}>
+      <div className={cn("group flex w-full items-center gap-x-3", className)}>
         <p className="text-zinc-500 text-sm">
           {parseAsDate ? toDate(data[0], "yyyy", i18n.language) : data[0]}
         </p>
@@ -128,7 +128,7 @@ const Slider: FunctionComponent<SliderProps> = ({
   };
 
   return (
-    <div className={clx("group flex w-full items-center gap-x-3", className)}>
+    <div className={cn("group flex w-full items-center gap-x-3", className)}>
       {enablePlayer && (
         <button
           type="button"
@@ -203,7 +203,7 @@ interface SliderTooltipProps {
 const SliderTooltip: FunctionComponent<SliderTooltipProps> = ({ play, children }) => {
   return (
     <div
-      className={clx(
+      className={cn(
         "absolute bottom-8 left-1/2 flex -translate-x-1/2 transform flex-col items-center opacity-0 group-hover:flex group-hover:opacity-100",
         "transition-opacity delay-300 duration-300 group-hover:delay-0 max-lg:group-focus-within:opacity-100",
         play ? "opacity-100" : "opacity-0"

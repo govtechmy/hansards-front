@@ -1,6 +1,6 @@
 import Dropdown from "@components/Dropdown";
 import { useTranslation } from "@hooks/useTranslation";
-import { clx, copyClipboard } from "@lib/helpers";
+import { cn, copyClipboard } from "@lib/helpers";
 import { track } from "@lib/mixpanel";
 import { GithubThemes } from "./theme";
 import { DocumentDuplicateIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
@@ -114,7 +114,7 @@ const CodeBlock: FunctionComponent<CodeBlockProps> = ({ children, hidden, event,
     <div className="dark:border-zinc-700 bg-slate-50 dark:bg-[#121212] h-fit rounded-xl border">
       <div className="border-slate-400 flex justify-between border-b border-opacity-20 p-1">
         <Dropdown
-          className={clx(hidden ? "invisible" : "visible", "w-fit")}
+          className={cn(hidden ? "invisible" : "visible", "w-fit")}
           sublabel={<GlobeAltIcon className="mr-2 h-4 w-4" />}
           options={languageOptions}
           selected={language}

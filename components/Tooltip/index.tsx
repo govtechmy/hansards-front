@@ -1,6 +1,6 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { Fragment, FunctionComponent, ReactNode, useState } from "react";
 import { body } from "@lib/configs/font";
 
@@ -23,19 +23,19 @@ const Tooltip: FunctionComponent<TooltipProps> = ({ children, className, positio
           {Boolean(tip) && (
             <>
               <InformationCircleIcon
-                className={clx("text-slate-400 mb-1 hidden h-4 w-4 md:inline-block", className)}
+                className={cn("text-slate-400 mb-1 hidden h-4 w-4 md:inline-block", className)}
               />
               <InformationCircleIcon
-                className={clx("text-slate-400 mb-1 inline-block h-4 w-4 md:hidden", className)}
+                className={cn("text-slate-400 mb-1 inline-block h-4 w-4 md:hidden", className)}
                 onClick={() => setIsOpen(true)}
               />
             </>
           )}
         </>
       )}
-      <div className={clx("invisible absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 transform flex-col items-center group-hover:visible group-hover:flex lg:flex", position)}>
+      <div className={cn("invisible absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 transform flex-col items-center group-hover:visible group-hover:flex lg:flex", position)}>
         <span
-          className={clx(
+          className={cn(
             "shadow-floating absolute bottom-1 w-max max-w-[200px] rounded-lg bg-zinc-900 px-3 py-2 text-sm font-normal text-white dark:bg-white dark:text-zinc-900",
             className
           )}
@@ -48,7 +48,7 @@ const Tooltip: FunctionComponent<TooltipProps> = ({ children, className, positio
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog
           as="div"
-          className={clx(body.variable, "relative z-10 font-sans")}
+          className={cn(body.variable, "relative z-10 font-sans")}
           onClose={setIsOpen}
         >
           <Transition.Child

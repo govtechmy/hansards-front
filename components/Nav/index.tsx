@@ -1,5 +1,5 @@
 import { useLanguage } from "@hooks/useLanguage";
-import { clx } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { languages } from "@lib/options";
 import At from "../At";
 import Dropdown from "../Dropdown";
@@ -41,7 +41,7 @@ const Item: FunctionComponent<NavItemProps> = ({
       href={link}
       scroll={false}
       onClick={onClick}
-      className={clx(
+      className={cn(
         "hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center gap-2 rounded-none px-3 py-2 text-sm font-medium transition hover:cursor-pointer md:rounded-md md:py-[6px]",
         pathname.startsWith(link) && link !== "/"
           ? "bg-slate-100 dark:bg-zinc-800"
@@ -88,12 +88,12 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
           className="hamburger -mr-1 rounded p-[5px] active:bg-slate-200 active:dark:bg-zinc-800 lg:hidden"
           onClick={() => setShowMobile(!showMobile)}
         >
-          <MenuIcon className={clx(showMobile && "open")} />
+          <MenuIcon className={cn(showMobile && "open")} />
         </Button>
       </div>
       {/* Mobile - Menu */}
       <div
-        className={clx(
+        className={cn(
           "dark:divide-slate-800 shadow-floating fixed left-0 top-[56px] flex w-screen flex-col gap-0 divide-y bg-white px-4 py-2 backdrop-blur-md dark:bg-zinc-900 lg:hidden",
           showMobile ? "flex" : "hidden"
         )}
