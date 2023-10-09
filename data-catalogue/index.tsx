@@ -8,12 +8,15 @@ import {
   Sidebar,
 } from "@components/index";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { BookmarkIcon } from "@heroicons/react/24/solid";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
+import { FolderIcon } from "@icons/index";
 import { BREAKPOINTS } from "@lib/constants";
 import { WindowContext } from "@lib/contexts/window";
 import { OptionType } from "@lib/types";
 import { Trans } from "next-i18next";
+import Link from "next/link";
 import {
   FunctionComponent,
   useMemo,
@@ -30,59 +33,53 @@ import {
  * @overview Status: Live
  */
 
-export type Catalogue = {
-  id: string;
-  catalog_name: string;
+export interface ArchiveLevel {
+  start_date: string;
+  end_date: string;
+  [key: string]: string;
+}
+
+export type Sitting = {
+  date: string;
+  volume: number;
+  filename: string;
+  download_count: number;
+  view_count: number;
+  cite_count: number;
 };
 
 interface CatalogueIndexProps {
-  // query: Record<string, string>;
-  // collection: Record<string, any>;
-  // sources: string[];
+  data: any;
+  collection: Record<string, any>;
 }
 
 const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
-  // query,
-  // collection,
-  // sources,
+  data,
+  collection,
 }) => {
   const { t } = useTranslation(["catalogue", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const filterRef = useRef<CatalogueFilterRef>(null);
   const { size } = useContext(WindowContext);
-  // const sourceOptions = sources.map((source) => ({
-  //   label: source,
-  //   value: source,
-  // }));
 
-  // const _collection = useMemo<Array<[string, any]>>(() => {
-  //   const resultCollection: Array<[string, Catalogue[]]> = [];
-  //   Object.entries(collection).forEach(([category, subcategory]) => {
-  //     Object.entries(subcategory).forEach(([subcategory_title, datasets]) => {
-  //       resultCollection.push([
-  //         `${category}: ${subcategory_title}`,
-  //         datasets as Catalogue[],
-  //       ]);
-  //     });
-  //   });
+  const _collection = useMemo<Array<[string, any]>>(() => {
+    const resultCollection: Array<[string, Sitting[]]> = [];
+    Object.entries(collection).forEach(([category, subcategory]) => {
+      Object.entries(subcategory).forEach(([subcategory_title, datasets]) => {
+        resultCollection.push([subcategory_title, datasets as Sitting[]]);
+      });
+    });
 
-  //   return resultCollection;
-  // }, [collection]);
+    return resultCollection;
+  }, [collection]);
+
+  const TERMS = Object.keys(collection).reverse();
 
   return (
     <>
-      <Hero
-        background="gold"
-        category={[t("category"), "text-secondary"]}
-        header={[t("header")]}
-        description={[t("description")]}
-      />
-
       <Container className="min-h-screen">
-        {/* <Sidebar
-          categories={Object.entries(collection).map(
-            ([category, subcategory]) => [category, Object.keys(subcategory)]
-          )}
+        <Sidebar
+          data={collection}
           onSelect={(selected) =>
             scrollRef.current[selected]?.scrollIntoView({
               behavior: "smooth",
@@ -90,7 +87,34 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
               inline: "end",
             })
           }
-        > */}
+        >
+          <div className="p-8">
+            <div className="flex flex-col gap-y-6 lg:gap-y-8">
+              <h5>{t("full_archive")}</h5>
+              <div className="grid grid-cols-5 gap-x-8 gap-y-12">
+                {TERMS.map((term, i) => (
+                    <Link href={"/"} className="flex flex-col gap-y-3 items-center">
+                      <div className="relative">
+                        <FolderIcon />
+                        <div className="absolute bottom-1 right-1 bg-slate-400 rounded-md flex gap-0.5 items-center py-0.5 px-1.5">
+                          <BookmarkIcon className="text-white h-3.5 w-3.5" />
+                          <p className="text-white font-medium">23</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col text-center">
+                        <p className="text-zinc-900 dark:text-white font-medium">
+                          {t("term", { ns: "enum", count: term })}
+                        </p>
+                        <p className="text-slate-500 text-sm">{`(${collection[term].start_date.substring(
+                        0,
+                        4
+                      )} - ${collection[term].end_date.substring(0, 4)})`}</p>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </div>
+          </div>
           {/* <CatalogueFilter
             ref={filterRef}
             query={query}
@@ -127,7 +151,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
               {t("common:no_entries")}.
             </p>
           )} */}
-        {/* </Sidebar> */}
+        </Sidebar>
       </Container>
     </>
   );
