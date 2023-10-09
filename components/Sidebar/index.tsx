@@ -1,59 +1,106 @@
-import { FunctionComponent, ReactNode, useState } from "react";
+import { ComponentProps, FunctionComponent, ReactNode, useState } from "react";
 import { Transition } from "@headlessui/react";
 import Button from "@components/Button";
 import { Bars3BottomLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "@hooks/useTranslation";
+import { cn } from "@lib/helpers";
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import { Sitting } from "@data-catalogue/index";
+
+type Term =
+  | "1"
+  | "2"
+  | "3"
+  | "4"
+  | "5"
+  | "6"
+  | "7"
+  | "8"
+  | "9"
+  | "10"
+  | "11"
+  | "12"
+  | "13"
+  | "14"
+  | "15";
+
+type Session = "1" | "2" | "3" | "4" | "5" | "6";
+
+type Meeting = "0" | "1" | "2" | "3" | "4" | "5" | "6";
+
+type Cycle = {
+  start_date: string;
+  end_date: string;
+};
 
 interface SidebarProps {
   children: ReactNode;
-  categories: Array<[category: string, subcategory: string[]]>;
+  data: Record<
+    Term,
+    Cycle & Record<Session, Cycle & Record<Meeting, Sitting[]>>
+  >;
   onSelect: (index: string) => void;
 }
 
-const Sidebar: FunctionComponent<SidebarProps> = ({ children, categories, onSelect }) => {
-  const { t } = useTranslation(["catalogue", "common"]);
+const Sidebar: FunctionComponent<SidebarProps> = ({
+  children,
+  data,
+  onSelect,
+}) => {
+  const { t } = useTranslation(["catalogue", "common", "enum"]);
   const [selected, setSelected] = useState<string>();
   const [show, setShow] = useState<boolean>(false);
   const styles = {
     base: "px-4 lg:px-5 py-1.5 w-full rounded-none text-start leading-tight",
     active:
-      "text-sm border-l-2 border-zinc-900 bg-slate-100 text-zinc-900 font-medium dark:bg-zinc-800 dark:text-white dark:border-white",
+      "text-sm bg-slate-100 text-zinc-900 font-medium dark:bg-zinc-800 dark:text-white",
     default: "text-sm text-zinc-500",
   };
 
+  const TERMS = Object.keys(data).reverse();
   return (
     <>
       <div className="flex w-full flex-row">
         {/* Desktop */}
         <div className="dark:border-r-slate-800  hidden border-r lg:block lg:w-1/4 xl:w-1/5">
-          <ul className="sticky top-14 flex h-[90vh] flex-col gap-2 overflow-auto pt-3">
-            <li>
-              <h5 className={styles.base}>{t("category")}</h5>
+          <ul className="sticky top-14 flex h-[90vh] flex-col overflow-auto pt-8">
+            <li className="flex px-5 justify-between">
+              <h5>{t("full_archive")}</h5>
+              <Button variant="default" className="p-1.5 shadow-button">
+                <ChevronRightIcon className="h-4.5 w-4.5" />
+              </Button>
             </li>
-            {categories.length > 0 ? (
-              categories.map(([category, subcategory]) => (
-                <li key={`${category}: ${subcategory[0]}`} title={category}>
+            {TERMS.length > 0 ? (
+              TERMS.map((term) => (
+                <li key={term} title={t("term", { ns: "enum", count: term })}>
                   <Button
-                    className={[
+                    className={cn(
                       styles.base,
-                      selected === category ? styles.active : styles.default,
-                    ].join(" ")}
+                      selected === term ? styles.active : styles.default
+                    )}
                     onClick={() => {
-                      setSelected(category);
-                      onSelect(`${category}: ${subcategory[0]}`);
+                      setSelected(term);
+                      // onSelect(`${term}: ${subcategory[0]}`);
                     }}
                   >
-                    {category}
+                    {t("term", { ns: "enum", count: term }).concat(
+                      ` (${data[term as Term].start_date.substring(
+                        0,
+                        4
+                      )} - ${data[term as Term].end_date.substring(0, 4)})`
+                    )}
                   </Button>
-                  <ul className="ml-5 space-y-1">
+                  {/* <ul className="ml-5 space-y-1">
                     {subcategory.length &&
-                      subcategory.map(title => (
+                      subcategory.map((title) => (
                         <li key={title} title={title}>
                           <Button
-                            className={[
+                            className={cn(
                               styles.base,
-                              selected === title ? styles.active : styles.default,
-                            ].join(" ")}
+                              selected === title
+                                ? styles.active
+                                : styles.default
+                            )}
                             onClick={() => {
                               setSelected(title);
                               onSelect(`${category}: ${title}`);
@@ -61,13 +108,17 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ children, categories, onSele
                           >
                             {title}
                           </Button>
+                          <div className="relative">
+                            <SidebarL className="absolute" />
+                            <SidebarT className="absolute" />
+                          </div>
                         </li>
                       ))}
-                  </ul>
+                  </ul> */}
                 </li>
               ))
             ) : (
-              <p className={[styles.base, "text-zinc-500 text-sm italic"].join(" ")}>
+              <p className={cn(styles.base, "text-zinc-500 text-sm italic")}>
                 {t("no_entries")}
               </p>
             )}
@@ -109,14 +160,14 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ children, categories, onSele
                   </Button>
                 </li>
 
-                {categories.length > 0 ? (
-                  categories.map(([category, subcategory]) => (
+                {/* {terms.length > 0 ? (
+                  terms.map(([category, subcategory]) => (
                     <li key={`${category}: ${subcategory[0]}`} title={category}>
                       <Button
-                        className={[
+                        className={cn(
                           styles.base,
-                          selected === category ? styles.active : styles.default,
-                        ].join(" ")}
+                          selected === category ? styles.active : styles.default
+                        )}
                         onClick={() => {
                           setSelected(category);
                           onSelect(`${category}: ${subcategory[0]}`);
@@ -126,13 +177,15 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ children, categories, onSele
                       </Button>
                       <ul className="ml-4">
                         {subcategory.length &&
-                          subcategory.map(title => (
+                          subcategory.map((title) => (
                             <li key={title}>
                               <Button
-                                className={[
+                                className={cn(
                                   styles.base,
-                                  selected === title ? styles.active : styles.default,
-                                ].join(" ")}
+                                  selected === title
+                                    ? styles.active
+                                    : styles.default
+                                )}
                                 onClick={() => {
                                   setSelected(title);
                                   onSelect(`${category}: ${title}`);
@@ -142,14 +195,16 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ children, categories, onSele
                               </Button>
                             </li>
                           ))}
-                      </ul>
+                              </ul>
                     </li>
                   ))
                 ) : (
-                  <p className={[styles.base, "text-zinc-500 text-sm italic"].join(" ")}>
+                  <p
+                    className={cn(styles.base, "text-zinc-500 text-sm italic")}
+                  >
                     {t("no_entries")}
                   </p>
-                )}
+                )}*/}
               </ul>
             </Transition>
           </>
@@ -161,4 +216,33 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ children, categories, onSele
   );
 };
 
+const SidebarL = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      width="15"
+      height="27"
+      viewBox="0 0 15 27"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M1 0V14C1 20.6274 6.37258 26 13 26H15" stroke="#94A3B8" />
+    </svg>
+  );
+};
+
+const SidebarT = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      width="2"
+      height="52"
+      viewBox="0 0 2 52"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M1 0V52" stroke="#94A3B8" />
+    </svg>
+  );
+};
 export default Sidebar;
