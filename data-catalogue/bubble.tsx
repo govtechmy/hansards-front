@@ -39,8 +39,7 @@ const SpeechBubble = ({ party, position, speaker, speech }: SpeechBubbleProps) =
   }, [party]);
 
   const _speech = speech.split(".\n");
-  console.log(_speech);
-  console.log(speech.length);
+
   return (
     <>
       <div
