@@ -201,7 +201,7 @@ export const MenuIcon = (props: ComponentProps<"svg">) => {
   );
 };
 
-export const FolderIcon = (props: ComponentProps<"svg">) => {
+export const ClosedFolderIcon = (props: ComponentProps<"svg">) => {
   return (
     <svg
       width="84"
@@ -226,6 +226,41 @@ export const FolderIcon = (props: ComponentProps<"svg">) => {
           y1="50"
           x2="42"
           y2="4"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0.494792" stopColor="#D6E0EC" />
+          <stop offset="1" stopColor="#F0F6FE" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
+export const OpenFolderIcon = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      width="93"
+      height="64"
+      viewBox="0 0 93 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M0 8V56C0 60.4183 3.58172 64 8 64H15L84 29.4603V18.6425C84 14.2242 80.4183 10.6425 76 10.6425H44L35.7426 2.35382C34.2414 0.847002 32.202 0 30.075 0H8C3.58172 0 0 3.58172 0 8Z"
+        fill="#94A3B8"
+      />
+      <path
+        d="M41.0871 21.1746H19.5207C13.9445 21.1746 9.10306 25.0158 7.83509 30.4459L1.71962 56.6356C0.840779 60.3993 3.69753 64 7.56244 64H77.4432C81.2559 64 84.5388 61.3093 85.2875 57.5708L92.5625 21.2416C93.3061 17.5285 90.4662 14.0635 86.6793 14.0635H54.8165C52.6896 14.0635 50.6502 14.9105 49.149 16.4173L46.7546 18.8208C45.2535 20.3276 43.2141 21.1746 41.0871 21.1746Z"
+        fill="url(#linear_gradient)"
+      />
+      <defs>
+        <linearGradient
+          id="linear_gradient"
+          x1="47"
+          y1="52.3358"
+          x2="47"
+          y2="14.0106"
           gradientUnits="userSpaceOnUse"
         >
           <stop offset="0.494792" stop-color="#D6E0EC" />
