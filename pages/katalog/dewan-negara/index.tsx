@@ -8,8 +8,7 @@ import { Page } from "@lib/types";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
-  data,
-  collection,
+  archive,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation("catalogue");
 
@@ -21,7 +20,7 @@ const CatalogueIndexPage: Page = ({
         keywords={""}
       />
       <CatalogueIndexLayout>
-        <CatalogueIndex collection={collection} data={data} />
+        <CatalogueIndex archive={archive} />
       </CatalogueIndexLayout>
     </>
   );
@@ -35,8 +34,6 @@ export const getStaticProps: GetStaticProps = withi18n(
         house: 1,
       });
 
-      // const collection = recurSort(data.catalogue_list);
-
       return {
         props: {
           meta: {
@@ -44,7 +41,7 @@ export const getStaticProps: GetStaticProps = withi18n(
             type: "misc",
           },
           data: data,
-          collection: data.catalogue_list, // collection,
+          archive: data.catalogue_list,
         },
       };
     } catch (error) {

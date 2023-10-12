@@ -9,8 +9,7 @@ import { Page } from "@lib/types";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
-  data,
-  collection,
+  archive,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation("catalogue");
 
@@ -22,21 +21,21 @@ const CatalogueIndexPage: Page = ({
         keywords={""}
       />
       <CatalogueIndexLayout>
-        <CatalogueIndex collection={collection} data={data} />
+        <CatalogueIndex archive={archive} />
       </CatalogueIndexLayout>
     </>
   );
 };
 
-// const recurSort = (data: Record<string, ArchiveLevel[]>): any => {
-//   if ("sitting_list" in data) return sortAlpha(data, "date");
+// const recurSort = (data: Record<string, ArchiveLevel[]> | Sitting[] ): any => {
+//   if (Array.isArray(data)) return sortAlpha(data, "filename");
 
 //   return Object.fromEntries(
 //     Object.entries(data)
 //       .sort(
 //         (a: [string, unknown], b: [string, unknown]) => Number(b[0]) - Number(a[0])
 //       )
-//       .map((item: [string, Record<string, ArchiveLevel[]>]) => [
+//       .map((item: [string, Record<string, ArchiveLevel[]> | Sitting[]]) => [
 //         item[0],
 //         recurSort(item[1]),
 //       ])
@@ -51,8 +50,6 @@ export const getStaticProps: GetStaticProps = withi18n(
         house: 0,
       });
 
-      // const collection = recurSort(data.catalogue_list);
-
       return {
         props: {
           meta: {
@@ -60,7 +57,7 @@ export const getStaticProps: GetStaticProps = withi18n(
             type: "misc",
           },
           data: data,
-          collection: data.catalogue_list, // collection,
+          archive: data.catalogue_list, // collection,
         },
       };
     } catch (error) {
