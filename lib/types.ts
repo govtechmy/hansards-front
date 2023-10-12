@@ -155,3 +155,34 @@ export type MetaPage = Record<string, any> & {
 };
 
 export type WithData<T> = { data_as_of: string; data: T };
+
+/* Hansard */
+export type Period = {
+  start_date: string;
+  end_date: string;
+};
+
+export type Sitting = {
+  date: string;
+  volume: number;
+  filename: string;
+  download_count: number;
+  view_count: number;
+  cite_count: number;
+};
+
+export type Meeting = Period & {
+  sitting_list: Sitting[];
+}
+
+export type Session = Period & {
+  [key: string]: Meeting;
+}
+
+export type Term = Period & {
+  [key: string]: Session;
+}
+
+export type Archive = {
+  [key in string]: Term;
+}
