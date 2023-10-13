@@ -19,7 +19,7 @@ interface CatalogueIndexProps {
 const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
   archive,
 }) => {
-  const { t, i18n } = useTranslation(["catalogue", "common"]);
+  const { t, i18n } = useTranslation(["catalogue", "common", "enum"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const { size } = useContext(WindowContext);
   const [open, setOpen] = useState<boolean>(false);
@@ -38,11 +38,10 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
             scrollRef.current[selected]?.scrollIntoView({
               behavior: "smooth",
               block: size.width <= BREAKPOINTS.LG ? "start" : "center",
-              inline: "end",
             })
           }
         >
-          <div className="pl-8 py-8 space-y-12 w-full">
+          <div className="pl-6 sm:pl-8 py-8 space-y-12 w-full">
             <>
               {TERMS ? (
                 TERMS.map((term) => {
@@ -70,7 +69,12 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                         {SESSIONS.map((session) => {
                           const { start_date, end_date, ...meetings } =
                             sessions[session];
-                          const MEETINGS = Object.keys(meetings).reverse();
+
+                          const MEETINGS = Object.keys(meetings).sort(
+                            (a, b) =>
+                              Date.parse(meetings[a].end_date) -
+                              Date.parse(meetings[b].end_date)
+                          );
                           const start = start_date.substring(0, 4);
                           const end = end_date.substring(0, 4);
                           const yearRange =
@@ -109,33 +113,35 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                                   const end = getShortDate(end_date);
                                   const dateRange =
                                     start === end
-                                      ? `(${start})`
-                                      : `(${start} - ${end})`;
+                                      ? `${start}`
+                                      : `${start} - ${end}`;
 
                                   return (
                                     <div
                                       key={meeting}
                                       ref={(ref) =>
-                                        (scrollRef.current[`${term}_${session}_${meeting}`] = ref)
+                                        (scrollRef.current[
+                                          `${term}_${session}`
+                                        ] = ref)
                                       }
-                                      className="flex flex-col gap-y-3 items-center"
                                     >
-                                      <div className="h-20 flex items-center">
-                                        <CatalogueFolder
-                                          sitting_list={sitting_list}
-                                        />
-                                      </div>
-                                      <div className="flex flex-col text-center gap-y-1">
-                                        <p className="text-zinc-900 dark:text-white font-medium">
-                                          {t("meeting", {
-                                            ns: "enum",
-                                            n: meeting,
-                                          })}
-                                        </p>
-                                        <p className="text-slate-500 text-sm">
-                                          {dateRange}
-                                        </p>
-                                      </div>
+                                      <CatalogueFolder
+                                        dateRange={dateRange}
+                                        meeting={meeting}
+                                        sitting_list={sitting_list}
+                                      >
+                                        <div className="flex flex-col text-center gap-y-1">
+                                          <p className="text-zinc-900 dark:text-white font-medium">
+                                            {t("meeting", {
+                                              ns: "enum",
+                                              n: meeting,
+                                            })}
+                                          </p>
+                                          <p className="text-slate-500 text-sm">
+                                            {dateRange}
+                                          </p>
+                                        </div>
+                                      </CatalogueFolder>
                                     </div>
                                   );
                                 })}
