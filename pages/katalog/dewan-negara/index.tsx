@@ -40,7 +40,6 @@ export const getStaticProps: GetStaticProps = withi18n(
             id: "catalogue-index",
             type: "misc",
           },
-          data: data,
           archive: data.catalogue_list,
         },
       };
