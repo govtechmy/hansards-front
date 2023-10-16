@@ -1,11 +1,7 @@
-import {
-  At,
-  Hero,
-} from "@components/index";
-import {
-  BuildingLibraryIcon,
-} from "@heroicons/react/24/solid";
+import { At, Hero } from "@components/index";
+import { BuildingLibraryIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "@hooks/useTranslation";
+import { WindowProvider } from "@lib/contexts/window";
 import { cn } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { OptionType } from "@lib/types";
@@ -22,9 +18,9 @@ interface CatalogIndexLayoutProps {
 }
 
 const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
-  const { t } = useTranslation(["common", "catalogue"]);
+  const { t } = useTranslation("catalogue");
   const { pathname } = useRouter();
-  
+
   const TAB_OPTIONS: Array<OptionType> = [
     {
       label: t("dewan_rakyat"),
@@ -40,9 +36,9 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
     <>
       <Hero
         background="gold"
-        category={[t("hero.category", { ns: "catalogue" }), "text-secondary"]}
-        header={[t("hero.header", { ns: "catalogue" })]}
-        description={[t("hero.description", { ns: "catalogue" })]}
+        category={[t("hero.category"), "text-secondary"]}
+        header={[t("hero.header")]}
+        description={[t("hero.description")]}
       />
 
       <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center lg:static">
@@ -50,8 +46,8 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
           {TAB_OPTIONS.map((tab) => (
             <div key={tab.value} className="snap-start">
               <At
-              href={tab.value}
-              scrollTop={false}
+                href={tab.value}
+                scrollTop={false}
                 className="flex h-full min-w-[56px] cursor-pointer items-center justify-center outline-none"
               >
                 <div
@@ -92,7 +88,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
         </div>
       </nav>
 
-      {children}
+      <WindowProvider>{children}</WindowProvider>
     </>
   );
 };
