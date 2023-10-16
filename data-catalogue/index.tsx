@@ -1,10 +1,8 @@
 import { Container, Sidebar } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import { BREAKPOINTS } from "@lib/constants";
-import { WindowContext } from "@lib/contexts/window";
 import { cn, toDate } from "@lib/helpers";
 import { Archive } from "@lib/types";
-import { FunctionComponent, useRef, useContext, useState } from "react";
+import { FunctionComponent, useRef } from "react";
 import CatalogueFolder from "./folder";
 
 /**
@@ -21,8 +19,6 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
 }) => {
   const { t, i18n } = useTranslation(["catalogue", "common", "enum"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
-  const { size } = useContext(WindowContext);
-  const [open, setOpen] = useState<boolean>(false);
 
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
@@ -37,7 +33,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
           onClick={(selected) =>
             scrollRef.current[selected]?.scrollIntoView({
               behavior: "smooth",
-              block: size.width <= BREAKPOINTS.LG ? "start" : "center",
+              block: "center",
             })
           }
         >
@@ -58,9 +54,9 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                     >
                       <div className="flex gap-3 items-center">
                         <h4 className="flex flex-wrap sm:whitespace-nowrap">
-                          {t("term", {
+                          {t("term_full", {
                             ns: "enum",
-                            count: term,
+                            n: term,
                           }).concat(yearRange)}
                         </h4>
                         <span className={classNames.hr}></span>
@@ -88,7 +84,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                             >
                               <div className="flex gap-3 items-center">
                                 <h5 className="flex flex-wrap sm:whitespace-nowrap">
-                                  {t("session", {
+                                  {t("session_full", {
                                     ns: "enum",
                                     n: session,
                                   }).concat(yearRange)}
@@ -97,7 +93,13 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                                   className={cn(classNames.hr, "border-dashed")}
                                 ></span>
                               </div>
-                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-6 lg:gap-y-12">
+                              <div
+                                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-6 lg:gap-y-12"
+                                ref={(ref) =>
+                                  (scrollRef.current[`${term}_${session}`] =
+                                    ref)
+                                }
+                              >
                                 {MEETINGS.map((meeting) => {
                                   const { start_date, end_date, sitting_list } =
                                     meetings[meeting];
@@ -117,32 +119,12 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                                       : `${start} - ${end}`;
 
                                   return (
-                                    <div
+                                    <CatalogueFolder
                                       key={meeting}
-                                      ref={(ref) =>
-                                        (scrollRef.current[
-                                          `${term}_${session}`
-                                        ] = ref)
-                                      }
-                                    >
-                                      <CatalogueFolder
-                                        dateRange={dateRange}
-                                        meeting={meeting}
-                                        sitting_list={sitting_list}
-                                      >
-                                        <div className="flex flex-col text-center gap-y-1">
-                                          <p className="text-zinc-900 dark:text-white font-medium">
-                                            {t("meeting", {
-                                              ns: "enum",
-                                              n: meeting,
-                                            })}
-                                          </p>
-                                          <p className="text-slate-500 text-sm">
-                                            {dateRange}
-                                          </p>
-                                        </div>
-                                      </CatalogueFolder>
-                                    </div>
+                                      dateRange={dateRange}
+                                      meeting={meeting}
+                                      sitting_list={sitting_list}
+                                    />
                                   );
                                 })}
                               </div>
