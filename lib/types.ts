@@ -164,7 +164,6 @@ export type Period = {
 
 export type Sitting = {
   date: string;
-  volume: number;
   filename: string;
   download_count: number;
   view_count: number;
