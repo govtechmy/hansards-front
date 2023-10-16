@@ -16,8 +16,8 @@ const CatalogueIndexPage: Page = ({
   return (
     <>
       <Metadata
-        title={t("header")}
-        description={t("description")}
+        title={t("hero.header")}
+        description={t("hero.description")}
         keywords={""}
       />
       <CatalogueIndexLayout>
@@ -47,7 +47,7 @@ export const getStaticProps: GetStaticProps = withi18n(
   async () => {
     try {
       const { data } = await get("api/catalogue/", {
-        house: 0,
+        house: "dewan-rakyat",
       });
 
       return {

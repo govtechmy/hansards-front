@@ -31,7 +31,7 @@ export const getStaticProps: GetStaticProps = withi18n(
   async () => {
     try {
       const { data } = await get("api/catalogue/", {
-        house: 1,
+        house: "dewan-negara",
       });
 
       return {
