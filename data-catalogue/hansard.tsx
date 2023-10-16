@@ -1,5 +1,5 @@
 import Hero from "@components/Hero";
-import { CalendarCard, Container, Section } from "@components/index";
+import { Container, DateCard, Section } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
 import { numFormat } from "@lib/helpers";
 import SpeechBubble, { SpeechBubbleProps } from "./bubble";
@@ -77,7 +77,7 @@ const Hansard = () => {
         <div>
           <div className="space-y-6 py-12 xl:w-full">
             <div className="flex justify-between gap-3 lg:gap-6 items-center">
-              <CalendarCard size="lg" date={DATE} />
+              <DateCard size="lg" date={DATE} />
               <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
                 <span
                   className="font-semibold text-secondary"
