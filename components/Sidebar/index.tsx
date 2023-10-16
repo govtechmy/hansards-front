@@ -31,9 +31,9 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   const { t } = useTranslation(["catalogue", "common", "enum"]);
   const { size } = useContext(WindowContext);
   const [selected, setSelected] = useState<string>();
-  const [showSidebar, setSidebar] = useState<boolean>(
-    size.width <= BREAKPOINTS.LG ? false : true
-  );
+  const [showSidebar, setSidebar] = useState<boolean>(true);
+  const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
+
   const [showToggleAnimation, setToggleAnimation] = useState(false);
 
   const styles = {
@@ -59,29 +59,22 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             return (
               <li
                 key={term}
-                title={t("term", { ns: "enum", count: term })}
+                title={t("term_full", { ns: "enum", n: term })}
                 className={cn(
                   "text-sm",
-                  selected && selected.startsWith(term)
+                  selected && selected.startsWith(`${term}_`)
                     ? styles.active
                     : styles.inactive
                 )}
               >
                 <Details
                   summary={
-                    <span
-                      className={cn(
-                        "flex flex-col"
-                        //     selected && selected.startsWith(term)
-                        //       ? styles.active
-                        //       : styles.inactive
-                      )}
-                    >
+                    <p className="flex flex-col">
                       <span className="font-medium">
-                        {t("term", { ns: "enum", count: term })}
+                        {t("term_full", { ns: "enum", n: term })}
                       </span>
                       <span className="font-base">{yearRange}</span>
-                    </span>
+                    </p>
                   }
                 >
                   <ul className="pl-2.5">
@@ -95,7 +88,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
 
                       return (
                         <li
-                          title={t("session", {
+                          title={t("session_full", {
                             ns: "enum",
                             n: session,
                           }).concat(yearRange)}
@@ -110,7 +103,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                           )}
                         >
                           <p className="font-medium whitespace-nowrap">
-                            {t("session", {
+                            {t("session_full", {
                               ns: "enum",
                               n: session,
                             })}
@@ -147,28 +140,26 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             "dark:border-r-slate-800 border-r shrink-0 w-12",
             "sticky top-[113px] h-[calc(100vh-113px)] sm:top-14 sm:h-[calc(100vh-56px)] overflow-y-scroll",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
-            showSidebar
-              ? "sidebar-scrollbar lg:w-[250px] duration-300"
-              : "hide-scrollbar duration-500"
-            // !showSidebar && "w-12"
+            showSidebar ? "lg:w-[250px] duration-300" : "duration-500"
           )}
         >
           <div
             className={cn(
-              "flex gap-3 py-3 items-baseline justify-between",
-              // "sticky top-14",
-              showSidebar ? "px-5" : "px-2"
+              "flex gap-3 max-lg:px-2 py-3 items-baseline justify-between whitespace-nowrap",
+              showSidebar ? "lg:px-5" : "lg:px-2"
             )}
           >
+            {/* Vertical */}
             <h5
               className={cn(
                 "absolute translate-y-20 -translate-x-9 -rotate-90",
-                showSidebar && "hidden"
+                showSidebar && "lg:hidden"
               )}
             >
               {t("full_archive")}
             </h5>
-            <h5 className={cn(!showSidebar && "hidden")}>
+            {/* Horizontal */}
+            <h5 className={cn("max-lg:hidden", !showSidebar && "hidden")}>
               {t("full_archive")}
             </h5>
             <Button
@@ -176,24 +167,33 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               className="p-1.5 shadow-button"
               title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
               onClick={() => {
-                setSidebar(!showSidebar);
                 setToggleAnimation(true);
+                if (size.width < BREAKPOINTS.LG) {
+                  setMobileSidebar(true);
+                } else {
+                  setSidebar(!showSidebar);
+                }
               }}
             >
-              <ChevronRightIcon className="h-4.5 w-4.5" />
+              <ChevronRightIcon
+                className={cn(
+                  "h-4.5 w-4.5 transition-transform ease-in-out",
+                  showSidebar
+                    ? "-rotate-180 duration-500"
+                    : "rotate-0 duration-300"
+                )}
+              />
             </Button>
           </div>
-          <aside
-            className={
-              "max-lg:hidden block"
-              // "sticky top-28 overflow-y-scroll",
-              // showSidebar
-              //   ? "sidebar-scrollbar h-[calc(100vh-112px)]"
-              //   : "hide-scrollbar h-0"
-            }
-          >
+          <aside className="max-lg:hidden block">
             <Sidebar />
-            <div className="sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"></div>
+            <div
+              className={
+                showSidebar
+                  ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
+                  : "hidden"
+              }
+            ></div>
           </aside>
         </div>
 
@@ -201,7 +201,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         <div className="relative block lg:hidden">
           <>
             <Transition
-              show={showSidebar}
+              show={mobileSidebar}
               as="aside"
               className="lg:hidden dark:border-zinc-800 shadow-floating fixed left-0 top-14 z-30 flex h-[calc(100vh-56px)] w-[250px] flex-col border-r bg-white dark:bg-zinc-900  overflow-y-scroll"
               enter="transition-opacity duration-75"
@@ -210,14 +210,13 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               leave="transition-opacity duration-150"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
-              onClick={() => setSidebar(false)}
             >
               <ul className="flex flex-col gap-1 pt-2 pr-2">
                 <li className="flex items-baseline justify-between">
                   <h5 className={styles.base}>{t("full_archive")}</h5>
                   <Button
                     className="hover:bg-slate-100 dark:hover:bg-zinc-800 group absolute right-2 top-2 flex h-8 w-8 items-center rounded-full"
-                    onClick={() => setSidebar(false)}
+                    onClick={() => setMobileSidebar(false)}
                   >
                     <XMarkIcon className="text-zinc-500 absolute right-1.5 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
                   </Button>
@@ -228,7 +227,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             </Transition>
           </>
         </div>
-        
+
         {/* Content */}
         <>{children}</>
       </div>
