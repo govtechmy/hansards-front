@@ -2,8 +2,11 @@ import { Container, Sidebar } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn, toDate } from "@lib/helpers";
 import { Archive } from "@lib/types";
-import { FunctionComponent, useRef } from "react";
+import { FunctionComponent, useEffect, useRef } from "react";
 import CatalogueFolder from "./folder";
+import { ParsedUrlQuery } from "querystring";
+import { useRouter } from "next/router";
+import { routes } from "@lib/routes";
 
 /**
  * Catalogue Index
@@ -12,30 +15,54 @@ import CatalogueFolder from "./folder";
 
 interface CatalogueIndexProps {
   archive: Archive;
+  params?: ParsedUrlQuery;
 }
 
 const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
   archive,
+  params,
 }) => {
   const { t, i18n } = useTranslation(["catalogue", "common", "enum"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
+  const { asPath, push } = useRouter();
 
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
   };
   const TERMS = Object.keys(archive).reverse();
 
+  const scrollToSession = (selected: string) => {
+    if (scrollRef) {
+      scrollRef.current[selected]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (params && params.archive) {
+      const [term, session, _] = params.archive;
+      if (session) {
+        scrollToSession(`${term}/${session}`);
+      } else {
+        scrollToSession(`${term}`);
+      }
+    }
+  }, []);
+
   return (
     <>
       <Container className="min-h-screen">
         <Sidebar
           data={archive}
-          onClick={(selected) =>
+          onClick={(selected) => {
+            push(asPath.slice(0, 21).concat("/" + selected), undefined, { shallow: true });
             scrollRef.current[selected]?.scrollIntoView({
               behavior: "smooth",
               block: "center",
-            })
-          }
+            });
+          }}
         >
           <div className="pl-6 sm:pl-8 py-8 space-y-12 w-full">
             <>
@@ -52,7 +79,12 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                       key={term}
                       className="flex flex-col gap-y-6 lg:gap-y-8"
                     >
-                      <div className="flex gap-3 items-center">
+                      <div
+                        className="flex gap-3 items-center"
+                        ref={(ref) =>
+                          (scrollRef.current[`parlimen-${term}`] = ref)
+                        }
+                      >
                         <h4 className="flex flex-wrap sm:whitespace-nowrap">
                           {t("term_full", {
                             ns: "enum",
@@ -96,8 +128,9 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                               <div
                                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-6 lg:gap-y-12"
                                 ref={(ref) =>
-                                  (scrollRef.current[`${term}_${session}`] =
-                                    ref)
+                                  (scrollRef.current[
+                                    `parlimen-${term}/penggal-${session}`
+                                  ] = ref)
                                 }
                               >
                                 {MEETINGS.map((meeting) => {
@@ -120,6 +153,18 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
 
                                   return (
                                     <CatalogueFolder
+                                      onClick={() =>
+                                        push(
+                                          `${asPath.slice(0, 21)}/parlimen-${term}/penggal-${session}/mesyuarat-${meeting}`,
+                                          undefined,
+                                          { shallow: true }
+                                        )
+                                      }
+                                      onClose={() =>
+                                        push(asPath.slice(0, 21), undefined, {
+                                          shallow: true,
+                                        })
+                                      }
                                       key={meeting}
                                       dateRange={dateRange}
                                       meeting={meeting}
