@@ -6,6 +6,7 @@ declare namespace NodeJS {
     NEXT_PUBLIC_APP_ENV: string;
     NEXT_PUBLIC_API_URL: string;
     NEXT_PUBLIC_I18N_URL: string;
+    NEXT_PUBLIC_DOWNLOAD_URL: string;
     NEXT_PUBLIC_AUTHORIZATION_TOKEN: string;
 
     REVALIDATE_TOKEN: string;
