@@ -24,11 +24,11 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
   const TAB_OPTIONS: Array<OptionType> = [
     {
       label: t("dewan_rakyat"),
-      value: routes.KATALOG.concat("/dewan-rakyat"),
+      value: routes.KATALOG_DR,
     },
     {
       label: t("dewan_negara"),
-      value: routes.KATALOG.concat("/dewan-negara"),
+      value: routes.KATALOG_DN,
     },
   ];
 

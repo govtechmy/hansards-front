@@ -1,6 +1,9 @@
 export const routes = {
   HOME: "/",
-  KATALOG: "/katalog",
+  KATALOG_DR: "/katalog/dewan-rakyat",
+  KATALOG_DN: "/katalog/dewan-negara",
+  HANSARD_DR: "/hansard/dewan-rakyat",
+  HANSARD_DN: "/hansard/dewan-negara",
 };
 
 export const static_routes: string[] = (() => {
