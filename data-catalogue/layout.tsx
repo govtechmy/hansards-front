@@ -20,7 +20,8 @@ interface CatalogIndexLayoutProps {
 const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
   const { t } = useTranslation("catalogue");
   const { pathname } = useRouter();
-
+  const dewan = pathname.slice(0, 21);
+  
   const TAB_OPTIONS: Array<OptionType> = [
     {
       label: t("dewan_rakyat"),
@@ -52,7 +53,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
               >
                 <div
                   className={cn(
-                    pathname === tab.value && "dark:bg-zinc-800",
+                    dewan === tab.value && "dark:bg-zinc-800",
                     "relative flex h-full flex-col items-center justify-center p-4"
                   )}
                 >
@@ -60,7 +61,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
                     <BuildingLibraryIcon
                       className={cn(
                         "h-4.5 w-4.5",
-                        pathname === tab.value
+                        dewan === tab.value
                           ? "dark:text-white text-zinc-800"
                           : "text-dim"
                       )}
@@ -68,7 +69,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
                     <div
                       className={cn(
                         "flex items-center gap-2",
-                        pathname === tab.value
+                        dewan === tab.value
                           ? "text-black dark:text-white"
                           : "text-dim"
                       )}
@@ -78,7 +79,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
                       </span>
                     </div>
                   </div>
-                  {pathname === tab.value && (
+                  {dewan === tab.value && (
                     <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
                   )}
                 </div>
