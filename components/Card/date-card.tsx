@@ -18,7 +18,7 @@ const DateCard = ({ className, date, size }: DateCardProps) => {
     <>
       <div
         className={cn(
-          "shadow-button p-1.5 h-auto max-sm:max-h-20 flex-col flex justify-center text-center border border-slate-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900",
+          "shadow-button p-1.5 h-auto max-sm:max-h-20 flex-col flex justify-center text-center border border-slate-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 select-none",
           {
             "w-[50px] lg:w-[60px]": size == "sm",
             "w-[60px] lg:w-[80px]": size == "lg",
