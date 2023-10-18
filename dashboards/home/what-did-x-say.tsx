@@ -1,21 +1,25 @@
-import { At, Container, Section } from "@components/index";
-import { FunctionComponent } from "react";
-import ExcerptCard, { Excerpt } from "@components/Card/excerpt-card";
+import Excerpts, { ExcerptsProps } from "./excerpts";
+import { Excerpt } from "@components/Card/excerpt-card";
+import { Container } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import Excerpts from "./excerpt";
+
 
 /**
  * What Did X Say Dashboard
  * @overview Status: In-development
  */
 
-const WhatDidXSay: FunctionComponent = () => {
+interface Props extends ExcerptsProps {
+
+}
+
+const WhatDidXSay = ({ count, excerpts, keyword }: Props) => {
   const { t } = useTranslation();
 
   return (
     <>
       <Container className="min-h-screen">
-        <Excerpts />
+      <Excerpts count={count} excerpts={excerpts} keyword={keyword}/>
       </Container>
     </>
   );

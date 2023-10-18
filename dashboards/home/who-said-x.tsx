@@ -1,16 +1,19 @@
 import { Container } from "@components/index";
-import { FunctionComponent } from "react";
-import Excerpts from "./excerpt";
+import Excerpts, { ExcerptsProps } from "./excerpts";
+import { Excerpt } from "@components/Card/excerpt-card";
 
 /**
  * Who Said X Dashboard
  * @overview Status: In-development
  */
 
-const WhoSaidX: FunctionComponent = () => {
+interface WhoSaidXProps extends ExcerptsProps {
+}
+
+const WhoSaidX = ({ count, excerpts, keyword }: WhoSaidXProps) => {
   return (
     <Container className="min-h-screen">
-      <Excerpts />
+      <Excerpts count={count} excerpts={excerpts} keyword={keyword}/>
     </Container>
   );
 };
