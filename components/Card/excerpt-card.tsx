@@ -1,5 +1,6 @@
 import DateCard from "./date-card";
 import Card from "@components/Card";
+import Markdown from "@components/Markdown";
 import ArrowUpRightIcon from "@heroicons/react/24/solid/ArrowUpRightIcon";
 import { useTranslation } from "@hooks/useTranslation";
 
@@ -9,11 +10,15 @@ import { useTranslation } from "@hooks/useTranslation";
  */
 
 export type Excerpt = {
-  date: string;
-  meeting: number;
-  session: number;
-  term: number;
-  quote: string;
+  id: number;
+  speaker: string;
+  trimmed_speech: string;
+  sitting: {
+    date: string;
+    term: number;
+    session: number;
+    meeting: number;
+  };
 };
 
 interface ExcerptCardProps {
@@ -40,41 +45,68 @@ const ExcerptCard = ({ excerpt, keyword }: ExcerptCardProps) => {
     "2018 - 2022",
     `2022 - ${t("now", { ns: "enum" })}`,
   ];
-  const quotes = excerpt.quote.split(keyword);
+
+  const quotes = excerpt.trimmed_speech.split("==");
+  const [name, title] = excerpt.speaker.split("[");
 
   return (
     <>
       <Card className="shadow-button p-6 max-w-3xl group hover:border-slate-400 hover:bg-slate-50 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/50">
-        <div className="flex flex-col gap-3 relative">
+        <div className="flex flex-col gap-3 relative h-full">
           <ArrowUpRightIcon className="absolute right-2 h-5 w-5 text-dim opacity-0 transition-[opacity_transform] duration-0 group-hover:translate-x-2 group-hover:opacity-100 group-hover:duration-300" />
           <div className="flex gap-3 lg:gap-6">
-            <DateCard date={excerpt.date} size="sm" />
+            <DateCard date={excerpt.sitting.date} size="sm" />
 
-            <div className="flex flex-col w-[calc(100%-94px)]">
-              <span className="text-zinc-900 dark:text-white font-bold text-lg truncate">
-                {t("meeting", { n: excerpt.meeting })}
-              </span>
-              <span className="text-dim truncate">
-                {`${t("term", { ordinal: true, count: excerpt.term })} (${
-                  TERM_YEARS[excerpt.term - 1]
-                })`}
-              </span>
-              <span className="text-dim truncate">
-                {t("session", { n: excerpt.session })}
-              </span>
+            <div className="flex flex-col w-[calc(100%-110px)] justify-evenly">
+              <p className="text-zinc-900 dark:text-white font-bold truncate">
+                {name}
+              </p>
+              <p className="text-zinc-500 font-medium truncate">
+                {title ? title.slice(0, -1) : ""}
+              </p>
             </div>
           </div>
-          <span className="text-zinc-900 dark:text-white">
-            {quotes.map((q, i) => (
-              <>
-                {q}
-                {i < quotes.length - 1 && (
-                  <span className="text-blue-600 bg-blue-600/10 w-fit rounded-md px-[3px] py-0.5">
-                    {keyword}
-                  </span>
-                )}
-              </>
-            ))}
+          <div className="text-zinc-900 dark:text-white flex-grow">
+            <span>...</span>
+            {quotes.map((q) => {
+              if (!q) return;
+              return (
+                <>
+                  {q.toLowerCase() === keyword.toLowerCase() ? (
+                    <span className="bg-blue-600 text-white w-fit rounded-md px-[3px] py-0.5 inline">
+                      {q}
+                    </span>
+                  ) : (
+                    <Markdown className="" components={{ p: "span" }}>
+                      {q}
+                    </Markdown>
+                  )}
+                </>
+              );
+            })}
+            <span>...</span>
+          </div>
+          <span className="flex text-zinc-500 text-xs gap-1 pt-3 border-t dark:border-zinc-800">
+            <span>
+              {t("term", {
+                ordinal: true,
+                count: excerpt.sitting.term,
+              })}
+            </span>
+            /
+            <span>
+              {t("meeting", {
+                ordinal: true,
+                count: excerpt.sitting.meeting,
+              })}
+            </span>
+            /
+            <span>
+              {t("session", {
+                ordinal: true,
+                count: excerpt.sitting.session,
+              })}
+            </span>
           </span>
         </div>
       </Card>
