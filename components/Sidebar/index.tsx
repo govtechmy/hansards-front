@@ -59,15 +59,18 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             return (
               <li
                 key={term}
-                title={t("term_full", { ns: "enum", n: term })}
+                title={t("term_full", { ns: "enum", n: term }).concat(
+                  " " + yearRange
+                )}
                 className={cn(
                   "text-sm",
-                  selected && selected.startsWith(`${term}_`)
+                  selected && selected.startsWith(`parlimen-${term}`)
                     ? styles.active
                     : styles.inactive
                 )}
               >
                 <Details
+                  open={selected?.startsWith(`parlimen-${term}`)}
                   summary={
                     <p className="flex flex-col">
                       <span className="font-medium">
@@ -84,20 +87,20 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                       const end = end_date.substring(0, 4);
                       const yearRange =
                         start === end ? `(${start})` : `(${start} - ${end})`;
-                      const id = `${term}_${session}`;
+                      const id = `parlimen-${term}/penggal-${session}`;
 
                       return (
                         <li
                           title={t("session_full", {
                             ns: "enum",
                             n: session,
-                          }).concat(yearRange)}
+                          }).concat(" " + yearRange)}
                           onClick={() => {
                             setSelected(id);
                             onClick(id);
                           }}
                           className={cn(
-                            "relative",
+                            "relative hover:bg-slate-100 dark:hover:bg-zinc-800",
                             styles.base,
                             selected === id ? styles.active : styles.inactive
                           )}
@@ -138,9 +141,11 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         <div
           className={cn(
             "dark:border-r-slate-800 border-r shrink-0 w-12",
-            "sticky top-[113px] h-[calc(100vh-113px)] sm:top-14 sm:h-[calc(100vh-56px)] overflow-y-scroll",
+            "sticky top-[113px] h-[calc(100vh-113px)] lg:top-14 lg:h-[calc(100vh-56px)] overflow-y-scroll",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
-            showSidebar ? "lg:w-[250px] duration-300" : "duration-500"
+            showSidebar
+              ? "lg:w-[250px] duration-300"
+              : "hide-scrollbar duration-500"
           )}
         >
           <div
@@ -198,7 +203,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         </div>
 
         {/* Mobile */}
-        <div className="relative block lg:hidden">
+        <div className="relative flex lg:hidden">
           <>
             <Transition
               show={mobileSidebar}
@@ -224,6 +229,10 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
 
                 <Sidebar />
               </ul>
+              <div
+                className="w-[calc(100%-250px)] lg:hidden fixed right-0 top-14 z-30 h-[calc(100vh-56px)] bg-zinc-900 bg-opacity-25"
+                onClick={() => setMobileSidebar(false)}
+              ></div>
             </Transition>
           </>
         </div>
