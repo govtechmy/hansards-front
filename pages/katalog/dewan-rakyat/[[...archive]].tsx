@@ -1,15 +1,15 @@
 import CatalogueIndex from "@data-catalogue/index";
 import CatalogueIndexLayout from "@data-catalogue/layout";
-import { get } from "@lib/api";
 import Metadata from "@components/Metadata";
-import { withi18n } from "@lib/decorators";
-import { sortAlpha } from "@lib/helpers";
 import { useTranslation } from "@hooks/useTranslation";
+import { get } from "@lib/api";
+import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
   archive,
+  params,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation("catalogue");
 
@@ -21,30 +21,22 @@ const CatalogueIndexPage: Page = ({
         keywords={""}
       />
       <CatalogueIndexLayout>
-        <CatalogueIndex archive={archive} />
+        <CatalogueIndex archive={archive} params={params} />
       </CatalogueIndexLayout>
     </>
   );
 };
 
-// const recurSort = (data: Record<string, ArchiveLevel[]> | Sitting[] ): any => {
-//   if (Array.isArray(data)) return sortAlpha(data, "filename");
-
-//   return Object.fromEntries(
-//     Object.entries(data)
-//       .sort(
-//         (a: [string, unknown], b: [string, unknown]) => Number(b[0]) - Number(a[0])
-//       )
-//       .map((item: [string, Record<string, ArchiveLevel[]> | Sitting[]]) => [
-//         item[0],
-//         recurSort(item[1]),
-//       ])
-//   );
-// };
+export const getStaticPaths: GetStaticPaths = () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+};
 
 export const getStaticProps: GetStaticProps = withi18n(
   ["catalogue", "enum"],
-  async () => {
+  async ({ params }) => {
     try {
       const { data } = await get("api/catalogue/", {
         house: "dewan-rakyat",
@@ -56,7 +48,8 @@ export const getStaticProps: GetStaticProps = withi18n(
             id: "catalogue-index",
             type: "misc",
           },
-          archive: data.catalogue_list, // collection,
+          archive: data.catalogue_list,
+          params: params,
         },
       };
     } catch (error) {
