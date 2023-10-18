@@ -3,20 +3,35 @@ import { Container, DateCard, Section } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
 import { numFormat } from "@lib/helpers";
 import SpeechBubble, { SpeechBubbleProps } from "./bubble";
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
 
 /**
  * Hansard
  * @overview Status: In-development
  */
 
-const Hansard = () => {
+interface HansardProps {
+  date: string;
+  filename: string;
+  cite_count: number;
+  download_count: number;
+  view_count: number;
+  speeches: string;
+}
+
+const Hansard = ({
+  date,
+  filename,
+  cite_count,
+  download_count,
+  view_count,
+  speeches,
+}: HansardProps) => {
   const { t } = useTranslation(["common", "enum", "hansard"]);
 
-  const DATE = "2023-09-19";
   const TERM = 15;
   const SESSION = 2;
   const MEETING = 0;
-  const BIL = 737;
 
   const VIEWS = 1_000_000;
   const SHARES = 1_000;
@@ -70,50 +85,51 @@ const Hansard = () => {
       Tarik balik! Tarik balik! Tarik balik! Tarik balik! Tarik balik! Tarik balik!`,
     },
   ];
-  
+
   return (
     <>
       <Hero background="gold">
         <div>
           <div className="space-y-6 py-12 xl:w-full">
+            <span className="flex items-center font-medium text-sm text-zinc-500 underline [text-underline-position:from-font]">
+              {t("archive", { ns: "hansard", context: "dewan_rakyat" })}
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500"/>
+              {t("term_full", { ns: "enum", n: TERM })}
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500"/>
+              {t("session_full", { ns: "enum", n: SESSION })}
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500"/>
+              {t("meeting_full", { ns: "enum", n: MEETING })}
+            </span>
             <div className="flex justify-between gap-3 lg:gap-6 items-center">
-              <DateCard size="lg" date={DATE} />
+              <DateCard size="lg" date={date} />
               <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
-                <span
-                  className="font-semibold text-secondary"
-                  data-testid="hero-category"
-                >
-                  {t("term", { ns: "enum", count: TERM })}
-                  {" / "}
-                  {t("session", { ns: "enum", n: SESSION })}
-                  {" / "}
-                  {t("meeting", { ns: "enum", n: MEETING })}
-                  {" / "}
-                  {t("bil", { ns: "enum", count: BIL })}
-                </span>
                 <h2 className="text-zinc-900" data-testid="hero-header">
                   {t("hero.header")}
                 </h2>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <p
+                <p
                 className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
                 data-testid="hero-views"
               >
-                <span>{`${numFormat(VIEWS, "compact")} ${t("views", {
-                  count: VIEWS,
+                <span>{`${numFormat(view_count, "compact")} ${t("views", {
+                  count: view_count,
                 })}`}</span>
                 •
                 <span>{`${numFormat(SHARES, "compact")} ${t("shares", {
                   count: SHARES,
                 })}`}</span>
                 •
-                <span>{`${numFormat(DLS, "compact")} ${t("downloads", {
-                  count: DLS,
-                })}`}</span>
+                <span>{`${numFormat(download_count, "compact")} ${t(
+                  "downloads",
+                  {
+                    count: download_count,
+                  }
+                )}`}</span>
               </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              
             </div>
           </div>
         </div>
