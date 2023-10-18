@@ -11,7 +11,7 @@ export const Details = ({
   ...props
 }: ComponentProps<"details"> & { summary: ReactElement }): ReactElement => {
   const [openState, setOpen] = useState(!!open);
-  
+
   // To animate the close animation we have to delay the DOM node state here.
   const [delayedOpenState, setDelayedOpenState] = useState(openState);
   useEffect(() => {
@@ -31,7 +31,7 @@ export const Details = ({
     >
       <summary
         className={cn(
-          "flex justify-between gap-3 cursor-pointer list-none items-center pl-5 pr-2 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 whitespace-nowrap"
+          "flex justify-between gap-3 cursor-pointer list-none items-center px-5 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 whitespace-nowrap"
         )}
         {...props}
         onClick={(e) => {
