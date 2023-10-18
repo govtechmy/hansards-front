@@ -184,7 +184,7 @@ export const DialogContent = forwardRef<
                   className={cn(
                     header.variable,
                     body.variable,
-                    "relative flex w-full max-w-5xl flex-col overflow-auto rounded-t-xl font-sans lg:h-fit lg:justify-center lg:rounded-xl",
+                    "relative flex w-full max-w-5xl flex-col overflow-auto p-6 rounded-t-xl font-sans lg:h-fit lg:justify-center lg:rounded-xl",
                     props.className
                   )}
                 >
