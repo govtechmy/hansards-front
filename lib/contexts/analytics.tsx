@@ -11,14 +11,12 @@ import { FunctionComponent, ReactNode, createContext, useEffect, useState } from
 /**
  * id (required):
  * type: "dashboard" | "data-catalogue"
- * metric" "view_count" | "download_png" | "download_csv" | "download_svg" | "download_parquet"
+ * metric" "view_count" | "download_pdf" | "download_csv"
  */
 type MetricType =
   | "view_count"
-  | "download_png"
-  | "download_csv"
-  | "download_svg"
-  | "download_parquet";
+  | "download_pdf"
+  | "download_csv";
 
 export type Meta = Omit<MetaPage["meta"], "type"> & { type: "dashboard" | "data-catalogue" };
 
@@ -27,9 +25,7 @@ type AnalyticsResult<T extends "dashboard" | "data-catalogue"> = {
   type: T;
   view_count: number;
   download_csv: T extends "dashboard" ? never : number;
-  download_parquet: T extends "dashboard" ? never : number;
-  download_png: T extends "dashboard" ? never : number;
-  download_svg: T extends "dashboard" ? never : number;
+  download_pdf: T extends "dashboard" ? never : number;
 };
 
 type AnalyticsContextProps<T extends "dashboard" | "data-catalogue"> = {
