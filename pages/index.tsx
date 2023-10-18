@@ -12,9 +12,11 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
  * @overview Status: Live
  */
 
-const Home: Page = ({}: InferGetServerSidePropsType<
-  typeof getServerSideProps
->) => {
+const Home: Page = ({
+  count,
+  excerpts,
+  keyword,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
       <Metadata
@@ -27,8 +29,8 @@ const Home: Page = ({}: InferGetServerSidePropsType<
           <>
             {
               {
-                who: <WhoSaidX />,
-                what: <WhatDidXSay />,
+                who: <WhoSaidX count={count} excerpts={excerpts} keyword={keyword}/>,
+                what: <WhatDidXSay count={count} excerpts={excerpts} keyword={keyword} />,
               }[tab]
             }
           </>
@@ -42,10 +44,13 @@ export const getServerSideProps: GetServerSideProps = withi18n(
   ["enum", "home"],
   async ({ query }) => {
     try {
-      const [name, type] =
-        Object.keys(query).length === 0
-          ? [null, null]
-          : [query.name, query.type];
+      const keyword = query.keyword ? query.keyword : "petrol";
+      const { data } = await get("api/search/", {
+        q: keyword,
+        house: "dewan-rakyat",
+        window_size: 50,
+        page: 1,
+      });
 
       return {
         notFound: false,
@@ -54,6 +59,9 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             id: "home",
             type: "misc",
           },
+          count: data.count,
+          excerpts: data.results,
+          keyword: keyword,
         },
       };
     } catch (error: any) {
