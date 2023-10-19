@@ -61,7 +61,7 @@ function App({ Component, pageProps }: AppPropsLayout) {
         forcedTheme={Component.theme}
       >
         {layout(<Component {...pageProps} />, pageProps)}
-        <Progress />
+        {/* <Progress /> */}
       </ThemeProvider>
     </div>
   );
