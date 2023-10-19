@@ -27,50 +27,37 @@ import { useContext, useState } from "react";
 
 interface CatalogueFolderProps {
   dateRange: string;
-  onClick: () => void;
-  onClose: () => void;
   meeting: string;
   sitting_list: Sitting[];
 }
 
 export default function CatalogueFolder({
   dateRange,
-  onClick,
-  onClose,
   meeting,
   sitting_list,
 }: CatalogueFolderProps) {
   const { t, i18n } = useTranslation(["catalogue", "enum"]);
   const [open, setOpen] = useState<boolean>(false);
-  const { size } = useContext(WindowContext);
+  // const { size } = useContext(WindowContext);
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(open) => {
-        setOpen(open);
-        if (!open) onClose();
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <div
-          className="flex flex-col gap-y-3 items-center pt-2"
-          onClick={() => {
-            setOpen(!open);
-            onClick();
-          }}
+          className="flex flex-col gap-y-3 items-center group"
+          onClick={() => setOpen(!open)}
         >
           <div className="relative">
             <div
               className={cn(
-                open &&
-                  "absolute -top-2 -left-2 border rounded-md -z-10 w-[100px] h-20"
+                "invisible group-hover:visible absolute -top-2 -left-2 border rounded-md -z-10 w-[100px] h-20",
+                open && "visible -left-1.5"
               )}
             ></div>
-            {open ? <OpenFolderIcon /> : <ClosedFolderIcon />}
+            {open ? <OpenFolderIcon className="pl-1" /> : <ClosedFolderIcon />}
             <div
               className={cn(
-                open ? "right-3" : "right-1",
+                open ? "right-2" : "right-1",
                 "absolute bottom-1 bg-slate-400 rounded-md flex gap-0.5 items-center py-0.5 px-1.5"
               )}
             >
@@ -115,24 +102,24 @@ export default function CatalogueFolder({
             {sitting_list.map((sitting, i) => {
               const { track } = useAnalytics(sitting.filename);
 
-              const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
-              const modulo = sitting_list.length % cols;
-              const itemsInLastRow =
-                size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
+              // const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
+              // const modulo = sitting_list.length % cols;
+              // const itemsInLastRow =
+              //   size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
 
               return (
-                <Link
-                  href={`${
-                    sitting.filename.startsWith("dr")
-                      ? routes.HANSARD_DR
-                      : routes.HANSARD_DN
-                  }/${sitting.date}`}
-                  prefetch={false}
-                  className="flex items-center gap-x-4.5 p-3 shadow-button hover:shadow-floating border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900"
-                >
+                <div className="flex items-center gap-x-4.5 p-3 shadow-button border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900">
                   <DateCard date={sitting.date} size="sm" />
                   <div className="flex flex-col gap-y-1.5">
-                    <p className="font-medium">
+                    <Link
+                      href={`${
+                        sitting.filename.startsWith("dr")
+                          ? routes.HANSARD_DR
+                          : routes.HANSARD_DN
+                      }/${sitting.date}`}
+                      prefetch={false}
+                      className="font-medium hover:underline [text-underline-position:from-font] text-zinc-900 dark:text-white"
+                    >
                       {new Date(sitting.date).toLocaleDateString(
                         i18n.language,
                         {
@@ -142,7 +129,7 @@ export default function CatalogueFolder({
                           day: "numeric",
                         }
                       )}
-                    </p>
+                    </Link>
                     <div>
                       <p className="text-blue-600 dark:text-primary-dark flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap">
                         <span className="dark:hover:text-blue-600 hover:underline [text-underline-position:from-font]">
@@ -158,11 +145,11 @@ export default function CatalogueFolder({
                             { label: "PDF", value: "pdf" },
                             { label: t("csv.title"), value: "csv" },
                           ]}
-                          anchor={
-                            i > sitting_list.length - itemsInLastRow - 1
-                              ? "bottom-6"
-                              : ""
-                          }
+                          // anchor={
+                          //   i > sitting_list.length - itemsInLastRow - 1
+                          //     ? "bottom-6"
+                          //     : ""
+                          // }
                           onChange={({ value: filetype }) => {
                             download(
                               `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
@@ -182,7 +169,7 @@ export default function CatalogueFolder({
                       </p>
                     </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
