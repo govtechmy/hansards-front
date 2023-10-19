@@ -1,17 +1,13 @@
 import Excerpts, { ExcerptsProps } from "./excerpts";
-import { Excerpt } from "@components/Card/excerpt-card";
 import { Container } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-
 
 /**
  * What Did X Say Dashboard
  * @overview Status: In-development
  */
 
-interface Props extends ExcerptsProps {
-
-}
+interface Props extends ExcerptsProps {}
 
 const WhatDidXSay = ({ count, excerpts, keyword }: Props) => {
   const { t } = useTranslation();
@@ -19,7 +15,7 @@ const WhatDidXSay = ({ count, excerpts, keyword }: Props) => {
   return (
     <>
       <Container className="min-h-screen">
-      <Excerpts count={count} excerpts={excerpts} keyword={keyword}/>
+        <Excerpts count={count} excerpts={excerpts} keyword={keyword} />
       </Container>
     </>
   );
