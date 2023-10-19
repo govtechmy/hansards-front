@@ -73,7 +73,7 @@ const ExcerptCard = ({ excerpt, keyword }: ExcerptCardProps) => {
               return (
                 <>
                   {q.toLowerCase() === keyword.toLowerCase() ? (
-                    <span className="bg-blue-600 text-white w-fit rounded-md px-[3px] py-0.5 inline">
+                    <span className="bg-blue-600 text-white w-fit rounded-md px-[3px] py-0.5 inline mx-[2px]">
                       {q}
                     </span>
                   ) : (
