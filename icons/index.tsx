@@ -239,9 +239,9 @@ export const ClosedFolderIcon = (props: ComponentProps<"svg">) => {
 export const OpenFolderIcon = (props: ComponentProps<"svg">) => {
   return (
     <svg
-      width="93"
+      width="91"
       height="64"
-      viewBox="0 0 93 64"
+      viewBox="0 0 91 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
@@ -251,12 +251,12 @@ export const OpenFolderIcon = (props: ComponentProps<"svg">) => {
         fill="#94A3B8"
       />
       <path
-        d="M41.0871 21.1746H19.5207C13.9445 21.1746 9.10306 25.0158 7.83509 30.4459L1.71962 56.6356C0.840779 60.3993 3.69753 64 7.56244 64H77.4432C81.2559 64 84.5388 61.3093 85.2875 57.5708L92.5625 21.2416C93.3061 17.5285 90.4662 14.0635 86.6793 14.0635H54.8165C52.6896 14.0635 50.6502 14.9105 49.149 16.4173L46.7546 18.8208C45.2535 20.3276 43.2141 21.1746 41.0871 21.1746Z"
-        fill="url(#linear_gradient_open)"
+        d="M39.0871 21.1746H17.9659C12.1883 21.1746 7.23091 25.2917 6.16997 30.9711L1.32665 56.8982C0.637087 60.5896 3.46943 64 7.22462 64H77.1796C81.1094 64 84.4573 61.1458 85.0789 57.2655L90.8867 21.0126C91.4708 17.3667 88.6546 14.0635 84.9623 14.0635H52.8165C50.6896 14.0635 48.6502 14.9105 47.149 16.4173L44.7546 18.8208C43.2535 20.3276 41.2141 21.1746 39.0871 21.1746Z"
+        fill="url(##linear_gradient_open)"
       />
       <defs>
         <linearGradient
-          id="linear_gradient_open"
+          id="#linear_gradient_open"
           x1="47"
           y1="52.3358"
           x2="47"
