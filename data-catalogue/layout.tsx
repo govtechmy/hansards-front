@@ -21,7 +21,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
   const { t } = useTranslation("catalogue");
   const { pathname } = useRouter();
   const dewan = pathname.slice(0, 21);
-  
+
   const TAB_OPTIONS: Array<OptionType> = [
     {
       label: t("dewan_rakyat"),
@@ -42,7 +42,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center lg:static">
+      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center">
         <div className="hide-scrollbar max-[420px]:justify-center, flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
           {TAB_OPTIONS.map((tab) => (
             <div key={tab.value} className="snap-start">
