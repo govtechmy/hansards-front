@@ -26,9 +26,9 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
   };
-  const TERMS = Object.keys(archive).reverse();
+  const PARLIMENS = Object.keys(archive).reverse();
 
-  const scrollToSession = (selected: string) => {
+  const scrollToPenggal = (selected: string) => {
     if (scrollRef) {
       scrollRef.current[selected]?.scrollIntoView({
         behavior: "smooth",
@@ -39,11 +39,11 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
 
   useEffect(() => {
     if (params && params.archive) {
-      const [term, session, meeting] = params.archive;
-      if (session) {
-        scrollToSession(`${term}/${session}`);
+      const [parlimen, penggal, mesyuarat] = params.archive;
+      if (penggal) {
+        scrollToPenggal(`${parlimen}/${penggal}`);
       } else {
-        scrollToSession(term);
+        scrollToPenggal(parlimen);
       }
     }
   }, []);
@@ -54,27 +54,25 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
         <Sidebar
           data={archive}
           onClick={(selected) => {
-              scrollRef.current[selected]?.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
+            scrollRef.current[selected]?.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           }}
         >
           <div className="flex flex-col pl-6 sm:pl-8 pb-8 gap-y-[42px] w-full">
             <>
-              {TERMS ? (
-                TERMS.map((term) => {
-                  const { start_date, end_date, ...sessions } = archive[term];
+              {PARLIMENS ? (
+                PARLIMENS.map((num) => {
+                  const { start_date, end_date, ...sessions } = archive[num];
                   const SESSIONS = Object.keys(sessions).reverse();
                   const start = start_date.substring(0, 4);
                   const end = end_date.substring(0, 4);
                   const yearRange =
                     start === end ? ` (${start})` : ` (${start} - ${end})`;
-                  const parlimen = `parlimen-${term}`;
+                  const parlimen = `parlimen-${num}`;
                   return (
-                    <section
-                      key={term}
-                    >
+                    <section key={num}>
                       <div
                         className="sticky top-[113px] z-10 pt-8 pb-3 bg-white dark:bg-zinc-900 flex gap-3 items-center"
                         ref={(ref) => (scrollRef.current[parlimen] = ref)}
@@ -82,7 +80,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                         <h4 className="flex flex-wrap sm:whitespace-nowrap">
                           {t("term_full", {
                             ns: "enum",
-                            n: term,
+                            n: num,
                           }).concat(yearRange)}
                         </h4>
                         <span className={classNames.hr}></span>
