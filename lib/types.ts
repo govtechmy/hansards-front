@@ -170,18 +170,18 @@ export type Sitting = {
   cite_count: number;
 };
 
-export type Meeting = Period & {
+export type Mesyuarat = Period & {
   sitting_list: Sitting[];
 }
 
-export type Session = Period & {
-  [key: string]: Meeting;
+export type Penggal = Period & {
+  [key: string]: Mesyuarat;
 }
 
-export type Term = Period & {
-  [key: string]: Session;
+export type Parlimen = Period & {
+  [key: string]: Penggal;
 }
 
 export type Archive = {
-  [key in string]: Term;
+  [key in string]: Parlimen;
 }
