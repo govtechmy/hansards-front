@@ -43,13 +43,15 @@ export const getStaticPaths: GetStaticPaths = () => {
 };
 
 export const getStaticProps: GetStaticProps = withi18n(
-  ["catalogue", "enum"],
+  ["catalogue", "enum", "hansard"],
   async ({ params }) => {
     try {
-      const date = params?.date ? params.date[0] : "2023-03-21";
+      const [house, date] = params?.sitting
+        ? (params.sitting as string[])
+        : ["dewan-rakyat", "2023-03-21"];
 
       const { data } = await get("api/sitting/", {
-        house: "dewan-negara",
+        house,
         date,
       });
 
