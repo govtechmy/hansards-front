@@ -37,7 +37,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   const [showToggleAnimation, setToggleAnimation] = useState(false);
 
   const styles = {
-    base: "px-4 lg:px-5 py-1.5 w-full text-start leading-tight",
+    base: "px-5 py-1.5 w-full text-start leading-tight",
     active:
       "bg-slate-100 font-medium dark:bg-zinc-800 text-zinc-900 dark:text-white",
     inactive: "text-zinc-500",
@@ -138,10 +138,10 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
     <>
       <div className="flex w-full">
         {/* Desktop */}
-        <div
+        <ul
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 w-12",
-            "sticky top-[113px] h-[calc(100vh-113px)] lg:top-14 lg:h-[calc(100vh-56px)] overflow-y-scroll",
+            "dark:border-r-slate-800 border-r shrink-0 w-12 max-lg:hide-scrollbar",
+            "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
               ? "lg:w-[250px] duration-300"
@@ -150,7 +150,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         >
           <div
             className={cn(
-              "flex gap-3 max-lg:px-2 py-3 items-baseline justify-between whitespace-nowrap",
+              "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 max-lg:px-2 py-3 items-baseline justify-between whitespace-nowrap",
               showSidebar ? "lg:px-5" : "lg:px-2"
             )}
           >
@@ -182,15 +182,15 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             >
               <ChevronRightIcon
                 className={cn(
-                  "h-4.5 w-4.5 transition-transform ease-in-out",
-                  showSidebar
+                  "h-4.5 w-4.5 transition-transform ease-in-out motion-reduce:transform-none",
+                  showSidebar && size.width >= BREAKPOINTS.LG
                     ? "-rotate-180 duration-500"
                     : "rotate-0 duration-300"
                 )}
               />
             </Button>
           </div>
-          <aside className="max-lg:hidden block">
+          <nav className="max-lg:hidden">
             <Sidebar />
             <div
               className={
@@ -198,17 +198,17 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                   ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
                   : "hidden"
               }
-            ></div>
-          </aside>
-        </div>
+            />
+          </nav>
+        </ul>
 
         {/* Mobile */}
         <div className="relative flex lg:hidden">
           <>
             <Transition
               show={mobileSidebar}
-              as="aside"
-              className="lg:hidden dark:border-zinc-800 shadow-floating fixed left-0 top-14 z-30 flex h-[calc(100vh-56px)] w-[250px] flex-col border-r bg-white dark:bg-zinc-900  overflow-y-scroll"
+              as="nav"
+              className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[250px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
               enter="transition-opacity duration-75"
               enterFrom="opacity-0"
               enterTo="opacity-100"
@@ -216,23 +216,31 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <ul className="flex flex-col gap-1 pt-2 pr-2">
-                <li className="flex items-baseline justify-between">
+              <div className="flex flex-col gap-1">
+                <div className="sticky top-0 flex items-center justify-between pt-2 pr-2 z-10 bg-white dark:bg-zinc-900">
                   <h5 className={styles.base}>{t("full_archive")}</h5>
                   <Button
-                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 group absolute right-2 top-2 flex h-8 w-8 items-center rounded-full"
+                    variant="reset"
+                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 group flex h-8 w-8 items-center rounded-full"
                     onClick={() => setMobileSidebar(false)}
                   >
-                    <XMarkIcon className="text-zinc-500 absolute right-1.5 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
+                    <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
                   </Button>
-                </li>
+                </div>
 
                 <Sidebar />
-              </ul>
+                <div
+                  className={
+                    mobileSidebar
+                      ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
+                      : "hidden"
+                  }
+                ></div>
+              </div>
               <div
-                className="w-[calc(100%-250px)] lg:hidden fixed right-0 top-14 z-30 h-[calc(100vh-56px)] bg-zinc-900 bg-opacity-25"
+                className="w-[calc(100%-250px)] lg:hidden fixed right-0 top-0 z-30 h-screen bg-zinc-900 bg-opacity-25"
                 onClick={() => setMobileSidebar(false)}
-              ></div>
+              />
             </Transition>
           </>
         </div>
