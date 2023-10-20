@@ -11,10 +11,9 @@ import { BookmarkIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useTranslation } from "@hooks/useTranslation";
 import { ClosedFolderIcon, OpenFolderIcon } from "@icons/index";
-import { get } from "@lib/api";
 import { BREAKPOINTS } from "@lib/constants";
 import { WindowContext } from "@lib/contexts/window";
-import { cn, download } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { Sitting } from "@lib/types";
 import Link from "next/link";
@@ -38,7 +37,7 @@ export default function CatalogueFolder({
 }: CatalogueFolderProps) {
   const { t, i18n } = useTranslation(["catalogue", "enum"]);
   const [open, setOpen] = useState<boolean>(false);
-  // const { size } = useContext(WindowContext);
+  // const { size } = useContext(WindowContext); FIXME: dropdown
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -151,14 +150,11 @@ export default function CatalogueFolder({
                           //     : ""
                           // }
                           onChange={({ value: filetype }) => {
-                            download(
-                              `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                                sitting.filename.startsWith("dr")
-                                  ? "dewanrakyat"
-                                  : "dewannegara"
-                              }/${sitting.filename}.${filetype}`,
-                              `sitting.filename.${filetype}`
-                            );
+                            window.open(`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                              sitting.filename.startsWith("dr")
+                                ? "dewanrakyat"
+                                : "dewannegara"
+                            }/${sitting.filename}.${filetype}`,"_blank")
                             track(filetype);
                           }}
                         />
