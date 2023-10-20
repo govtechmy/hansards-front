@@ -1,5 +1,8 @@
+import Button from "@components/Button";
 import Markdown from "@components/Markdown";
 import { UserIcon } from "@heroicons/react/24/solid";
+import { useTranslation } from "@hooks/useTranslation";
+import { ShareButton } from "@icons/index";
 import { cn } from "@lib/helpers";
 import { useMemo } from "react";
 
@@ -8,19 +11,21 @@ import { useMemo } from "react";
  * Speech Bubble
  */
 
-type Speaker = {
-  name: string;
-  designation: string;
-};
-
 export type SpeechBubbleProps = {
   position: "left" | "right";
   party: "bn" | "gps" | "ph" | "pn" | "ydp" | string;
-  speaker: Speaker;
+  author: string;
   speech: string;
 };
 
-const SpeechBubble = ({ party, position, speaker, speech }: SpeechBubbleProps) => {
+const SpeechBubble = ({
+  party,
+  position,
+  author,
+  speech,
+}: SpeechBubbleProps) => {
+  const { t } = useTranslation("hansard");
+  const [name, title] = author ? author.split("[") : [];
   const colour = useMemo<string>(() => {
     switch (party) {
       case "bn":
@@ -38,7 +43,7 @@ const SpeechBubble = ({ party, position, speaker, speech }: SpeechBubbleProps) =
     }
   }, [party]);
 
-  const _speech = speech.split(".\n");
+  // const _speech = speech.split(".\n");
 
   return (
     <>
@@ -54,26 +59,42 @@ const SpeechBubble = ({ party, position, speaker, speech }: SpeechBubbleProps) =
           </div>
         </div>
         <div className="flex flex-col gap-y-2">
-          {_speech.map((speech, i) => (
-            <div
+          {/* {_speech.map((speech, i) => ( */}
+          <div
+            className={cn(
+              "relative group flex flex-col px-4.5 py-3 gap-y-1 whitespace-pre-line",
+              party == "ydp" ? "bg-[#FAF8F0]" : "bg-slate-50 dark:bg-[#000000]",
+              "hover:bg-white dark:hover:bg-zinc-900 hover:shadow-floating",
+              "border border-transparent rounded-xl hover:border-slate-200 hover:dark:border-zinc-800",
+              speech.length > 100 && "w-full"
+            )}
+          >
+            {/* {i === 0 && ( */}
+            <div className="flex gap-2 flex-col sm:flex-row">
+              <p className={cn("font-bold text-sm", colour)}>{name}</p>
+              <p className="text-sm text-zinc-500">
+                {title ? title.slice(0, -1) : ""}
+              </p>
+            </div>
+            {/* )} */}
+            <Markdown>
+              {speech}
+              {/* {speech.concat(i < _speech.length - 1 ? "." : "")} */}
+            </Markdown>
+            <Button
+              variant="base"
               className={cn(
-                "shadow-button border rounded-xl dark:border-zinc-800 px-4.5 py-3 flex flex-col gap-y-1 bg-white dark:bg-[#000000]",
-                speech.length > 100 && "w-full"
+                "invisible group-hover:visible absolute bottom-1.5 right-1.5 flex gap-1 items-center",
+                // "transition-[transform_opacity]",
+                "bg-white dark:bg-zinc-900",
+                "text-blue-600 hover:text-primary"
               )}
             >
-              {i === 0 && (
-                <div className="flex gap-2">
-                  <p className={cn("font-bold text-sm", colour)}>
-                    {speaker.name}
-                  </p>
-                  <p className="text-sm text-zinc-500">{speaker.designation}</p>
-                </div>
-              )}
-              <Markdown>
-                {speech.concat(i < _speech.length - 1 ? "." : "")}
-              </Markdown>
-            </div>
-          ))}
+              <ShareButton />
+              {t("share")}
+            </Button>
+          </div>
+          {/* ))} */}
         </div>
       </div>
     </>
