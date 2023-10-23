@@ -31,7 +31,7 @@ export const Details = ({
     >
       <summary
         className={cn(
-          "flex justify-between gap-3 cursor-pointer list-none items-center px-5 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 whitespace-nowrap"
+          "flex justify-between gap-3 cursor-pointer list-none items-center px-5 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800"
         )}
         {...props}
         onClick={(e) => {
@@ -42,7 +42,7 @@ export const Details = ({
         {summary}
         <ChevronRightIcon
           className={cn(
-            "h-4.5 w-4.5 -mx-2 transition-transform",
+            "h-4.5 w-4.5 -mx-2 shrink-0 transition-transform",
             openState && "rotate-90"
           )}
         />
