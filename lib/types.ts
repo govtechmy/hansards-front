@@ -185,3 +185,14 @@ export type Parlimen = Period & {
 export type Archive = {
   [key in string]: Parlimen;
 }
+
+export type Speech = {
+  speech: string;
+  author: string;
+  timestamp: number;
+  is_annotation: boolean;
+};
+
+export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
+
+export type Speeches = Array<Speech | NestedSpeech>;
