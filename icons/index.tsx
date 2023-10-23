@@ -329,3 +329,33 @@ export const ShareButton = (props: ComponentProps<"svg">) => {
     </svg>
   );
 };
+
+export const SidebarL = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      width="15"
+      height="27"
+      viewBox="0 0 15 27"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M1 0V14C1 20.6274 6.37258 26 13 26H15" stroke="#94A3B8" />
+    </svg>
+  );
+};
+
+export const SidebarT = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      width="2"
+      height="52"
+      viewBox="0 0 2 52"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M1 0V52" stroke="#94A3B8" />
+    </svg>
+  );
+};
