@@ -16,6 +16,7 @@ export type SpeechBubbleProps = {
   party: "bn" | "gps" | "ph" | "pn" | "ydp" | string;
   author: string;
   speech: string;
+  isAnnotation: boolean;
 };
 
 const SpeechBubble = ({
@@ -23,6 +24,7 @@ const SpeechBubble = ({
   position,
   author,
   speech,
+  isAnnotation,
 }: SpeechBubbleProps) => {
   const { t } = useTranslation("hansard");
   const [name, title] = author ? author.split("[") : [];
@@ -43,7 +45,7 @@ const SpeechBubble = ({
     }
   }, [party]);
 
-  // const _speech = speech.split(".\n");
+  // const _speech = speech.split("");
 
   return (
     <>
@@ -54,7 +56,7 @@ const SpeechBubble = ({
         )}
       >
         <div className="flex w-min h-auto items-end">
-          <div className="h-9 w-9 border border-slate-200 dark:border-zinc-800 rounded-full flex justify-center items-center bg-white dark:bg-zinc-900">
+          <div className="h-9 w-9 border border-slate-200 dark:border-zinc-800 rounded-full flex justify-center items-center bg-white dark:bg-zinc-950">
             <UserIcon className="w-7 h-7 text-slate-200 dark:text-zinc-700" />
           </div>
         </div>
@@ -63,8 +65,8 @@ const SpeechBubble = ({
           <div
             className={cn(
               "relative group flex flex-col px-4.5 py-3 gap-y-1 whitespace-pre-line",
-              party == "ydp" ? "bg-[#FAF8F0]" : "bg-slate-50 dark:bg-[#000000]",
-              "hover:bg-white dark:hover:bg-zinc-900 hover:shadow-floating",
+              party == "ydp" ? "bg-[#FAF8F0] dark:bg-[#3E3713]" : "bg-slate-50 dark:bg-[#000000]",
+              "hover:bg-white dark:hover:bg-zinc-800 hover:shadow-floating dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)]",
               "border border-transparent rounded-xl hover:border-slate-200 hover:dark:border-zinc-800",
               speech.length > 100 && "w-full"
             )}
@@ -77,22 +79,23 @@ const SpeechBubble = ({
               </p>
             </div>
             {/* )} */}
-            <Markdown>
+            <Markdown className={isAnnotation ? "italic text-zinc-500" : ""}>
               {speech}
               {/* {speech.concat(i < _speech.length - 1 ? "." : "")} */}
             </Markdown>
-            <Button
-              variant="base"
+            <div
               className={cn(
-                "invisible group-hover:visible absolute bottom-1.5 right-1.5 flex gap-1 items-center",
-                // "transition-[transform_opacity]",
+                "flex select-none items-center gap-1 text-sm font-medium outline-none transition px-3 py-1.5",
+                "invisible group-hover:visible absolute bottom-1.5 right-3.5",
+                "transition-transform group-hover:translate-x-2 duration-300",
+                "[mask-image:linear-gradient(279deg,#FFF_80%,rgba(0,0,0,0)_95%)]",
                 "bg-white dark:bg-zinc-900",
                 "text-blue-600 hover:text-primary"
               )}
             >
               <ShareButton />
               {t("share")}
-            </Button>
+            </div>
           </div>
           {/* ))} */}
         </div>
