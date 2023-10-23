@@ -1,7 +1,7 @@
 /* Markdown generator */
-.markdown {
+/* .markdown {
   @apply space-y-6;
-}
+} */
 
 .markdown p {
   @apply leading-7;
@@ -20,7 +20,7 @@
 }
 
 .markdown ol {
-  @apply ml-5 list-outside list-decimal space-y-6;
+  @apply  list-inside list-decimal ;
 }
 
 .markdown li > p {
