@@ -7,6 +7,7 @@ import { Page } from "@lib/types";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
+  cycle,
   date,
   filename,
   cite_count,
@@ -14,7 +15,7 @@ const CatalogueIndexPage: Page = ({
   view_count,
   speeches,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { t } = useTranslation("catalogue");
+  const { t } = useTranslation("hansard");
 
   return (
     <>
@@ -24,6 +25,7 @@ const CatalogueIndexPage: Page = ({
         keywords={""}
       />
       <Hansard
+        cycle={cycle}
         date={date}
         filename={filename}
         cite_count={cite_count}
@@ -61,6 +63,7 @@ export const getStaticProps: GetStaticProps = withi18n(
             id: "hansard",
             type: "data-catalogue",
           },
+          cycle: data.meta.cycle,
           date: data.meta.date,
           filename: data.meta.filename,
           cite_count: data.meta.cite_count,
