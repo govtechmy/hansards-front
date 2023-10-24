@@ -1,5 +1,6 @@
 import Button from "@components/Button";
 import Markdown from "@components/Markdown";
+import { ShareIcon } from "@heroicons/react/20/solid";
 import { UserIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { ShareButton } from "@icons/index";
@@ -64,7 +65,7 @@ const SpeechBubble = ({
           {/* {_speech.map((speech, i) => ( */}
           <div
             className={cn(
-              "relative group flex flex-col px-4.5 py-3 gap-y-1 whitespace-pre-line",
+              "relative group flex flex-col px-3 sm:px-4.5 py-3 gap-y-1 whitespace-pre-line",
               party == "ydp" ? "bg-[#FAF8F0] dark:bg-[#3E3713]" : "bg-slate-50 dark:bg-[#000000]",
               "hover:bg-white dark:hover:bg-zinc-800 hover:shadow-floating dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)]",
               "border border-transparent rounded-xl hover:border-slate-200 hover:dark:border-zinc-800",
@@ -72,7 +73,7 @@ const SpeechBubble = ({
             )}
           >
             {/* {i === 0 && ( */}
-            <div className="flex gap-2 flex-col sm:flex-row">
+            <div className="flex gap-x-2 flex-col sm:flex-row">
               <p className={cn("font-bold text-sm", colour)}>{name}</p>
               <p className="text-sm text-zinc-500">
                 {title ? title.slice(0, -1) : ""}
@@ -93,7 +94,8 @@ const SpeechBubble = ({
                 "text-blue-600 hover:text-primary"
               )}
             >
-              <ShareButton />
+              <ShareIcon className="text-blue-600 h-5 w-5" />
+              {/* <ShareButton /> */}
               {t("share")}
             </div>
           </div>
