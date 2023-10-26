@@ -191,6 +191,7 @@ export type Speech = {
   author: string;
   timestamp: number;
   is_annotation: boolean;
+  index: number;
 };
 
 export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
