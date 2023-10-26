@@ -1,21 +1,17 @@
 import Button from "@components/Button";
-import {
-  ComponentProps,
-  ReactNode,
-  useContext,
-  useState,
-} from "react";
+import { ReactNode, useContext, useState } from "react";
 import { Transition } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "@hooks/useTranslation";
-import { SidebarL, SidebarT } from "@icons/index";
+import { SidebarL } from "@icons/index";
 import { BREAKPOINTS } from "@lib/constants";
 import { WindowContext } from "@lib/contexts/window";
 import { cn } from "@lib/helpers";
-import { NestedSpeech, Speech, Speeches } from "@lib/types";
+import { Speeches } from "@lib/types";
 import { Details } from "./details";
 import { Collapse } from "./collapse";
+import { isSpeech } from "@data-catalogue/hansard";
 
 interface SidebarProps {
   children: ReactNode;
@@ -39,79 +35,96 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
     inactive: "text-zinc-500",
   };
 
-  function isSpeech(_speech: Speech | NestedSpeech): _speech is Speech {
-    return Object.keys(_speech).includes("speech");
-  }
 
-  const Sidebar = () => (
-    <Collapse isOpen={showSidebar} horizontal>
-      <ul>
-        {speeches ? (
-          speeches.map((s, i) => {
-            if (isSpeech(s)) return;
-            else {
-              const keys = Object.keys(s);
-              const key = keys[0];
-
-              return (
+  const Sidebar = () => {
+    const recurTitle = (
+      speeches: Speeches,
+      first: boolean = true,
+      prev_id?: string
+    ): ReactNode => {
+      return speeches.map((s, i) => {
+        if (isSpeech(s)) {
+          return;
+        } else {
+          const keys = Object.keys(s);
+          const key = keys[0];
+          const id = prev_id ? `${prev_id}_${key}` : key;
+          return (
+            <li
+              key={key}
+              title={key}
+              className={cn(
+                "text-sm relative",
+                !first &&
+                  "border-l border-slate-400 last-of-type:border-transparent",
+                selected && selected.startsWith(id)
+                  ? styles.active
+                  : styles.inactive
+              )}
+            >
+              {s[key].every((s) => isSpeech(s)) ? (
                 <li
-                  key={i}
                   title={key}
+                  onClick={() => {
+                    setSelected(id);
+                    onClick(id);
+                  }}
                   className={cn(
-                    "text-sm",
-                    selected && selected.startsWith(``)
-                      ? styles.active
-                      : styles.inactive
+                    "relative hover:bg-slate-100 dark:hover:bg-zinc-800",
+                    styles.base,
+                    selected === id ? styles.active : styles.inactive
                   )}
                 >
-                  <Details
-                    open={selected?.startsWith(``)}
-                    summary={
-                      <p className="flex flex-col">
-                        <span className="font-medium">{key}</span>
-                      </p>
-                    }
-                  >
-                    {/* <ul className="pl-2.5">
-                    {.map((, i) => {
-
-                      return (
-                        <li
-                          title={}
-                          onClick={() => {
-                            setSelected(id);
-                            onClick(id);
-                          }}
-                          className={cn(
-                            "relative hover:bg-slate-100 dark:hover:bg-zinc-800",
-                            styles.base,
-                            selected === id ? styles.active : styles.inactive
-                          )}
-                        >
-                          <p className="font-medium whitespace-nowrap">
-                          </p>
-
-                          <SidebarL className="absolute -left-0.5 top-0" />
-                          {i < .length - 1 && (
-                            <SidebarT className="absolute -left-0.5 top-0" />
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul> */}
-                  </Details>
+                  <p className="font-medium">{key}</p>
+                  {!first && (
+                    <>
+                      <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
+                      {i === speeches.length - 1 && (
+                        <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
+                      )}
+                    </>
+                  )}
                 </li>
-              );
-            }
-          })
-        ) : (
-          <p className={cn(styles.base, "text-zinc-500 text-sm italic")}>
-            {t("no_entries")}
-          </p>
-        )}
-      </ul>
-    </Collapse>
-  );
+              ) : (
+                <Details
+                  className="relative"
+                  open={selected?.startsWith(id)}
+                  summary={
+                    <>
+                      <span className="font-medium">{key}</span>
+                      {!first && (
+                        <>
+                          <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
+                          {i === speeches.length - 1 && (
+                            <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
+                          )}
+                        </>
+                      )}
+                    </>
+                  }
+                >
+                  <ul className="pl-2.5">{recurTitle(s[key], false, id)}</ul>
+                </Details>
+              )}
+            </li>
+          );
+        }
+      });
+    };
+    return (
+      <Collapse isOpen={showSidebar} horizontal>
+        <ul>
+          {speeches ? (
+            recurTitle(speeches)
+          ) : (
+            <p className={cn(styles.base, "text-zinc-500 text-sm italic")}>
+              {t("no_entries")}
+            </p>
+          )}
+        </ul>
+      </Collapse>
+    );
+  };
 
   return (
     <>
@@ -120,10 +133,10 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
         <ul
           className={cn(
             "dark:border-r-slate-800 border-r shrink-0 w-12 max-lg:hide-scrollbar",
-            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-auto [scrollbar-gutter:stable]",
+            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll lg:sidebar-scrollbar",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
-              ? "lg:w-[266px] duration-300"
+              ? "lg:w-[250px] duration-300"
               : "hide-scrollbar duration-500"
           )}
         >
@@ -187,7 +200,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
             <Transition
               show={mobileSidebar}
               as="nav"
-              className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[266px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
+              className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[250px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
               enter="transition-opacity duration-75"
               enterFrom="opacity-0"
               enterTo="opacity-100"
