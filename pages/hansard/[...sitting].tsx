@@ -5,6 +5,7 @@ import { withi18n } from "@lib/decorators";
 import { useTranslation } from "@hooks/useTranslation";
 import { Page } from "@lib/types";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
+import { WindowProvider } from "@lib/contexts/window";
 
 const CatalogueIndexPage: Page = ({
   cycle,
@@ -24,15 +25,17 @@ const CatalogueIndexPage: Page = ({
         description={t("hero.description")}
         keywords={""}
       />
-      <Hansard
-        cycle={cycle}
-        date={date}
-        filename={filename}
-        cite_count={cite_count}
-        download_count={download_count}
-        view_count={view_count}
-        speeches={speeches}
-      />
+      <WindowProvider>
+        <Hansard
+          cycle={cycle}
+          date={date}
+          filename={filename}
+          cite_count={cite_count}
+          download_count={download_count}
+          view_count={view_count}
+          speeches={speeches}
+        />
+      </WindowProvider>
     </>
   );
 };
@@ -76,9 +79,6 @@ export const getStaticProps: GetStaticProps = withi18n(
       console.error(error);
       return { notFound: true };
     }
-  },
-  {
-    cache_expiry: 600, // 10 min
   }
 );
 
