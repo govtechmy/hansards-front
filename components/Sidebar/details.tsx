@@ -24,14 +24,15 @@ export const Details = ({
   }, [openState]);
   return (
     <details
-      className={cn("bg-white dark:bg-neutral-900", className)}
+      className="bg-white dark:bg-neutral-900"
       {...props}
       open={delayedOpenState}
       {...(openState && { "data-expanded": true })}
     >
       <summary
         className={cn(
-          "flex justify-between gap-3 cursor-pointer list-none items-center px-5 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800"
+          "flex justify-between gap-3 cursor-pointer list-none items-center px-5 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800",
+          className
         )}
         {...props}
         onClick={(e) => {
