@@ -63,6 +63,7 @@
     "react-markdown": "^8.0.7",
     "react-virtualized-auto-sizer": "^1.0.20",
     "react-window": "^1.8.9",
+    "rehype-raw": "^6.1.1",
     "remark-gfm": "3.0.1",
     "sonner": "^0.7.0",
     "tailwind-merge": "^1.14.0",
