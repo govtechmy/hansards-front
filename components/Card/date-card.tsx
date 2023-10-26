@@ -31,7 +31,7 @@ const DateCard = ({ className, date, size }: DateCardProps) => {
             "uppercase text-[#AE2929]",
             {
               "text-[10px] leading-[14px] lg:text-xs": size == "sm",
-              "lg:text-sm lg:font-medium": size == "lg",
+              "text-xs lg:text-sm lg:font-medium": size == "lg",
             },
           )}
         >
@@ -42,7 +42,7 @@ const DateCard = ({ className, date, size }: DateCardProps) => {
             "text-zinc-900 dark:text-white",
             {
               "text-[16px] leading-5 font-medium lg:text-xl lg:font-semibold": size == "sm",
-              "lg:text-[32px] lg:leading-tight font-semibold": size == "lg",
+              "text-xl lg:text-[32px] lg:leading-tight font-semibold": size == "lg",
             },
           )}
         >
@@ -53,7 +53,7 @@ const DateCard = ({ className, date, size }: DateCardProps) => {
             "text-dim",
             {
               "text-[10px] leading-[14px] lg:text-xs": size == "sm",
-              "lg:text-sm lg:font-medium": size == "lg",
+              "text-xs lg:text-sm lg:font-medium": size == "lg",
             },
           )}
         >
