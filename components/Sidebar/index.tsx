@@ -1,10 +1,4 @@
-import {
-  ComponentProps,
-  FunctionComponent,
-  ReactNode,
-  useContext,
-  useState,
-} from "react";
+import { FunctionComponent, ReactNode, useContext, useState } from "react";
 import { Transition } from "@headlessui/react";
 import Button from "@components/Button";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -16,7 +10,7 @@ import { Details } from "./details";
 import { Collapse } from "./collapse";
 import { WindowContext } from "@lib/contexts/window";
 import { BREAKPOINTS } from "@lib/constants";
-import { SidebarL, SidebarT } from "@icons/index";
+import { SidebarL } from "@icons/index";
 
 interface SidebarProps {
   children: ReactNode;
@@ -29,12 +23,11 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   data,
   onClick,
 }) => {
-  const { t } = useTranslation(["catalogue", "common", "enum"]);
+  const { t } = useTranslation(["catalogue", "enum"]);
   const { size } = useContext(WindowContext);
   const [selected, setSelected] = useState<string>();
   const [showSidebar, setSidebar] = useState<boolean>(true);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
-
   const [showToggleAnimation, setToggleAnimation] = useState(false);
 
   const styles = {
@@ -102,6 +95,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                           }}
                           className={cn(
                             "relative hover:bg-slate-100 dark:hover:bg-zinc-800",
+                            "border-l border-slate-400 last-of-type:border-transparent",
                             styles.base,
                             selected === id ? styles.active : styles.inactive
                           )}
@@ -113,10 +107,9 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                             })}
                           </p>
                           <p className="font-base">{yearRange}</p>
-
-                          <SidebarL className="absolute -left-0.5 top-0" />
-                          {i < SESSIONS.length - 1 && (
-                            <SidebarT className="absolute -left-0.5 top-0" />
+                          <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
+                          {i === SESSIONS.length - 1 && (
+                            <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
                           )}
                         </li>
                       );
