@@ -1,10 +1,4 @@
-import {
-  Container,
-  DateCard,
-  Hero,
-  HansardSidebar,
-  Section,
-} from "@components/index";
+import { Container, DateCard, Hero, HansardSidebar } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
 import { numFormat } from "@lib/helpers";
 import SpeechBubble from "./bubble";
@@ -42,38 +36,33 @@ const Hansard = ({
   view_count,
   speeches,
 }: HansardProps) => {
-  const { t, i18n } = useTranslation(["common", "enum", "hansard"]);
+  const { t } = useTranslation(["common", "enum", "hansard"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
 
   const SHARES = 1_000;
 
-  function isSpeech(_speech: Speech | NestedSpeech): _speech is Speech {
-    return Object.keys(_speech).includes("speech");
-  }
-
-  let current = DateTime.fromISO("00:00");
-  const recurSpeech = (speeches: Speeches): ReactNode => {
+  let curr = DateTime.fromISO("00:00");
+  const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
     return speeches.map((s) => {
       if (isSpeech(s)) {
-        const { speech, author, timestamp, is_annotation } = s;
+        const { speech, author, timestamp, is_annotation, index } = s;
 
         const hr = String(timestamp).slice(0, 2);
         const mn = String(timestamp).slice(2, 4);
         const _timestamp = DateTime.fromISO(`${hr}:${mn}`);
-
-        const prev = current;
-        if (_timestamp > current) {
-          current = _timestamp;
+        const prev = curr; // temp store
+        if (_timestamp > curr) {
+          curr = _timestamp;
         }
 
+        const timeString = _timestamp.toLocaleString(DateTime.TIME_SIMPLE, {
+          locale: "en-US",
+        });
+        // FIXME: overnight timestamps 
         return (
           <>
             {!_timestamp.hasSame(prev, "minute") && (
-              <p className="text-zinc-500 text-center italic">
-                {_timestamp.toLocaleString(DateTime.TIME_SIMPLE, {
-                  locale: i18n.language,
-                })}
-              </p>
+              <p className="text-zinc-500 text-center italic">{timeString}</p>
             )}
             {author === "ANNOTATION" ? (
               <p className="text-zinc-900 dark:text-white text-center italic">
@@ -87,7 +76,9 @@ const Hansard = ({
                 }
                 author={author}
                 speech={speech}
-                isAnnotation={is_annotation}
+                is_annotation={is_annotation}
+                timeString={timeString}
+                index={index}
               />
             )}
           </>
@@ -95,13 +86,24 @@ const Hansard = ({
       } else {
         const keys = Object.keys(s);
         const key = keys[0];
-
+        const id = prev_id ? `${prev_id}_${key}` : key;
         return (
-          <div className="px-0 py-6 lg:p-8 flex flex-col gap-y-3 lg:gap-y-6">
-            <p className="text-zinc-900 dark:text-white text-center font-bold">
+          <div
+            ref={(ref) => (scrollRef.current[id] = ref)}
+            className="flex flex-col gap-y-3 lg:gap-y-6"
+          >
+            <p
+              onClick={() => {
+                scrollRef.current[id]?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }}
+              className="text-zinc-900 dark:text-white text-center font-bold py-3 lg:sticky top-14 bg-white dark:bg-zinc-900 z-10"
+            >
               {key}
             </p>
-            {recurSpeech(s[key])}
+            {recurSpeech(s[key], id)}
           </div>
         );
       }
@@ -114,11 +116,11 @@ const Hansard = ({
       onClick={(selected) => {
         scrollRef.current[selected]?.scrollIntoView({
           behavior: "smooth",
-          block: "center",
+          block: "start",
         });
       }}
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full">
         <Hero background="gold">
           <div>
             <div className="space-y-6 py-12 xl:w-full">
@@ -166,17 +168,20 @@ const Hansard = ({
             </div>
           </div>
         </Hero>
-
-        <Container>
-          <Section>
-            <div className="bg-white dark:bg-zinc-900">
-              {recurSpeech(speeches)}
-            </div>
-          </Section>
-        </Container>
+        <div className="h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 py-8 lg:py-12 bg-white dark:bg-zinc-900 gap-y-6 flex flex-col">
+          {recurSpeech(speeches)}
+        </div>
       </div>
     </HansardSidebar>
   );
 };
 
 export default Hansard;
+
+export function isSpeech(_speech: Speech | NestedSpeech): _speech is Speech {
+  return (
+    Object.keys(_speech).includes("speech") &&
+    Object.keys(_speech).includes("author") &&
+    Object.keys(_speech).includes("timestamp")
+  );
+}
