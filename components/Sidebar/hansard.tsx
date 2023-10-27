@@ -35,7 +35,6 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
     inactive: "text-zinc-500",
   };
 
-
   const Sidebar = () => {
     const recurTitle = (
       speeches: Speeches,
@@ -63,7 +62,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               )}
             >
               {s[key].every((s) => isSpeech(s)) ? (
-                <li
+                <div
                   title={key}
                   onClick={() => {
                     setSelected(id);
@@ -84,7 +83,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
                       )}
                     </>
                   )}
-                </li>
+                </div>
               ) : (
                 <Details
                   className="relative"
@@ -127,12 +126,12 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
   };
 
   return (
-    <>
-      <div className="flex w-full">
+    <div className="flex h-full w-full justify-center">
+      <div className="flex h-full w-full max-w-screen-2xl">
         {/* Desktop */}
         <ul
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 w-12 max-lg:hide-scrollbar",
+            "dark:border-r-slate-800 border-r shrink-0 hidden sm:block max-lg:hide-scrollbar",
             "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll lg:sidebar-scrollbar",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
@@ -240,7 +239,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
         {/* Content */}
         <>{children}</>
       </div>
-    </>
+    </div>
   );
 };
 
