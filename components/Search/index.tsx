@@ -1,11 +1,11 @@
 import { MagnifyingGlassIcon as SearchIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
-import { FunctionComponent, useEffect, useRef } from "react";
+import { ChangeEvent, FunctionComponent, useEffect, useRef } from "react";
 
 type SearchProps = {
   query?: string;
-  onChange: (query?: string) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   className?: string;
   placeholder?: string;
 };
@@ -38,9 +38,10 @@ const Search: FunctionComponent<SearchProps> = ({ query, onChange, className, pl
         type="search"
         placeholder={placeholder ?? t("placeholder.search")}
         value={query}
-        onChange={e => onChange(e.target.value)}
+        onChange={e => onChange(e)}
         autoComplete="off"
-        className="text-zinc-500 dark:border-zinc-700 block w-full border-0 bg-inherit pl-10 text-sm focus:ring-0 lg:text-base"
+        spellCheck="false"
+        className="text-zinc-500 dark:border-zinc-700 block w-full border-0 bg-inherit pl-10 focus:ring-0 py-1.5 text-base"
       />
       <div className="absolute inset-y-0 left-0 flex items-center pl-3">
         <SearchIcon className="text-zinc-500 h-4 w-4" />
