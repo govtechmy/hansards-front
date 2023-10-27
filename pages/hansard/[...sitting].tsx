@@ -93,7 +93,10 @@ export const getStaticProps: GetStaticProps = withi18n(
           filename: data.meta.filename,
           cite_count: data.meta.cite_count,
           download_count: data.meta.download_count,
-          view_count: count.data.find((e: any) => e.type === "view").view_count,
+          view_count:
+            count.data.length > 0
+              ? count.data.find((e: any) => e.type === "view").view_count
+              : 0,
           speeches: data.speeches,
         },
       };
