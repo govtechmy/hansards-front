@@ -1,0 +1,133 @@
+import { useContext, useMemo, useLayoutEffect, Fragment, ReactElement, ReactNode } from 'react';
+import { SearchContext, SearchEventContext } from './context';
+
+interface MatchTextProps {
+    id: string;
+    text?: string;
+    children?: ReactNode;
+    ignorecase?: boolean;
+    matchColor?: string;
+    activeColor?: string;
+  }
+
+const MARK = '__$CTRL_F$__';
+
+function escapeStr(str: string) {
+  return `${str}`.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+}
+
+function getMatchId(prefixId: string, index: number) {
+  return `${prefixId}_${index}`;
+}
+
+function isValidColor(color: string) {
+//   const style = new Option().style;
+//   style.color = color;
+  return (color !== '' && color !== 'unset' && color !== 'initial' && color !== 'inherit')
+}
+
+function getMatchText(
+  keyword: string,
+  text: string,
+  ignorecase: boolean = true
+) {
+  let keywordStr = keyword;
+  let textStr = text;
+  if (typeof keyword === 'number') {
+    keywordStr = `${keyword}`;
+  }
+  if (typeof text === 'number') {
+    textStr = `${text}`;
+  }
+  if (
+    typeof keywordStr !== 'string' ||
+    !keywordStr.trim() ||
+    typeof textStr !== 'string' ||
+    !textStr.trim() ||
+    !textStr.toLowerCase().includes(keywordStr.toLowerCase()) // case insensitive
+  ) {
+    return text;
+  }
+  const regexp = new RegExp(escapeStr(keywordStr), ignorecase ? 'gi' : 'g');
+  const matches: string[] = []; // save matched string, we will use this to overwrite keywordStr in the result string
+  const textWithMark = textStr.replace(regexp, (match) => {
+    matches.push(match);
+    return MARK;
+  });
+  const slices = textWithMark.split(MARK);
+  const data = {
+    slices,
+    matches,
+  };
+  return data;
+}
+
+export const MatchText = (data: MatchTextProps): ReactElement<string> => {
+  let textStr = data.text!;
+  const id = data.id;
+  const activeColor = isValidColor(data.activeColor || '') ? data.activeColor : '#ff9632';
+  const matchColor = isValidColor(data.matchColor || '') ? data.matchColor : '#ffff00';
+
+  if (typeof data.children === 'string') {
+    textStr = data.children;
+  }
+  if (!textStr) {
+    return <>{textStr}</>;
+  }
+
+  let { searchValue, activeId, ignorecase } = useContext(SearchContext);
+  const { onUpdateMatchList } = useContext(SearchEventContext);
+  ignorecase =
+    typeof data.ignorecase === 'boolean' ? data.ignorecase : ignorecase;
+
+  const matchData = useMemo(
+    () => getMatchText(searchValue, textStr, ignorecase),
+    [searchValue, textStr]
+  );
+
+  useLayoutEffect(() => {
+    if (typeof matchData === 'object') {
+      const matchIds = matchData.matches.map((_, index) => ({
+        id: getMatchId(id, index),
+        idCount: index,
+      }));
+      onUpdateMatchList(matchIds);
+    }
+  }, [matchData]);
+
+  if (typeof matchData === 'string') {
+    return <>{matchData}</>;
+  }
+  const slicesLen = matchData.slices.length - 1;
+  return (
+    <Fragment>
+      {matchData.slices.map((slice, index) => {
+        if (index === slicesLen) {
+          return slice;
+        }
+        const matchId = getMatchId(id, index);
+        const color = matchId === activeId ? activeColor : matchColor;
+
+        const matchStr = matchData.matches[index];
+        return (
+          <Fragment key={index}>
+            {slice}
+            <span
+              id={matchId}
+              style={{
+                backgroundColor: color,
+                color: 'white',
+                display: 'inline-block',
+                whiteSpace: 'pre-wrap',
+              }}
+            >
+              {matchStr}
+            </span>
+          </Fragment>
+        );
+      })}
+    </Fragment>
+  );
+};
+
+export default MatchText;
