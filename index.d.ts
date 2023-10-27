@@ -8,6 +8,11 @@ declare namespace NodeJS {
     NEXT_PUBLIC_I18N_URL: string;
     NEXT_PUBLIC_DOWNLOAD_URL: string;
     NEXT_PUBLIC_AUTHORIZATION_TOKEN: string;
+    
+    NEXT_PUBLIC_TINYBIRD_URL: string;
+    NEXT_PUBLIC_TINYBIRD_AUTH: string;
+    NEXT_PUBLIC_GET_COUNTS: string;
+    NEXT_PUBLIC_POST_COUNTS: string;
 
     REVALIDATE_TOKEN: string;
     AUTH_TOKEN: string;

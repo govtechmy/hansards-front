@@ -5,9 +5,12 @@ import { withi18n } from "@lib/decorators";
 import { useTranslation } from "@hooks/useTranslation";
 import { Page } from "@lib/types";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
+import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { WindowProvider } from "@lib/contexts/window";
+import { SearchProvider } from "@data-catalogue/context";
 
 const CatalogueIndexPage: Page = ({
+  meta,
   cycle,
   date,
   filename,
@@ -20,22 +23,30 @@ const CatalogueIndexPage: Page = ({
 
   return (
     <>
-      <Metadata
-        title={t("hero.header")}
-        description={t("hero.description")}
-        keywords={""}
-      />
-      <WindowProvider>
-        <Hansard
-          cycle={cycle}
-          date={date}
-          filename={filename}
-          cite_count={cite_count}
-          download_count={download_count}
-          view_count={view_count}
-          speeches={speeches}
+      <AnalyticsProvider meta={meta}>
+        <Metadata
+          title={t("hero.header")}
+          description={t("hero.description")}
+          keywords={""}
         />
-      </WindowProvider>
+        <SearchProvider
+          value={{
+            fixedHeaderHeight: 240,
+          }}
+        >
+          <WindowProvider>
+            <Hansard
+              cycle={cycle}
+              date={date}
+              filename={filename}
+              cite_count={cite_count}
+              download_count={download_count}
+              view_count={view_count}
+              speeches={speeches}
+            />
+          </WindowProvider>
+        </SearchProvider>
+      </AnalyticsProvider>
     </>
   );
 };
@@ -60,10 +71,21 @@ export const getStaticProps: GetStaticProps = withi18n(
         date,
       });
 
+      const { data: count } = await get(
+        "/pipes/get_counts.json",
+        {
+          hansard_id: `${house}/${date}`,
+          token: process.env.NEXT_PUBLIC_TINYBIRD_AUTH.concat(
+            process.env.NEXT_PUBLIC_GET_COUNTS
+          ),
+        },
+        "tinybird"
+      );
+
       return {
         props: {
           meta: {
-            id: "hansard",
+            id: `${house}/${date}`,
             type: "data-catalogue",
           },
           cycle: data.meta.cycle,
@@ -71,7 +93,7 @@ export const getStaticProps: GetStaticProps = withi18n(
           filename: data.meta.filename,
           cite_count: data.meta.cite_count,
           download_count: data.meta.download_count,
-          view_count: data.meta.view_count,
+          view_count: count.data.find((e: any) => e.type === "view").view_count,
           speeches: data.speeches,
         },
       };

@@ -1,6 +1,12 @@
 import { post } from "@lib/api";
 import { MetaPage } from "@lib/types";
-import { FunctionComponent, ReactNode, createContext, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  ReactNode,
+  createContext,
+  useEffect,
+  useState,
+} from "react";
 
 /**
  * Realtime view count for dashboard & data-catalogue.
@@ -11,14 +17,13 @@ import { FunctionComponent, ReactNode, createContext, useEffect, useState } from
 /**
  * id (required):
  * type: "dashboard" | "data-catalogue"
- * metric" "view_count" | "download_pdf" | "download_csv"
+ * metric: "download_pdf" | "download_csv" | "share" | "view"
  */
-type MetricType =
-  | "view_count"
-  | "download_pdf"
-  | "download_csv";
+export type MetricType = "download_pdf" | "download_csv" | "share" | "view";
 
-export type Meta = Omit<MetaPage["meta"], "type"> & { type: "dashboard" | "data-catalogue" };
+export type Meta = Omit<MetaPage["meta"], "type"> & {
+  type: "dashboard" | "data-catalogue";
+};
 
 type AnalyticsResult<T extends "dashboard" | "data-catalogue"> = {
   id: string;
@@ -30,7 +35,7 @@ type AnalyticsResult<T extends "dashboard" | "data-catalogue"> = {
 
 type AnalyticsContextProps<T extends "dashboard" | "data-catalogue"> = {
   result?: Partial<AnalyticsResult<T>>;
-  realtime_track: (id: string, type: Meta["type"], metric: MetricType) => void;
+  realtime_track: (name: string, id: string, metric: MetricType) => void;
 };
 
 interface ContextChildren {
@@ -42,21 +47,36 @@ export const AnalyticsContext = createContext<
   AnalyticsContextProps<"dashboard" | "data-catalogue">
 >({
   result: {},
-  realtime_track(id, type, metric) {},
+  realtime_track() {},
 });
 
-export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({ meta, children }) => {
-  const [data, setData] = useState<AnalyticsResult<"dashboard" | "data-catalogue"> | undefined>();
+export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
+  meta,
+  children,
+}) => {
+  const [data, setData] = useState<
+    AnalyticsResult<"dashboard" | "data-catalogue"> | undefined
+  >();
+
   // auto-increment view count for id
   useEffect(() => {
-    track(meta.id, meta.type, "view_count");
+    track("events_example", meta.id, "view");
   }, []);
 
   // increment activity count
-  const track = (id: string, type: Meta["type"], metric: MetricType) => {
-    post(`/view-count/?id=${id}&type=${type}&metric=${metric}`, null, "api")
-      .then(response => setData(response.data))
-      .catch(e => console.error(e));
+  const track = (name: string, id: string, metricType: MetricType) => {
+    post(
+      `/events?name=${name}`,
+      { timestamp: new Date().toISOString(), hansard_id: id, type: metricType },
+      "tinybird",
+      {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_AUTH.concat(
+          process.env.NEXT_PUBLIC_POST_COUNTS
+        )}`,
+      }
+    )
+      .then((response) => setData(response.data))
+      .catch((e) => console.error(e));
   };
 
   return (

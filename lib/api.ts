@@ -16,6 +16,7 @@ const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const urls: Record<BaseURL, string> = {
     api: process.env.NEXT_PUBLIC_API_URL,
     app: process.env.NEXT_PUBLIC_APP_URL,
+    tinybird: process.env.NEXT_PUBLIC_TINYBIRD_URL,
   };
   const BROWSER_RUNTIME = typeof window === "object";
 
