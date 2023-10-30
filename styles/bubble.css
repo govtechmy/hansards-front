@@ -2,7 +2,7 @@
   @apply flex gap-3;
 
   .bub {
-    @apply relative flex flex-col px-3 sm:px-4.5 pt-3 pb-6 gap-y-1 max-w-[1000px] whitespace-pre-line bg-slate-50 dark:bg-[#000000]
+    @apply relative flex flex-col px-3 sm:px-4.5 pt-3 pb-6 gap-y-1 whitespace-pre-line bg-slate-50 dark:bg-[#000000]
     hover:bg-white dark:hover:bg-zinc-800 hover:shadow-floating dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)]
     border border-transparent rounded-xl hover:border-slate-200 hover:dark:border-zinc-800;
   }
