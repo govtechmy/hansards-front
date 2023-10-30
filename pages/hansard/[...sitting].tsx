@@ -34,7 +34,7 @@ const CatalogueIndexPage: Page = ({
             fixedHeaderHeight: 240,
           }}
         >
-          <WindowProvider>
+          {/* <WindowProvider> */}
             <Hansard
               cycle={cycle}
               date={date}
@@ -44,7 +44,7 @@ const CatalogueIndexPage: Page = ({
               view_count={view_count}
               speeches={speeches}
             />
-          </WindowProvider>
+          {/* </WindowProvider> */}
         </SearchProvider>
       </AnalyticsProvider>
     </>

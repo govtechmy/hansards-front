@@ -21,7 +21,6 @@ interface SidebarProps {
 
 const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
   const { t } = useTranslation(["hansard", "common"]);
-  const { size } = useContext(WindowContext);
   const [selected, setSelected] = useState<string>();
   const [showSidebar, setSidebar] = useState<boolean>(true);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
@@ -131,7 +130,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
         {/* Desktop */}
         <ul
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 hidden sm:block max-lg:hide-scrollbar",
+            "dark:border-r-slate-800 border-r shrink-0 hidden lg:block max-lg:hide-scrollbar",
             "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll lg:sidebar-scrollbar",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
@@ -170,7 +169,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               <ChevronRightIcon
                 className={cn(
                   "h-4.5 w-4.5 transition-transform ease-in-out motion-reduce:transform-none",
-                  showSidebar && size.width >= BREAKPOINTS.LG
+                  showSidebar
                     ? "-rotate-180 duration-500"
                     : "rotate-0 duration-300"
                 )}
@@ -190,19 +189,22 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
         </ul>
 
         {/* Mobile */}
-        <Button
-          variant="default"
-          className={cn("shadow-floating absolute top-[400px] left-3 sm:hidden", mobileSidebar && "hidden")}
-          title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
-          onClick={() => {
-            setToggleAnimation(true);
-            setMobileSidebar(!mobileSidebar);
-          }}
-        >
-          {t("toc")}
-          <ChevronDownIcon className="h-4.5 w-4.5" />
-        </Button>
         <div className="relative flex lg:hidden">
+          <Button
+            variant="default"
+            className={cn(
+              "shadow-floating absolute top-96 left-3 lg:hidden",
+              mobileSidebar && "hidden"
+            )}
+            title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
+            onClick={() => {
+              setToggleAnimation(true);
+              setMobileSidebar(true);
+            }}
+          >
+            {t("toc")}
+            <ChevronDownIcon className="h-4.5 w-4.5" />
+          </Button>
           <>
             <Transition
               show={mobileSidebar}
