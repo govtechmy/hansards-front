@@ -26,7 +26,7 @@ function isValidColor(color: string) {
   return (color !== '' && color !== 'unset' && color !== 'initial' && color !== 'inherit')
 }
 
-function getMatchText(
+export function getMatchText(
   keyword: string,
   text: string,
   ignorecase: boolean = true
