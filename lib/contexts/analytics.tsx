@@ -1,4 +1,4 @@
-import { post } from "@lib/api";
+import { get, post } from "@lib/api";
 import { MetaPage } from "@lib/types";
 import {
   FunctionComponent,
@@ -34,7 +34,7 @@ type AnalyticsResult<T extends "dashboard" | "data-catalogue"> = {
 };
 
 type AnalyticsContextProps<T extends "dashboard" | "data-catalogue"> = {
-  result?: Partial<AnalyticsResult<T>>;
+  result?: any; // Partial<AnalyticsResult<T>>;
   realtime_track: (name: string, id: string, metric: MetricType) => void;
 };
 
@@ -54,9 +54,7 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
   meta,
   children,
 }) => {
-  const [data, setData] = useState<
-    AnalyticsResult<"dashboard" | "data-catalogue"> | undefined
-  >();
+  const [data, setData] = useState<any | undefined>(); // Array<{type: MetricType, view_count?: number}>
 
   // auto-increment view count for id
   useEffect(() => {
@@ -75,7 +73,22 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
         )}`,
       }
     )
-      .then((response) => setData(response.data))
+      .then(() =>
+        get(
+          "/pipes/get_counts.json",
+          {
+            hansard_id: id,
+            token: process.env.NEXT_PUBLIC_TINYBIRD_AUTH.concat(
+              process.env.NEXT_PUBLIC_GET_COUNTS
+            ),
+          },
+          "tinybird"
+        )
+          .then((response) => {
+            console.log(response.data);
+            setData(response.data)})
+          .catch((e) => console.error(e))
+      )
       .catch((e) => console.error(e));
   };
 

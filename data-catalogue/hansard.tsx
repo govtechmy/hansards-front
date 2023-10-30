@@ -50,12 +50,18 @@ const Hansard = ({
   filename,
   cite_count,
   download_count,
-  view_count,
+  // view_count,
   speeches,
 }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
-  const { track } = useAnalytics(filename);
+  const { result, track } = useAnalytics(
+    `${cycle.house === 0 ? "dewan-rakyat" : "dewan-negara"}/${date}`
+  );
+  const view_count: number =
+    result && result.data && result.data.length > 0
+      ? result.data.find((e: any) => e.type === "view").view_count
+      : 0;
 
   const { searchValue, activeCount, totalCount } = useContext(SearchContext);
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
