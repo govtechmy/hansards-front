@@ -142,7 +142,7 @@ export default function CatalogueFolder({
                           selected={undefined}
                           options={[
                             { label: "PDF", value: "pdf" },
-                            { label: t("csv.title"), value: "csv" },
+                            { label: t("csv"), value: "csv" },
                           ]}
                           // anchor={
                           //   i > sitting_list.length - itemsInLastRow - 1
