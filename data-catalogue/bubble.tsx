@@ -1,11 +1,11 @@
-import Button from "@components/Button";
 import Markdown from "@components/Markdown";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
-import { useMemo } from "react";
+import { useContext, useLayoutEffect, useMemo } from "react";
 import rehypeRaw from "rehype-raw";
 import { Speech } from "@lib/types";
-import { MatchText } from "./match-text";
+import { getMatchText } from "./match-text";
+import { SearchContext, SearchEventContext } from "./context";
 
 /**
  * @overview Status: In-development
@@ -49,22 +49,32 @@ const SpeechBubble = ({
     }
   }, [party]);
 
-  // const _children = useMemo<string>(() => {
-  //   if (keyword && children.includes(keyword)) {
-  //     return children.replaceAll(
-  //       keyword,
-  //       `<span className='s'>${keyword}</span>`
-  //     );
-  //   }
-  //   return children;
-  // }, [children, keyword]);
+  let { searchValue, activeId } = useContext(SearchContext);
+  const { onUpdateMatchList } = useContext(SearchEventContext);
 
-  const _children = (
-    <Markdown className={cn(is_annotation && "a")} rehypePlugins={[rehypeRaw]}>
-      {children}
-    </Markdown>
+  const matchData = useMemo(
+    () => getMatchText(searchValue, children),
+    [searchValue, children]
   );
 
+  useLayoutEffect(() => {
+    if (typeof matchData === "object") {
+      const matchIds = matchData.matches.map((_, i) => ({
+        id: `${index}_${i}`,
+        idCount: i,
+      }));
+      onUpdateMatchList(matchIds);
+    }
+  }, [matchData]);
+
+  const _children = useMemo<string>(() => {
+    if (keyword && children.includes(keyword)) {
+      return children.split(keyword).join(`<mark>${keyword}</mark>`);
+    }
+    return children;
+  }, [children, keyword]);
+
+  let cnt = 0;
   return (
     <>
       <div
@@ -87,15 +97,45 @@ const SpeechBubble = ({
                 )}
               </p>
             </div>
-            <p>
+
+            <Markdown
+              className={cn(is_annotation && "a")}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                mark(props) {
+                  const { node, ...rest } = props;
+                  // FIXME: wrong count
+                  const matchId = `${index}_${cnt}`;
+
+                  const color = matchId === activeId ? "#DC2626" : "#2563EB";
+                  cnt++;
+                  return (
+                    <span
+                      key={index}
+                      id={matchId}
+                      style={{
+                        backgroundColor: color,
+                        color: "white",
+                        display: "inline-block",
+                        whiteSpace: "pre-wrap",
+                      }}
+                      {...rest}
+                    ></span>
+                  );
+                },
+              }}
+            >
+              {_children}
+            </Markdown>
+            {/* <p>
               <MatchText
                 id={`${index}`}
                 matchColor="#2563EB"
                 activeColor="#DC2626"
               >
-                {_children.props.children}
+                {_c.props.children}
               </MatchText>
-            </p>
+            </p> */}
 
             <button className="bt">
               <div className={"shr"} />
