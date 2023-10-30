@@ -8,6 +8,8 @@ import {
   ReactNode,
 } from "react";
 
+/* React Ctrl F from https://github.com/dbwcooper/react-ctrl-f.git */
+
 enum IActionTypes {
   setSearchValue = "setSearchValue",
   setActiveMatch = "setActiveMatch",
@@ -83,7 +85,7 @@ const defaultStore: IState = {
   searchValue: "",
   totalCount: 0,
 
-  activeCount: 0, // actived count, less than or equal totalCount
+  activeCount: 0, // active count, less than or equal totalCount
   activeId: "", // active text id
   matchedList: [],
 };
