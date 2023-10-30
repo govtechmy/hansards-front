@@ -19,17 +19,17 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-  const basicAuth = request.headers.get("authorization");
-  if (basicAuth) {
-    const authValue = basicAuth.split(" ")[1];
-    const [user, password] = atob(authValue).split(":");
-    if (user === "admin" && password === process.env.AUTH_TOKEN) {
-      response = NextResponse.next({ request: { headers } });
-      return response;
-    }
-  }
-  return new NextResponse("Auth required", {
-    status: 401,
-    headers: { "WWW-Authenticate": `Basic realm="Secure Area"` },
-  });
+  // const basicAuth = request.headers.get("authorization");
+  // if (basicAuth) {
+  //   const authValue = basicAuth.split(" ")[1];
+  //   const [user, password] = atob(authValue).split(":");
+  //   if (user === "admin" && password === process.env.AUTH_TOKEN) {
+  //     response = NextResponse.next({ request: { headers } });
+  //     return response;
+  //   }
+  // }
+  // return new NextResponse("Auth required", {
+  //   status: 401,
+  //   headers: { "WWW-Authenticate": `Basic realm="Secure Area"` },
+  // });
 }
