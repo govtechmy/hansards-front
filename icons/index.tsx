@@ -291,7 +291,7 @@ export const CiteIcon = (props: ComponentProps<"svg">) => {
   );
 };
 
-export const DownloadButton = (props: ComponentProps<"svg">) => {
+export const DownloadIcon = (props: ComponentProps<"svg">) => {
   return (
     <svg
       width="20"
