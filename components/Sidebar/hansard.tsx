@@ -1,7 +1,7 @@
 import Button from "@components/Button";
 import { ReactNode, useContext, useState } from "react";
 import { Transition } from "@headlessui/react";
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
-  const { t } = useTranslation(["catalogue", "common", "enum"]);
+  const { t } = useTranslation(["hansard", "common"]);
   const { size } = useContext(WindowContext);
   const [selected, setSelected] = useState<string>();
   const [showSidebar, setSidebar] = useState<boolean>(true);
@@ -117,7 +117,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
             recurTitle(speeches)
           ) : (
             <p className={cn(styles.base, "text-zinc-500 text-sm italic")}>
-              {t("no_entries")}
+              {t("no_entries", { ns: "common" })}
             </p>
           )}
         </ul>
@@ -152,23 +152,19 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
                 showSidebar && "lg:hidden"
               )}
             >
-              {t("kandungan")}
+              {t("toc")}
             </h5>
             {/* Horizontal */}
             <h5 className={cn("max-lg:hidden", !showSidebar && "hidden")}>
-              {t("kandungan")}
+              {t("toc")}
             </h5>
             <Button
               variant="default"
-              className="p-1.5 shadow-button"
+              className="p-1.5 shadow-button "
               title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
               onClick={() => {
                 setToggleAnimation(true);
-                if (size.width < BREAKPOINTS.LG) {
-                  setMobileSidebar(true);
-                } else {
-                  setSidebar(!showSidebar);
-                }
+                setSidebar(!showSidebar);
               }}
             >
               <ChevronRightIcon
@@ -194,6 +190,18 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
         </ul>
 
         {/* Mobile */}
+        <Button
+          variant="default"
+          className={cn("shadow-floating absolute top-[400px] left-3 sm:hidden", mobileSidebar && "hidden")}
+          title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
+          onClick={() => {
+            setToggleAnimation(true);
+            setMobileSidebar(!mobileSidebar);
+          }}
+        >
+          {t("toc")}
+          <ChevronDownIcon className="h-4.5 w-4.5" />
+        </Button>
         <div className="relative flex lg:hidden">
           <>
             <Transition
@@ -209,7 +217,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
             >
               <div className="flex flex-col gap-1">
                 <div className="sticky top-0 flex items-center justify-between pt-2 pr-2 z-10 bg-white dark:bg-zinc-900">
-                  <h5 className={styles.base}>{t("kandungan")}</h5>
+                  <h5 className={styles.base}>{t("toc")}</h5>
                   <Button
                     variant="reset"
                     className="hover:bg-slate-100 dark:hover:bg-zinc-800 group flex h-8 w-8 items-center rounded-full"
