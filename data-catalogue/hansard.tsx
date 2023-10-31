@@ -1,10 +1,11 @@
 import {
-  DateCard,
-  Hero,
-  HansardSidebar,
-  Search,
-  Button,
   At,
+  Button,
+  DateCard,
+  HansardSidebar,
+  Hero,
+  Search,
+  Toggle,
 } from "@components/index";
 import {
   ChevronDownIcon,
@@ -14,15 +15,15 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { useTranslation } from "@hooks/useTranslation";
-import { numFormat } from "@lib/helpers";
+import { cn, numFormat } from "@lib/helpers";
 import { NestedSpeech, Speech, Speeches } from "@lib/types";
 import debounce from "lodash/debounce";
 import { DateTime } from "luxon";
-import { ReactNode, useContext, useRef } from "react";
+import { ReactNode, useContext, useRef, useState } from "react";
 import SpeechBubble from "./bubble";
 import { SearchContext, SearchEventContext } from "./context";
 import { CiteIcon, DownloadIcon } from "@icons/index";
-import { useAnalytics } from "@hooks/useAnalytics";
+import { AnalyticsContext } from "@lib/contexts/analytics";
 
 /**
  * Hansard
@@ -38,35 +39,29 @@ interface HansardProps {
   };
   date: string;
   filename: string;
-  cite_count: number;
-  download_count: number;
-  view_count: number;
   speeches: Speeches;
+  id: string;
 }
 
-const Hansard = ({
-  cycle,
-  date,
-  filename,
-  cite_count,
-  download_count,
-  // view_count,
-  speeches,
-}: HansardProps) => {
+const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
-  const { result, track } = useAnalytics(
-    `${cycle.house === 0 ? "dewan-rakyat" : "dewan-negara"}/${date}`
-  );
-  const view_count: number =
+  const [narrowMode, setNarrowMode] = useState<boolean>(false);
+
+  const { result, realtime_track } = useContext(AnalyticsContext);
+
+
+  const [downloads, shares, views]: number[] =
     result && result.data && result.data.length > 0
-      ? result.data.find((e: any) => e.type === "view").view_count
-      : 0;
+      ? [
+          result.data.find((e) => e.type === "downloads")?.counts ?? 0,
+          result.data.find((e) => e.type === "shares")?.counts ?? 0,
+          result.data.find((e) => e.type === "views")?.counts ?? 0,
+        ]
+      : [0, 0, 0];
 
   const { searchValue, activeCount, totalCount } = useContext(SearchContext);
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
-
-  const SHARES = 1_000;
 
   let curr = DateTime.fromISO("00:00");
   const recurSpeech = (
@@ -110,6 +105,7 @@ const Hansard = ({
                 timeString={timeString}
                 index={index}
                 keyword={keyword}
+                id={id}
               >
                 {speech}
               </SpeechBubble>
@@ -159,7 +155,7 @@ const Hansard = ({
         });
       }}
     >
-      <div className="flex flex-col w-full transition-[width]">
+      <div className="flex flex-col w-full items-center">
         <Hero background="gold">
           <div>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
@@ -186,31 +182,33 @@ const Hansard = ({
                 <DateCard size="lg" date={date} />
                 <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
                   <h2 className="text-zinc-900" data-testid="hero-header">
-                    {t("hero.header", {
+                    {t("header", {
                       context: cycle.house === 0 ? "dr" : "dn",
                     })}
                   </h2>
-                  <p
-                    className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
-                    data-testid="hero-views"
-                  >
-                    <span>{`${numFormat(view_count, "compact")} ${t("views", {
-                      ns: "common",
-                      count: view_count,
-                    })}`}</span>
-                    •
-                    <span>{`${numFormat(SHARES, "compact")} ${t("shares", {
-                      count: SHARES,
-                    })}`}</span>
-                    •
-                    <span>{`${numFormat(download_count, "compact")} ${t(
-                      "downloads",
-                      {
+                  {result && result.data && result.data.length > 0 && (
+                    <p
+                      className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
+                      data-testid="hero-views"
+                    >
+                      <span>{`${numFormat(views, "compact")} ${t("views", {
                         ns: "common",
-                        count: download_count,
-                      }
-                    )}`}</span>
-                  </p>
+                        count: views,
+                      })}`}</span>
+                      •
+                      <span>{`${numFormat(shares, "compact")} ${t("shares", {
+                        count: shares,
+                      })}`}</span>
+                      •
+                      <span>{`${numFormat(downloads, "compact")} ${t(
+                        "downloads",
+                        {
+                          ns: "common",
+                          count: downloads,
+                        }
+                      )}`}</span>
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -224,8 +222,10 @@ const Hansard = ({
                   href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
                     filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
                   }/${filename}.pdf`}
-                  onClick={() => track("pdf")}
-                  className="flex gap-1 items-center link-primary"
+                  onClick={() =>
+                    realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "pdf")
+                  }
+                  className={styles.link_blue}
                 >
                   <DownloadIcon className="h-5 w-5" />
                   {t("download", { context: "pdf" })}
@@ -235,13 +235,15 @@ const Hansard = ({
                   href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
                     filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
                   }/${filename}.csv`}
-                  onClick={() => track("csv")}
-                  className="flex gap-1 items-center link-primary"
+                  onClick={() =>
+                    realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "csv")
+                  }
+                  className={styles.link_blue}
                 >
                   <DownloadIcon className="h-5 w-5" />
                   {t("download", { context: "csv" })}
                 </At>
-                <span className="flex gap-1 items-center link-primary">
+                <span className={styles.link_blue}>
                   <ShareIcon className="h-5 w-5" />
                   {t("share")}
                 </span>
@@ -249,19 +251,18 @@ const Hansard = ({
             </div>
           </div>
         </Hero>
-        <div className="dark:border-washed-dark sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-2 border-b bg-white py-1.5 dark:bg-black lg:px-8">
-          <div className="flex w-48 lg:w-[400px]">
-            <div className="flex-1">
-              <Search
-                className="border-none py-[3.5px]"
-                query={searchValue}
-                onChange={onSearchChange}
-              />
-            </div>
+        <div className="dark:border-washed-dark sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-3 w-full border-b bg-white py-1.5 dark:bg-black lg:px-8">
+          <div className="flex gap-3 items-center w-full">
+            <Search
+              className="border-none py-[3.5px] w-full"
+              query={searchValue}
+              onChange={onSearchChange}
+            />
+
             {searchValue && searchValue.length > 0 && (
               <Button
                 variant="reset"
-                className="h-min hover:bg-washed dark:hover:bg-washed-dark text-dim group block rounded-full p-1 hover:text-black dark:hover:text-white"
+                className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
                 onClick={() => onSearchChange}
               >
                 <XMarkIcon className="text-dim h-5 w-5 group-hover:text-black dark:group-hover:text-white" />
@@ -270,13 +271,32 @@ const Hansard = ({
           </div>
           {searchValue && searchValue.length > 0 && (
             <div className="flex gap-3 items-center">
-              <p className="text-zinc-500 max-sm:text-sm">{`${activeCount} of ${totalCount} found`}</p>
+              <p className="text-zinc-500 max-sm:text-sm whitespace-nowrap">{`${activeCount} of ${totalCount} found`}</p>
               <ChevronUpIcon className="w-5 h-5" onClick={onPrev} />
               <ChevronDownIcon className="w-5 h-5" onClick={onNext} />
             </div>
           )}
         </div>
-        <div className="h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 py-8 lg:py-12 bg-white dark:bg-zinc-900 gap-y-6 flex flex-col">
+        <div
+          className={cn(
+            "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 py-8 lg:py-12 bg-white dark:bg-zinc-900 gap-y-6 flex flex-col relative",
+            narrowMode ? "w-[500px]" : "w-full"
+          )}
+        >
+          <div
+            className={cn(
+              "hidden lg:block absolute top-7 right-40 p-1.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-floating",
+              narrowMode ? "right-8" : "right-40"
+            )}
+          >
+            <Toggle
+              enabled={false}
+              onStateChanged={() => {
+                setNarrowMode(!narrowMode);
+              }}
+              label={t("narrow")}
+            />
+          </div>
           {recurSpeech(speeches, searchValue)}
         </div>
       </div>
