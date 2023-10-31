@@ -24,6 +24,7 @@ import SpeechBubble from "./bubble";
 import { SearchContext, SearchEventContext } from "./context";
 import { CiteIcon, DownloadIcon } from "@icons/index";
 import { AnalyticsContext } from "@lib/contexts/analytics";
+import ShareButton from "./share";
 
 /**
  * Hansard
@@ -49,7 +50,6 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
   const [narrowMode, setNarrowMode] = useState<boolean>(false);
 
   const { result, realtime_track } = useContext(AnalyticsContext);
-
 
   const [downloads, shares, views]: number[] =
     result && result.data && result.data.length > 0
@@ -243,10 +243,15 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                   <DownloadIcon className="h-5 w-5" />
                   {t("download", { context: "csv" })}
                 </At>
-                <span className={styles.link_blue}>
-                  <ShareIcon className="h-5 w-5" />
-                  {t("share")}
-                </span>
+                <ShareButton
+                  id={id}
+                  trigger={(onClick) => (
+                    <button className={styles.link_blue} onClick={onClick}>
+                      <ShareIcon className="h-5 w-5" />
+                      {t("share")}
+                    </button>
+                  )}
+                />
               </div>
             </div>
           </div>

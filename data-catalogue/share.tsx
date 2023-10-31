@@ -12,7 +12,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { FBShare, XShare } from "@icons/index";
 import { AnalyticsContext } from "@lib/contexts/analytics";
 import { copyClipboard } from "@lib/helpers";
-import { useContext, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 
 /**
  * Share Button
@@ -21,9 +21,10 @@ import { useContext, useState } from "react";
 
 interface ShareButtonProps {
   id: string;
+  trigger?: (onClick: () => void) => ReactNode;
 }
 
-export default function ShareButton({ id }: ShareButtonProps) {
+export default function ShareButton({ id, trigger }: ShareButtonProps) {
   const { t, i18n } = useTranslation(["hansard", "catalogue"]);
   const [open, setOpen] = useState<boolean>(false);
   const [copyText, setCopyText] = useState<string>("copy");
@@ -31,27 +32,33 @@ export default function ShareButton({ id }: ShareButtonProps) {
   const title = `Hansard Parlimen`;
   const URL = `https://hansard.parlimen.gov.my/hansard/${id}`;
 
+  const onClick = () => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Hansard Parlimen",
+          text: "Hansard Parlimen",
+          url: `https://hansard.parlimen.gov.my/hansard/${id}`,
+        })
+        .then(() => console.log("Successful share"))
+        .catch((error) => console.log("Error sharing", error));
+    } else setOpen(!open);
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <button
-          className="bt"
-          onClick={() => {
-            if (navigator.share) {
-              navigator
-                .share({
-                  title: "Hansard Parlimen",
-                  text: "Hansard Parlimen",
-                  url: `https://hansard.parlimen.gov.my/hansard/${id}`,
-                })
-                .then(() => console.log("Successful share"))
-                .catch((error) => console.log("Error sharing", error));
-            } else setOpen(!open);
-          }}
-        >
-          <div className={"shr"} />
-          {t("share")}
-        </button>
+        {trigger ? (
+          trigger(onClick)
+        ) : (
+          <button
+            className="bt"
+            onClick={onClick}
+          >
+            <div className={"shr"} />
+            {t("share")}
+          </button>
+        )}
       </DialogTrigger>
       <DialogContent className="w-full border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 p-6 flex flex-col gap-y-5">
         <DialogHeading>
