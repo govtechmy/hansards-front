@@ -68,13 +68,20 @@ const SpeechBubble = ({
   }, [matchData]);
 
   const _children = useMemo<string>(() => {
-    if (keyword && children.includes(keyword)) {
-      return children.split(keyword).join(`<mark>${keyword}</mark>`);
+    if (typeof matchData === "string") {
+      return matchData;
+    } else {
+      let str = "";
+      for (let i = 0; i < matchData.slices.length; i++) {
+        if (i === matchData.slices.length - 1) str += matchData.slices[i];
+        else
+          str +=
+            matchData.slices[i] + `<mark id='${i}'>${matchData.matches[i]}</mark>`;
+      }
+      return str;
     }
-    return children;
   }, [children, keyword]);
 
-  let cnt = 0;
   return (
     <>
       <div
@@ -103,12 +110,9 @@ const SpeechBubble = ({
               rehypePlugins={[rehypeRaw]}
               components={{
                 mark(props) {
-                  const { node, ...rest } = props;
-                  // FIXME: wrong count
-                  const matchId = `${index}_${cnt}`;
-
+                  const { node, id, ...rest } = props;
+                  const matchId = `${index}_${id}`;
                   const color = matchId === activeId ? "#DC2626" : "#2563EB";
-                  cnt++;
                   return (
                     <span
                       key={index}
