@@ -6,6 +6,7 @@ import rehypeRaw from "rehype-raw";
 import { Speech } from "@lib/types";
 import { getMatchText } from "./match-text";
 import { SearchContext, SearchEventContext } from "./context";
+import ShareButton from "./share";
 
 /**
  * @overview Status: In-development
@@ -18,6 +19,7 @@ export type SpeechBubbleProps = Omit<Speech, "timestamp" | "speech"> & {
   timeString: string;
   children: string;
   keyword?: string;
+  id: string;
 };
 
 const SpeechBubble = ({
@@ -29,6 +31,7 @@ const SpeechBubble = ({
   index,
   timeString,
   keyword,
+  id,
 }: SpeechBubbleProps) => {
   const { t } = useTranslation("hansard");
   const [name, title] = author ? author.split("[") : [];
@@ -131,20 +134,8 @@ const SpeechBubble = ({
             >
               {_children}
             </Markdown>
-            {/* <p>
-              <MatchText
-                id={`${index}`}
-                matchColor="#2563EB"
-                activeColor="#DC2626"
-              >
-                {_c.props.children}
-              </MatchText>
-            </p> */}
 
-            <button className="bt">
-              <div className={"shr"} />
-              {t("share")}
-            </button>
+            <ShareButton id={`${id}#${index}`}/>
             <p className={"ts"}>{timeString}</p>
           </div>
         </div>
