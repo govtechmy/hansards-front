@@ -142,7 +142,7 @@ const Hero: FunctionComponent<HeroProps> = ({
         )}
 
         {/* Parlimen Icon */}
-        <div className="hidden lg:block absolute right-0 bottom-0 opacity-20">
+        <div className="absolute -right-14 -bottom-8 sm:right-0 sm:bottom-0 opacity-20">
           <svg
             width="300"
             height="214"
