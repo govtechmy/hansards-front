@@ -135,7 +135,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
               ? "w-[250px] duration-300"
-              : "w-12 hide-scrollbar duration-500"
+              : "w-fit hide-scrollbar duration-500"
           )}
         >
           <div
@@ -193,7 +193,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
           <Button
             variant="default"
             className={cn(
-              "shadow-floating absolute top-96 left-3 lg:hidden",
+              "shadow-floating absolute top-96 left-3 lg:hidden z-50",
               mobileSidebar && "hidden"
             )}
             title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
