@@ -14,7 +14,7 @@ export interface ExcerptsProps {
 }
 
 const Excerpts = ({ count, excerpts, keyword }: ExcerptsProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("home");
 
   return (
     <>
