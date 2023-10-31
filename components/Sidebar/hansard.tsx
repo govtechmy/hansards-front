@@ -128,14 +128,14 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
     <div className="flex h-full w-full justify-center">
       <div className="flex h-full w-full max-w-screen-2xl">
         {/* Desktop */}
-        <ul
+        <div
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 hidden lg:block max-lg:hide-scrollbar",
-            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll lg:sidebar-scrollbar",
+            "dark:border-r-slate-800 border-r shrink-0 hidden lg:block",
+            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll sidebar-scrollbar",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
-              ? "lg:w-[250px] duration-300"
-              : "hide-scrollbar duration-500"
+              ? "w-[250px] duration-300"
+              : "w-12 hide-scrollbar duration-500"
           )}
         >
           <div
@@ -186,7 +186,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               }
             />
           </nav>
-        </ul>
+        </div>
 
         {/* Mobile */}
         <div className="relative flex lg:hidden">
