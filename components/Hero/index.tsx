@@ -56,7 +56,7 @@ const Hero: FunctionComponent<HeroProps> = ({
   return (
     <Container
       background={cn(background_style, "border-b dark:border-zinc-800")}
-      className={cn("relative", className)}
+      className={cn("relative overflow-hidden", className)}
     >
       <>
         {children ? (
@@ -77,7 +77,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                 </div>
               )}
 
-              {(header || description || result?.view_count) && (
+              {(header || description || result.data.length > 0) && (
                 <div className="space-y-3">
                   {header && (
                     <h2
@@ -101,7 +101,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                   ) : (
                     description
                   )}
-                  {result?.view_count && (
+                  {/* {result?.view_count && (
                     <p
                       className="text-zinc-500 flex gap-2 text-sm"
                       data-testid="hero-views"
@@ -114,7 +114,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                         }
                       )}`}
                     </p>
-                  )}
+                  )} */}
                 </div>
               )}
 
