@@ -17,7 +17,7 @@ export const useAnalytics = (hansard: string) => {
     //   ext,
     // };
     // mixpanel_track("file_download", meta);
-    realtime_track("events_example", hansard, `download_${ext}`);
+    realtime_track(process.env.NEXT_PUBLIC_POST_DL, hansard, ext);
   };
   return { result, track };
 };
