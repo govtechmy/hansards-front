@@ -144,31 +144,10 @@ const Hansard = ({
     });
   };
 
-  //   const bold = /\*\*(.+?)\*\*|\*(.+?)\*/g;
-  //   const italic = /\*(.+?)\*/g;
-
-  //   const getNodeText = (node: ReactNode): string => {
-  //     if (node == null) return "";
-  //
-  //     switch (typeof node) {
-  //       case "string":
-  //       case "number":
-  //         return node.toString().replaceAll(bold, "$1").replaceAll(italic, "$1") + "\n\n";
-
-  //       case "boolean":
-  //         return "";
-
-  //       case "object": {
-  //         if (node instanceof Array) return node.map(getNodeText).join("");
-
-  //         if ("props" in node) return getNodeText(node.props.author) + getNodeText(node.props.children);
-  //       }
-
-  //       default:
-  //         console.warn("Unresolved `node` of type:", typeof node, node);
-  //         return "";
-  //     }
-  //   };
+  const styles = {
+    link_blue: "flex gap-1 items-center link-blue",
+    link_dim: "hover:underline [text-underline-position:from-font]",
+  };
 
   return (
     <HansardSidebar
@@ -180,26 +159,36 @@ const Hansard = ({
         });
       }}
     >
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full transition-[width]">
         <Hero background="gold">
           <div>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
-              <span className="flex items-center font-medium text-sm text-zinc-500 underline [text-underline-position:from-font] whitespace-nowrap flex-wrap">
-                {t("archive", {
-                  context: cycle.house === 0 ? "dewan_rakyat" : "dewan_negara",
-                })}
+              <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
+                <span className={styles.link_dim}>
+                  {t("archive", {
+                    context: cycle.house === 0 ? "dr" : "dn",
+                  })}
+                </span>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                {t("term_full", { ns: "enum", n: cycle.term })}
+                <span className={styles.link_dim}>
+                  {t("term_full", { ns: "enum", n: cycle.term })}
+                </span>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                {t("session_full", { ns: "enum", n: cycle.session })}
+                <span className={styles.link_dim}>
+                  {t("session_full", { ns: "enum", n: cycle.session })}
+                </span>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                {t("meeting_full", { ns: "enum", n: cycle.meeting })}
-              </span>
+                <span className={styles.link_dim}>
+                  {t("meeting_full", { ns: "enum", n: cycle.meeting })}
+                </span>
+              </div>
               <div className="flex justify-between gap-3 lg:gap-6 items-center">
                 <DateCard size="lg" date={date} />
                 <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
                   <h2 className="text-zinc-900" data-testid="hero-header">
-                    {t("hero.header")}
+                    {t("hero.header", {
+                      context: cycle.house === 0 ? "dr" : "dn",
+                    })}
                   </h2>
                   <p
                     className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
@@ -211,7 +200,6 @@ const Hansard = ({
                     })}`}</span>
                     •
                     <span>{`${numFormat(SHARES, "compact")} ${t("shares", {
-                      ns: "common",
                       count: SHARES,
                     })}`}</span>
                     •
@@ -226,8 +214,8 @@ const Hansard = ({
                 </div>
               </div>
 
-              <div className="flex gap-x-4.5 gap-y-3 text-blue-600 font-medium whitespace-nowrap flex-wrap">
-                <span className="flex gap-1 items-center">
+              <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap">
+                <span className={styles.link_blue}>
                   <CiteIcon className="h-5 w-5" />
                   {t("cite")}
                 </span>
@@ -237,7 +225,7 @@ const Hansard = ({
                     filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
                   }/${filename}.pdf`}
                   onClick={() => track("pdf")}
-                  className="flex gap-1 items-center"
+                  className="flex gap-1 items-center link-primary"
                 >
                   <DownloadIcon className="h-5 w-5" />
                   {t("download", { context: "pdf" })}
@@ -248,12 +236,12 @@ const Hansard = ({
                     filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
                   }/${filename}.csv`}
                   onClick={() => track("csv")}
-                  className="flex gap-1 items-center"
+                  className="flex gap-1 items-center link-primary"
                 >
                   <DownloadIcon className="h-5 w-5" />
-                  {t("download", { context: "pdf" })}
+                  {t("download", { context: "csv" })}
                 </At>
-                <span className="flex gap-1 items-center">
+                <span className="flex gap-1 items-center link-primary">
                   <ShareIcon className="h-5 w-5" />
                   {t("share")}
                 </span>
@@ -261,7 +249,7 @@ const Hansard = ({
             </div>
           </div>
         </Hero>
-        <div className="dark:border-washed-dark sticky top-14 z-10 flex items-center justify-between gap-1 lg:gap-2 border-b bg-white py-1.5 dark:bg-black lg:px-8">
+        <div className="dark:border-washed-dark sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-2 border-b bg-white py-1.5 dark:bg-black lg:px-8">
           <div className="flex w-48 lg:w-[400px]">
             <div className="flex-1">
               <Search
@@ -288,7 +276,6 @@ const Hansard = ({
             </div>
           )}
         </div>
-        {/* <p className="whitespace-pre-line">{getNodeText(recurSpeech(speeches, search ?? ""))}</p> */}
         <div className="h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 py-8 lg:py-12 bg-white dark:bg-zinc-900 gap-y-6 flex flex-col">
           {recurSpeech(speeches, searchValue)}
         </div>
