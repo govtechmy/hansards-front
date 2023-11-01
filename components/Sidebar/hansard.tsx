@@ -135,7 +135,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
               ? "w-[250px] duration-300"
-              : "w-fit hide-scrollbar duration-500"
+              : "w-min hide-scrollbar duration-500"
           )}
         >
           <div
