@@ -17,7 +17,7 @@ const style = {
   default:
     "border border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:dark:border-zinc-700 active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white",
   primary:
-    "from-primary to-secondary shadow-button bg-gradient-to-t text-white hover:to-[#5B8EFF]",
+    "from-blue-600 to-primary-dark shadow-button bg-gradient-to-t text-white hover:to-[#5B8EFF]",
   ghost:
     "hover:bg-slate-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white",
 };
