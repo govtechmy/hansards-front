@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
-  const { t } = useTranslation(["hansard", "common"]);
+  const { t, i18n } = useTranslation(["hansard", "common"]);
   const [selected, setSelected] = useState<string>();
   const [showSidebar, setSidebar] = useState<boolean>(true);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
@@ -86,6 +86,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               ) : (
                 <Details
                   className="relative"
+                  key={id}
                   open={selected?.startsWith(id)}
                   summary={
                     <>
@@ -144,17 +145,11 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               showSidebar ? "lg:px-5" : "lg:px-2"
             )}
           >
-            {/* Vertical */}
             <h5
               className={cn(
-                "absolute translate-y-20 -translate-x-9 -rotate-90",
-                showSidebar && "lg:hidden"
+                !showSidebar && `absolute -rotate-90 origin-top-left ${i18n.language === "en-GB" ? "translate-y-28" : "translate-y-36"}`
               )}
             >
-              {t("toc")}
-            </h5>
-            {/* Horizontal */}
-            <h5 className={cn("max-lg:hidden", !showSidebar && "hidden")}>
               {t("toc")}
             </h5>
             <Button
@@ -176,7 +171,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               />
             </Button>
           </div>
-          <nav className="max-lg:hidden">
+          <nav className={showSidebar ? "max-lg:hidden" : "hidden"}>
             <Sidebar />
             <div
               className={
