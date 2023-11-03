@@ -1,21 +1,11 @@
-import {
-  ComboBox,
-  Container,
-  Hero,
-  Panel,
-  Section,
-  Tabs,
-  toast,
-} from "@components/index";
+import { Hero } from "@components/index";
 import { ChatBubbleLeftRightIcon, UsersIcon } from "@heroicons/react/24/solid";
 import { useData } from "@hooks/useData";
-import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
-import { get } from "@lib/api";
 import { cn } from "@lib/helpers";
 import { OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
-import { FunctionComponent, ReactNode } from "react";
+import { ReactNode } from "react";
 
 /**
  * Home Page
@@ -28,18 +18,18 @@ interface HomeProps {
   children: (tab: string) => ReactNode;
 }
 
-const HomeDashboard: FunctionComponent<HomeProps> = ({ children }) => {
-  const { t } = useTranslation(["common", "home"]);
+const HomeDashboard = ({ children }: HomeProps) => {
+  const { t } = useTranslation("home");
 
   const TAB_OPTIONS: Array<OptionType & { icon: ReactNode }> = [
     {
       icon: <ChatBubbleLeftRightIcon className="h-4.5 w-4.5" />,
-      label: t("who_said_x", { ns: "home" }),
+      label: t("who_said_x"),
       value: "who",
     },
     {
       icon: <UsersIcon className="h-4.5 w-4.5" />,
-      label: t("what_did_x_say", { ns: "home" }),
+      label: t("what_did_x_say"),
       value: "what",
     },
   ];
@@ -53,9 +43,9 @@ const HomeDashboard: FunctionComponent<HomeProps> = ({ children }) => {
       <Toast />
       <Hero
         background="gold"
-        category={[t("hero.category", { ns: "home" }), "text-secondary"]}
-        header={[t("hero.header", { ns: "home" })]}
-        description={[t("hero.description", { ns: "home" })]}
+        category={[t("hero.category"), "text-secondary"]}
+        header={[t("hero.header")]}
+        description={[t("hero.description")]}
       />
 
       <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center lg:static">
