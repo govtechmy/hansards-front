@@ -66,7 +66,7 @@ export default function CatalogueFolder({
           </div>
           <div className="flex flex-col text-center gap-y-1">
             <p className="text-zinc-900 dark:text-white font-medium">
-              {t("meeting_full", {
+              {t("mesyuarat_full", {
                 ns: "enum",
                 n: meeting,
               })}
@@ -80,7 +80,7 @@ export default function CatalogueFolder({
         <DialogHeading className="gap-x-3 flex items-center justify-between mr-6">
           <div className="gap-x-3 flex items-center max-[360px]:flex-wrap">
             <span className="font-medium text-zinc-900 dark:text-white">
-              {t("meeting_full", {
+              {t("mesyuarat_full", {
                 ns: "enum",
                 n: meeting,
               })}
