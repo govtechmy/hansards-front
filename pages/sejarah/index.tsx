@@ -1,15 +1,17 @@
 import Metadata from "@components/Metadata";
-import SejarahDashboard from "@dashboards/sejarah";
+import SearchArea from "@dashboards/sejarah/search-area";
+import SearchMP from "@dashboards/sejarah/search-mp";
+import SejarahLayout from "@dashboards/sejarah/layout";
 import { useTranslation } from "@hooks/useTranslation";
 import { get } from "@lib/api";
 import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const Sejarah: Page = ({
   meta,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation("sejarah");
 
   return (
@@ -19,23 +21,31 @@ const Sejarah: Page = ({
         description={t("hero.description")}
         keywords={""}
       />
-      <SejarahDashboard/>
+      <SejarahLayout>
+        {(tab) => (
+          <>
+            {
+              {
+                area: <SearchArea />,
+                mp: <SearchMP />,
+              }[tab]
+            }
+          </>
+        )}
+      </SejarahLayout>
     </AnalyticsProvider>
   );
 };
 
-export const getStaticProps: GetStaticProps = withi18n(
-  "sejarah",
-  async () => {
-    return {
-      props: {
-        meta: {
-          id: "sejarah",
-          type: "dashboard",
-        },
+export const getServerSideProps: GetServerSideProps = withi18n("sejarah", async () => {
+  return {
+    props: {
+      meta: {
+        id: "sejarah",
+        type: "dashboard",
       },
-    };
-  }
-);
+    },
+  };
+});
 
 export default Sejarah;
