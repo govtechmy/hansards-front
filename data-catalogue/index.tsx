@@ -78,7 +78,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                         ref={(ref) => (scrollRef.current[parlimen] = ref)}
                       >
                         <h4 className="flex flex-wrap sm:whitespace-nowrap">
-                          {t("term_full", {
+                          {t("parlimen_full", {
                             ns: "enum",
                             n: num,
                           }).concat(yearRange)}
@@ -109,7 +109,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                             >
                               <div className="flex gap-3 items-center">
                                 <h5 className="flex flex-wrap sm:whitespace-nowrap">
-                                  {t("session_full", {
+                                  {t("penggal_full", {
                                     ns: "enum",
                                     n: session,
                                   }).concat(yearRange)}
