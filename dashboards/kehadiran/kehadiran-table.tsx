@@ -72,7 +72,7 @@ const KehadiranTable = ({
       title={
         <h5>
           {t("kehadiran", {
-            context: tab_idx === 0 ? "individu" : "parti",
+            context: tab_idx === 0 ? "ind" : "parti",
           })}
         </h5>
       }
