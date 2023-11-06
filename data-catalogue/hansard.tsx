@@ -157,102 +157,100 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
     >
       <div className="flex flex-col w-full items-center">
         <Hero background="gold">
-          <div>
-            <div className="space-y-6 py-8 lg:py-12 xl:w-full">
-              <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
-                <span className={styles.link_dim}>
-                  {t("archive", {
+          <div className="space-y-6 py-8 lg:py-12 xl:w-full">
+            <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
+              <span className={styles.link_dim}>
+                {t("archive", {
+                  context: cycle.house === 0 ? "dr" : "dn",
+                })}
+              </span>
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+              <span className={styles.link_dim}>
+                {t("parlimen_full", { ns: "enum", n: cycle.term })}
+              </span>
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+              <span className={styles.link_dim}>
+                {t("penggal_full", { ns: "enum", n: cycle.session })}
+              </span>
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+              <span className={styles.link_dim}>
+                {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
+              </span>
+            </div>
+            <div className="flex justify-between gap-3 lg:gap-6 items-center">
+              <DateCard size="lg" date={date} />
+              <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
+                <h2 className="text-zinc-900" data-testid="hero-header">
+                  {t("header", {
                     context: cycle.house === 0 ? "dr" : "dn",
                   })}
-                </span>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <span className={styles.link_dim}>
-                  {t("term_full", { ns: "enum", n: cycle.term })}
-                </span>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <span className={styles.link_dim}>
-                  {t("session_full", { ns: "enum", n: cycle.session })}
-                </span>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <span className={styles.link_dim}>
-                  {t("meeting_full", { ns: "enum", n: cycle.meeting })}
-                </span>
-              </div>
-              <div className="flex justify-between gap-3 lg:gap-6 items-center">
-                <DateCard size="lg" date={date} />
-                <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
-                  <h2 className="text-zinc-900" data-testid="hero-header">
-                    {t("header", {
-                      context: cycle.house === 0 ? "dr" : "dn",
-                    })}
-                  </h2>
-                  {result && result.data && result.data.length > 0 && (
-                    <p
-                      className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
-                      data-testid="hero-views"
-                    >
-                      <span>{`${numFormat(views, "compact")} ${t("views", {
+                </h2>
+                {result && result.data && result.data.length > 0 && (
+                  <p
+                    className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
+                    data-testid="hero-views"
+                  >
+                    <span>{`${numFormat(views, "compact")} ${t("views", {
+                      ns: "common",
+                      count: views,
+                    })}`}</span>
+                    •
+                    <span>{`${numFormat(shares, "compact")} ${t("shares", {
+                      count: shares,
+                    })}`}</span>
+                    •
+                    <span>{`${numFormat(downloads, "compact")} ${t(
+                      "downloads",
+                      {
                         ns: "common",
-                        count: views,
-                      })}`}</span>
-                      •
-                      <span>{`${numFormat(shares, "compact")} ${t("shares", {
-                        count: shares,
-                      })}`}</span>
-                      •
-                      <span>{`${numFormat(downloads, "compact")} ${t(
-                        "downloads",
-                        {
-                          ns: "common",
-                          count: downloads,
-                        }
-                      )}`}</span>
-                    </p>
-                  )}
-                </div>
+                        count: downloads,
+                      }
+                    )}`}</span>
+                  </p>
+                )}
               </div>
+            </div>
 
-              <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap">
-                <span className={styles.link_blue}>
-                  <CiteIcon className="h-5 w-5" />
-                  {t("cite")}
-                </span>
-                <At
-                  external
-                  href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                    filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
-                  }/${filename}.pdf`}
-                  onClick={() =>
-                    realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "pdf")
-                  }
-                  className={styles.link_blue}
-                >
-                  <DownloadIcon className="h-5 w-5" />
-                  {t("download", { context: "pdf" })}
-                </At>
-                <At
-                  external
-                  href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                    filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
-                  }/${filename}.csv`}
-                  onClick={() =>
-                    realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "csv")
-                  }
-                  className={styles.link_blue}
-                >
-                  <DownloadIcon className="h-5 w-5" />
-                  {t("download", { context: "csv" })}
-                </At>
-                <ShareButton
-                  id={id}
-                  trigger={(onClick) => (
-                    <button className={styles.link_blue} onClick={onClick}>
-                      <ShareIcon className="h-5 w-5" />
-                      {t("share")}
-                    </button>
-                  )}
-                />
-              </div>
+            <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap">
+              <span className={styles.link_blue}>
+                <CiteIcon className="h-5 w-5" />
+                {t("cite")}
+              </span>
+              <At
+                external
+                href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                  filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
+                }/${filename}.pdf`}
+                onClick={() =>
+                  realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "pdf")
+                }
+                className={styles.link_blue}
+              >
+                <DownloadIcon className="h-5 w-5" />
+                {t("download", { context: "pdf" })}
+              </At>
+              <At
+                external
+                href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                  filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
+                }/${filename}.csv`}
+                onClick={() =>
+                  realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "csv")
+                }
+                className={styles.link_blue}
+              >
+                <DownloadIcon className="h-5 w-5" />
+                {t("download", { context: "csv" })}
+              </At>
+              <ShareButton
+                id={id}
+                trigger={(onClick) => (
+                  <div className={styles.link_blue} onClick={onClick}>
+                    <ShareIcon className="h-5 w-5" />
+                    {t("share")}
+                  </div>
+                )}
+              />
             </div>
           </div>
         </Hero>
