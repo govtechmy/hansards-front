@@ -27,7 +27,7 @@ const ComboBox = dynamic(() => import("@components/Combobox"), {
 
 type Seat = {
   seat: string;
-  election_name: string;
+  election: string;
   date: string;
   party: string;
   name: string;
@@ -54,17 +54,17 @@ const SearchArea = ({}: SearchAreaProps) => {
 
   const seat_schema = generateSchema<Seat>([
     {
-      key: "election_name",
-      id: "election_name",
-      header: t("election_name"),
+      key: "election",
+      id: "election",
+      header: t("election"),
     },
-    { key: "seat", id: "seat", header: t("constituency") },
+    { key: "seat", id: "seat", header: t("seat") },
     {
       key: "party",
       id: "party",
-      header: t("winning_party"),
+      header: t("party"),
     },
-    { key: "name", id: "name", header: t("candidate_name") },
+    { key: "name", id: "name", header: t("name") },
   ]);
 
   return (
