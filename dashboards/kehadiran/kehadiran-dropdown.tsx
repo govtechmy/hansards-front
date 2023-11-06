@@ -213,7 +213,7 @@ const KehadiranDropdown = ({
                       onLoad();
                       setFilter(
                         "parlimen",
-                        data.parlimen === "all" ? null : data.parlimen
+                        data.parlimen === "all" ? "all" : data.parlimen
                       );
                       setFilter(
                         "penggal",
@@ -253,7 +253,7 @@ const KehadiranDropdown = ({
               setData("parlimen", "all");
               setData("penggal", "all");
               setData("mesyuarat", "all");
-              setFilter("parlimen", null);
+              setFilter("parlimen", "all");
               setFilter("penggal", null);
               setFilter("mesyuarat", null);
             } else {
