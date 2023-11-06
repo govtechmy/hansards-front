@@ -37,15 +37,18 @@ const Sejarah: Page = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = withi18n("sejarah", async () => {
-  return {
-    props: {
-      meta: {
-        id: "sejarah",
-        type: "dashboard",
+export const getServerSideProps: GetServerSideProps = withi18n(
+  ["party", "sejarah"],
+  async () => {
+    return {
+      props: {
+        meta: {
+          id: "sejarah",
+          type: "dashboard",
+        },
       },
-    },
-  };
-});
+    };
+  }
+);
 
 export default Sejarah;
