@@ -39,20 +39,20 @@ const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
                   onClick={close}
                 />
                 <Nav.Item
-                  title={t("nav.kehadiran")}
-                  link="/kehadiran"
                   key="/kehadiran"
+                  title={t("nav.kehadiran")}
+                  link="/kehadiran/dewan-rakyat"
                   onClick={close}
                 />
                 <Nav.Item
+                  key="/sejarah"
                   title={t("nav.sejarah")}
                   link="/sejarah"
-                  key="/sejarah"
                   onClick={close}
                 />
                 <Nav.Item
-                  title={t("nav.katalog")}
                   key="/katalog"
+                  title={t("nav.katalog")}
                   link="/katalog/dewan-rakyat"
                   onClick={close}
                 />
