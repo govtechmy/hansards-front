@@ -253,7 +253,7 @@ export const DialogClose = forwardRef<
       {...props}
       ref={ref}
       variant="ghost"
-      className="hover:bg-slate-100 dark:hover:bg-zinc-800 group absolute right-3 top-4.5 lg:top-3 rounded-full p-2"
+      className="hover:bg-slate-100 dark:hover:bg-zinc-800 group rounded-full p-2 -m-2"
       onClick={() => setOpen(false)}
     >
       <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
