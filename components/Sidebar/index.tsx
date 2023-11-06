@@ -150,6 +150,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
           >
             <h5
               className={cn(
+                "max-lg:absolute max-lg:-rotate-90 origin-top-left max-lg:translate-y-[150px]",
                 !showSidebar &&
                   "absolute -rotate-90 origin-top-left translate-y-[150px]"
               )}
