@@ -8,17 +8,17 @@ import dynamic from "next/dynamic";
 import { ReactNode } from "react";
 
 /**
- * Home Page
+ * Home Layout
  * @overview Status: Live
  */
 
 const Toast = dynamic(() => import("@components/Toast"), { ssr: false });
 
-interface HomeProps {
+interface HomeLayoutProps {
   children: (tab: string) => ReactNode;
 }
 
-const HomeDashboard = ({ children }: HomeProps) => {
+const HomeLayout = ({ children }: HomeLayoutProps) => {
   const { t } = useTranslation("home");
 
   const TAB_OPTIONS: Array<OptionType & { icon: ReactNode }> = [
@@ -100,4 +100,4 @@ const HomeDashboard = ({ children }: HomeProps) => {
   );
 };
 
-export default HomeDashboard;
+export default HomeLayout;
