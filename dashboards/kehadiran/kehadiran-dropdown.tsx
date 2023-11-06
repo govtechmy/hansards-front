@@ -23,10 +23,15 @@ import { useMemo, useState } from "react";
 
 export interface KehadiranDropdownProps {
   dropdown: Archive;
+  onLoad: () => void;
   params: Record<"parlimen" | "penggal" | "mesyuarat", string>;
 }
 
-const KehadiranDropdown = ({ dropdown, params }: KehadiranDropdownProps) => {
+const KehadiranDropdown = ({
+  dropdown,
+  onLoad,
+  params,
+}: KehadiranDropdownProps) => {
   const { t, i18n } = useTranslation(["kehadiran", "enum"]);
   const [open, setOpen] = useState<boolean>(false);
   const { data, setData } = useData({
@@ -205,7 +210,7 @@ const KehadiranDropdown = ({ dropdown, params }: KehadiranDropdownProps) => {
                     variant={"primary"}
                     className="w-full justify-center"
                     onClick={() => {
-                      setData("loading", true);
+                      onLoad();
                       setFilter(
                         "parlimen",
                         data.parlimen === "all" ? null : data.parlimen
@@ -283,7 +288,7 @@ const KehadiranDropdown = ({ dropdown, params }: KehadiranDropdownProps) => {
           options={MESYUARAT_OPTIONS}
           selected={MESYUARAT_OPTIONS.find((e) => e.value === data.mesyuarat)}
           onChange={(selected) => {
-            setData("loading", true);
+            onLoad();
             setFilter("parlimen", data.parlimen);
             setFilter("penggal", data.penggal);
             if (selected.value === "all") {

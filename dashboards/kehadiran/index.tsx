@@ -20,7 +20,7 @@ const KehadiranDashboard = ({
   party,
   params,
 }: Omit<KehadiranBarMeterProps, "loading"> &
-  KehadiranDropdownProps &
+  Omit<KehadiranDropdownProps, "onLoad"> &
   Omit<KehadiranTableProps, "loading">) => {
   const { t } = useTranslation(["kehadiran", "enum"]);
   const { events } = useRouter();
@@ -47,7 +47,11 @@ const KehadiranDashboard = ({
             <section>
               <h4 className="text-center">{t("header")}</h4>
 
-              <KehadiranDropdown dropdown={dropdown} params={params} />
+              <KehadiranDropdown
+                dropdown={dropdown}
+                onLoad={() => setData("loading", true)}
+                params={params}
+              />
 
               {/* Individual/Party Attendance */}
               <KehadiranTable
