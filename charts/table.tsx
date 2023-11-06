@@ -173,10 +173,9 @@ const Table: FunctionComponent<TableProps> = ({
 
   const DOTS = "...";
   const curr = table.getState().pagination.pageIndex;
+  const totalPages = table.getPageCount();
   const siblings = 1; // square(s) beside curr
   const pageRange = useMemo(() => {
-    const totalPages = table.getPageCount();
-
     // If num of pages < the squares we want to show, return the range [1..totalPages]
     if (totalPages <= 5 + siblings) {
       return range(1, totalPages);
@@ -207,7 +206,7 @@ const Table: FunctionComponent<TableProps> = ({
       let middleRange = range(leftSiblingIdx, rightSiblingIdx);
       return [firstPageIdx, DOTS, ...middleRange, DOTS, lastPageIdx];
     }
-  }, [curr]);
+  }, [curr, totalPages]);
 
   return (
     <div>
@@ -398,7 +397,7 @@ const Table: FunctionComponent<TableProps> = ({
             ) : (
               <tr>
                 <td colSpan={table.getAllColumns().length}>
-                  <div>{t("no_entries")}. </div>
+                  <div className="h-20 flex justify-center items-center">{t("no_entries")}. </div>
                 </td>
               </tr>
             )}
@@ -416,10 +415,10 @@ const Table: FunctionComponent<TableProps> = ({
             <p className="max-sm:hidden">{t("previous")}</p>
           </Button>
           <div className="max-[480px]:hidden flex gap-1.5 items-center text-inherit">
-            {pageRange?.map((page) => {
-              console.log(curr, page)
+            {pageRange?.map((page, i) => {
               return typeof page === "number" ? (
                 <button
+                  key={page + i}
                   className={cn(
                     styles.page,
                     curr === page - 1 ? styles.active : styles.inactive
@@ -429,7 +428,7 @@ const Table: FunctionComponent<TableProps> = ({
                   {page}
                 </button>
               ) : (
-                <div className={cn(styles.page)}>{page}</div>
+                <div key={page + i} className={cn(styles.page)}>{page}</div>
               );
             })}
           </div>
