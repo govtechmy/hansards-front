@@ -24,6 +24,7 @@ export { default as Metadata } from "./Metadata";
 export { default as Markdown } from "./Markdown";
 export { default as Modal } from "./Modal";
 export { default as Nav } from "./Nav";
+export { default as PartyFlag } from "./PartyFlag";
 export { default as Progress } from "./Progress";
 export { default as Radio } from "./Radio";
 export { default as Search } from "./Search";
