@@ -77,7 +77,7 @@ export default function CatalogueFolder({
         </div>
       </DialogTrigger>
       <DialogContent className="w-full border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 p-6 flex flex-col gap-y-5">
-        <DialogHeading className="gap-x-3 flex items-center justify-between mr-6">
+        <DialogHeading className="gap-x-3 flex items-center justify-between">
           <div className="gap-x-3 flex items-center max-[360px]:flex-wrap">
             <span className="font-medium text-zinc-900 dark:text-white">
               {t("mesyuarat_full", {
