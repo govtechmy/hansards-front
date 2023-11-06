@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import BarPerc from "@charts/bar-perc";
-import { ImageWithFallback, Spinner, Tooltip } from "@components/index";
+import { PartyFlag, Spinner, Tooltip } from "@components/index";
 import { cn, numFormat, toDate } from "@lib/helpers";
 import { useTranslation } from "@hooks/useTranslation";
 import { FunctionComponent, ReactNode } from "react";
@@ -24,7 +24,7 @@ export interface AreaTableProps {
 type AreaTableIds =
   | "index"
   | "party"
-  | "election_name"
+  | "election"
   | "name"
   | "votes"
   | "majority"
@@ -52,7 +52,7 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
 
   /**
    * Special cells
-   * keys: party | election_name | seats | result | votes | majority
+   * keys: party | election | seats | result | votes | majority
    */
   const lookupDesktop = (id: AreaTableIds, cell: any) => {
     const value = cell.getValue();
@@ -74,7 +74,7 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
         ) : (
           value
         );
-      case "election_name":
+      case "election":
         return (
           <div className="w-fit">
             <Tooltip
@@ -99,33 +99,7 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
           </div>
         );
       case "party":
-        return (
-          <div className="flex items-center gap-1.5">
-            <div className="relative flex h-auto w-8 justify-center">
-              <ImageWithFallback
-                className="border-slate-200 dark:border-zinc-800 rounded border"
-                src={`/static/images/parties/${value}.png`}
-                width={32}
-                height={18}
-                alt={value}
-                style={{
-                  width: "auto",
-                  maxWidth: "32px",
-                  height: "auto",
-                  maxHeight: "32px",
-                }}
-              />
-            </div>
-            <span>
-              {!table
-                .getAllColumns()
-                .map((col) => col.id)
-                .includes("full_result")
-                ? t(`party:${value}`)
-                : value}
-            </span>
-          </div>
-        );
+        return <PartyFlag value={value} />;
       case "seats":
         return (
           <div className="flex items-center gap-2 md:flex-col md:items-start lg:flex-row lg:items-center">
@@ -181,22 +155,7 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
         );
       case "party":
         return (
-          <div className="flex items-center gap-1.5">
-            <div className="relative flex h-auto w-8 justify-center">
-              <ImageWithFallback
-                className="border-slate-200 dark:border-zinc-800 rounded border"
-                src={`/static/images/parties/${value}.png`}
-                width={32}
-                height={18}
-                alt={value}
-                style={{
-                  width: "auto",
-                  maxWidth: "32px",
-                  height: "auto",
-                  maxHeight: "32px",
-                }}
-              />
-            </div>
+          <PartyFlag value={value}>
             {cell.row.original.name ? (
               <span>
                 <span className="pr-1 font-medium">
@@ -210,11 +169,11 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
                 </span> */}
               </span>
             ) : (
-              <span className="font-medium">{t(`party:${value}`)}</span>
+              <span className="font-medium">{t(value, { ns: "party" })}</span>
             )}
-          </div>
+          </PartyFlag>
         );
-      case "election_name":
+      case "election":
         return (
           <div className="flex flex-wrap gap-x-3 text-sm">
             <p className="font-medium">
@@ -393,13 +352,11 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
               key={index}
             >
               {/* Row 1 - Election Name / Date / Full result */}
-              {["election_name", "full_result"].some((id) =>
-                ids.includes(id)
-              ) && (
+              {["election", "full_result"].some((id) => ids.includes(id)) && (
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex gap-x-2">
                     {_row.index}
-                    {_row.election_name}
+                    {_row.election}
                   </div>
                   {_row.full_result}
                 </div>
@@ -463,49 +420,49 @@ const dummyData = [
   {
     name: "Rushdan Bin Rusmi",
     date: "2022-11-19",
-    election_name: "GE-15",
+    election: "GE-15",
     seat: "P.001 Padang Besar, Perlis",
     party: "PN",
   },
   {
     name: "Zahidi Bin Zainul Abidin",
     date: "2022-11-19",
-    election_name: "GE-14",
+    election: "GE-14",
     seat: "P.001 Padang Besar, Perlis",
     party: "BN",
   },
   {
     name: "Zahidi Bin Zainul Abidin",
     date: "2022-11-19",
-    election_name: "GE-13",
+    election: "GE-13",
     seat: "P.001 Padang Besar, Perlis",
     party: "BEBAS",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election_name: "GE-12",
+    election: "GE-12",
     seat: "P.001 Padang Besar, Perlis",
     party: "BN",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election_name: "GE-11",
+    election: "GE-11",
     seat: "P.001 Padang Besar, Perlis",
     party: "PH",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election_name: "GE-10",
+    election: "GE-10",
     seat: "P.001 Padang Besar, Perlis",
     party: "PH",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election_name: "GE-09",
+    election: "GE-09",
     seat: "P.001 Padang Besar, Perlis",
     party: "PH",
   },
