@@ -85,6 +85,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
 
                       return (
                         <li
+                          key={id}
                           title={t("penggal_full", {
                             ns: "enum",
                             n: session,
