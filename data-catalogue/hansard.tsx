@@ -14,16 +14,17 @@ import {
   ShareIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
+import { useAnalytics } from "@hooks/useAnalytics";
 import { useTranslation } from "@hooks/useTranslation";
+import { CiteIcon, DownloadIcon } from "@icons/index";
 import { cn, numFormat } from "@lib/helpers";
 import { NestedSpeech, Speech, Speeches } from "@lib/types";
 import debounce from "lodash/debounce";
 import { DateTime } from "luxon";
 import { ReactNode, useContext, useRef, useState } from "react";
+
 import SpeechBubble from "./bubble";
 import { SearchContext, SearchEventContext } from "./context";
-import { CiteIcon, DownloadIcon } from "@icons/index";
-import { AnalyticsContext } from "@lib/contexts/analytics";
 import ShareButton from "./share";
 
 /**
@@ -49,14 +50,13 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const [narrowMode, setNarrowMode] = useState<boolean>(false);
 
-  const { result, realtime_track } = useContext(AnalyticsContext);
-
+  const { counts, download } = useAnalytics(id);
   const [downloads, shares, views]: number[] =
-    result && result.data && result.data.length > 0
+    counts && counts.length > 0
       ? [
-          result.data.find((e) => e.type === "downloads")?.counts ?? 0,
-          result.data.find((e) => e.type === "shares")?.counts ?? 0,
-          result.data.find((e) => e.type === "views")?.counts ?? 0,
+          counts.find((e) => e.type === "downloads")?.counts ?? 0,
+          counts.find((e) => e.type === "shares")?.counts ?? 0,
+          counts.find((e) => e.type === "views")?.counts ?? 0,
         ]
       : [0, 0, 0];
 
@@ -106,6 +106,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                 index={index}
                 keyword={keyword}
                 id={id}
+                date={date}
               >
                 {speech}
               </SpeechBubble>
@@ -185,7 +186,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                     context: cycle.house === 0 ? "dr" : "dn",
                   })}
                 </h2>
-                {result && result.data && result.data.length > 0 && (
+                {counts && counts.length > 0 && (
                   <p
                     className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
                     data-testid="hero-views"
@@ -211,7 +212,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
               </div>
             </div>
 
-            <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap">
+            <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
               <span className={styles.link_blue}>
                 <CiteIcon className="h-5 w-5" />
                 {t("cite")}
@@ -221,9 +222,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                 href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
                   filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
                 }/${filename}.pdf`}
-                onClick={() =>
-                  realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "pdf")
-                }
+                onClick={() => download("pdf")}
                 className={styles.link_blue}
               >
                 <DownloadIcon className="h-5 w-5" />
@@ -234,16 +233,15 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                 href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
                   filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
                 }/${filename}.csv`}
-                onClick={() =>
-                  realtime_track(process.env.NEXT_PUBLIC_POST_DL, id, "csv")
-                }
+                onClick={() => download("csv")}
                 className={styles.link_blue}
               >
                 <DownloadIcon className="h-5 w-5" />
                 {t("download", { context: "csv" })}
               </At>
               <ShareButton
-                id={id}
+                date={date}
+                hansard_id={id}
                 trigger={(onClick) => (
                   <div className={styles.link_blue} onClick={onClick}>
                     <ShareIcon className="h-5 w-5" />

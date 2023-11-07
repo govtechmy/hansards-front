@@ -8,12 +8,13 @@ import {
   DialogHeading,
   DialogTrigger,
 } from "@components/Dialog";
+import DateCard from "@components/Card/date-card";
 import { DocumentDuplicateIcon, EnvelopeIcon } from "@heroicons/react/24/solid";
+import { useAnalytics } from "@hooks/useAnalytics";
 import { useTranslation } from "@hooks/useTranslation";
 import { FBShare, XShare } from "@icons/index";
-import { AnalyticsContext } from "@lib/contexts/analytics";
 import { copyClipboard } from "@lib/helpers";
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode, useState } from "react";
 
 /**
  * Share Button
@@ -21,27 +22,37 @@ import { ReactNode, useContext, useState } from "react";
  */
 
 interface ShareButtonProps {
-  id: string;
+  date: string;
+  hansard_id: string;
+  index?: number;
   trigger?: (onClick: () => void) => ReactNode;
 }
 
-export default function ShareButton({ id, trigger }: ShareButtonProps) {
-  const { t } = useTranslation(["hansard", "catalogue"]);
+export default function ShareButton({
+  date,
+  hansard_id,
+  index,
+  trigger,
+}: ShareButtonProps) {
+  const { t, i18n } = useTranslation(["hansard", "catalogue"]);
   const [open, setOpen] = useState<boolean>(false);
   const [copyText, setCopyText] = useState<string>("copy");
-
+  const { share } = useAnalytics(hansard_id);
   const title = `Hansard Parlimen`;
-  const URL = `https://hansard.parlimen.gov.my/hansard/${id}`;
+  const URL = `https://hansard.parlimen.gov.my/hansard/${hansard_id}${
+    index ? `#${index}` : ""
+  }`;
 
   const onClick = () => {
     if (navigator.share) {
+      share();
       navigator
         .share({
-          title: "Hansard Parlimen",
-          text: "Hansard Parlimen",
-          url: `https://hansard.parlimen.gov.my/hansard/${id}`,
+          title: title,
+          text: title,
+          url: URL,
         })
-        .catch((error) => console.log("Error sharing", error));
+        .catch((error) => console.error("Error sharing", error));
     } else setOpen(!open);
   };
 
@@ -57,15 +68,26 @@ export default function ShareButton({ id, trigger }: ShareButtonProps) {
           </div>
         )}
       </DialogTrigger>
-      <DialogContent className="w-fit border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 p-6 flex flex-col gap-y-5">
-        <DialogHeading>
-          <span className="font-medium text-zinc-900 dark:text-white">
-            {t("share")}
+      <DialogContent className="lg:w-fit border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 p-6 flex flex-col gap-y-5">
+        <DialogHeading className="flex justify-between">
+          <span className="text-center font-medium text-zinc-900 dark:text-white w-full">
+            {t("share_hansard")}
           </span>
           <DialogClose></DialogClose>
         </DialogHeading>
-        <DialogDescription>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[80vh]">
+        <DialogDescription className="flex flex-col gap-6 max-h-[80vh]">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-button p-3 flex gap-4.5 w-fit mx-auto items-center">
+            <DateCard date={date} size="sm" />
+            <p>
+              {new Date(date).toLocaleDateString(i18n.language, {
+                weekday: "long",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               {
                 name: "Twitter",
@@ -88,19 +110,19 @@ export default function ShareButton({ id, trigger }: ShareButtonProps) {
                 link: "copy",
               },
             ].map(({ name, icon, link }) => {
-              const { result, realtime_track } = useContext(AnalyticsContext);
-
               return (
-                // <div className="flex flex-col gap-3 justify-center items-center h-24 p-3 shadow-button border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900">
                 <Button
                   key={name}
                   variant="default"
                   onClick={() => {
-                    copyClipboard(URL);
-                    setCopyText("copied");
-                    setTimeout(() => {
-                      setCopyText("copy");
-                    }, 1000);
+                    share();
+                    if (link === "copy") {
+                      copyClipboard(URL);
+                      setCopyText("copied");
+                      setTimeout(() => {
+                        setCopyText("copy");
+                      }, 1000);
+                    }
                   }}
                 >
                   {icon}

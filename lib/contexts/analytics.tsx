@@ -36,14 +36,10 @@ export type Meta = Omit<MetaPage["meta"], "type"> & {
 type Count = {
   type: "downloads" | "shares" | "views";
   counts: number;
-}
-
-type AnalyticsResult = {
-  data: Array<Count | never>;
 };
 
 type AnalyticsContextProps<T extends "dashboard" | "data-catalogue"> = {
-  result: AnalyticsResult; // Partial<AnalyticsResult<T>>;
+  counts: Array<Count | never>; // Partial<AnalyticsResult<T>>;
   realtime_track: (name: string, id: string, fileType?: "pdf" | "csv") => void;
 };
 
@@ -55,7 +51,7 @@ interface ContextChildren {
 export const AnalyticsContext = createContext<
   AnalyticsContextProps<"dashboard" | "data-catalogue">
 >({
-  result: {data: []},
+  counts: [],
   realtime_track() {},
 });
 
@@ -93,9 +89,8 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
           },
           "tinybird"
         )
-          .then((response) => {
-            console.log(response.data);
-            setData(response.data);
+          .then(({ data }) => {
+            if (data.data) setData(data.data);
           })
           .catch((e) => console.error(e))
       )
@@ -103,7 +98,7 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
   };
 
   return (
-    <AnalyticsContext.Provider value={{ result: data, realtime_track: track }}>
+    <AnalyticsContext.Provider value={{ counts: data, realtime_track: track }}>
       {children}
     </AnalyticsContext.Provider>
   );

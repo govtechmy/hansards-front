@@ -20,6 +20,7 @@ export type SpeechBubbleProps = Omit<Speech, "timestamp" | "speech"> & {
   children: string;
   keyword?: string;
   id: string;
+  date: string;
 };
 
 const SpeechBubble = ({
@@ -32,6 +33,7 @@ const SpeechBubble = ({
   timeString,
   keyword,
   id,
+  date,
 }: SpeechBubbleProps) => {
   const { t } = useTranslation("hansard");
   const [name, title] = author ? author.split("[") : [];
@@ -135,7 +137,7 @@ const SpeechBubble = ({
               {_children}
             </Markdown>
 
-            <ShareButton id={`${id}#${index}`}/>
+            <ShareButton date={date} hansard_id={id} index={index}/>
             <p className={"ts"}>{timeString}</p>
           </div>
         </div>

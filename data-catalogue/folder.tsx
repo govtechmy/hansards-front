@@ -99,7 +99,13 @@ export default function CatalogueFolder({
             )}
           >
             {sitting_list.map((sitting, i) => {
-              const { track } = useAnalytics(sitting.filename);
+              const { download } = useAnalytics(
+                `${
+                  sitting.filename.startsWith("dr")
+                    ? "dewan-rakyat"
+                    : "dewan-negara"
+                }/${sitting.date}`
+              );
 
               // const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
               // const modulo = sitting_list.length % cols;
@@ -107,7 +113,10 @@ export default function CatalogueFolder({
               //   size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
 
               return (
-                <div className="flex items-center gap-x-4.5 p-3 shadow-button border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900">
+                <div
+                  key={i}
+                  className="flex items-center gap-x-4.5 p-3 shadow-button border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900"
+                >
                   <DateCard date={sitting.date} size="sm" />
                   <div className="flex flex-col gap-y-1.5">
                     <Link
@@ -150,12 +159,15 @@ export default function CatalogueFolder({
                           //     : ""
                           // }
                           onChange={({ value: filetype }) => {
-                            window.open(`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                              sitting.filename.startsWith("dr")
-                                ? "dewanrakyat"
-                                : "dewannegara"
-                            }/${sitting.filename}.${filetype}`,"_blank")
-                            track(filetype);
+                            window.open(
+                              `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                                sitting.filename.startsWith("dr")
+                                  ? "dewanrakyat"
+                                  : "dewannegara"
+                              }/${sitting.filename}.${filetype}`,
+                              "_blank"
+                            );
+                            download(filetype);
                           }}
                         />
                         •
