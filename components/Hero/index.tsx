@@ -42,7 +42,12 @@ const Hero: FunctionComponent<HeroProps> = ({
   last_updated,
 }) => {
   const { t, i18n } = useTranslation();
-  const { result } = useContext(AnalyticsContext);
+
+  const { counts } = useContext(AnalyticsContext);
+  const hasCounts = counts && counts.length > 0;
+  const views: number = hasCounts
+    ? counts.find((e) => e.type === "views")?.counts ?? 0
+    : 0;
 
   const background_style = useMemo<string>(() => {
     switch (background) {
@@ -77,7 +82,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                 </div>
               )}
 
-              {(header || description || result.data.length > 0) && (
+              {(header || description || hasCounts) && (
                 <div className="space-y-3">
                   {header && (
                     <h2
@@ -101,20 +106,17 @@ const Hero: FunctionComponent<HeroProps> = ({
                   ) : (
                     description
                   )}
-                  {/* {result?.view_count && (
+                  {hasCounts && (
                     <p
                       className="text-zinc-500 flex gap-2 text-sm"
                       data-testid="hero-views"
                     >
                       <EyeIcon className="w-4.5 h-4.5 self-center" />
-                      {`${numFormat(result.view_count, "standard")} ${t(
-                        "views",
-                        {
-                          count: result.view_count,
-                        }
-                      )}`}
+                      {`${numFormat(views, "standard")} ${t("views", {
+                        count: views,
+                      })}`}
                     </p>
-                  )} */}
+                  )}
                 </div>
               )}
 
@@ -142,7 +144,7 @@ const Hero: FunctionComponent<HeroProps> = ({
         )}
 
         {/* Parlimen Icon */}
-        <div className="absolute -right-14 -bottom-8 sm:right-0 sm:bottom-0 opacity-20">
+        <div className="absolute -right-14 -bottom-8 sm:right-0 sm:bottom-0 opacity-20 pointer-events-none">
           <svg
             width="300"
             height="214"
