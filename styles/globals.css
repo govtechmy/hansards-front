@@ -217,3 +217,8 @@ path:focus {
   --tw-shadow-color: rgba(115, 115, 115, 0.4);
   --tw-shadow: var(--tw-shadow-colored);
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 10px;
+}
