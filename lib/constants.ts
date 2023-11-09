@@ -99,8 +99,8 @@ export const CountryAndStates: Record<string, string> = (() => {
  * @example COLOR.PRIMARY -> "#110C42"
  */
 export const COLOR = {
-  PRIMARY: "#110C42",
-  PRIMARY_H: "#110C421A",
+  PRIMARY: "#2563EB",
+  PRIMARY_H: "#2563EB1A",
   SECONDARY: "#B49B1A",
   SECONDARY_H: "#B49B1A1A",
   BLACK: "#18181B",
