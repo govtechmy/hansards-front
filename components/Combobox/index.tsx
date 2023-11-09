@@ -75,7 +75,7 @@ const ComboBox = <T extends unknown>({
       }
     },
   });
-console.log(selectedItem)
+
   return (
     <div className="relative">
       <div>
