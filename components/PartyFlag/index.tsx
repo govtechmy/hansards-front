@@ -3,11 +3,11 @@ import { ImageWithFallback } from "..";
 import { ReactNode } from "react";
 
 interface PartyFlagProps {
-  value: string;
+  party: string;
   children?: ReactNode;
 }
 
-const PartyFlag = ({ value, children }: PartyFlagProps) => {
+const PartyFlag = ({ party, children }: PartyFlagProps) => {
   const { t } = useTranslation("party");
 
   return (
@@ -15,10 +15,10 @@ const PartyFlag = ({ value, children }: PartyFlagProps) => {
       <div className="relative flex h-5 w-8 justify-center">
         <ImageWithFallback
           className="border-slate-200 dark:border-zinc-800 rounded border"
-          src={`/static/images/parties/${value}.png`}
+          src={`/static/images/parties/${party}.png`}
           width={32}
           height={18}
-          alt={value}
+          alt={party}
           style={{
             width: "auto",
             maxWidth: "32px",
@@ -27,7 +27,7 @@ const PartyFlag = ({ value, children }: PartyFlagProps) => {
           }}
         />
       </div>
-      {children ? children : <span className="truncate">{t(value)}</span>}
+      {children ? children : <span className="truncate">{t(party)}</span>}
     </div>
   );
 };
