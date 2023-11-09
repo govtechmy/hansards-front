@@ -32,7 +32,7 @@ interface IState {
 
 interface EventContextProps {
   onSearchChange: (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement>
   ) => void;
   onNext: (data: any) => void;
   onPrev: (data: any) => void;
