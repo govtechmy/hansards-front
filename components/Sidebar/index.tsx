@@ -135,7 +135,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         {/* Desktop */}
         <ul
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 w-12 max-lg:hide-scrollbar",
+            "dark:border-r-slate-800 border-r shrink-0 w-11 max-lg:hide-scrollbar",
             "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
@@ -145,7 +145,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         >
           <div
             className={cn(
-              "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 max-lg:px-2 py-3 items-baseline justify-between whitespace-nowrap",
+              "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 px-0 py-3 items-baseline justify-between whitespace-nowrap",
               showSidebar ? "lg:px-5" : "lg:px-2"
             )}
           >
