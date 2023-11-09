@@ -77,21 +77,25 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
         const mn = String(timestamp).slice(2, 4);
         const _timestamp = DateTime.fromISO(`${hr}:${mn}`);
         const prev = curr; // temp store
-        if (_timestamp > curr) {
+        if (
+          !_timestamp.hasSame(curr, "hour") &&
+          !_timestamp.hasSame(curr, "minute")
+        ) {
           curr = _timestamp;
         }
 
         const timeString = _timestamp.toLocaleString(DateTime.TIME_SIMPLE, {
           locale: "en-US",
         });
-        // FIXME: overnight timestamps
+
         return (
           <>
-            {!_timestamp.hasSame(prev, "minute") && (
-              <p className="text-zinc-500 text-center italic">{timeString}</p>
-            )}
+            {!_timestamp.hasSame(prev, "hour") &&
+              !_timestamp.hasSame(prev, "minute") && (
+                <p key={index} className="text-zinc-500 text-center italic">{timeString}</p>
+              )}
             {author === "ANNOTATION" ? (
-              <p className="text-zinc-900 dark:text-white text-center italic">
+              <p key={index} className="text-zinc-900 dark:text-white text-center italic">
                 {speech}
               </p>
             ) : (
@@ -156,151 +160,154 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
         });
       }}
     >
-      <div className="flex flex-col w-full items-center">
-        <Hero background="gold">
-          <div className="space-y-6 py-8 lg:py-12 xl:w-full">
-            <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
-              <span className={styles.link_dim}>
-                {t("archive", {
-                  context: cycle.house === 0 ? "dr" : "dn",
-                })}
-              </span>
-              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-              <span className={styles.link_dim}>
-                {t("parlimen_full", { ns: "enum", n: cycle.term })}
-              </span>
-              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-              <span className={styles.link_dim}>
-                {t("penggal_full", { ns: "enum", n: cycle.session })}
-              </span>
-              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-              <span className={styles.link_dim}>
-                {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
-              </span>
-            </div>
-            <div className="flex justify-between gap-3 lg:gap-6 items-center">
-              <DateCard size="lg" date={date} />
-              <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
-                <h2 className="text-zinc-900" data-testid="hero-header">
-                  {t("header", {
+      {(sidebarButton) => (
+        <div className="flex flex-col w-full items-center">
+          <Hero background="gold">
+            <div className="space-y-6 py-8 lg:py-12 xl:w-full">
+              <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
+                <span className={styles.link_dim}>
+                  {t("archive", {
                     context: cycle.house === 0 ? "dr" : "dn",
                   })}
-                </h2>
-                {counts && counts.length > 0 && (
-                  <p
-                    className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
-                    data-testid="hero-views"
-                  >
-                    <span>{`${numFormat(views, "compact")} ${t("views", {
-                      ns: "common",
-                      count: views,
-                    })}`}</span>
-                    •
-                    <span>{`${numFormat(shares, "compact")} ${t("shares", {
-                      count: shares,
-                    })}`}</span>
-                    •
-                    <span>{`${numFormat(downloads, "compact")} ${t(
-                      "downloads",
-                      {
+                </span>
+                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+                <span className={styles.link_dim}>
+                  {t("parlimen_full", { ns: "enum", n: cycle.term })}
+                </span>
+                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+                <span className={styles.link_dim}>
+                  {t("penggal_full", { ns: "enum", n: cycle.session })}
+                </span>
+                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+                <span className={styles.link_dim}>
+                  {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3 lg:gap-6 items-center">
+                <DateCard size="lg" date={date} />
+                <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
+                  <h2 className="text-zinc-900" data-testid="hero-header">
+                    {t("header", {
+                      context: cycle.house === 0 ? "dr" : "dn",
+                    })}
+                  </h2>
+                  {counts && counts.length > 0 && (
+                    <p
+                      className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
+                      data-testid="hero-views"
+                    >
+                      <span>{`${numFormat(views, "compact")} ${t("views", {
                         ns: "common",
-                        count: downloads,
-                      }
-                    )}`}</span>
-                  </p>
-                )}
+                        count: views,
+                      })}`}</span>
+                      •
+                      <span>{`${numFormat(shares, "compact")} ${t("shares", {
+                        count: shares,
+                      })}`}</span>
+                      •
+                      <span>{`${numFormat(downloads, "compact")} ${t(
+                        "downloads",
+                        {
+                          ns: "common",
+                          count: downloads,
+                        }
+                      )}`}</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
+                <span className={styles.link_blue}>
+                  <CiteIcon className="h-5 w-5" />
+                  {t("cite")}
+                </span>
+                <At
+                  external
+                  href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                    filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
+                  }/${filename}.pdf`}
+                  onClick={() => download("pdf")}
+                  className={styles.link_blue}
+                >
+                  <DownloadIcon className="h-5 w-5" />
+                  {t("download", { context: "pdf" })}
+                </At>
+                <At
+                  external
+                  href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                    filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
+                  }/${filename}.csv`}
+                  onClick={() => download("csv")}
+                  className={styles.link_blue}
+                >
+                  <DownloadIcon className="h-5 w-5" />
+                  {t("download", { context: "csv" })}
+                </At>
+                <ShareButton
+                  date={date}
+                  hansard_id={id}
+                  trigger={(onClick) => (
+                    <div className={styles.link_blue} onClick={onClick}>
+                      <ShareIcon className="h-5 w-5" />
+                      {t("share")}
+                    </div>
+                  )}
+                />
               </div>
             </div>
-
-            <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
-              <span className={styles.link_blue}>
-                <CiteIcon className="h-5 w-5" />
-                {t("cite")}
-              </span>
-              <At
-                external
-                href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                  filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
-                }/${filename}.pdf`}
-                onClick={() => download("pdf")}
-                className={styles.link_blue}
-              >
-                <DownloadIcon className="h-5 w-5" />
-                {t("download", { context: "pdf" })}
-              </At>
-              <At
-                external
-                href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                  filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
-                }/${filename}.csv`}
-                onClick={() => download("csv")}
-                className={styles.link_blue}
-              >
-                <DownloadIcon className="h-5 w-5" />
-                {t("download", { context: "csv" })}
-              </At>
-              <ShareButton
-                date={date}
-                hansard_id={id}
-                trigger={(onClick) => (
-                  <div className={styles.link_blue} onClick={onClick}>
-                    <ShareIcon className="h-5 w-5" />
-                    {t("share")}
-                  </div>
-                )}
+          </Hero>
+          <div className="dark:border-washed-dark sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-3 w-full border-b bg-white py-1.5 dark:bg-black lg:px-8">
+            <div className="flex gap-3 items-center w-full">
+              <Search
+                className="border-none py-[3.5px] w-full"
+                query={searchValue}
+                onChange={onSearchChange}
               />
-            </div>
-          </div>
-        </Hero>
-        <div className="dark:border-washed-dark sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-3 w-full border-b bg-white py-1.5 dark:bg-black lg:px-8">
-          <div className="flex gap-3 items-center w-full">
-            <Search
-              className="border-none py-[3.5px] w-full"
-              query={searchValue}
-              onChange={onSearchChange}
-            />
 
+              {searchValue && searchValue.length > 0 && (
+                <Button
+                  variant="reset"
+                  className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
+                  onClick={() => onSearchChange}
+                >
+                  <XMarkIcon className="text-dim h-5 w-5 group-hover:text-black dark:group-hover:text-white" />
+                </Button>
+              )}
+            </div>
             {searchValue && searchValue.length > 0 && (
-              <Button
-                variant="reset"
-                className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
-                onClick={() => onSearchChange}
-              >
-                <XMarkIcon className="text-dim h-5 w-5 group-hover:text-black dark:group-hover:text-white" />
-              </Button>
+              <div className="flex gap-3 items-center">
+                <p className="text-zinc-500 max-sm:text-sm whitespace-nowrap">{`${activeCount} of ${totalCount} found`}</p>
+                <ChevronUpIcon className="w-5 h-5" onClick={onPrev} />
+                <ChevronDownIcon className="w-5 h-5" onClick={onNext} />
+              </div>
             )}
           </div>
-          {searchValue && searchValue.length > 0 && (
-            <div className="flex gap-3 items-center">
-              <p className="text-zinc-500 max-sm:text-sm whitespace-nowrap">{`${activeCount} of ${totalCount} found`}</p>
-              <ChevronUpIcon className="w-5 h-5" onClick={onPrev} />
-              <ChevronDownIcon className="w-5 h-5" onClick={onNext} />
-            </div>
-          )}
-        </div>
-        <div
-          className={cn(
-            "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 py-8 lg:py-12 bg-white dark:bg-zinc-900 gap-y-6 flex flex-col relative",
-            narrowMode ? "w-[500px]" : "w-full"
-          )}
-        >
           <div
             className={cn(
-              "hidden lg:block absolute top-7 right-40 p-1.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-floating",
-              narrowMode ? "right-8" : "right-40"
+              "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-white dark:bg-zinc-900 gap-y-6 flex flex-col relative",
+              narrowMode ? "w-[500px]" : "w-full"
             )}
           >
-            <Toggle
-              enabled={false}
-              onStateChanged={() => {
-                setNarrowMode(!narrowMode);
-              }}
-              label={t("narrow")}
-            />
+            <div
+              className={cn(
+                "hidden lg:block absolute top-2 right-40 p-1.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-button",
+                narrowMode ? "right-8" : "right-40"
+              )}
+            >
+              <Toggle
+                enabled={false}
+                onStateChanged={() => {
+                  setNarrowMode(!narrowMode);
+                }}
+                label={t("narrow")}
+              />
+            </div>
+            {sidebarButton}
+            {recurSpeech(speeches, searchValue)}
           </div>
-          {recurSpeech(speeches, searchValue)}
         </div>
-      </div>
+      )}
     </HansardSidebar>
   );
 };
