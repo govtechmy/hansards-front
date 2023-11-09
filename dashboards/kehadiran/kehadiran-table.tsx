@@ -108,7 +108,7 @@ const KehadiranTable = ({
                 accessorKey: "party",
                 header: t("party"),
                 className: "min-w-[240px] max-w-[240px]",
-                cell: ({ getValue }) => <PartyFlag value={getValue()} />,
+                cell: ({ getValue }) => <PartyFlag party={getValue()} />,
               },
               {
                 accessorKey: "age",
@@ -152,7 +152,7 @@ const KehadiranTable = ({
                 accessorKey: "party",
                 header: t("party"),
                 className: "min-w-[240px] max-w-[300px]",
-                cell: ({ getValue }) => <PartyFlag value={getValue()} />,
+                cell: ({ getValue }) => <PartyFlag party={getValue()} />,
               },
               {
                 accessorKey: "attendance_pct",
