@@ -9,13 +9,11 @@ import { useWatch } from "./useWatch";
  * Filter hook. Contains logic for backend-driven query / filtering.
  * @param state Filter queries
  * @param params Required for URL with dynamic params.
- * @param sequential Only for DC pages
  * @returns filter, setFilter, queries, actives
  */
 export const useFilter = (
   state: Record<string, any> = {},
   params = {},
-  sequential: boolean = false
 ) => {
   const { data, setData } = useData(state);
   const router = useRouter();
@@ -70,28 +68,13 @@ export const useFilter = (
     []
   );
 
-  const _setData = (key: string, value: any) => {
-    if (sequential) {
-      let flag = false;
-      for (const _key in data) {
-        if (flag && _key !== "range") setData(_key, undefined);
-        if (key === _key) {
-          setData(key, value);
-          flag = true;
-        }
-      }
-    } else {
-      setData(key, value);
-    }
-  };
-
   useWatch(() => {
     search(actives);
   }, [data]);
 
   return {
     filter: data,
-    setFilter: _setData,
+    setFilter: setData,
     queries,
     actives,
   };
