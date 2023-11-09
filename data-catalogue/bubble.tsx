@@ -1,7 +1,6 @@
 import Markdown from "@components/Markdown";
-import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
-import { useContext, useLayoutEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import rehypeRaw from "rehype-raw";
 import { Speech } from "@lib/types";
 import { getMatchText } from "./match-text";
@@ -35,7 +34,6 @@ const SpeechBubble = ({
   id,
   date,
 }: SpeechBubbleProps) => {
-  const { t } = useTranslation("hansard");
   const [name, title] = author ? author.split("[") : [];
   const colour = useMemo<string>(() => {
     switch (party) {
@@ -62,7 +60,7 @@ const SpeechBubble = ({
     [searchValue, children]
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof matchData === "object") {
       const matchIds = matchData.matches.map((_, i) => ({
         id: `${index}_${i}`,
