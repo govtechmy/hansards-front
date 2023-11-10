@@ -15,7 +15,7 @@ export type ComboOptionProps<T> = {
   active: boolean;
   index: number;
   total: number;
-  style: CSSProperties;
+  style?: CSSProperties;
 };
 
 function ComboOptionInner<T>(
