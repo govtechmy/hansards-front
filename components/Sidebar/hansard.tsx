@@ -211,7 +211,7 @@ const HansardSidebar = ({
                   <h5 className={styles.base}>{t("toc")}</h5>
                   <Button
                     variant="reset"
-                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 group flex h-8 w-8 items-center rounded-full"
+                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 group flex h-8 w-8 justify-center items-center rounded-full"
                     onClick={() => setMobileSidebar(false)}
                   >
                     <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
