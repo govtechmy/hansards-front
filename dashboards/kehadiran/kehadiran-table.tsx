@@ -106,7 +106,7 @@ const KehadiranTable = ({
               },
               {
                 accessorKey: "party",
-                header: t("party"),
+                header: t("party", { ns: "common" }),
                 className: "min-w-[240px] max-w-[240px]",
                 cell: ({ getValue }) => <PartyFlag party={getValue()} />,
               },
@@ -150,7 +150,7 @@ const KehadiranTable = ({
             config={[
               {
                 accessorKey: "party",
-                header: t("party"),
+                header: t("party", { ns: "common" }),
                 className: "min-w-[240px] max-w-[300px]",
                 cell: ({ getValue }) => <PartyFlag party={getValue()} />,
               },
