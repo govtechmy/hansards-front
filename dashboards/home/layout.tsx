@@ -24,12 +24,12 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
   const TAB_OPTIONS: Array<OptionType & { icon: ReactNode }> = [
     {
       icon: <ChatBubbleLeftRightIcon className="h-4.5 w-4.5" />,
-      label: t("who_said_x"),
+      label: t("search_keyword"),
       value: "who",
     },
     {
       icon: <UsersIcon className="h-4.5 w-4.5" />,
-      label: t("what_did_x_say"),
+      label: t("search_mp_party"),
       value: "what",
     },
   ];
@@ -48,12 +48,12 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center lg:static">
-        <div className="hide-scrollbar max-[420px]:justify-center, flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
+      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-slate-200 bg-white dark:border-b-zinc-800 dark:bg-zinc-900 justify-start min-[350px]:justify-center lg:static">
+        <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto">
           {TAB_OPTIONS.map((tab) => (
             <div key={tab.value} className="snap-start">
               <div
-                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center  outline-none"
+                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center outline-none"
                 onClick={() => setData("tab", tab.value)}
               >
                 <div
@@ -66,8 +66,8 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
                     <div
                       className={cn(
                         data.tab === tab.value
-                          ? "dark:text-white text-zinc-800"
-                          : "text-dim"
+                          ? "text-zinc-900 dark:text-white"
+                          : "text-zinc-500"
                       )}
                     >
                       {tab.icon}
@@ -76,8 +76,8 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
                       className={cn(
                         "flex items-center gap-2",
                         data.tab === tab.value
-                          ? "text-black dark:text-white"
-                          : "text-dim"
+                          ? "text-zinc-900 dark:text-white"
+                          : "text-zinc-500"
                       )}
                     >
                       <span className="whitespace-nowrap text-base font-medium">
