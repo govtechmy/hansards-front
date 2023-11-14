@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 
 interface PartyFlagProps {
   party: string;
-  children?: ReactNode;
+  children?: (party: string) => ReactNode;
 }
 
 const PartyFlag = ({ party, children }: PartyFlagProps) => {
@@ -27,7 +27,7 @@ const PartyFlag = ({ party, children }: PartyFlagProps) => {
           }}
         />
       </div>
-      {children ? children : <span className="truncate">{t(party)}</span>}
+      {children ? children(party) : <span className="truncate">{t(party)}</span>}
     </div>
   );
 };
