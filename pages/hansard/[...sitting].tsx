@@ -22,7 +22,9 @@ const CatalogueIndexPage: Page = ({
     <>
       <AnalyticsProvider meta={meta}>
         <Metadata
-          title={t("header").concat(" - " + date)}
+          title={date.concat(
+            ` ${t("header", { context: `${filename}`.slice(0, 2) })}`
+          )}
           description={meta.id}
           keywords={""}
         />
