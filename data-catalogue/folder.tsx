@@ -13,8 +13,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { ClosedFolderIcon, OpenFolderIcon } from "@icons/index";
 import { BREAKPOINTS } from "@lib/constants";
 import { WindowContext } from "@lib/contexts/window";
-import { cn } from "@lib/helpers";
-import { routes } from "@lib/routes";
+import { cn, copyClipboard } from "@lib/helpers";
 import { Sitting } from "@lib/types";
 import Link from "next/link";
 import { useContext, useState } from "react";
@@ -37,13 +36,15 @@ export default function CatalogueFolder({
 }: CatalogueFolderProps) {
   const { t, i18n } = useTranslation(["catalogue", "enum"]);
   const [open, setOpen] = useState<boolean>(false);
-  // const { size } = useContext(WindowContext); FIXME: dropdown
+  const [copyText, setCopyText] = useState<string>("copy");
+  const title = `Hansard Parlimen`;
+  const { size } = useContext(WindowContext);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <div
-          className="flex flex-col gap-y-3 items-center group"
+          className="flex flex-col gap-y-3 items-center group pt-2"
           onClick={() => setOpen(!open)}
         >
           <div className="relative">
@@ -99,18 +100,18 @@ export default function CatalogueFolder({
             )}
           >
             {sitting_list.map((sitting, i) => {
-              const { download } = useAnalytics(
-                `${
-                  sitting.filename.startsWith("dr")
-                    ? "dewan-rakyat"
-                    : "dewan-negara"
-                }/${sitting.date}`
-              );
+              const hansard_id = `${
+                sitting.filename.startsWith("dr")
+                  ? "dewan-rakyat"
+                  : "dewan-negara"
+              }/${sitting.date}`;
+              const { download, share } = useAnalytics(hansard_id);
+              const URL = `https://hansard.parlimen.gov.my/hansard/${hansard_id}`;
 
-              // const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
-              // const modulo = sitting_list.length % cols;
-              // const itemsInLastRow =
-              //   size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
+              const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
+              const modulo = sitting_list.length % cols;
+              const itemsInLastRow =
+                size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
 
               return (
                 <div
@@ -120,12 +121,9 @@ export default function CatalogueFolder({
                   <DateCard date={sitting.date} size="sm" />
                   <div className="flex flex-col gap-y-1.5">
                     <Link
-                      href={`${
-                        sitting.filename.startsWith("dr")
-                          ? routes.HANSARD_DR
-                          : routes.HANSARD_DN
-                      }/${sitting.date}`}
+                      href={`/hansard/${hansard_id}`}
                       prefetch={false}
+                      onClick={() => setOpen(false)}
                       className="font-medium hover:underline [text-underline-position:from-font] text-zinc-900 dark:text-white"
                     >
                       {new Date(sitting.date).toLocaleDateString(
@@ -153,11 +151,11 @@ export default function CatalogueFolder({
                             { label: "PDF", value: "pdf" },
                             { label: t("csv"), value: "csv" },
                           ]}
-                          // anchor={
-                          //   i > sitting_list.length - itemsInLastRow - 1
-                          //     ? "bottom-6"
-                          //     : ""
-                          // }
+                          anchor={
+                            i > sitting_list.length - itemsInLastRow - 1
+                              ? "bottom-6"
+                              : ""
+                          }
                           onChange={({ value: filetype }) => {
                             window.open(
                               `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
@@ -171,9 +169,45 @@ export default function CatalogueFolder({
                           }}
                         />
                         •
-                        <span className="dark:hover:text-blue-600 hover:underline [text-underline-position:from-font]">
-                          {t("share")}
-                        </span>
+                        <Dropdown
+                          className="p-0 border-none shadow-none text-blue-600 dark:text-primary-dark hover:underline [text-underline-position:from-font] font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
+                          width="w-fit"
+                          placeholder={t("share")}
+                          selected={undefined}
+                          options={[
+                            {
+                              label: "Twitter",
+                              value: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
+                            },
+                            {
+                              label: "Facebook",
+                              value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
+                            },
+                            {
+                              label: "E-mail",
+                              value: `mailto:?subject=${title}&body=${URL}`,
+                            },
+                            {
+                              label: t(copyText, { ns: "common" }),
+                              value: "copy",
+                            },
+                          ]}
+                          anchor={
+                            i > sitting_list.length - itemsInLastRow - 1
+                              ? "bottom-6 right-0"
+                              : "right"
+                          }
+                          onChange={({ value: link }) => {
+                            share();
+                            if (link === "copy") {
+                              copyClipboard(URL);
+                              setCopyText("copied");
+                              setTimeout(() => {
+                                setCopyText("copy");
+                              }, 1000);
+                            } else window.open(link, "_blank");
+                          }}
+                        />
                       </p>
                     </div>
                   </div>
