@@ -6,11 +6,15 @@ export const routes = {
   HANSARD_DN: "/hansard/dewan-negara",
   KEHADIRAN_DR: "/kehadiran/dewan-rakyat",
   KEHADIRAN_DN: "/kehadiran/dewan-negara",
+  SEJARAH_INDIVIDU: "/sejarah/individu",
+  SEJARAH_KAWASAN: "/sejarah/kawasan",
+  SEJARAH_PARLIMEN: "/sejarah/parlimen",
+  SEJARAH_PARTI: "/sejarah/parti",
 };
 
 export const static_routes: string[] = (() => {
-  let s_routes = [""];//Object.values(routes).filter(route => !["/katalog"].includes(route));
-
+  let s_routes = [routes.KATALOG_DR, routes.KATALOG_DN];
+  
   s_routes.forEach(route => {
     s_routes.push(`/en-GB${route}`);
   });

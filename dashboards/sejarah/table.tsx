@@ -11,7 +11,7 @@ import { cn, numFormat, toDate } from "@lib/helpers";
 import { useTranslation } from "@hooks/useTranslation";
 import { FunctionComponent, ReactNode } from "react";
 
-export interface AreaTableProps {
+export interface TableProps {
   className?: string;
   title?: string | ReactNode;
   empty?: string | ReactNode;
@@ -21,10 +21,10 @@ export interface AreaTableProps {
   isLoading: boolean;
 }
 
-type AreaTableIds =
+type TableIds =
   | "index"
   | "party"
-  | "election"
+  | "election_name"
   | "name"
   | "votes"
   | "majority"
@@ -33,7 +33,7 @@ type AreaTableIds =
   | "result"
   | "full_result";
 
-const AreaTable: FunctionComponent<AreaTableProps> = ({
+const Table: FunctionComponent<TableProps> = ({
   className = "",
   title,
   empty,
@@ -54,7 +54,7 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
    * Special cells
    * keys: party | election | seats | result | votes | majority
    */
-  const lookupDesktop = (id: AreaTableIds, cell: any) => {
+  const lookupDesktop = (id: TableIds, cell: any) => {
     const value = cell.getValue();
     switch (id) {
       case "index":
@@ -74,7 +74,7 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
         ) : (
           value
         );
-      case "election":
+      case "election_name":
         return (
           <div className="w-fit">
             <Tooltip
@@ -91,15 +91,16 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
                   onClick={open}
                 >
                   {value === "By-Election"
-                    ? t(`election:${value}`)
-                    : value.slice(0, -5) + t(`election:${value.slice(-5)}`)}
+                    ? t(value, { ns: "election" })
+                    : value.slice(0, -5) +
+                      t(value.slice(-5), { ns: "election" })}
                 </div>
               )}
             </Tooltip>
           </div>
         );
       case "party":
-        return <PartyFlag value={value} />;
+        return <PartyFlag party={value} />;
       case "seats":
         return (
           <div className="flex items-center gap-2 md:flex-col md:items-start lg:flex-row lg:items-center">
@@ -116,32 +117,32 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
       // case "result":
       //   return <ResultBadge value={value} />;
 
-      // case "votes":
-      // case "majority":
-      //   return (
-      //     <>
-      //       {typeof value === "number" ? (
-      //         value
-      //       ) : (
-      //         <div className="flex items-center gap-2 md:flex-col md:items-start lg:flex-row lg:items-center">
-      //           <div className="lg:self-center">
-      //             <BarPerc hidden value={value.perc} />
-      //           </div>
-      //           <span className="whitespace-nowrap">
-      //             {value.abs !== null ? numFormat(value.abs, "standard") : `—`}
-      //             {value.perc !== null
-      //               ? ` (${numFormat(value.perc, "compact", [1, 1])}%)`
-      //               : " (—)"}
-      //           </span>
-      //         </div>
-      //       )}
-      //     </>
-      //   );
+      case "votes":
+      case "majority":
+        return (
+          <>
+            {typeof value === "number" ? (
+              value
+            ) : (
+              <div className="flex items-center gap-2 md:flex-col md:items-start lg:flex-row lg:items-center">
+                <div className="lg:self-center">
+                  <BarPerc hidden value={value.perc} />
+                </div>
+                <span className="whitespace-nowrap">
+                  {value.abs !== null ? numFormat(value.abs, "standard") : `—`}
+                  {value.perc !== null
+                    ? ` (${numFormat(value.perc, "compact", [1, 1])}%)`
+                    : " (—)"}
+                </span>
+              </div>
+            )}
+          </>
+        );
       default:
         return flexRender(cell.column.columnDef.cell, cell.getContext());
     }
   };
-  const lookupMobile = (id: AreaTableIds, cell: any) => {
+  const lookupMobile = (id: TableIds, cell: any) => {
     if (!cell) return <></>;
     const value = cell.getValue();
     switch (id) {
@@ -155,13 +156,13 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
         );
       case "party":
         return (
-          <PartyFlag value={value}>
-            {cell.row.original.name ? (
+          <PartyFlag party={value}>
+            {(party) => cell.row.original.name ? (
               <span>
                 <span className="pr-1 font-medium">
                   {cell.row.original.name}
                 </span>
-                <span className="inline-flex pr-1">{` (${value})`}</span>
+                <span className="inline-flex pr-1">{` (${party})`}</span>
                 {/* <span className="inline-flex translate-y-0.5">
                   {highlightedRows.includes(+cell.row.id) && (
                     <ResultBadge hidden value={cell.row.original.result} />
@@ -169,17 +170,17 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
                 </span> */}
               </span>
             ) : (
-              <span className="font-medium">{t(value, { ns: "party" })}</span>
+              <span className="font-medium">{t(party, { ns: "party" })}</span>
             )}
           </PartyFlag>
         );
-      case "election":
+      case "election_name":
         return (
           <div className="flex flex-wrap gap-x-3 text-sm">
             <p className="font-medium">
               {value === "By-Election"
-                ? t(`election:${value}`)
-                : value.slice(0, -5) + t(`election:${value.slice(-5)}`)}
+                ? t(value, { ns: "election" })
+                : value.slice(0, -5) + t(value.slice(-5), { ns: "election" })}
             </p>
             {cell.row.original.date && (
               <p className="text-zinc-500">
@@ -351,18 +352,17 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
               )}
               key={index}
             >
-              {/* Row 1 - Election Name / Date / Full result */}
-              {["election", "full_result"].some((id) => ids.includes(id)) && (
+              {/* Row 1 - Election Name / Date */}
+              {["election_name"].some((id) => ids.includes(id)) && (
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex gap-x-2">
                     {_row.index}
-                    {_row.election}
+                    {_row.election_name}
                   </div>
-                  {_row.full_result}
                 </div>
               )}
               {/* Row 2 - Seat (if available)*/}
-              {(_row.result || _row.index) && (
+              {(_row.seat || _row.index) && (
                 <div>
                   <p>{_row.seat} </p>
                 </div>
@@ -393,12 +393,12 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
           );
         })}
         {isLoading && (
-          <div className="flex h-20 w-full items-center justify-center">
+          <div className="flex h-[200px] w-full items-center justify-center">
             <Spinner loading={isLoading} />
           </div>
         )}
         {!data.length && !isLoading && (
-          <div className="flex items-center justify-center md:h-[200px]">
+          <div className="flex items-center justify-center h-[200px]">
             <div className="bg-slate-200 dark:bg-zinc-800 flex h-auto w-[300px] rounded-md px-3 pb-2 pt-1 lg:w-fit">
               <p className="text-sm">
                 <span className="inline-flex pr-1">
@@ -414,55 +414,55 @@ const AreaTable: FunctionComponent<AreaTableProps> = ({
   );
 };
 
-export default AreaTable;
+export default Table;
 
 const dummyData = [
   {
     name: "Rushdan Bin Rusmi",
     date: "2022-11-19",
-    election: "GE-15",
+    election_name: "GE-15",
     seat: "P.001 Padang Besar, Perlis",
     party: "PN",
   },
   {
     name: "Zahidi Bin Zainul Abidin",
     date: "2022-11-19",
-    election: "GE-14",
+    election_name: "GE-14",
     seat: "P.001 Padang Besar, Perlis",
     party: "BN",
   },
   {
     name: "Zahidi Bin Zainul Abidin",
     date: "2022-11-19",
-    election: "GE-13",
+    election_name: "GE-13",
     seat: "P.001 Padang Besar, Perlis",
     party: "BEBAS",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election: "GE-12",
+    election_name: "GE-12",
     seat: "P.001 Padang Besar, Perlis",
     party: "BN",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election: "GE-11",
+    election_name: "GE-11",
     seat: "P.001 Padang Besar, Perlis",
     party: "PH",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election: "GE-10",
+    election_name: "GE-10",
     seat: "P.001 Padang Besar, Perlis",
     party: "PH",
   },
   {
     name: "Azmi Bin Khalid",
     date: "2022-11-19",
-    election: "GE-09",
+    election_name: "GE-09",
     seat: "P.001 Padang Besar, Perlis",
     party: "PH",
   },
