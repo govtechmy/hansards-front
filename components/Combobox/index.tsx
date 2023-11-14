@@ -50,7 +50,7 @@ const ComboBox = <T extends unknown>({
     size: items.length,
     parentRef: listRef,
     estimateSize: useCallback(() => 36, []),
-    overscan: 2,
+    overscan: 15,
   });
 
   const {
@@ -157,6 +157,9 @@ const ComboBox = <T extends unknown>({
                     active={highlightedIndex === i}
                     index={i}
                     style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
                       height: virtualRow.size,
                       transform: `translateY(${virtualRow.start}px)`,
                     }}

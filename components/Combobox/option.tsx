@@ -37,6 +37,7 @@ function ComboOptionInner<T>(
 
   return (
     <div
+      key={id}
       id={id}
       ref={ref}
       role="option"
@@ -48,7 +49,7 @@ function ComboOptionInner<T>(
       aria-setsize={total}
       aria-posinset={index + 1}
       className={cn(
-        "px-4 py-2 absolute top-0 left-0 w-full cursor-pointer select-none",
+        "px-4 py-2 w-full cursor-pointer select-none z-10",
         "hover:bg-slate-100 hover:dark:bg-zinc-800",
         active && "bg-slate-100 dark:bg-zinc-800"
       )}
