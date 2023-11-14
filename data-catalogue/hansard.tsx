@@ -4,6 +4,7 @@ import {
   DateCard,
   HansardSidebar,
   Hero,
+  Markdown,
   Search,
   Toggle,
 } from "@components/index";
@@ -19,13 +20,21 @@ import { useTranslation } from "@hooks/useTranslation";
 import { CiteIcon, DownloadIcon } from "@icons/index";
 import { cn, numFormat } from "@lib/helpers";
 import { NestedSpeech, Speech, Speeches } from "@lib/types";
-import debounce from "lodash/debounce";
 import { DateTime } from "luxon";
-import { ReactNode, useContext, useRef, useState } from "react";
+import {
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import rehypeRaw from "rehype-raw";
 
 import SpeechBubble from "./bubble";
 import { SearchContext, SearchEventContext } from "./context";
 import ShareButton from "./share";
+import { getMatchText } from "./match-text";
 
 /**
  * Hansard
@@ -49,6 +58,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const [narrowMode, setNarrowMode] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
 
   const { counts, download } = useAnalytics(id);
   const [downloads, shares, views]: number[] =
@@ -88,16 +98,82 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
           locale: "en-US",
         });
 
+        let { searchValue, activeId } = useContext(SearchContext);
+        const { onUpdateMatchList } = useContext(SearchEventContext);
+
+        const matchData = useMemo(
+          () => getMatchText(searchValue, speech),
+          [searchValue, speech]
+        );
+
+        useEffect(() => {
+          if (typeof matchData === "object") {
+            const matchIds = matchData.matches.map((_, i) => ({
+              id: `${index}_${i}`,
+              idCount: i,
+            }));
+            onUpdateMatchList(matchIds);
+          }
+        }, [matchData]);
+
+        const parseMarkdown = (children: string) => (
+          <Markdown
+            className={cn(is_annotation && "a")}
+            rehypePlugins={[rehypeRaw]}
+            components={{
+              mark(props) {
+                const { node, id, ...rest } = props;
+                const matchId = `${index}_${id}`;
+                const color = matchId === activeId ? "#DC2626" : "#2563EB";
+                return (
+                  <span
+                    key={index}
+                    id={matchId}
+                    style={{
+                      backgroundColor: color,
+                      color: "white",
+                      display: "inline-block",
+                      whiteSpace: "pre-wrap",
+                    }}
+                    {...rest}
+                  ></span>
+                );
+              },
+            }}
+          >
+            {children}
+          </Markdown>
+        );
+
+        const _speech = useMemo<ReactNode>(() => {
+          if (typeof matchData === "string") {
+            return parseMarkdown(matchData);
+          } else {
+            let str = "";
+            for (let i = 0; i < matchData.slices.length; i++) {
+              if (i === matchData.slices.length - 1) str += matchData.slices[i];
+              else
+                str +=
+                  matchData.slices[i] +
+                  `<mark id='${i}'>${matchData.matches[i]}</mark>`;
+            }
+            return parseMarkdown(str);
+          }
+        }, [speech, keyword]);
+
         return (
           <>
             {!_timestamp.hasSame(prev, "hour") &&
               !_timestamp.hasSame(prev, "minute") && (
-                <p key={index} className="text-zinc-500 text-center italic">{timeString}</p>
+                <p className="text-zinc-500 text-center italic">{timeString}</p>
               )}
             {author === "ANNOTATION" ? (
-              <p key={index} className="text-zinc-900 dark:text-white text-center italic">
-                {speech}
-              </p>
+              <div
+                key={index}
+                className="text-zinc-900 dark:text-white text-center italic"
+              >
+                {_speech}
+              </div>
             ) : (
               <SpeechBubble
                 party={["Tuan Yang di-Pertua"].includes(author) ? "ydp" : ""}
@@ -112,7 +188,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                 id={id}
                 date={date}
               >
-                {speech}
+                {_speech}
               </SpeechBubble>
             )}
           </>
@@ -261,15 +337,18 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
             <div className="flex gap-3 items-center w-full">
               <Search
                 className="border-none py-[3.5px] w-full"
-                query={searchValue}
-                onChange={onSearchChange}
+                query={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  onSearchChange(e.target.value);
+                }}
               />
 
               {searchValue && searchValue.length > 0 && (
                 <Button
                   variant="reset"
                   className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
-                  onClick={() => onSearchChange}
+                  onClick={() => onSearchChange("")}
                 >
                   <XMarkIcon className="text-dim h-5 w-5 group-hover:text-black dark:group-hover:text-white" />
                 </Button>
@@ -278,8 +357,20 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
             {searchValue && searchValue.length > 0 && (
               <div className="flex gap-3 items-center">
                 <p className="text-zinc-500 max-sm:text-sm whitespace-nowrap">{`${activeCount} of ${totalCount} found`}</p>
-                <ChevronUpIcon className="w-5 h-5" onClick={onPrev} />
-                <ChevronDownIcon className="w-5 h-5" onClick={onNext} />
+                <Button
+                  variant="reset"
+                  className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
+                  onClick={onPrev}
+                >
+                  <ChevronUpIcon className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="reset"
+                  className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
+                  onClick={onNext}
+                >
+                  <ChevronDownIcon className="w-5 h-5" />
+                </Button>
               </div>
             )}
           </div>

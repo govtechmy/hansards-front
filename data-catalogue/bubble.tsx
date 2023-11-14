@@ -1,22 +1,18 @@
-import Markdown from "@components/Markdown";
 import { cn } from "@lib/helpers";
-import { useContext, useEffect, useMemo } from "react";
-import rehypeRaw from "rehype-raw";
+import { ReactNode, useMemo } from "react";
 import { Speech } from "@lib/types";
-import { getMatchText } from "./match-text";
-import { SearchContext, SearchEventContext } from "./context";
 import ShareButton from "./share";
 
 /**
- * @overview Status: In-development
  * Speech Bubble
+ * @overview Status: In-development
  */
 
 export type SpeechBubbleProps = Omit<Speech, "timestamp" | "speech"> & {
   position: "left" | "right";
   party: "bn" | "gps" | "ph" | "pn" | "ydp" | string;
   timeString: string;
-  children: string;
+  children: ReactNode;
   keyword?: string;
   id: string;
   date: string;
@@ -27,10 +23,8 @@ const SpeechBubble = ({
   position,
   author,
   children,
-  is_annotation,
   index,
   timeString,
-  keyword,
   id,
   date,
 }: SpeechBubbleProps) => {
@@ -51,39 +45,6 @@ const SpeechBubble = ({
         return "text-zinc-500";
     }
   }, [party]);
-
-  let { searchValue, activeId } = useContext(SearchContext);
-  const { onUpdateMatchList } = useContext(SearchEventContext);
-
-  const matchData = useMemo(
-    () => getMatchText(searchValue, children),
-    [searchValue, children]
-  );
-
-  useEffect(() => {
-    if (typeof matchData === "object") {
-      const matchIds = matchData.matches.map((_, i) => ({
-        id: `${index}_${i}`,
-        idCount: i,
-      }));
-      onUpdateMatchList(matchIds);
-    }
-  }, [matchData]);
-
-  const _children = useMemo<string>(() => {
-    if (typeof matchData === "string") {
-      return matchData;
-    } else {
-      let str = "";
-      for (let i = 0; i < matchData.slices.length; i++) {
-        if (i === matchData.slices.length - 1) str += matchData.slices[i];
-        else
-          str +=
-            matchData.slices[i] + `<mark id='${i}'>${matchData.matches[i]}</mark>`;
-      }
-      return str;
-    }
-  }, [children, keyword]);
 
   return (
     <>
@@ -108,34 +69,9 @@ const SpeechBubble = ({
               </p>
             </div>
 
-            <Markdown
-              className={cn(is_annotation && "a")}
-              rehypePlugins={[rehypeRaw]}
-              components={{
-                mark(props) {
-                  const { node, id, ...rest } = props;
-                  const matchId = `${index}_${id}`;
-                  const color = matchId === activeId ? "#DC2626" : "#2563EB";
-                  return (
-                    <span
-                      key={index}
-                      id={matchId}
-                      style={{
-                        backgroundColor: color,
-                        color: "white",
-                        display: "inline-block",
-                        whiteSpace: "pre-wrap",
-                      }}
-                      {...rest}
-                    ></span>
-                  );
-                },
-              }}
-            >
-              {_children}
-            </Markdown>
+            {children}
 
-            <ShareButton date={date} hansard_id={id} index={index}/>
+            <ShareButton date={date} hansard_id={id} index={index} />
             <p className={"ts"}>{timeString}</p>
           </div>
         </div>
