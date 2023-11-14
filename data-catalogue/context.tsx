@@ -1,10 +1,10 @@
+import debounce from "lodash/debounce";
 import {
   useReducer,
   useCallback,
   createContext,
   useEffect,
   useMemo,
-  ChangeEvent,
   ReactNode,
 } from "react";
 
@@ -31,9 +31,7 @@ interface IState {
 }
 
 interface EventContextProps {
-  onSearchChange: (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => void;
+  onSearchChange: (searchValue: string) => void;
   onNext: (data: any) => void;
   onPrev: (data: any) => void;
   onUpdateMatchList: (matchedList: MatchObjectProps[]) => void;
@@ -129,10 +127,12 @@ export const SearchProvider = (props: SearchProviderProps) => {
 
   const activeCount = store.activeCount;
   const totalCount = store.matchedList?.length;
-  const onSearchChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const searchValue = e.target.value;
-    dispatch({ type: IActionTypes.setSearchValue, payload: { searchValue } });
-  }, []);
+  const onSearchChange = useCallback(
+    debounce((searchValue: string) => {
+      dispatch({ type: IActionTypes.setSearchValue, payload: { searchValue } });
+    }, 500),
+    []
+  );
 
   // Calculate previous match text
   const onPrev = useCallback(
