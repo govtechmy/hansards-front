@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
   if (purpose && purpose.match(/prefetch/i)) headers.delete("x-middleware-prefetch"); // empty json bugfix (in the browser headers still show, but here it is gone)
 
   // Request authenticated
-  if (["development", "staging"].includes(process.env.NEXT_PUBLIC_APP_ENV)) {
+  if (["development"].includes(process.env.NEXT_PUBLIC_APP_ENV)) {
   response = NextResponse.next({ request: { headers } });
   return response;
 }

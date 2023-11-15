@@ -23,7 +23,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   data,
   onClick,
 }) => {
-  const { t } = useTranslation(["catalogue", "enum"]);
+  const { t, i18n } = useTranslation(["catalogue", "enum"]);
   const { size } = useContext(WindowContext);
   const [selected, setSelected] = useState<string>();
   const [showSidebar, setSidebar] = useState<boolean>(true);
@@ -53,7 +53,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             return (
               <li
                 key={term}
-                title={t("term_full", { ns: "enum", n: term }).concat(
+                title={t("parlimen_full", { ns: "enum", n: term }).concat(
                   " " + yearRange
                 )}
                 className={cn(
@@ -68,7 +68,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                   summary={
                     <p className="flex flex-col">
                       <span className="font-medium">
-                        {t("term_full", { ns: "enum", n: term })}
+                        {t("parlimen_full", { ns: "enum", n: term })}
                       </span>
                       <span className="font-base">{yearRange}</span>
                     </p>
@@ -85,7 +85,8 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
 
                       return (
                         <li
-                          title={t("session_full", {
+                          key={id}
+                          title={t("penggal_full", {
                             ns: "enum",
                             n: session,
                           }).concat(" " + yearRange)}
@@ -101,7 +102,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                           )}
                         >
                           <p className="font-medium whitespace-nowrap">
-                            {t("session_full", {
+                            {t("penggal_full", {
                               ns: "enum",
                               n: session,
                             })}
@@ -134,7 +135,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         {/* Desktop */}
         <ul
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 w-12 max-lg:hide-scrollbar",
+            "dark:border-r-slate-800 border-r shrink-0 w-11 max-lg:hide-scrollbar",
             "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
@@ -144,21 +145,17 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         >
           <div
             className={cn(
-              "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 max-lg:px-2 py-3 items-baseline justify-between whitespace-nowrap",
+              "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 px-0 py-3 items-baseline justify-between whitespace-nowrap",
               showSidebar ? "lg:px-5" : "lg:px-2"
             )}
           >
-            {/* Vertical */}
             <h5
               className={cn(
-                "absolute translate-y-20 -translate-x-9 -rotate-90",
-                showSidebar && "lg:hidden"
+                "max-lg:absolute max-lg:-rotate-90 origin-top-left max-lg:translate-y-[150px]",
+                !showSidebar &&
+                  "absolute -rotate-90 origin-top-left translate-y-[150px]"
               )}
             >
-              {t("full_archive")}
-            </h5>
-            {/* Horizontal */}
-            <h5 className={cn("max-lg:hidden", !showSidebar && "hidden")}>
               {t("full_archive")}
             </h5>
             <Button

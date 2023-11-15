@@ -14,9 +14,6 @@ const CatalogueIndexPage: Page = ({
   cycle,
   date,
   filename,
-  cite_count,
-  download_count,
-  view_count,
   speeches,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation("hansard");
@@ -25,8 +22,10 @@ const CatalogueIndexPage: Page = ({
     <>
       <AnalyticsProvider meta={meta}>
         <Metadata
-          title={t("hero.header")}
-          description={t("hero.description")}
+          title={date.concat(
+            ` ${t("header", { context: `${filename}`.slice(0, 2) })}`
+          )}
+          description={meta.id}
           keywords={""}
         />
         <SearchProvider
@@ -35,15 +34,13 @@ const CatalogueIndexPage: Page = ({
           }}
         >
           {/* <WindowProvider> */}
-            <Hansard
-              cycle={cycle}
-              date={date}
-              filename={filename}
-              cite_count={cite_count}
-              download_count={download_count}
-              view_count={view_count}
-              speeches={speeches}
-            />
+          <Hansard
+            id={meta.id}
+            cycle={cycle}
+            date={date}
+            filename={filename}
+            speeches={speeches}
+          />
           {/* </WindowProvider> */}
         </SearchProvider>
       </AnalyticsProvider>
@@ -71,17 +68,6 @@ export const getStaticProps: GetStaticProps = withi18n(
         date,
       });
 
-      const { data: count } = await get(
-        "/pipes/get_counts.json",
-        {
-          hansard_id: `${house}/${date}`,
-          token: process.env.NEXT_PUBLIC_TINYBIRD_AUTH.concat(
-            process.env.NEXT_PUBLIC_GET_COUNTS
-          ),
-        },
-        "tinybird"
-      );
-
       return {
         props: {
           meta: {
@@ -89,14 +75,8 @@ export const getStaticProps: GetStaticProps = withi18n(
             type: "data-catalogue",
           },
           cycle: data.meta.cycle,
-          date: data.meta.date,
+          date: date,
           filename: data.meta.filename,
-          cite_count: data.meta.cite_count,
-          download_count: data.meta.download_count,
-          view_count:
-            count.data.length > 0
-              ? count.data.find((e: any) => e.type === "view").view_count
-              : 0,
           speeches: data.speeches,
         },
       };

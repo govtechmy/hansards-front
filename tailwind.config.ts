@@ -27,7 +27,7 @@ const config: Config = {
         header: ["var(--font-header)"],
       },
       colors: {
-        "primary": "#110C42",
+        "primary": "#2563EB", // Blue 600
         "primary-dark": "#3E7AFF",
         "secondary": "#B49B1A",
         "black": "#18181B", // Zinc 900
@@ -57,8 +57,17 @@ const config: Config = {
           from: { height: "var(--from-height)" },
           to: { height: "var(--to-height)" },
         },
+        appear: {
+          "0%": {
+            visibility: "hidden",
+          },
+          "100%": {
+            visibility: "visible",
+          },
+        },
       },
       animation: {
+        appear: "appear 200ms ease-out",
         slide: "slide 1.5s ease-out",
       },
     },

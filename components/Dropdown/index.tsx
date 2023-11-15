@@ -35,6 +35,7 @@ type CommonProps = {
   anchor?: "left" | "right" | string;
   enableSearch?: boolean;
   enableFlag?: boolean;
+  flag?: (value: string) => ReactNode;
   enableClear?: boolean;
 };
 
@@ -73,6 +74,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   label,
   sublabel,
   enableFlag = false,
+  flag,
   enableClear = false,
 }) => {
   const [search, setSearch] = useState<string>("");
@@ -80,19 +82,26 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   const { t } = useTranslation();
   const isSelected = (option: OptionType): boolean => {
     return (
-      multiple && (selected as OptionType[]).some((item: OptionType) => item.value === option.value)
+      multiple &&
+      (selected as OptionType[]).some(
+        (item: OptionType) => item.value === option.value
+      )
     );
   };
 
   const handleDeselect = (option: OptionType): any => {
-    return (selected as OptionType[]).filter((item: OptionType) => item.value !== option.value);
+    return (selected as OptionType[]).filter(
+      (item: OptionType) => item.value !== option.value
+    );
   };
   const handleChange = (options: any) => {
     if (!multiple) return onChange(options);
 
     const added = options;
     if (!isSelected(added)) {
-      selected && Array.isArray(selected) ? onChange([...selected, options]) : onChange([options]);
+      selected && Array.isArray(selected)
+        ? onChange([...selected, options])
+        : onChange([options]);
     } else {
       onChange(handleDeselect(added));
     }
@@ -127,14 +136,17 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       value={option}
     >
       {/* State flag - optional */}
-      {enableFlag && (
-        <Image
-          src={`/static/images/states/${option.value}.jpeg`}
-          width={20}
-          height={12}
-          alt={option.label as string}
-        />
-      )}
+      {enableFlag &&
+        (flag ? (
+          flag(option.value)
+        ) : (
+          <Image
+            src={`/static/images/states/${option.value}.jpeg`}
+            width={20}
+            height={12}
+            alt={option.label as string}
+          />
+        ))}
 
       {/* Option label */}
       <span
@@ -152,7 +164,10 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
           <input
             type="checkbox"
             checked={
-              selected && (selected as OptionType[]).some(item => item.value === option.value)
+              selected &&
+              (selected as OptionType[]).some(
+                (item) => item.value === option.value
+              )
             }
             className="border-slate-200 text-primary dark:border-zinc-700 dark:bg-zinc-800 dark:checked:border-primary dark:checked:bg-secondary h-4 w-4 rounded focus:ring-0"
           />
@@ -160,9 +175,11 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       )}
 
       {/* Checkmark */}
-      {!multiple && selected && (selected as OptionType).value === option.value && (
-        <CheckCircleIcon className="text-primary dark:text-secondary h-4 w-4" />
-      )}
+      {!multiple &&
+        selected &&
+        (selected as OptionType).value === option.value && (
+          <CheckCircleIcon className="text-primary dark:text-secondary h-4 w-4" />
+        )}
     </Listbox.Option>
   );
 
@@ -171,7 +188,9 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       {label && <Label label={label}></Label>}
       <Listbox
         value={selected}
-        onChange={(option: OptionType & OptionType[]) => !multiple && handleChange(option)}
+        onChange={(option: OptionType & OptionType[]) =>
+          !multiple && handleChange(option)
+        }
         multiple={multiple}
         disabled={disabled}
       >
@@ -194,24 +213,34 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
 
               {/* Sublabel */}
               {sublabel && (
-                <span className="text-zinc-500 block w-fit min-w-min truncate">{sublabel}</span>
+                <span className="text-zinc-500 block w-fit min-w-min truncate">
+                  {sublabel}
+                </span>
               )}
 
               {/* Flag (selected) */}
-              {enableFlag && selected && (
-                <div className="self-center">
-                  <Image
-                    src={`/static/images/states/${(selected as OptionType).value}.jpeg`}
-                    width={20}
-                    height={12}
-                    alt={(selected as OptionType).label as string}
-                  />
-                </div>
-              )}
+              {enableFlag &&
+                selected &&
+                (flag ? (
+                  flag((selected as OptionType).value)
+                ) : (
+                  <div className="self-center">
+                    <Image
+                      src={`/static/images/states/${
+                        (selected as OptionType).value
+                      }.jpeg`}
+                      width={20}
+                      height={12}
+                      alt={(selected as OptionType).label as string}
+                    />
+                  </div>
+                ))}
 
               {/* Label */}
               <span className="flex flex-grow truncate">
-                {multiple ? title : (selected as OptionType)?.label || placeholder || "Select"}
+                {multiple
+                  ? title
+                  : (selected as OptionType)?.label || placeholder || "Select"}
               </span>
               {/* Label (multiple) */}
               {multiple && (selected as OptionType[])?.length > 0 && (
@@ -235,11 +264,19 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               className={cn(
                 "dark:ring-slate-800  shadow-floating absolute z-20 mt-1 min-w-full rounded-md bg-white text-zinc-900 ring-1 ring-zinc-900 ring-opacity-5 focus:outline-none dark:bg-zinc-900 dark:text-white",
                 availableOptions.length <= 100 && "max-h-60 overflow-auto",
-                anchor === "right" ? "right-0" : anchor === "left" ? "left-0" : anchor
+                anchor === "right"
+                  ? "right-0"
+                  : anchor === "left"
+                  ? "left-0"
+                  : anchor
               )}
             >
               {/* Description - optional*/}
-              {description && <p className="text-zinc-500 px-3 pb-1 pt-2 text-xs">{description}</p>}
+              {description && (
+                <p className="text-zinc-500 px-3 pb-1 pt-2 text-xs">
+                  {description}
+                </p>
+              )}
 
               {/* Search - optional*/}
               {enableSearch && (
@@ -250,7 +287,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
                     value={search}
                     className="border-none focus:ring-transparent"
                     placeholder={t("placeholder.search") + "..."}
-                    onChange={value => setSearch(value)}
+                    onChange={(value) => setSearch(value)}
                   />
                 </div>
               )}
@@ -262,15 +299,32 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
                   itemCount={availableOptions.length}
                   itemSize={36}
                 >
-                  {({ index, style }: { index: number; style: CSSProperties }) => {
+                  {({
+                    index,
+                    style,
+                  }: {
+                    index: number;
+                    style: CSSProperties;
+                  }) => {
                     const option = availableOptions[index];
-                    return <ListboxOption option={option} index={index} style={style} />;
+                    return (
+                      <ListboxOption
+                        option={option}
+                        index={index}
+                        style={style}
+                      />
+                    );
                   }}
                 </FixedSizeList>
               ) : (
                 <>
                   {availableOptions.map((option, index) => (
-                    <ListboxOption key={index} option={option} index={index} style={null} />
+                    <ListboxOption
+                      key={index}
+                      option={option}
+                      index={index}
+                      style={null}
+                    />
                   ))}
                 </>
               )}
@@ -278,7 +332,9 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               {/* Clear / Reset */}
               {enableClear && (
                 <button
-                  onClick={() => (multiple ? onChange([]) : onChange(undefined))}
+                  onClick={() =>
+                    multiple ? onChange([]) : onChange(undefined)
+                  }
                   className="text-zinc-500 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:border-zinc-800 group relative flex w-full cursor-default select-none items-center gap-2 border-t py-3 pl-10 pr-4 disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={Array.isArray(selected) && selected.length === 0}
                 >

@@ -1,31 +1,34 @@
 import Button from "@components/Button";
-import { ReactNode, useContext, useState } from "react";
+import { isSpeech } from "@data-catalogue/hansard";
 import { Transition } from "@headlessui/react";
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
-import { BREAKPOINTS } from "@lib/constants";
-import { WindowContext } from "@lib/contexts/window";
 import { cn } from "@lib/helpers";
 import { Speeches } from "@lib/types";
+import dynamic from "next/dynamic";
+import { ReactNode, useState } from "react";
 import { Details } from "./details";
 import { Collapse } from "./collapse";
-import { isSpeech } from "@data-catalogue/hansard";
 
-interface SidebarProps {
-  children: ReactNode;
-  speeches: Speeches;
+const MobileButton = dynamic(() => import("./mobile-button"), { ssr: false });
+
+interface HansardSidebarProps {
+  children: (button: ReactNode) => ReactNode;
   onClick: (index: string) => void;
+  speeches: Speeches;
 }
 
-const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
-  const { t } = useTranslation(["hansard", "common"]);
-  const [selected, setSelected] = useState<string>();
+const HansardSidebar = ({
+  children,
+  speeches,
+  onClick,
+}: HansardSidebarProps) => {
+  const { t, i18n } = useTranslation(["hansard", "common"]);
   const [showSidebar, setSidebar] = useState<boolean>(true);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
-
-  const [showToggleAnimation, setToggleAnimation] = useState(false);
+  const [_, setToggleAnimation] = useState(false);
 
   const styles = {
     base: "px-5 py-1.5 w-full text-start leading-tight",
@@ -40,6 +43,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
       first: boolean = true,
       prev_id?: string
     ): ReactNode => {
+      const [selected, setSelected] = useState<string>();
       return speeches.map((s, i) => {
         if (isSpeech(s)) {
           return;
@@ -77,7 +81,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
                   {!first && (
                     <>
                       <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
-                      {i === speeches.length - 1 && (
+                      {i <= speeches.length - 1 && (
                         <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
                       )}
                     </>
@@ -86,6 +90,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               ) : (
                 <Details
                   className="relative"
+                  key={id}
                   open={selected?.startsWith(id)}
                   summary={
                     <>
@@ -93,7 +98,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
                       {!first && (
                         <>
                           <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
-                          {i === speeches.length - 1 && (
+                          {i <= speeches.length - 1 && (
                             <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
                           )}
                         </>
@@ -128,14 +133,14 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
     <div className="flex h-full w-full justify-center">
       <div className="flex h-full w-full max-w-screen-2xl">
         {/* Desktop */}
-        <ul
+        <div
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 hidden lg:block max-lg:hide-scrollbar",
-            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll lg:sidebar-scrollbar",
+            "dark:border-r-slate-800 border-r shrink-0 hidden lg:block",
+            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll sidebar-scrollbar",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
-              ? "lg:w-[250px] duration-300"
-              : "hide-scrollbar duration-500"
+              ? "w-[250px] duration-300"
+              : "w-min hide-scrollbar duration-500"
           )}
         >
           <div
@@ -144,22 +149,21 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               showSidebar ? "lg:px-5" : "lg:px-2"
             )}
           >
-            {/* Vertical */}
             <h5
               className={cn(
-                "absolute translate-y-20 -translate-x-9 -rotate-90",
-                showSidebar && "lg:hidden"
+                !showSidebar &&
+                  `absolute -rotate-90 origin-top-left ${
+                    i18n.language === "en-GB"
+                      ? "translate-y-28"
+                      : "translate-y-36"
+                  }`
               )}
             >
               {t("toc")}
             </h5>
-            {/* Horizontal */}
-            <h5 className={cn("max-lg:hidden", !showSidebar && "hidden")}>
-              {t("toc")}
-            </h5>
             <Button
               variant="default"
-              className="p-1.5 shadow-button "
+              className="p-1.5 shadow-button"
               title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
               onClick={() => {
                 setToggleAnimation(true);
@@ -176,7 +180,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               />
             </Button>
           </div>
-          <nav className="max-lg:hidden">
+          <nav className={showSidebar ? "max-lg:hidden" : "hidden"}>
             <Sidebar />
             <div
               className={
@@ -186,25 +190,10 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
               }
             />
           </nav>
-        </ul>
+        </div>
 
         {/* Mobile */}
         <div className="relative flex lg:hidden">
-          <Button
-            variant="default"
-            className={cn(
-              "shadow-floating absolute top-96 left-3 lg:hidden",
-              mobileSidebar && "hidden"
-            )}
-            title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
-            onClick={() => {
-              setToggleAnimation(true);
-              setMobileSidebar(true);
-            }}
-          >
-            {t("toc")}
-            <ChevronDownIcon className="h-4.5 w-4.5" />
-          </Button>
           <>
             <Transition
               show={mobileSidebar}
@@ -222,7 +211,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
                   <h5 className={styles.base}>{t("toc")}</h5>
                   <Button
                     variant="reset"
-                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 group flex h-8 w-8 items-center rounded-full"
+                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 group flex h-8 w-8 justify-center items-center rounded-full"
                     onClick={() => setMobileSidebar(false)}
                   >
                     <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
@@ -236,7 +225,7 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
                       ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
                       : "hidden"
                   }
-                ></div>
+                />
               </div>
               <div
                 className="w-[calc(100%-250px)] lg:hidden fixed right-0 top-0 z-30 h-screen bg-zinc-900 bg-opacity-25"
@@ -247,10 +236,20 @@ const Sidebar = ({ children, speeches, onClick }: SidebarProps) => {
         </div>
 
         {/* Content */}
-        <>{children}</>
+        <>
+          {children(
+            <MobileButton
+              mobileSidebar={mobileSidebar}
+              onClick={() => {
+                setToggleAnimation(true);
+                setMobileSidebar(true);
+              }}
+            />
+          )}
+        </>
       </div>
     </div>
   );
 };
 
-export default Sidebar;
+export default HansardSidebar;

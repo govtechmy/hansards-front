@@ -1,6 +1,13 @@
 import { cn, toDate } from "@lib/helpers";
 import { useTranslation } from "@hooks/useTranslation";
-import { FunctionComponent, ReactNode, forwardRef, LegacyRef, ForwardedRef, useMemo } from "react";
+import {
+  FunctionComponent,
+  ReactNode,
+  forwardRef,
+  LegacyRef,
+  ForwardedRef,
+  useMemo,
+} from "react";
 import { DateTime } from "luxon";
 
 interface SectionProps {
@@ -15,7 +22,7 @@ interface SectionProps {
 
 const Section: FunctionComponent<SectionProps> = forwardRef(
   (
-    { title, className = "py-8 lg:py-12", description, children, date, menu },
+    { title, className, description, children, date, menu },
     ref: LegacyRef<HTMLElement> | undefined
   ) => {
     const { t, i18n } = useTranslation();
@@ -31,7 +38,7 @@ const Section: FunctionComponent<SectionProps> = forwardRef(
       return toDate(date, "dd MMM yyyy, HH:mm", i18n.language);
     }, [date]);
     return (
-      <section className={className} ref={ref}>
+      <section className={cn("py-8 lg:py-12", className)} ref={ref}>
         <div className="flex flex-col gap-6 lg:gap-8">
           {title || date || description ? (
             <div className="flex flex-col gap-y-3">
@@ -62,7 +69,11 @@ const Section: FunctionComponent<SectionProps> = forwardRef(
                   ) : (
                     <div>{description}</div>
                   )}
-                  {menu && <div className="flex w-full gap-3 md:w-auto md:justify-end">{menu}</div>}
+                  {menu && (
+                    <div className="flex w-full gap-3 md:w-auto md:justify-end">
+                      {menu}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

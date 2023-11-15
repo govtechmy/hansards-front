@@ -1,7 +1,7 @@
 import { cn } from "@lib/helpers";
 import { OptionType } from "@lib/types";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { ForwardedRef, forwardRef, ReactNode } from "react";
+import { CSSProperties, ForwardedRef, forwardRef, ReactNode } from "react";
 import { useId } from "@floating-ui/react";
 
 export type ComboOptionProp<T extends unknown> = OptionType & T;
@@ -10,23 +10,25 @@ export type ComboOptionProps<T> = {
   option: ComboOptionProp<T>;
   format?: (option: ComboOptionProp<T>) => ReactNode;
   onClick?: () => void;
-  image?: (value: string) => ReactNode;
+  icon?: (value: string) => ReactNode;
   isSelected: boolean;
   active: boolean;
   index: number;
   total: number;
+  style?: CSSProperties;
 };
 
 function ComboOptionInner<T>(
   {
     option,
     format,
-    image,
+    icon,
     onClick,
     isSelected,
     active,
     index,
     total,
+    style,
     ...rest
   }: ComboOptionProps<T>,
   ref: ForwardedRef<HTMLDivElement>
@@ -35,6 +37,7 @@ function ComboOptionInner<T>(
 
   return (
     <div
+      key={id}
       id={id}
       ref={ref}
       role="option"
@@ -46,31 +49,41 @@ function ComboOptionInner<T>(
       aria-setsize={total}
       aria-posinset={index + 1}
       className={cn(
-        "relative flex w-full cursor-pointer select-none flex-row gap-2 px-4 py-2",
+        "px-4 py-2 w-full cursor-pointer select-none z-10",
+        "hover:bg-slate-100 hover:dark:bg-zinc-800",
         active && "bg-slate-100 dark:bg-zinc-800"
       )}
+      style={style}
     >
-      <>
+      <div className="relative flex flex-row gap-2">
         {format ? (
-          <p className={cn("flex gap-x-1 truncate", isSelected ? "font-medium" : "font-normal")}>
+          <p
+            className={cn(
+              "flex gap-x-1 truncate",
+              isSelected ? "font-medium" : "font-normal"
+            )}
+          >
             {format(option)}
           </p>
         ) : (
           <>
-            {image && image(option.value)}
+            {icon && icon(option.value)}
             <p
-              className={cn("block grow self-center", isSelected ? "font-medium" : "font-normal")}
+              className={cn(
+                "block grow self-center",
+                isSelected ? "font-medium" : "font-normal"
+              )}
             >
               {option.label}
             </p>
           </>
         )}
         {isSelected && (
-          <span className="absolute inset-y-0 right-3 flex items-center">
+          <span className="absolute inset-y-0 right-0 flex items-center">
             <CheckCircleIcon className="text-primary dark:text-secondary h-4 w-4" />
           </span>
         )}
-      </>
+      </div>
     </div>
   );
 }

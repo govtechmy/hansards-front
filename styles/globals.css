@@ -80,8 +80,8 @@
     disabled:pointer-events-none disabled:cursor-not-allowed;
   }
 
-  .link-primary {
-    @apply text-primary cursor-pointer font-medium [text-underline-position:from-font] hover:underline;
+  .link-blue {
+    @apply text-blue-600 cursor-pointer font-medium [text-underline-position:from-font] hover:underline;
   }
 
   .link-dim {
@@ -216,4 +216,9 @@ path:focus {
 .sidebar-scrollbar:hover::-webkit-scrollbar-thumb:hover {
   --tw-shadow-color: rgba(115, 115, 115, 0.4);
   --tw-shadow: var(--tw-shadow-colored);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 10px;
 }

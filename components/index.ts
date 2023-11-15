@@ -24,6 +24,7 @@ export { default as Metadata } from "./Metadata";
 export { default as Markdown } from "./Markdown";
 export { default as Modal } from "./Modal";
 export { default as Nav } from "./Nav";
+export { default as PartyFlag } from "./PartyFlag";
 export { default as Progress } from "./Progress";
 export { default as Radio } from "./Radio";
 export { default as Search } from "./Search";
@@ -37,7 +38,7 @@ export { default as Spinner } from "./Spinner";
 export { default as Tabs, Panel, List } from "./Tabs";
 export { default as Textarea } from "./Textarea";
 export { default as Toast, toast } from "./Toast";
-// export { default as Toggle } from "./Toggle";
+export { default as Toggle } from "./Toggle";
 export { default as Tooltip } from "./Tooltip";
 export { default as ThemeToggle } from "./Nav/theme";
 

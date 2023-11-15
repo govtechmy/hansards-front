@@ -3,10 +3,13 @@ const I18NextHttpBackend = require("i18next-http-backend/cjs");
 const namespaces = [
   "catalogue",
   "common",
+  "election",
   "enum",
   "error",
+  "hansard",
   "home",
   "kehadiran",
+  "party",
   "sejarah",
 ];
 
@@ -17,7 +20,11 @@ const defineConfig = (namespace, autoloadNs) => {
       defaultLocale: "ms-MY",
       locales: ["ms-MY", "en-GB"],
       backend: {
-        loadPath: `${process.env.NEXT_PUBLIC_I18N_URL}/${process.env.NEXT_PUBLIC_APP_ENV}/{{lng}}/{{ns}}.json`,
+        loadPath: `${process.env.NEXT_PUBLIC_I18N_URL}/${
+          process.env.NEXT_PUBLIC_APP_ENV === "production"
+            ? "production"
+            : "staging"
+        }/{{lng}}/{{ns}}.json`,
         crossDomain: true,
         allowMultiLoading: true,
       },

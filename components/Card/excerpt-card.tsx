@@ -4,11 +4,6 @@ import Markdown from "@components/Markdown";
 import ArrowUpRightIcon from "@heroicons/react/24/solid/ArrowUpRightIcon";
 import { useTranslation } from "@hooks/useTranslation";
 
-/**
- * Excerpt Card
- * @overview Status: In-development
- */
-
 export type Excerpt = {
   id: number;
   speaker: string;
@@ -88,21 +83,21 @@ const ExcerptCard = ({ excerpt, keyword }: ExcerptCardProps) => {
           </div>
           <span className="flex text-zinc-500 text-xs gap-1 pt-3 border-t dark:border-zinc-800">
             <span>
-              {t("term", {
+              {t("parlimen", {
                 ordinal: true,
                 count: excerpt.sitting.term,
               })}
             </span>
             /
             <span>
-              {t("meeting", {
+              {t("penggal", {
                 ordinal: true,
                 count: excerpt.sitting.meeting,
               })}
             </span>
             /
             <span>
-              {t("session", {
+              {t("mesyuarat", {
                 ordinal: true,
                 count: excerpt.sitting.session,
               })}

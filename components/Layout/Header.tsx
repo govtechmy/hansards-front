@@ -2,7 +2,6 @@ import Container from "@components/Container";
 import Nav from "@components/Nav";
 import { useTranslation } from "@hooks/useTranslation";
 import { ParlimenIcon } from "@icons/index";
-import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
 
@@ -39,20 +38,20 @@ const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
                   onClick={close}
                 />
                 <Nav.Item
-                  title={t("nav.kehadiran")}
-                  link="/kehadiran"
                   key="/kehadiran"
+                  title={t("nav.kehadiran")}
+                  link="/kehadiran/dewan-rakyat"
                   onClick={close}
                 />
                 <Nav.Item
-                  title={t("nav.sejarah")}
-                  link="/sejarah"
                   key="/sejarah"
+                  title={t("nav.sejarah")}
+                  link="/sejarah/individu"
                   onClick={close}
                 />
                 <Nav.Item
-                  title={t("nav.katalog")}
                   key="/katalog"
+                  title={t("nav.katalog")}
                   link="/katalog/dewan-rakyat"
                   onClick={close}
                 />

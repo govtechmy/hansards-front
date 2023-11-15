@@ -24,11 +24,11 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
 
   const TAB_OPTIONS: Array<OptionType> = [
     {
-      label: t("dewan_rakyat"),
+      label: t("dewan_rakyat", { ns: "common"}),
       value: routes.KATALOG_DR,
     },
     {
-      label: t("dewan_negara"),
+      label: t("dewan_negara", { ns: "common"}),
       value: routes.KATALOG_DN,
     },
   ];
@@ -42,8 +42,8 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center">
-        <div className="hide-scrollbar max-[420px]:justify-center, flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
+      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black justify-start min-[350px]:justify-center">
+        <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
           {TAB_OPTIONS.map((tab) => (
             <div key={tab.value} className="snap-start">
               <At
@@ -62,16 +62,16 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
                       className={cn(
                         "h-4.5 w-4.5",
                         dewan === tab.value
-                          ? "dark:text-white text-zinc-800"
-                          : "text-dim"
+                          ? "text-zinc-900 dark:text-white"
+                          : "text-zinc-500"
                       )}
                     />
                     <div
                       className={cn(
                         "flex items-center gap-2",
                         dewan === tab.value
-                          ? "text-black dark:text-white"
-                          : "text-dim"
+                          ? "text-zinc-900 dark:text-white"
+                          : "text-zinc-500"
                       )}
                     >
                       <span className="whitespace-nowrap text-base font-medium">

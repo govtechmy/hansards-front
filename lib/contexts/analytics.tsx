@@ -1,4 +1,4 @@
-import { post } from "@lib/api";
+import { get, post } from "@lib/api";
 import { MetaPage } from "@lib/types";
 import {
   FunctionComponent,
@@ -25,17 +25,22 @@ export type Meta = Omit<MetaPage["meta"], "type"> & {
   type: "dashboard" | "data-catalogue";
 };
 
-type AnalyticsResult<T extends "dashboard" | "data-catalogue"> = {
-  id: string;
-  type: T;
-  view_count: number;
-  download_csv: T extends "dashboard" ? never : number;
-  download_pdf: T extends "dashboard" ? never : number;
+// type AnalyticsResult<T extends "dashboard" | "data-catalogue"> = {
+//   id: string;
+//   type: T;
+//   view_count: number;
+//   download_csv: T extends "dashboard" ? never : number;
+//   download_pdf: T extends "dashboard" ? never : number;
+// };
+
+type Count = {
+  type: "downloads" | "shares" | "views";
+  counts: number;
 };
 
 type AnalyticsContextProps<T extends "dashboard" | "data-catalogue"> = {
-  result?: Partial<AnalyticsResult<T>>;
-  realtime_track: (name: string, id: string, metric: MetricType) => void;
+  counts: Array<Count | never>; // Partial<AnalyticsResult<T>>;
+  realtime_track: (name: string, id: string, fileType?: "pdf" | "csv") => void;
 };
 
 interface ContextChildren {
@@ -46,7 +51,7 @@ interface ContextChildren {
 export const AnalyticsContext = createContext<
   AnalyticsContextProps<"dashboard" | "data-catalogue">
 >({
-  result: {},
+  counts: [],
   realtime_track() {},
 });
 
@@ -54,33 +59,46 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
   meta,
   children,
 }) => {
-  const [data, setData] = useState<
-    AnalyticsResult<"dashboard" | "data-catalogue"> | undefined
-  >();
+  const [data, setData] = useState<any | undefined>(); // Array<{type: MetricType, view_count?: number}>
 
   // auto-increment view count for id
   useEffect(() => {
-    track("events_example", meta.id, "view");
+    track(process.env.NEXT_PUBLIC_POST_VIEW, meta.id);
   }, []);
 
   // increment activity count
-  const track = (name: string, id: string, metricType: MetricType) => {
+  const track = (name: string, hansard_id: string, type?: "pdf" | "csv") => {
     post(
       `/events?name=${name}`,
-      { timestamp: new Date().toISOString(), hansard_id: id, type: metricType },
+      { timestamp: new Date().toISOString(), hansard_id, type },
       "tinybird",
       {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_AUTH.concat(
-          process.env.NEXT_PUBLIC_POST_COUNTS
+          process.env.NEXT_PUBLIC_POST_TOKEN
         )}`,
       }
     )
-      .then((response) => setData(response.data))
+      .then(() =>
+        get(
+          `/pipes/${process.env.NEXT_PUBLIC_GET_COUNTS}.json`,
+          {
+            hansard_id,
+            token: process.env.NEXT_PUBLIC_TINYBIRD_AUTH.concat(
+              process.env.NEXT_PUBLIC_GET_TOKEN
+            ),
+          },
+          "tinybird"
+        )
+          .then(({ data }) => {
+            if (data.data) setData(data.data);
+          })
+          .catch((e) => console.error(e))
+      )
       .catch((e) => console.error(e));
   };
 
   return (
-    <AnalyticsContext.Provider value={{ result: data, realtime_track: track }}>
+    <AnalyticsContext.Provider value={{ counts: data, realtime_track: track }}>
       {children}
     </AnalyticsContext.Provider>
   );

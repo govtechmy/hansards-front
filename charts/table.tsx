@@ -41,7 +41,7 @@ export interface TableConfigColumn {
 }
 
 export interface TableConfig {
-  id: string | undefined;
+  id?: string | undefined;
   header?: ReactNode;
   accessorKey?: string;
   className?: string;
@@ -160,6 +160,54 @@ const Table: FunctionComponent<TableProps> = ({
     return ele !== undefined && ele !== null ? ele.clientWidth : 0;
   };
 
+  const styles = {
+    page: "px-3 py-1.5 rounded-md",
+    inactive: "hover:bg-slate-100 dark:bg-zinc-800",
+    active: "bg-slate-200 dark:bg-zinc-800",
+  };
+
+  const range = (start: number, end: number) => {
+    let length = end - start + 1;
+    return Array.from({ length }, (_, idx) => idx + start);
+  };
+
+  const DOTS = "...";
+  const curr = table.getState().pagination.pageIndex;
+  const totalPages = table.getPageCount();
+  const siblings = 1; // square(s) beside curr
+  const pageRange = useMemo(() => {
+    // If num of pages < the squares we want to show, return the range [1..totalPages]
+    if (totalPages <= 5 + siblings) {
+      return range(1, totalPages);
+    }
+
+    const leftSiblingIdx = Math.max(curr + 1 - siblings, 1);
+    const rightSiblingIdx = Math.min(curr + 1 + siblings, totalPages);
+
+    const shouldShowLeftDots = leftSiblingIdx > 2;
+    const shouldShowRightDots = rightSiblingIdx < totalPages - 2;
+
+    const firstPageIdx = 1;
+    const lastPageIdx = totalPages;
+
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      let leftItemCount = 3 + 2 * siblings;
+      let leftRange = range(1, leftItemCount);
+      return [...leftRange, DOTS, totalPages];
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      let rightItemCount = 3 + 2 * siblings;
+      let rightRange = range(totalPages - rightItemCount + 1, totalPages);
+      return [firstPageIdx, DOTS, ...rightRange];
+    }
+
+    if (shouldShowLeftDots && shouldShowRightDots) {
+      let middleRange = range(leftSiblingIdx, rightSiblingIdx);
+      return [firstPageIdx, DOTS, ...middleRange, DOTS, lastPageIdx];
+    }
+  }, [curr, totalPages]);
+
   return (
     <div>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -180,7 +228,7 @@ const Table: FunctionComponent<TableProps> = ({
       <div className={cn(responsive && "relative overflow-x-auto")}>
         <table
           className={cn(
-            "relative mx-auto w-full table-auto border-separate border-spacing-0 whitespace-nowrap md:w-fit",
+            "relative mx-auto w-full table-auto border-separate border-spacing-0 whitespace-nowrap",
             className
           )}
           data-testid={props["data-testid"]}
@@ -209,7 +257,7 @@ const Table: FunctionComponent<TableProps> = ({
                         <div
                           className={cn(
                             header.subHeaders.length < 1
-                              ? "flex select-none items-center justify-between gap-1 px-2 text-left text-sm"
+                              ? "flex select-none items-center justify-between gap-1 text-left text-sm"
                               : !header.column.columnDef.header
                               ? "hidden"
                               : "pr-2 text-end",
@@ -276,17 +324,12 @@ const Table: FunctionComponent<TableProps> = ({
                   <tr
                     key={row.id}
                     className={cn(
-                      stripe ?
-                        "even:bg-slate-50 even:dark:bg-zinc-800 odd:bg-white odd:dark:bg-zinc-900"
+                      stripe
+                        ? "even:bg-slate-50 even:dark:bg-zinc-800 odd:bg-white odd:dark:bg-zinc-900"
                         : "bg-white dark:bg-zinc-900"
                     )}
                   >
                     {row.getVisibleCells().map((cell: any) => {
-                      const lastCellInGroup = cell.column.parent
-                        ? cell.column.parent?.columns[
-                            cell.column.parent?.columns.length - 1
-                          ]
-                        : cell.column;
                       const value = cell.getValue();
                       const unit = cell.column.columnDef.unit ?? undefined;
 
@@ -307,7 +350,6 @@ const Table: FunctionComponent<TableProps> = ({
                       const classNames = cn(
                         "border-slate-200 dark:border-zinc-800 border-b px-2 py-2.5 max-sm:max-w-[150px] truncate",
                         typeof value === "number" && "tabular-nums text-right",
-                        lastCellInGroup.id === cell.column.id && "text-sm",
                         freeze?.includes(cell.column.id) &&
                           "sticky z-10 bg-inherit max-lg:border-r-2",
                         cell.column.columnDef.className
@@ -316,6 +358,11 @@ const Table: FunctionComponent<TableProps> = ({
                       );
 
                       const displayValue = () => {
+                        if (cell.column.columnDef.cell)
+                          return flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          );
                         if (typeof value === "number")
                           return numFormat(
                             value,
@@ -349,11 +396,8 @@ const Table: FunctionComponent<TableProps> = ({
               })
             ) : (
               <tr>
-                <td
-                  colSpan={table.getAllColumns().length}
-                  className="border-r border-zinc-900"
-                >
-                  <div>{t("no_entries")}. </div>
+                <td colSpan={table.getAllColumns().length}>
+                  <div className="h-20 flex justify-center items-center">{t("no_entries")}. </div>
                 </td>
               </tr>
             )}
@@ -361,19 +405,34 @@ const Table: FunctionComponent<TableProps> = ({
         </table>
       </div>
       {enablePagination && (
-        <div
-          className={`mt-5 flex items-center justify-center gap-4 text-sm font-medium`}
-        >
+        <div className="mt-5 flex items-center justify-center gap-4 text-sm font-medium">
           <Button
             className="btn-disabled btn-default"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             <ChevronLeftIcon className="h-4.5 w-4.5" />
-            {t("previous")}
+            <p className="max-sm:hidden">{t("previous")}</p>
           </Button>
-
-          <span className="flex items-center gap-1 text-center">
+          <div className="max-[480px]:hidden flex gap-1.5 items-center text-inherit">
+            {pageRange?.map((page, i) => {
+              return typeof page === "number" ? (
+                <button
+                  key={page + i}
+                  className={cn(
+                    styles.page,
+                    curr === page - 1 ? styles.active : styles.inactive
+                  )}
+                  onClick={() => table.setPageIndex(page - 1)}
+                >
+                  {page}
+                </button>
+              ) : (
+                <div key={page + i} className={cn(styles.page)}>{page}</div>
+              );
+            })}
+          </div>
+          <span className="max-[480px]:flex items-center gap-1 text-center hidden">
             {t("page_of", {
               current: table.getState().pagination.pageIndex + 1,
               total: table.getPageCount(),
@@ -384,7 +443,7 @@ const Table: FunctionComponent<TableProps> = ({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            {t("next")}
+            <p className="max-sm:hidden">{t("next")}</p>
             <ChevronRightIcon className="h-4.5 w-4.5" />
           </Button>
         </div>
@@ -457,38 +516,6 @@ const dummyConfig: TableConfig[] = [
       },
     ],
   },
-  {
-    id: "adolescent",
-    header: "Adolescent",
-    columns: [
-      {
-        id: "adolescent.perc_1dose",
-        header: "% 1 Dose",
-        accessorKey: "adolescent.perc_1dose",
-      },
-      {
-        id: "adolescent.perc_2dose",
-        header: "% 2 Doses",
-        accessorKey: "adolescent.perc_2dose",
-      },
-    ],
-  },
-  {
-    id: "children",
-    header: "Children",
-    columns: [
-      {
-        id: "children.perc_1dose",
-        header: "% 1 Dose",
-        accessorKey: "children.perc_1dose",
-      },
-      {
-        id: "children.perc_2dose",
-        header: "% 2 Doses",
-        accessorKey: "children.perc_1dose",
-      },
-    ],
-  },
 ];
 
 const dummy = Array(Object.keys(CountryAndStates).length)
@@ -507,14 +534,6 @@ const dummy = Array(Object.keys(CountryAndStates).length)
         perc_1dose: Math.floor(Math.random() * 10) + 1,
         perc_2dose: Math.floor(Math.random() * 10) + 1,
         perc_1booster: Math.floor(Math.random() * 10) + 1,
-      },
-      adolescent: {
-        perc_1dose: Math.floor(Math.random() * 10) + 1,
-        perc_2dose: Math.floor(Math.random() * 10) + 1,
-      },
-      children: {
-        perc_1dose: Math.floor(Math.random() * 10) + 1,
-        perc_2dose: Math.floor(Math.random() * 10) + 1,
       },
     };
   });

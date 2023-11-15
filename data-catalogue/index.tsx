@@ -5,6 +5,7 @@ import { Archive } from "@lib/types";
 import { FunctionComponent, useEffect, useRef } from "react";
 import CatalogueFolder from "./folder";
 import { ParsedUrlQuery } from "querystring";
+import { WindowProvider } from "@lib/contexts/window";
 
 /**
  * Catalogue Index
@@ -60,7 +61,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
             });
           }}
         >
-          <div className="flex flex-col pl-6 sm:pl-8 pb-8 gap-y-[42px] w-full">
+          <div className="flex flex-col pl-6 sm:pl-8 pt-3 pb-6 lg:pb-8 gap-y-[42px] w-full">
             <>
               {PARLIMENS ? (
                 PARLIMENS.map((num) => {
@@ -74,11 +75,11 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                   return (
                     <section key={num}>
                       <div
-                        className="sticky top-[113px] z-10 pt-8 pb-3 bg-white dark:bg-zinc-900 flex gap-3 items-center"
+                        className="sticky top-[113px] z-10 py-3 bg-white dark:bg-zinc-900 flex gap-3 items-center"
                         ref={(ref) => (scrollRef.current[parlimen] = ref)}
                       >
                         <h4 className="flex flex-wrap sm:whitespace-nowrap">
-                          {t("term_full", {
+                          {t("parlimen_full", {
                             ns: "enum",
                             n: num,
                           }).concat(yearRange)}
@@ -109,7 +110,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                             >
                               <div className="flex gap-3 items-center">
                                 <h5 className="flex flex-wrap sm:whitespace-nowrap">
-                                  {t("session_full", {
+                                  {t("penggal_full", {
                                     ns: "enum",
                                     n: session,
                                   }).concat(yearRange)}
@@ -143,12 +144,14 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                                       : `${start} - ${end}`;
 
                                   return (
-                                    <CatalogueFolder
-                                      key={meeting}
-                                      dateRange={dateRange}
-                                      meeting={meeting}
-                                      sitting_list={sitting_list}
-                                    />
+                                    <WindowProvider>
+                                      <CatalogueFolder
+                                        key={meeting}
+                                        dateRange={dateRange}
+                                        meeting={meeting}
+                                        sitting_list={sitting_list}
+                                      />
+                                    </WindowProvider>
                                   );
                                 })}
                               </div>

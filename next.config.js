@@ -56,6 +56,20 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/katalog",
+        destination: "/katalog/dewan-rakyat",
+        permanent: true,
+      },
+      {
+        source: "/kehadiran",
+        destination: "/kehadiran/dewan-rakyat",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = () => {

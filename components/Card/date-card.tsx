@@ -1,8 +1,3 @@
-/**
- * Date Card
- * @overview Status: In-development
- */
-
 import { cn } from "@lib/helpers";
 
 interface DateCardProps {
