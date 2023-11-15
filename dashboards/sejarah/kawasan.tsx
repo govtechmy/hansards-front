@@ -85,7 +85,7 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
     <div className="flex h-full w-full justify-center">
       <div className="flex flex-col h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
         <div className="xl:col-span-10 xl:col-start-2">
-          <h4 className="text-center">{t("kawasan_header")}</h4>
+          <h4 className="text-center">{t("kawasan.header")}</h4>
           <div className="mx-auto w-full py-6 sm:w-[500px]">
             <ComboBox
               placeholder={t("cari_kawasan")}
@@ -108,7 +108,7 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
           </div>
 
           <h5 className="py-6">
-            {t("kawasan_title")}
+            {t("kawasan.title")}
             <span className="text-primary">{KAWASAN_OPTION?.label}</span>
           </h5>
 

@@ -158,7 +158,7 @@ const SejarahParlimen = ({
     <div className="flex h-full w-full justify-center">
       <div className="flex flex-col h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
         <div className="xl:col-span-10 xl:col-start-2">
-          <h4 className="text-center pb-6">{t("parlimen_header")}</h4>
+          <h4 className="text-center pb-6">{t("parlimen.header")}</h4>
 
           <div className="pb-6 lg:pb-8 items-center gap-2 flex flex-col sm:flex-row mx-auto w-fit">
             <Dropdown

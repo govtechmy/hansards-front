@@ -140,9 +140,9 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
           <div className="text-lg leading-9 py-6">
             <PartyFlag party={params.name ?? DEFAULT_PARTI}>
               {(party) => (
-                <>
+                <span>
                   <span className="font-bold">{t(party, { ns: "party" })}</span>
-                  <Trans>{t("party.title")}</Trans>
+                  <Trans>{t("parti.title")}</Trans>
                   <StateDropdown
                     currentState={params.state ?? "mys"}
                     onChange={(selected) => {
@@ -156,7 +156,7 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
                     width="inline-flex ml-0.5"
                     anchor="left"
                   />
-                </>
+                </span>
               )}
             </PartyFlag>
           </div>

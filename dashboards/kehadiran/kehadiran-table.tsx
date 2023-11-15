@@ -80,7 +80,10 @@ const KehadiranTable = ({
       onChange={(index) => setTabIdx(index)}
       className="pb-6"
     >
-      <Panel name={t("individu")} icon={<UserIcon className="mr-1 h-5 w-5" />}>
+      <Panel
+        name={t("individu", { ns: "common" })}
+        icon={<UserIcon className="mr-1 h-5 w-5" />}
+      >
         {loading ? (
           <Skeleton height="h-[550px]" width="w-auto" />
         ) : (
@@ -139,7 +142,7 @@ const KehadiranTable = ({
         )}
       </Panel>
       <Panel
-        name={t("party")}
+        name={t("party", { ns: "common" })}
         icon={<FlagIcon key="map_icon" className="mr-1 h-5 w-5" />}
       >
         {loading ? (
