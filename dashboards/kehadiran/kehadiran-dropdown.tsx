@@ -72,7 +72,7 @@ const KehadiranDropdown = ({
     if (data.parlimen && data.parlimen !== "all") {
       _penggal = Object.keys(dropdown[data.parlimen])
         .filter((e) => !["start_date", "end_date"].includes(e))
-        .filter((e) => (data.parlimen === "14" && +e < 4 ? false : true))
+        .filter((e) => (data.parlimen === "14" && +e < 3 ? false : true))
         .reverse()
         .map((penggal) => {
           const { start_date, end_date } = dropdown[data.parlimen][penggal];
@@ -102,6 +102,9 @@ const KehadiranDropdown = ({
       _mesyuarat = Object.keys(dropdown[data.parlimen][data.penggal])
         .reverse()
         .filter((e) => !["start_date", "end_date"].includes(e))
+        .filter(
+          (e) => data.parlimen === "14" && data.penggal === "3" && +e === 0
+        )
         .map((mesyuarat: string) => {
           const { start_date, end_date } =
             dropdown[data.parlimen][data.penggal][mesyuarat];
