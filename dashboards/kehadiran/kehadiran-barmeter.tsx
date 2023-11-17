@@ -26,7 +26,7 @@ const KehadiranBarMeter = ({ barmeter, loading }: KehadiranBarMeterProps) => {
 
   return (
     <section className="py-8 lg:py-12 space-y-6">
-      <h5>{t("barmeter_title")}</h5>
+      <h3 className="title">{t("barmeter_title")}</h3>
 
       {loading ? (
         <Skeleton height="h-[300px]" width="w-auto" />

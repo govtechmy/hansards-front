@@ -43,7 +43,7 @@ const Section: FunctionComponent<SectionProps> = forwardRef(
           {title || date || description ? (
             <div className="flex flex-col gap-y-3">
               <div className="flex flex-col flex-wrap items-start gap-2 lg:flex-row lg:items-center lg:justify-between">
-                {title && typeof title === "string" ? <h4>{title}</h4> : title}
+                {title && typeof title === "string" ? <h2 className="header">{title}</h2> : title}
                 {date && date !== null && (
                   <span className="text-zinc-500 text-right text-sm">
                     {t("data_of", { date: displayDate })}

@@ -238,7 +238,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
     >
       {(sidebarButton) => (
         <div className="flex flex-col w-full items-center">
-          <Hero background="gold">
+          <Hero>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
               <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
                 <span className={styles.link_dim}>
@@ -262,11 +262,11 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
               <div className="flex justify-between gap-3 lg:gap-6 items-center">
                 <DateCard size="lg" date={date} />
                 <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
-                  <h2 className="text-zinc-900" data-testid="hero-header">
+                  <h1 className="text-3xl font-bold leading-[38px] text-zinc-900 dark:text-white" data-testid="hero-header">
                     {t("header", {
                       context: cycle.house === 0 ? "dr" : "dn",
                     })}
-                  </h2>
+                  </h1>
                   {counts && counts.length > 0 && (
                     <p
                       className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"

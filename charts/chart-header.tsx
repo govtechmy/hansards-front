@@ -13,7 +13,7 @@ const ChartHeader: FunctionComponent<ChartHeaderProps> = ({ title, menu, control
     <>
       {[title, controls, menu].some(Boolean) && (
         <div className={cn("flex flex-wrap items-start justify-between gap-2", className)}>
-          {title && typeof title === "string" ? <h5>{title}</h5> : title}
+          {title && typeof title === "string" ? <h3 className="title">{title}</h3> : title}
           {menu && <div className="block md:hidden">{menu}</div>}
           {controls && (
             <div className="flex items-center justify-end gap-2 md:hidden">{controls}</div>

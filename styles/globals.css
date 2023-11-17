@@ -12,30 +12,6 @@
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 @layer base {
-  h1 {
-    @apply font-header text-4xl font-bold leading-[54px] dark:text-white;
-  }
-
-  h2 {
-    @apply font-header text-3xl font-bold leading-[38px] text-zinc-900 dark:text-white;
-  }
-
-  h3 {
-    @apply font-header text-2xl font-bold text-zinc-900 dark:text-white;
-  }
-
-  h4 {
-    @apply font-header text-xl font-bold text-zinc-900 dark:text-white;
-  }
-
-  h5 {
-    @apply text-lg font-bold text-zinc-900 dark:text-white;
-  }
-
-  h6 {
-    @apply text-base font-semibold uppercase tracking-wider text-gray-500 dark:text-white;
-  }
-
   input[type="search"]::-webkit-search-decoration,
   input[type="search"]::-webkit-search-cancel-button,
   input[type="search"]::-webkit-search-results-button,
@@ -49,6 +25,14 @@
 }
 
 @layer components {
+  .header {
+    @apply font-header text-xl font-bold text-zinc-900 dark:text-white;
+  }
+
+  .title {
+    @apply text-lg font-bold text-zinc-900 dark:text-white;
+  }
+
   .btn {
     @apply flex select-none items-center gap-1.5 rounded-md border border-transparent text-start text-sm font-medium outline-none transition;
   }

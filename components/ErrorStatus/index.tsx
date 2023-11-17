@@ -18,12 +18,12 @@ const ErrorStatus: FunctionComponent<ErrorStatusProps> = ({ title, description, 
   return (
     <>
       <div className="flex flex-col space-y-10">
-        <div className="flex flex-col-reverse  items-end justify-between gap-6 lg:flex-row">
+        <div className="flex flex-col-reverse items-end justify-between gap-6 lg:flex-row font-header">
           <div className="space-y-2">
-            <h2 className="text-xl lg:text-3xl">{title}</h2>
-            {description && <p className="text-zinc-500">{description}</p>}
+            <h1 className="text-xl lg:text-3xl text-zinc-900 dark:text-white">{title}</h1>
+            {description && <p className="text-zinc-500 font-body">{description}</p>}
           </div>
-          <h1 className="text-zinc-500 text-7xl font-zinc-900">{code}</h1>
+          <h2 className="text-zinc-500 text-7xl">{code}</h2>
         </div>
         <div>
           <p className="text-zinc-500 pb-2 text-sm font-bold uppercase dark:text-white">

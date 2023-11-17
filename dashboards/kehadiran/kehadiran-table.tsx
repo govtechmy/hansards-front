@@ -70,11 +70,11 @@ const KehadiranTable = ({
   return (
     <Tabs
       title={
-        <h5>
+        <h3 className="title">
           {t("kehadiran", {
             context: tab_idx === 0 ? "ind" : "parti",
           })}
-        </h5>
+        </h3>
       }
       current={tab_idx}
       onChange={(index) => setTabIdx(index)}

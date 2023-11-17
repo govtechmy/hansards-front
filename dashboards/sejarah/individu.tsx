@@ -94,7 +94,7 @@ const SejarahIndividu = ({
       <Section>
         <div className="xl:grid xl:grid-cols-12">
           <div className="xl:col-span-10 xl:col-start-2">
-            <h4 className="text-center">{t("individu.header")}</h4>
+            <h2 className="header text-center">{t("individu.header")}</h2>
             <div className="mx-auto w-full py-6 sm:w-[500px]">
               <ComboBox
                 placeholder={t("cari_individu")}
@@ -118,10 +118,10 @@ const SejarahIndividu = ({
 
             <Tabs
               title={
-                <h5 className="py-6">
+                <h3 className="title py-6">
                   {t("individu.title")}
                   <span className="text-primary">{INDIVIDU_OPTION?.label}</span>
-                </h5>
+                </h3>
               }
               current={data.tab_idx}
               onChange={(index) => setData("tab_idx", index)}

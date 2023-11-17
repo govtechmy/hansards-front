@@ -3,6 +3,7 @@ import KehadiranDropdown, {
   KehadiranDropdownProps,
 } from "./kehadiran-dropdown";
 import KehadiranTable, { KehadiranTableProps } from "./kehadiran-table";
+import Container from "@components/Container";
 import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { useRouter } from "next/router";
@@ -41,33 +42,31 @@ const KehadiranDashboard = ({
 
   return (
     <>
-      <div className="flex h-full w-full justify-center">
-        <div className="flex flex-col h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
-          <div className="xl:col-span-10 xl:col-start-2">
-            <section>
-              <h4 className="text-center">{t("header")}</h4>
+      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+        <div className="xl:col-span-10 xl:col-start-2">
+          <section>
+            <h2 className="header text-center">{t("header")}</h2>
 
-              <KehadiranDropdown
-                dropdown={dropdown}
-                onLoad={() => setData("loading", true)}
-                params={params}
-              />
+            <KehadiranDropdown
+              dropdown={dropdown}
+              onLoad={() => setData("loading", true)}
+              params={params}
+            />
 
-              {/* Individual/Party Attendance */}
-              <KehadiranTable
-                individual={individual}
-                loading={data.loading}
-                party={party}
-              />
-            </section>
+            {/* Individual/Party Attendance */}
+            <KehadiranTable
+              individual={individual}
+              loading={data.loading}
+              party={party}
+            />
+          </section>
 
-            {/* A breakdown of attendance by key demographics */}
-            <Barmeter barmeter={barmeter} loading={data.loading} />
+          {/* A breakdown of attendance by key demographics */}
+          <Barmeter barmeter={barmeter} loading={data.loading} />
 
-            <p className="text-zinc-500 text-center">{t("disclaimer")}</p>
-          </div>
+          <p className="text-zinc-500 text-center">{t("disclaimer")}</p>
         </div>
-      </div>
+      </Container>
     </>
   );
 };

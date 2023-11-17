@@ -20,7 +20,7 @@ const Excerpts = ({ count, excerpts, keyword }: ExcerptsProps) => {
     <>
       <Section>
         <div className="justify-between flex pb-6 lg:pb-8 flex-wrap gap-3">
-          <h4>{t("excerpts", { count: count })}</h4>
+          <h2 className="header">{t("excerpts", { count: count })}</h2>
           <At
             className="btn btn-border active:bg-slate-100 shadow-button bg-white px-3 py-1.5 text-sm text-zinc-900"
             href="/katalog"
