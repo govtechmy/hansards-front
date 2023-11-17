@@ -1,7 +1,7 @@
 import Container from "@components/Container";
 import Nav from "@components/Nav";
 import { useTranslation } from "@hooks/useTranslation";
-import { ParlimenIcon } from "@icons/index";
+import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
 
@@ -20,11 +20,11 @@ const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
       >
         <div className="flex w-full items-center gap-1 lg:gap-4">
           <Link href="/">
-            <div className="flex cursor-pointer gap-2.5">
-              <div className="flex w-8 items-center justify-center">
-              <ParlimenIcon />
+            <div className="flex gap-2.5">
+              <div className="flex w-7 h-7 items-center justify-center">
+                <Image src="/static/images/logo.png" width={108} height={109} alt="datagovmy_logo" />
               </div>
-              <h4 className="whitespace-nowrap">Hansard Parlimen</h4>
+              <div className="header whitespace-nowrap">Hansard Parlimen</div>
             </div>
           </Link>
 
