@@ -42,8 +42,8 @@ const KehadiranBarMeter = ({ barmeter, loading }: KehadiranBarMeterProps) => {
                   layout="horizontal"
                   unit="%"
                   data={barmeter[k]}
-                  sort={["age"].includes(k) ? undefined : "desc"}
-                  formatX={(key) => t(key)}
+                  sort={k === "age" ? undefined : "desc"}
+                  formatX={(key) => k === "age" ? key : t(key)}
                 />
               </div>
             );
