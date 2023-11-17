@@ -92,7 +92,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                           onClick(parlimen_penggal);
                           if (size.width < BREAKPOINTS.LG) {
                             setMobileSidebar(false);
-                          } 
+                          }
                         }}
                         className={cn(
                           "relative hover:bg-slate-100 dark:hover:bg-zinc-800 ml-2.5",
@@ -127,106 +127,108 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
 
   return (
     <>
-      {/* Desktop */}
-      <div
-        className={cn(
-          "dark:border-r-slate-800 border-r shrink-0 w-11 max-lg:hide-scrollbar",
-          "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
-          "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
-          showSidebar
-            ? "lg:w-[250px] duration-300"
-            : "hide-scrollbar duration-500"
-        )}
-      >
+      <div className="flex w-full">
+        {/* Desktop */}
         <div
           className={cn(
-            "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 px-0 py-3 items-baseline justify-between whitespace-nowrap",
-            showSidebar && "lg:px-5"
+            "dark:border-r-slate-800 border-r shrink-0 w-11 max-lg:hide-scrollbar",
+            "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
+            "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
+            showSidebar
+              ? "lg:w-[250px] duration-300"
+              : "hide-scrollbar duration-500"
           )}
         >
-          <h4
+          <div
             className={cn(
-              "title max-lg:absolute max-lg:-rotate-90 origin-top-left max-lg:translate-y-[150px]",
-              !showSidebar &&
-                "absolute -rotate-90 origin-top-left translate-y-[150px] text-zinc-500"
+              "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 px-0 py-3 items-baseline justify-between whitespace-nowrap",
+              showSidebar && "lg:px-5"
             )}
           >
-            {t("full_archive")}
-          </h4>
-          <Button
-            variant="default"
-            className="p-1.5 shadow-button"
-            title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
-            onClick={() => {
-              setToggleAnimation(true);
-              if (size.width < BREAKPOINTS.LG) {
-                setMobileSidebar(true);
-              } else {
-                setSidebar(!showSidebar);
-              }
-            }}
-          >
-            <ChevronRightIcon
+            <h4
               className={cn(
-                "h-4.5 w-4.5 transition-transform ease-in-out motion-reduce:transform-none",
-                showSidebar && size.width >= BREAKPOINTS.LG
-                  ? "-rotate-180 duration-500"
-                  : "rotate-0 duration-300"
+                "title max-lg:absolute max-lg:-rotate-90 origin-top-left max-lg:translate-y-[150px]",
+                !showSidebar &&
+                  "absolute -rotate-90 origin-top-left translate-y-[150px] text-zinc-500"
               )}
-            />
-          </Button>
-        </div>
-        {size.width > BREAKPOINTS.LG && (
-          <nav className="max-lg:hidden">
-            <Sidebar />
-            <div
-              className={
-                showSidebar
-                  ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
-                  : "hidden"
-              }
-            />
-          </nav>
-        )}
-      </div>
-
-      {/* Mobile */}
-      {size.width <= BREAKPOINTS.LG && (
-        <>
-          <Transition
-            show={mobileSidebar}
-            as="nav"
-            className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[250px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
-            enter="transition-opacity duration-75"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition-opacity duration-150"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="flex flex-col gap-1 pb-3">
-              <div className="sticky top-0 flex items-center justify-between pt-2 pr-3 z-10 bg-white dark:bg-zinc-900">
-                <h3 className={cn("title", styles.base)}>
-                  {t("full_archive")}
-                </h3>
-                <XMarkIcon
-                  onClick={() => setMobileSidebar(false)}
-                  className="text-zinc-500 h-5 w-5"
-                />
-              </div>
-
+            >
+              {t("full_archive")}
+            </h4>
+            <Button
+              variant="default"
+              className="p-1.5 shadow-button"
+              title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
+              onClick={() => {
+                setToggleAnimation(true);
+                if (size.width < BREAKPOINTS.LG) {
+                  setMobileSidebar(true);
+                } else {
+                  setSidebar(!showSidebar);
+                }
+              }}
+            >
+              <ChevronRightIcon
+                className={cn(
+                  "h-4.5 w-4.5 transition-transform ease-in-out motion-reduce:transform-none",
+                  showSidebar && size.width >= BREAKPOINTS.LG
+                    ? "-rotate-180 duration-500"
+                    : "rotate-0 duration-300"
+                )}
+              />
+            </Button>
+          </div>
+          {size.width > BREAKPOINTS.LG && (
+            <nav className="max-lg:hidden">
               <Sidebar />
-            </div>
-            <div
-              className="w-[calc(100%-250px)] lg:hidden fixed right-0 top-0 z-30 h-screen bg-zinc-900 bg-opacity-25"
-              onClick={() => setMobileSidebar(false)}
-            />
-          </Transition>
-        </>
-      )}
+              <div
+                className={
+                  showSidebar
+                    ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
+                    : "hidden"
+                }
+              />
+            </nav>
+          )}
+        </div>
 
-      {/* Content */}
-      <>{children}</>
+        {/* Mobile */}
+        {size.width <= BREAKPOINTS.LG && (
+          <>
+            <Transition
+              show={mobileSidebar}
+              as="nav"
+              className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[250px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
+              enter="transition-opacity duration-75"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity duration-150"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="flex flex-col gap-1 pb-3">
+                <div className="sticky top-0 flex items-center justify-between pt-2 pr-3 z-10 bg-white dark:bg-zinc-900">
+                  <h3 className={cn("title", styles.base)}>
+                    {t("full_archive")}
+                  </h3>
+                  <XMarkIcon
+                    onClick={() => setMobileSidebar(false)}
+                    className="text-zinc-500 h-5 w-5"
+                  />
+                </div>
+
+                <Sidebar />
+              </div>
+              <div
+                className="w-[calc(100%-250px)] lg:hidden fixed right-0 top-0 z-30 h-screen bg-zinc-900 bg-opacity-25"
+                onClick={() => setMobileSidebar(false)}
+              />
+            </Transition>
+          </>
+        )}
+
+        {/* Content */}
+        <>{children}</>
+      </div>
     </>
   );
 };
