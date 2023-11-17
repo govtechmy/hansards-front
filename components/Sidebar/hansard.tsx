@@ -56,7 +56,7 @@ const HansardSidebar = ({
               key={key}
               title={key}
               className={cn(
-                "text-sm relative",
+                "ml-2.5 text-sm relative",
                 !first &&
                   "border-l border-slate-400 last-of-type:border-transparent",
                 selected && selected.startsWith(id)
@@ -106,7 +106,7 @@ const HansardSidebar = ({
                     </>
                   }
                 >
-                  <ul className="pl-2.5">{recurTitle(s[key], false, id)}</ul>
+                  <>{recurTitle(s[key], false, id)}</>
                 </Details>
               )}
             </li>
@@ -116,7 +116,7 @@ const HansardSidebar = ({
     };
     return (
       <Collapse isOpen={showSidebar} horizontal>
-        <ul>
+        <>
           {speeches ? (
             recurTitle(speeches)
           ) : (
@@ -124,7 +124,7 @@ const HansardSidebar = ({
               {t("no_entries", { ns: "common" })}
             </p>
           )}
-        </ul>
+        </>
       </Collapse>
     );
   };
@@ -149,8 +149,9 @@ const HansardSidebar = ({
               showSidebar ? "lg:px-5" : "lg:px-2"
             )}
           >
-            <h5
+            <h3
               className={cn(
+                "title",
                 !showSidebar &&
                   `absolute -rotate-90 origin-top-left ${
                     i18n.language === "en-GB"
@@ -160,7 +161,7 @@ const HansardSidebar = ({
               )}
             >
               {t("toc")}
-            </h5>
+            </h3>
             <Button
               variant="default"
               className="p-1.5 shadow-button"
@@ -208,7 +209,7 @@ const HansardSidebar = ({
             >
               <div className="flex flex-col gap-1">
                 <div className="sticky top-0 flex items-center justify-between pt-2 pr-2 z-10 bg-white dark:bg-zinc-900">
-                  <h5 className={styles.base}>{t("toc")}</h5>
+                  <h3 className={cn("title", styles.base)}>{t("toc")}</h3>
                   <Button
                     variant="reset"
                     className="hover:bg-slate-100 dark:hover:bg-zinc-800 group flex h-8 w-8 justify-center items-center rounded-full"

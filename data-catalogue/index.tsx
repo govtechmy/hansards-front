@@ -1,8 +1,8 @@
 import { Container, Sidebar } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn, toDate } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { Archive } from "@lib/types";
-import { FunctionComponent, useEffect, useRef } from "react";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 import CatalogueFolder from "./folder";
 import { ParsedUrlQuery } from "querystring";
 import { WindowProvider } from "@lib/contexts/window";
@@ -17,11 +17,11 @@ interface CatalogueIndexProps {
   params?: ParsedUrlQuery;
 }
 
-const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
+const CatalogueIndex = ({
   archive,
   params,
-}) => {
-  const { t, i18n } = useTranslation(["catalogue", "common", "enum"]);
+}: CatalogueIndexProps) => {
+  const { t } = useTranslation(["catalogue", "common", "enum"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
 
   const classNames = {
@@ -38,6 +38,41 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
     }
   };
 
+  const data = useMemo(
+    () =>
+      Object.keys(archive)
+        .reverse()
+        .map((p) => {
+          const { start_date, end_date, ...sessions } = archive[p];
+          const start = start_date.substring(0, 4);
+          const end = end_date.substring(0, 4);
+          const yearRange =
+            start === end ? ` (${start})` : ` (${start} - ${end})`;
+
+          return {
+            id: p,
+            yearRange,
+            penggal: Object.keys(sessions)
+              .reverse()
+              .map((s) => {
+                const { start_date, end_date, ...mesyuarat } = sessions[s];
+
+                const start = start_date.substring(0, 4);
+                const end = end_date.substring(0, 4);
+                const yearRange =
+                  start === end ? ` (${start})` : ` (${start} - ${end})`;
+
+                return {
+                  id: s,
+                  yearRange,
+                  mesyuarat,
+                };
+              }),
+          };
+        }),
+    []
+  );
+
   useEffect(() => {
     if (params && params.archive) {
       const [parlimen, penggal, mesyuarat] = params.archive;
@@ -51,9 +86,9 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
 
   return (
     <>
-      <Container className="min-h-screen">
+      <Container>
         <Sidebar
-          data={archive}
+          data={data}
           onClick={(selected) => {
             scrollRef.current[selected]?.scrollIntoView({
               behavior: "smooth",
@@ -61,97 +96,65 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
             });
           }}
         >
-          <div className="flex flex-col pl-6 sm:pl-8 pt-3 pb-6 lg:pb-8 gap-y-[42px] w-full">
-            <>
-              {PARLIMENS ? (
-                PARLIMENS.map((num) => {
-                  const { start_date, end_date, ...sessions } = archive[num];
-                  const SESSIONS = Object.keys(sessions).reverse();
-                  const start = start_date.substring(0, 4);
-                  const end = end_date.substring(0, 4);
-                  const yearRange =
-                    start === end ? ` (${start})` : ` (${start} - ${end})`;
-                  const parlimen = `parlimen-${num}`;
+          <section className="flex flex-col pl-6 sm:pl-8 pt-3 pb-6 lg:pb-8 w-full h-full">
+            <WindowProvider>
+              {data ? (
+                PARLIMENS.map((_, index) => {
+                  const { id, penggal, yearRange } = data[index];
+                  const parlimen_id = `parlimen-${id}/`;
+
                   return (
-                    <section key={num}>
+                    <Fragment key={id}>
                       <div
-                        className="sticky top-[113px] z-10 py-3 bg-white dark:bg-zinc-900 flex gap-3 items-center"
-                        ref={(ref) => (scrollRef.current[parlimen] = ref)}
+                        className="py-3 bg-white dark:bg-zinc-900 flex gap-3 items-center sticky top-[113px] z-10"
+                        ref={(ref) => (scrollRef.current[parlimen_id] = ref)}
                       >
-                        <h4 className="flex flex-wrap sm:whitespace-nowrap">
+                        <h2 className="header flex flex-wrap w-fit sm:whitespace-nowrap">
                           {t("parlimen_full", {
                             ns: "enum",
-                            n: num,
+                            n: id,
                           }).concat(yearRange)}
-                        </h4>
-                        <span className={classNames.hr}></span>
+                        </h2>
+                        <span className={classNames.hr} />
                       </div>
-                      <div className="flex flex-col gap-y-8 pt-3">
-                        {SESSIONS.map((session) => {
-                          const { start_date, end_date, ...meetings } =
-                            sessions[session];
 
+                      <div className="space-y-8 pt-3 pb-[42px]">
+                        {penggal.map(({ id, mesyuarat, yearRange }) => {
+                          const meetings = mesyuarat;
                           const MEETINGS = Object.keys(meetings).sort(
                             (a, b) =>
                               Date.parse(meetings[a].end_date) -
                               Date.parse(meetings[b].end_date)
                           );
-                          const start = start_date.substring(0, 4);
-                          const end = end_date.substring(0, 4);
-                          const yearRange =
-                            start === end
-                              ? ` (${start})`
-                              : ` (${start} - ${end})`;
-                          const parlimen_penggal = `${parlimen}/penggal-${session}`;
+                          const parlimen_penggal = `${parlimen_id}penggal-${id}`;
                           return (
-                            <div
-                              key={session}
-                              className="flex flex-col gap-y-6"
-                            >
-                              <div className="flex gap-3 items-center">
-                                <h5 className="flex flex-wrap sm:whitespace-nowrap">
-                                  {t("penggal_full", {
-                                    ns: "enum",
-                                    n: session,
-                                  }).concat(yearRange)}
-                                </h5>
-                                <span
-                                  className={cn(classNames.hr, "border-dashed")}
-                                ></span>
-                              </div>
+                            <div key={id} className="relative">
+                              <span
+                                className={cn(
+                                  classNames.hr,
+                                  "absolute top-3.5 left-0 -z-10 border-dashed"
+                                )}
+                              />
+                              <h3 className="title flex flex-wrap w-fit sm:whitespace-nowrap bg-white dark:bg-zinc-900 pr-3">
+                                {t("penggal_full", {
+                                  ns: "enum",
+                                  n: id,
+                                }).concat(yearRange)}
+                              </h3>
+
                               <div
-                                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-[54px] py-6"
+                                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-[54px] pt-12 pb-6"
                                 ref={(ref) =>
                                   (scrollRef.current[parlimen_penggal] = ref)
                                 }
                               >
-                                {MEETINGS.map((meeting) => {
-                                  const { start_date, end_date, sitting_list } =
-                                    meetings[meeting];
-
-                                  function getShortDate(date: string) {
-                                    return toDate(
-                                      date,
-                                      "dd MMM",
-                                      i18n.language
-                                    );
-                                  }
-                                  const start = getShortDate(start_date);
-                                  const end = getShortDate(end_date);
-                                  const dateRange =
-                                    start === end
-                                      ? `${start}`
-                                      : `${start} - ${end}`;
-
+                                {MEETINGS.map((meeting_id) => {
                                   return (
-                                    <WindowProvider>
-                                      <CatalogueFolder
-                                        key={meeting}
-                                        dateRange={dateRange}
-                                        meeting={meeting}
-                                        sitting_list={sitting_list}
-                                      />
-                                    </WindowProvider>
+                                    <CatalogueFolder
+                                      key={meeting_id}
+                                      meeting={meetings[meeting_id]}
+                                      meeting_id={meeting_id}
+                                    />
                                   );
                                 })}
                               </div>
@@ -159,7 +162,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                           );
                         })}
                       </div>
-                    </section>
+                    </Fragment>
                   );
                 })
               ) : (
@@ -167,8 +170,8 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                   {t("no_entries", { ns: "common" })}.
                 </p>
               )}
-            </>
-          </div>
+            </WindowProvider>
+          </section>
         </Sidebar>
       </Container>
     </>
