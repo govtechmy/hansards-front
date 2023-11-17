@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Triggers on relevant pages. Authentication to be removed at launch
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/((?!api).*)"],
 };
 
 export async function middleware(request: NextRequest) {
