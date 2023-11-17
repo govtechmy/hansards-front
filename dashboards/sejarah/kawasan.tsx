@@ -1,3 +1,4 @@
+import Container from "@components/Container";
 import Skeleton from "@components/Skeleton";
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
@@ -82,10 +83,10 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
   }, [params]);
 
   return (
-    <div className="flex h-full w-full justify-center">
-      <div className="flex flex-col h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+    <>
+      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
         <div className="xl:col-span-10 xl:col-start-2">
-          <h4 className="text-center">{t("kawasan.header")}</h4>
+          <h2 className="header text-center">{t("kawasan.header")}</h2>
           <div className="mx-auto w-full py-6 sm:w-[500px]">
             <ComboBox
               placeholder={t("cari_kawasan")}
@@ -107,10 +108,10 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
             />
           </div>
 
-          <h5 className="py-6">
+          <h3 className="title py-6">
             {t("kawasan.title")}
             <span className="text-primary">{KAWASAN_OPTION?.label}</span>
-          </h5>
+          </h3>
 
           <KawasanTable
             data={kawasan}
@@ -122,8 +123,8 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
             {t("kawasan.disclaimer")}
           </p>
         </div>
-      </div>
-    </div>
+      </Container>
+    </>
   );
 };
 

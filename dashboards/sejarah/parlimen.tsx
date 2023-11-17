@@ -1,5 +1,6 @@
 import BarPerc from "@charts/bar-perc";
 import {
+  Container,
   Dropdown,
   List,
   Panel,
@@ -22,7 +23,9 @@ import { useEffect } from "react";
  * @overview Status: In-development
  */
 
-const skeleton = () => <Skeleton height="h-[400px] lg:h-[500px]" width="w-auto" />;
+const skeleton = () => (
+  <Skeleton height="h-[400px] lg:h-[500px]" width="w-auto" />
+);
 const ParlimenTable = dynamic(() => import("./table"), {
   loading: skeleton,
   ssr: false,
@@ -155,10 +158,10 @@ const SejarahParlimen = ({
   }, [params]);
 
   return (
-    <div className="flex h-full w-full justify-center">
-      <div className="flex flex-col h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+    <>
+      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
         <div className="xl:col-span-10 xl:col-start-2">
-          <h4 className="text-center pb-6">{t("parlimen.header")}</h4>
+          <h2 className="header text-center pb-6">{t("parlimen.header")}</h2>
 
           <div className="pb-6 lg:pb-8 items-center gap-2 flex flex-col sm:flex-row mx-auto w-fit">
             <Dropdown
@@ -191,17 +194,15 @@ const SejarahParlimen = ({
           </div>
 
           <div className="flex flex-col lg:flex-row justify-between">
-            <h5 className="pt-6 pb-3">
-              <span>
-                {
-                  PARLIMEN_OPTIONS.find(
-                    (e) => e.value === (params.election ?? "15")
-                  )?.label
-                }
-                {": "}
-              </span>
+            <h3 className="title pt-6 pb-3">
+              {
+                PARLIMEN_OPTIONS.find(
+                  (e) => e.value === (params.election ?? "15")
+                )?.label
+              }
+              {": "}
               {CountryAndStates[params.state ?? "mys"]}
-            </h5>
+            </h3>
 
             <List
               options={[
@@ -321,8 +322,8 @@ const SejarahParlimen = ({
             </Panel>
           </Tabs>
         </div>
-      </div>
-    </div>
+      </Container>
+    </>
   );
 };
 
