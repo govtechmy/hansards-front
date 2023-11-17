@@ -14,14 +14,14 @@ type Context = Parameters<GetStaticProps | GetServerSideProps>[0];
 type ResolvedProps<T> = GetStaticPropsResult<T> & GetServerSidePropsResult<T>;
 
 /**
- * Decorator function to merge i18n context together with prop. Auto-loads "common" & "agencies" namespace
+ * Decorator function to merge i18n context together with prop. Auto-loads "common" namespace
  * @param {string | string[] | null} namespace Namespaces to load
  * @param {GetStaticProps | GetServerSideProps} getProps Generic "getProps" function
  * @returns {Promise<ResolvedProps>} Merged props with i18n
  *
- * @example {null} i18n(null, ...) // loads "common" & "agencies" namespace only
- * @example {string} i18n("dashboard-999-tracker", ...) // loads "common", "agencies" & "dashboard-999-tracker" namespace
- * @example {string[]} i18n(["dashboard-999-tracker", "dashboard-blood-donation"], ...) // loads "common", "agencies", "dashboard-999-tracker" & "dashboard-blood-donation" namespace
+ * @example {null} withi18n(null, ...) // loads "common" namespace only
+ * @example {string} withi18n("home", ...) // loads "common" & "home" namespace
+ * @example {string[]} withi18n(["home", "error"], ...) // loads "common", "home" & "error" namespace
  */
 export const withi18n = <T extends Context>(
   namespace: string | string[] | null,
