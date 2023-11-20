@@ -14,13 +14,10 @@ import { WindowProvider } from "@lib/contexts/window";
 
 interface CatalogueIndexProps {
   archive: Archive;
-  params?: ParsedUrlQuery;
+  params: ParsedUrlQuery;
 }
 
-const CatalogueIndex = ({
-  archive,
-  params,
-}: CatalogueIndexProps) => {
+const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
   const { t } = useTranslation(["catalogue", "common", "enum"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
 
@@ -75,7 +72,7 @@ const CatalogueIndex = ({
 
   useEffect(() => {
     if (params && params.archive) {
-      const [parlimen, penggal, mesyuarat] = params.archive;
+      const [parlimen, penggal] = params.archive;
       if (penggal) {
         scrollToPenggal(`${parlimen}/${penggal}`);
       } else {
@@ -126,7 +123,7 @@ const CatalogueIndex = ({
                               Date.parse(meetings[a].end_date) -
                               Date.parse(meetings[b].end_date)
                           );
-                          const parlimen_penggal = `${parlimen_id}penggal-${id}`;
+                          const penggal_id = `penggal-${id}`;
                           return (
                             <div key={id} className="relative">
                               <span
@@ -145,15 +142,30 @@ const CatalogueIndex = ({
                               <div
                                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-[54px] pt-12 pb-6"
                                 ref={(ref) =>
-                                  (scrollRef.current[parlimen_penggal] = ref)
+                                  (scrollRef.current[
+                                    `${parlimen_id}${penggal_id}`
+                                  ] = ref)
                                 }
                               >
-                                {MEETINGS.map((meeting_id) => {
+                                {MEETINGS.map((mesyuarat_id) => {
                                   return (
                                     <CatalogueFolder
-                                      key={meeting_id}
-                                      meeting={meetings[meeting_id]}
-                                      meeting_id={meeting_id}
+                                      key={mesyuarat_id}
+                                      isOpen={
+                                        params && params.archive
+                                          ? params.archive.includes(
+                                              `parlimen-${parlimen_id}`
+                                            ) &&
+                                            params.archive.includes(
+                                              `penggal-${penggal_id}`
+                                            ) &&
+                                            params.archive.includes(
+                                              `mesyuarat-${mesyuarat_id}`
+                                            )
+                                          : false
+                                      }
+                                      meeting={meetings[mesyuarat_id]}
+                                      meeting_id={mesyuarat_id}
                                     />
                                   );
                                 })}

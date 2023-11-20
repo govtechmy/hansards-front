@@ -35,6 +35,8 @@ import SpeechBubble from "./bubble";
 import { SearchContext, SearchEventContext } from "./context";
 import ShareButton from "./share";
 import { getMatchText } from "./match-text";
+import Link from "next/link";
+import { routes } from "@lib/routes";
 
 /**
  * Hansard
@@ -77,11 +79,12 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
   const recurSpeech = (
     speeches: Speeches,
     keyword?: string,
-    prev_id?: string
+    prev_id?: string,
+    index?: number
   ): ReactNode => {
-    return speeches.map((s) => {
+    return speeches.map((s, idx) => {
       if (isSpeech(s)) {
-        const { speech, author, timestamp, is_annotation, index } = s;
+        const { speech, author, timestamp, is_annotation } = s;
 
         const hr = String(timestamp).slice(0, 2);
         const mn = String(timestamp).slice(2, 4);
@@ -98,7 +101,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
           locale: "en-US",
         });
 
-        let { searchValue, activeId } = useContext(SearchContext);
+        let { searchValue } = useContext(SearchContext);
         const { onUpdateMatchList } = useContext(SearchEventContext);
 
         const matchData = useMemo(
@@ -109,7 +112,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
         useEffect(() => {
           if (typeof matchData === "object") {
             const matchIds = matchData.matches.map((_, i) => ({
-              id: `${index}_${i}`,
+              id: `${index ? index : ""}_${idx}_${i}`,
               idCount: i,
             }));
             onUpdateMatchList(matchIds);
@@ -123,11 +126,13 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
             components={{
               mark(props) {
                 const { node, id, ...rest } = props;
-                const matchId = `${index}_${id}`;
+                const matchId = `${index ? index : ""}_${idx}_${id}`;
+                const { activeId } = useContext(SearchContext);
                 const color = matchId === activeId ? "#DC2626" : "#2563EB";
+
                 return (
                   <span
-                    key={index}
+                    key={idx}
                     id={matchId}
                     style={{
                       backgroundColor: color,
@@ -136,7 +141,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                       whiteSpace: "pre-wrap",
                     }}
                     {...rest}
-                  ></span>
+                  />
                 );
               },
             }}
@@ -169,7 +174,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
               )}
             {author === "ANNOTATION" ? (
               <div
-                key={index}
+                key={idx}
                 className="text-zinc-900 dark:text-white text-center italic"
               >
                 {_speech}
@@ -183,7 +188,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                 author={author}
                 is_annotation={is_annotation}
                 timeString={timeString}
-                index={index}
+                index={idx + 1}
                 keyword={keyword}
                 id={id}
                 date={date}
@@ -197,6 +202,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
         const keys = Object.keys(s);
         const key = keys[0];
         const id = prev_id ? `${prev_id}_${key}` : key;
+
         return (
           <div
             key={key}
@@ -214,7 +220,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
             >
               {key}
             </p>
-            {recurSpeech(s[key], keyword, id)}
+            {recurSpeech(s[key], keyword, id, idx + 1)}
           </div>
         );
       }
@@ -225,6 +231,8 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
     link_blue: "flex gap-1 items-center link-blue",
     link_dim: "hover:underline [text-underline-position:from-font]",
   };
+
+  const IS_DR = cycle.house === 0;
 
   return (
     <HansardSidebar
@@ -241,28 +249,55 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
           <Hero>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
               <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
-                <span className={styles.link_dim}>
+                <Link
+                  href={IS_DR ? routes.KATALOG_DR : routes.KATALOG_DN}
+                  className={styles.link_dim}
+                >
                   {t("archive", {
-                    context: cycle.house === 0 ? "dr" : "dn",
+                    context: IS_DR ? "dr" : "dn",
                   })}
-                </span>
+                </Link>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <span className={styles.link_dim}>
+                <Link
+                  href={
+                    IS_DR
+                      ? `${routes.KATALOG_DR}/parlimen-${cycle.term}`
+                      : `${routes.KATALOG_DN}/parlimen-${cycle.term}`
+                  }
+                  className={styles.link_dim}
+                >
                   {t("parlimen_full", { ns: "enum", n: cycle.term })}
-                </span>
+                </Link>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <span className={styles.link_dim}>
+                <Link
+                  href={
+                    IS_DR
+                      ? `${routes.KATALOG_DR}/parlimen-${cycle.term}/penggal-${cycle.session}`
+                      : `${routes.KATALOG_DN}/parlimen-${cycle.term}/penggal-${cycle.session}`
+                  }
+                  className={styles.link_dim}
+                >
                   {t("penggal_full", { ns: "enum", n: cycle.session })}
-                </span>
+                </Link>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <span className={styles.link_dim}>
+                <Link
+                  href={
+                    IS_DR
+                      ? `${routes.KATALOG_DR}/parlimen-${cycle.term}/penggal-${cycle.session}/mesyuarat-${cycle.meeting}`
+                      : `${routes.KATALOG_DN}/parlimen-${cycle.term}/penggal-${cycle.session}/mesyuarat-${cycle.meeting}`
+                  }
+                  className={styles.link_dim}
+                >
                   {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
-                </span>
+                </Link>
               </div>
               <div className="flex justify-between gap-3 lg:gap-6 items-center">
                 <DateCard size="lg" date={date} />
                 <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
-                  <h1 className="text-3xl font-bold leading-[38px] text-zinc-900 dark:text-white" data-testid="hero-header">
+                  <h1
+                    className="text-3xl font-bold leading-[38px] text-zinc-900 dark:text-white"
+                    data-testid="hero-header"
+                  >
                     {t("header", {
                       context: cycle.house === 0 ? "dr" : "dn",
                     })}

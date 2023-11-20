@@ -10,14 +10,13 @@ import { DateCard, Dropdown } from "@components/index";
 import { BookmarkIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useTranslation } from "@hooks/useTranslation";
-import { ClosedFolderIcon, OpenFolderIcon } from "@icons/index";
 import { BREAKPOINTS } from "@lib/constants";
 import { WindowContext } from "@lib/contexts/window";
 import { cn, copyClipboard } from "@lib/helpers";
-import { Mesyuarat, Sitting } from "@lib/types";
+import { Mesyuarat } from "@lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 
 /**
  * Catalogue Folder
@@ -25,31 +24,35 @@ import { useContext, useState } from "react";
  */
 
 interface CatalogueFolderProps {
+  isOpen: boolean;
   meeting: Mesyuarat;
   meeting_id: string;
 }
 
 export default function CatalogueFolder({
+  isOpen,
   meeting,
   meeting_id,
 }: CatalogueFolderProps) {
   const { t, i18n } = useTranslation(["catalogue", "enum"]);
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(isOpen);
   const [copyText, setCopyText] = useState<string>("copy");
   const title = `Hansard Parlimen`;
   const { size } = useContext(WindowContext);
 
   const { start_date, end_date, sitting_list } = meeting;
 
-  function getShortDate(date: string) {
-    return new Date(date).toLocaleDateString(i18n.language, {
-      month: "short",
-      day: "numeric",
-    });
-  }
-  const start = getShortDate(start_date);
-  const end = getShortDate(end_date);
-  const dateRange = start === end ? `${start}` : `${start} - ${end}`;
+  const dateRange = useMemo(() => {
+    function getShortDate(date: string) {
+      return new Date(date).toLocaleDateString(i18n.language, {
+        month: "short",
+        day: "numeric",
+      });
+    }
+    const start = getShortDate(start_date);
+    const end = getShortDate(end_date);
+    return start === end ? `${start}` : `${start} - ${end}`;
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -59,7 +62,7 @@ export default function CatalogueFolder({
       >
         <div
           className={cn(
-            "border group-hover:border-slate-200 group-hover:dark:border-zinc-800 rounded-md w-[100px] h-20 relative mb-1.5",
+            "border group-hover:border-slate-200 dark:group-hover:border-zinc-800 rounded-md w-[100px] h-20 relative mb-1.5",
             open ? "visible pl-2 pt-2" : "p-2 border-transparent"
           )}
         >
