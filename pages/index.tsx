@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
           count: excerpt.count,
           excerpts: excerpt.results,
-          keyword: q,
+          keyword: q ?? "",
           timeseries: data.chart_data,
           top_word_freq: data.top_word_freq,
         },
