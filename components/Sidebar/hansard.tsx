@@ -38,12 +38,13 @@ const HansardSidebar = ({
   };
 
   const Sidebar = () => {
+    const [selected, setSelected] = useState<string>();
+
     const recurTitle = (
       speeches: Speeches,
       first: boolean = true,
       prev_id?: string
     ): ReactNode => {
-      const [selected, setSelected] = useState<string>();
       return speeches.map((s, i) => {
         if (isSpeech(s)) {
           return;
