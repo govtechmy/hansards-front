@@ -61,7 +61,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               key={id}
               title={`${parlimen_full}${yearRange}`}
               className={cn(
-                "text-sm",
+                "text-sm relative",
                 selected && selected.startsWith(parlimen_id)
                   ? styles.active
                   : styles.inactive
@@ -77,7 +77,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                 }
               >
                 <>
-                  {penggal.map(({ id, yearRange }, i) => {
+                  {penggal.map(({ id, yearRange }) => {
                     const parlimen_penggal = `${parlimen_id}penggal-${id}`;
                     const penggal_full = t("penggal_full", {
                       ns: "enum",
@@ -95,23 +95,23 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                           }
                         }}
                         className={cn(
-                          "relative hover:bg-slate-100 dark:hover:bg-zinc-800 ml-2.5",
-                          "border-l border-slate-400 last-of-type:border-transparent",
+                          "hover:bg-slate-100 dark:hover:bg-zinc-800 relative ml-2.5",
                           styles.base,
-                          selected === id ? styles.active : styles.inactive
+                          selected === parlimen_penggal ? styles.active : styles.inactive
                         )}
                       >
                         <p className="font-medium whitespace-nowrap">
                           {penggal_full}
                         </p>
                         {yearRange}
-                        <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
-                        {i === penggal.length - 1 && (
-                          <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
-                        )}
+                        <SidebarL className="absolute -left-[0.5px] bottom-1/2" />
                       </li>
                     );
                   })}
+                  <div
+                    className="absolute left-2.5 top-0 w-px border-l border-slate-400 z-10"
+                    style={{ height: (penggal.length - 1) * 47 + 10.5}}
+                  />
                 </>
               </Details>
             </li>
