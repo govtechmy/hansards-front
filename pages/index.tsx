@@ -16,6 +16,8 @@ const Home: Page = ({
   count,
   excerpts,
   keyword,
+  timeseries,
+  top_word_freq,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
@@ -29,8 +31,22 @@ const Home: Page = ({
           <>
             {
               {
-                who: <WhoSaidX count={count} excerpts={excerpts} keyword={keyword}/>,
-                what: <WhatDidXSay count={count} excerpts={excerpts} keyword={keyword} />,
+                who: (
+                  <WhoSaidX
+                    count={count}
+                    excerpts={excerpts}
+                    keyword={keyword}
+                    timeseries={timeseries}
+                    top_word_freq={top_word_freq}
+                  />
+                ),
+                what: (
+                  <WhatDidXSay
+                    count={count}
+                    excerpts={excerpts}
+                    keyword={keyword}
+                  />
+                ),
               }[tab]
             }
           </>
@@ -41,15 +57,23 @@ const Home: Page = ({
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  ["enum", "home"],
+  ["enum", "home", "kehadiran", "party"],
   async ({ query }) => {
     try {
-      const keyword = query.keyword ? query.keyword : "petrol";
-      const { data } = await get("api/search/", {
-        q: keyword,
+      const { q, ...dates } = query;
+      const { data: excerpt } = await get("api/search/", {
+        q: q ?? "petrol",
+        house: "dewan-rakyat",
+        window_size: 30,
+        page: 1,
+        ...dates
+      });
+
+      const { data } = await get("api/search-plot/", {
+        q: q ?? "petrol",
         house: "dewan-rakyat",
         window_size: 50,
-        page: 1,
+        ...dates
       });
 
       return {
@@ -59,9 +83,11 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             id: "home",
             type: "misc",
           },
-          count: data.count,
-          excerpts: data.results,
-          keyword: keyword,
+          count: excerpt.count,
+          excerpts: excerpt.results,
+          keyword: q,
+          timeseries: data.chart_data,
+          top_word_freq: data.top_word_freq,
         },
       };
     } catch (error: any) {
