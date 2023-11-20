@@ -1,6 +1,12 @@
 import Label, { LabelProps } from "../Label";
 import { cn } from "@lib/helpers";
-import { FunctionComponent, HTMLInputTypeAttribute, ReactElement, useEffect, useRef } from "react";
+import {
+  FunctionComponent,
+  HTMLInputTypeAttribute,
+  ReactElement,
+  useEffect,
+  useRef,
+} from "react";
 
 interface InputProps extends LabelProps {
   className?: string;
@@ -46,12 +52,7 @@ const Input: FunctionComponent<InputProps> = ({
   return (
     <div className="relative flex w-full flex-col gap-2">
       {label && <Label name={name} label={label} />}
-      <div
-        className={cn(
-          "text-zinc-500 absolute left-3 h-full",
-          !label ? "translate-y-[25%]" : "translate-y-[65%]"
-        )}
-      >
+      <div className="text-zinc-500 absolute left-3 h-full flex items-center">
         {icon && icon}
       </div>
 
@@ -65,16 +66,18 @@ const Input: FunctionComponent<InputProps> = ({
         min={min}
         max={max}
         className={cn(
-          "placeholder:text-zinc-500 focus:ring-zinc-500 w-full rounded-md px-3 text-sm dark:bg-zinc-900 dark:text-white",
-          "focus:ring-primary dark:focus:ring-secondary focus:outline-none",
+          "placeholder:text-zinc-500 focus:ring-zinc-500 w-full rounded-md px-3 py-2 text-sm dark:bg-zinc-900 dark:text-white",
+          "focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none",
           icon ? "pl-10" : "",
-          validation ? "border-danger border-2" : "border-slate-200 dark:border-zinc-800",
+          validation
+            ? "border-danger border-2"
+            : "border-slate-200 dark:border-zinc-800",
           className
         )}
         placeholder={placeholder}
         value={value}
         required={required}
-        onChange={e => {
+        onChange={(e) => {
           if (onChange) onChange(e.target.value);
         }}
         onKeyDown={onKeyDown}
