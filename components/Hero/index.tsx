@@ -155,6 +155,7 @@ const Hero: FunctionComponent<HeroProps> = ({
             width={300}
             height={214}
             alt="Parlimen"
+            loading="eager"
           />
         </div>
       </>
