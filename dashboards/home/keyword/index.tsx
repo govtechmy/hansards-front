@@ -35,7 +35,7 @@ const Keyword = ({ dewan, keyword, timeseries }: KeywordProps) => {
 
   const { data, setData } = useData({
     loading: false,
-    minmax: [0, 365],
+    minmax: [0, timeseries.date.length - 1],
   });
   const { coordinate } = useSlice(timeseries, data.minmax);
 
