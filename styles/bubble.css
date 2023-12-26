@@ -2,7 +2,7 @@
   @apply flex gap-3;
 
   .bub {
-    @apply relative flex flex-col px-3 sm:px-4.5 pt-3 pb-6 gap-y-1 whitespace-pre-line bg-slate-50 dark:bg-[#000000]
+    @apply relative flex flex-col px-3 sm:px-4.5 pt-3 pb-6 gap-y-1 bg-slate-50 dark:bg-[#000000]
     hover:bg-white dark:hover:bg-zinc-800 hover:shadow-floating dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)]
     border border-transparent rounded-xl hover:border-slate-200 hover:dark:border-zinc-800;
   }
@@ -48,13 +48,11 @@
   .s {
     @apply bg-blue-600 text-white;
   }
-  .shr {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='rgb(37,99,235)' class='w-5 h-5'%3E%3Cpath d='M13 4.5a2.5 2.5 0 11.702 1.737L6.97 9.604a2.518 2.518 0 010 .792l6.733 3.367a2.5 2.5 0 11-.671 1.341l-6.733-3.367a2.5 2.5 0 110-3.475l6.733-3.366A2.52 2.52 0 0113 4.5z' /%3E%3C/svg%3E");
-    @apply h-5 w-5;
-  }
 
   .bt {
-    @apply flex select-none items-center gap-1 text-sm font-medium outline-none px-3 py-1.5 invisible absolute bottom-4.5 right-3.5 transition-transform  duration-300 [mask-image:linear-gradient(279deg,#FFF_80%,rgba(0,0,0,0)_95%)] bg-white dark:bg-zinc-800 text-blue-600 hover:text-primary dark:hover:text-primary-dark;
+    @apply flex select-none items-center gap-1 text-sm font-medium outline-none px-3 py-1.5 invisible 
+    absolute bottom-4.5 right-3.5 transition-transform duration-300 [mask-image:linear-gradient(279deg,#FFF_80%,rgba(0,0,0,0)_95%)] 
+    bg-white dark:bg-zinc-800 text-blue-600 hover:text-primary dark:hover:text-primary-dark;
   }
 }
 
@@ -64,4 +62,9 @@
 
 .bubble.rt {
   @apply flex-row-reverse pl-12;
+}
+
+.shr {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='rgb(37,99,235)' class='w-5 h-5'%3E%3Cpath d='M13 4.5a2.5 2.5 0 11.702 1.737L6.97 9.604a2.518 2.518 0 010 .792l6.733 3.367a2.5 2.5 0 11-.671 1.341l-6.733-3.367a2.5 2.5 0 110-3.475l6.733-3.366A2.52 2.52 0 0113 4.5z' /%3E%3C/svg%3E");
+  @apply h-5 w-5;
 }
