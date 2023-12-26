@@ -1,7 +1,7 @@
 import Metadata from "@components/Metadata";
 import HomeLayout from "@dashboards/home/layout";
-import WhoSaidX from "@dashboards/home/who-said-x";
-import WhatDidXSay from "@dashboards/home/what-did-x-say";
+import SearchKeyword from "@dashboards/home/search-keyword";
+import SearchMP from "@dashboards/home/search-mp";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
@@ -15,9 +15,10 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 const Home: Page = ({
   count,
   excerpts,
-  keyword,
+  query,
   timeseries,
   top_word_freq,
+  top_speakers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
@@ -32,19 +33,23 @@ const Home: Page = ({
             {
               {
                 who: (
-                  <WhoSaidX
+                  <SearchKeyword
                     count={count}
+                    dewan={query.dewan}
                     excerpts={excerpts}
-                    keyword={keyword}
+                    keyword={query.q}
+                    query={query}
                     timeseries={timeseries}
                     top_word_freq={top_word_freq}
+                    top_speakers={top_speakers}
                   />
                 ),
                 what: (
-                  <WhatDidXSay
+                  <SearchMP
                     count={count}
                     excerpts={excerpts}
-                    keyword={keyword}
+                    keyword={query.q}
+                    query={query}
                   />
                 ),
               }[tab]
@@ -57,37 +62,45 @@ const Home: Page = ({
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  ["enum", "home", "kehadiran", "party"],
+  ["demografi", "enum", "home", "kehadiran", "party"],
   async ({ query }) => {
     try {
-      const { q, ...dates } = query;
-      const { data: excerpt } = await get("api/search/", {
-        q: q ?? "petrol",
-        house: "dewan-rakyat",
-        window_size: 30,
-        page: 1,
-        ...dates
-      });
+      const { q, dewan, ...dates } = query;
+      const results = await Promise.allSettled([
+        get("api/search/", {
+          q: q,
+          house: dewan,
+          window_size: 30,
+          page: 1, 
+          ...dates,
+        }),
+        get("api/search-plot/", {
+          q: q,
+          house: dewan,
+          ...dates,
+        }),
+      ]);
 
-      const { data } = await get("api/search-plot/", {
-        q: q ?? "petrol",
-        house: "dewan-rakyat",
-        window_size: 50,
-        ...dates
+      const [excerpt, data] = results.map((e) => {
+        if (e.status === "rejected") return {};
+        else return e.value.data;
       });
 
       return {
-        notFound: false,
         props: {
           meta: {
             id: "home",
             type: "misc",
           },
-          count: excerpt.count,
-          excerpts: excerpt.results,
-          keyword: q ?? "",
-          timeseries: data.chart_data,
-          top_word_freq: data.top_word_freq,
+          count: excerpt.count ?? 0,
+          excerpts: excerpt.results ?? null,
+          query: query ?? null,
+          timeseries: data.chart_data ?? {
+            date: Array.from({ length: 365 }, (_, i) => i * 86400000),
+            freq: [],
+          },
+          top_word_freq: data.top_word_freq ?? null,
+          top_speakers: data.top_speakers ?? null,
         },
       };
     } catch (error: any) {

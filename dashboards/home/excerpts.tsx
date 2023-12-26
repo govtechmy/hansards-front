@@ -1,6 +1,9 @@
-import { At, Section } from "@components/index";
+import { Button, Section, Skeleton } from "@components/index";
 import ExcerptCard, { Excerpt } from "@components/Card/excerpt-card";
 import { useTranslation } from "@hooks/useTranslation";
+import { useState } from "react";
+import { get } from "@lib/api";
+import { ParsedUrlQuery } from "querystring";
 
 /**
  * Excerpts
@@ -11,28 +14,51 @@ export interface ExcerptsProps {
   count: number;
   excerpts: Excerpt[];
   keyword: string;
+  query: ParsedUrlQuery;
 }
 
-const Excerpts = ({ count, excerpts, keyword }: ExcerptsProps) => {
+const Excerpts = ({ count, excerpts, keyword, query }: ExcerptsProps) => {
   const { t } = useTranslation("home");
+  const [loading, setLoading] = useState(false);
+  const [_excerpts, setExcerpts] = useState(excerpts);
+
+  const { q, dewan, ...dates } = query;
 
   return (
     <>
-      <Section>
-        <div className="justify-between flex pb-6 lg:pb-8 flex-wrap gap-3">
-          <h2 className="header">{t("excerpts", { count: count })}</h2>
-          <At
-            className="btn btn-border active:bg-slate-100 shadow-button bg-white px-3 py-1.5 text-sm text-zinc-900"
-            href="/katalog"
-            enableIcon
-          >
-            {t("see_all", { count: count })}
-          </At>
-        </div>
+      <Section className="space-y-6 lg:space-y-8">
+        <h2 className="header">{t("excerpts", { count: count })}</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {excerpts.map((excerpt) => (
-            <ExcerptCard key={excerpt.id} excerpt={excerpt} keyword={keyword} />
+          {_excerpts.map((excerpt, i) => (
+            <ExcerptCard key={i} excerpt={excerpt} keyword={keyword} />
           ))}
+        </div>
+
+        <div className="flex w-full justify-center gap-6">
+          {count > excerpts.length && loading ? (
+            <Skeleton />
+          ) : (
+            <Button
+              variant="default"
+              onClick={() => {
+                setLoading(true);
+                get("api/search/", {
+                  q: q,
+                  house: dewan ?? "dewan-rakyat",
+                  window_size: 30,
+                  page: 1,
+                  ...dates,
+                })
+                  .then(({ data }) =>
+                    setExcerpts((prev_data) => [prev_data, ...data])
+                  )
+                  .catch((e) => console.error(e));
+                setTimeout(() => setLoading(false), 500);
+              }}
+            >
+              {t("load_more")}
+            </Button>
+          )}
         </div>
       </Section>
     </>
