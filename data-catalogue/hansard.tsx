@@ -53,16 +53,22 @@ interface HansardProps {
   date: string;
   filename: string;
   speeches: Speeches;
-  id: string;
+  hansard_id: string;
 }
 
-const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
+const Hansard = ({
+  cycle,
+  date,
+  filename,
+  speeches,
+  hansard_id,
+}: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const [narrowMode, setNarrowMode] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
 
-  const { counts, download } = useAnalytics(id);
+  const { counts, download } = useAnalytics(hansard_id);
   const [downloads, shares, views]: number[] =
     counts && counts.length > 0
       ? [
@@ -79,12 +85,11 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
   const recurSpeech = (
     speeches: Speeches,
     keyword?: string,
-    prev_id?: string,
-    index?: number
+    prev_id?: string
   ): ReactNode => {
-    return speeches.map((s, idx) => {
+    return speeches.map((s) => {
       if (isSpeech(s)) {
-        const { speech, author, timestamp, is_annotation } = s;
+        const { speech, author, timestamp, is_annotation, index } = s;
 
         const hr = String(timestamp).slice(0, 2);
         const mn = String(timestamp).slice(2, 4);
@@ -96,7 +101,6 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
         ) {
           curr = _timestamp;
         }
-
         const timeString = _timestamp.toLocaleString(DateTime.TIME_SIMPLE, {
           locale: "en-US",
         });
@@ -112,7 +116,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
         useEffect(() => {
           if (typeof matchData === "object") {
             const matchIds = matchData.matches.map((_, i) => ({
-              id: `${index ? index : ""}_${idx}_${i}`,
+              id: `${index}_${i}`,
               idCount: i,
             }));
             onUpdateMatchList(matchIds);
@@ -126,13 +130,13 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
             components={{
               mark(props) {
                 const { node, id, ...rest } = props;
-                const matchId = `${index ? index : ""}_${idx}_${id}`;
+                const matchId = `${index}_${id}`;
                 const { activeId } = useContext(SearchContext);
                 const color = matchId === activeId ? "#DC2626" : "#2563EB";
 
                 return (
                   <span
-                    key={idx}
+                    key={index}
                     id={matchId}
                     style={{
                       backgroundColor: color,
@@ -174,7 +178,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
               )}
             {author === "ANNOTATION" ? (
               <div
-                key={idx}
+                key={index}
                 className="text-zinc-900 dark:text-white text-center italic"
               >
                 {_speech}
@@ -188,9 +192,9 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                 author={author}
                 is_annotation={is_annotation}
                 timeString={timeString}
-                index={idx + 1}
+                index={index}
                 keyword={keyword}
-                id={id}
+                hansard_id={hansard_id}
                 date={date}
               >
                 {_speech}
@@ -220,7 +224,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
             >
               {key}
             </p>
-            {recurSpeech(s[key], keyword, id, idx + 1)}
+            {recurSpeech(s[key], keyword, id)}
           </div>
         );
       }
@@ -357,7 +361,7 @@ const Hansard = ({ cycle, date, filename, speeches, id }: HansardProps) => {
                 </At>
                 <ShareButton
                   date={date}
-                  hansard_id={id}
+                  hansard_id={hansard_id}
                   trigger={(onClick) => (
                     <div className={styles.link_blue} onClick={onClick}>
                       <ShareIcon className="h-5 w-5" />
