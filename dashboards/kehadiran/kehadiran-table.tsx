@@ -49,7 +49,7 @@ const KehadiranTable = ({
   loading,
   party,
 }: KehadiranTableProps) => {
-  const { t } = useTranslation("kehadiran");
+  const { t } = useTranslation(["demografi", "kehadiran"]);
   const [tab_idx, setTabIdx] = useState<number>(0);
 
   const kehadiranPerc = (value: Kehadiran) => (
@@ -115,19 +115,19 @@ const KehadiranTable = ({
               },
               {
                 accessorKey: "age",
-                header: t("age"),
+                header: t("age", { ns: "demografi" }),
                 className: "text-left",
               },
               {
                 accessorKey: "sex",
-                header: t("sex"),
-                cell: ({ getValue }) => <>{t(getValue())}</>,
+                header: t("sex", { ns: "demografi" }),
+                cell: ({ getValue }) => <>{t(getValue(), { ns: "demografi" })}</>,
               },
               {
                 accessorKey: "ethnicity",
-                header: t("ethnicity"),
+                header: t("ethnicity", { ns: "demografi" }),
                 className: "min-w-[160px]",
-                cell: ({ getValue }) => <>{t(getValue())}</>,
+                cell: ({ getValue }) => <>{t(getValue(), { ns: "demografi" })}</>,
               },
             ]}
             search={(onSearch) => (

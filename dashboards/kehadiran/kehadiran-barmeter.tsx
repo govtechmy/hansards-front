@@ -21,7 +21,7 @@ export interface KehadiranBarMeterProps {
 }
 
 const KehadiranBarMeter = ({ barmeter, loading }: KehadiranBarMeterProps) => {
-  const { t } = useTranslation("kehadiran");
+  const { t } = useTranslation("demografi");
   const DEMOGRAPHY = ["sex", "ethnicity", "age"] as DemographyKeys[];
 
   return (
