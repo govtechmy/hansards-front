@@ -13,7 +13,7 @@ const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="dark:border-zinc-800 fixed left-0 top-0 z-30 w-full border-b">
+    <div className="dark:border-zinc-800 fixed left-0 top-0 z-30 w-full border-b h-14">
       <Container
         background="bg-white dark:bg-zinc-900"
         className="flex items-center gap-4 py-[11px]"
