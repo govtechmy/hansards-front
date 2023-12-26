@@ -39,7 +39,7 @@ const Kehadiran: Page = ({
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  ["kehadiran", "enum", "party"],
+  ["kehadiran", "enum", "demografi", "party"],
   async ({ query }) => {
     const { data: dropdown } = await get("api/catalogue/", {
       house: "dewan-rakyat",
