@@ -6,7 +6,6 @@ import { useTranslation } from "@hooks/useTranslation";
 import { Page } from "@lib/types";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { AnalyticsProvider } from "@lib/contexts/analytics";
-import { WindowProvider } from "@lib/contexts/window";
 import { SearchProvider } from "@data-catalogue/context";
 
 const CatalogueIndexPage: Page = ({
@@ -33,15 +32,13 @@ const CatalogueIndexPage: Page = ({
             fixedHeaderHeight: 240,
           }}
         >
-          {/* <WindowProvider> */}
           <Hansard
-            id={meta.id}
+            hansard_id={meta.id}
             cycle={cycle}
             date={date}
             filename={filename}
             speeches={speeches}
           />
-          {/* </WindowProvider> */}
         </SearchProvider>
       </AnalyticsProvider>
     </>
