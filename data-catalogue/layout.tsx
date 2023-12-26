@@ -6,30 +6,29 @@ import { cn } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { OptionType } from "@lib/types";
 import { useRouter } from "next/router";
-import { FC, ReactNode } from "react";
+import { ReactNode } from "react";
 
 /**
  * Catalogue Index Layout
  * @overview Status: Live
  */
 
-interface CatalogIndexLayoutProps {
-  children: ReactNode;
-}
-
-const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
+const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation("catalogue");
   const { pathname } = useRouter();
-  const dewan = pathname.slice(0, 21);
 
   const TAB_OPTIONS: Array<OptionType> = [
     {
-      label: t("dewan_rakyat", { ns: "common"}),
+      label: t("dewan_rakyat", { ns: "common" }),
       value: routes.KATALOG_DR,
     },
     {
-      label: t("dewan_negara", { ns: "common"}),
+      label: t("dewan_negara", { ns: "common" }),
       value: routes.KATALOG_DN,
+    },
+    {
+      label: t("kamar_khas", { ns: "common" }),
+      value: routes.KATALOG_KK,
     },
   ];
 
@@ -53,7 +52,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
               >
                 <div
                   className={cn(
-                    dewan === tab.value && "dark:bg-zinc-800",
+                    pathname.includes(tab.value) && "dark:bg-zinc-800",
                     "relative flex h-full flex-col items-center justify-center p-4"
                   )}
                 >
@@ -61,7 +60,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
                     <BuildingLibraryIcon
                       className={cn(
                         "h-4.5 w-4.5",
-                        dewan === tab.value
+                        pathname.includes(tab.value)
                           ? "text-zinc-900 dark:text-white"
                           : "text-zinc-500"
                       )}
@@ -69,7 +68,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
                     <div
                       className={cn(
                         "flex items-center gap-2",
-                        dewan === tab.value
+                        pathname.includes(tab.value)
                           ? "text-zinc-900 dark:text-white"
                           : "text-zinc-500"
                       )}
@@ -79,7 +78,7 @@ const CatalogIndexLayout: FC<CatalogIndexLayoutProps> = ({ children }) => {
                       </span>
                     </div>
                   </div>
-                  {dewan === tab.value && (
+                  {pathname.includes(tab.value) && (
                     <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
                   )}
                 </div>
