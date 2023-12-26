@@ -22,11 +22,57 @@
   textarea {
     @apply resize-none;
   }
+
+  /* Radix UI HSL Variables */
+  :root {
+    --background: 0 0% 100%; /* White */
+    --foreground: 222.2 84% 4.9%; /* Slate 950 */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 222.2 84% 4.9%; /* Slate 950 */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 222.2 84% 4.9%; /* Slate 950 */
+    --primary: 221.2 83.2% 53.3%; /* Blue 600 */
+    --primary-foreground: 210 40% 98%; /* Slate 50 */
+    --secondary: 210 40% 96.1%; /* Slate 100 */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* Slate 900 */
+    --muted: 210 40% 96.1%; /* Slate 100 */
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%; /* Slate 100 */
+    --accent-foreground: 222.2 47.4% 11.2%; /* Slate 900 */
+    --destructive: 0 84.2% 60.2%; /* Red 500 */
+    --destructive-foreground: 210 40% 98%; /* Slate 50 */
+    --border: 214.3 31.8% 91.4%; /* Slate 200 */
+    --input: 214.3 31.8% 91.4%; /* Slate 200 */
+    --ring: 221.2 83.2% 53.3%; /* Blue 600 */
+    --radius: 0.5rem; /* 8px */
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%; /* Slate 950 */
+    --foreground: 210 40% 98%; /* Slate 50 */
+    --card: 222.2 84% 4.9%; /* Slate 950 */
+    --card-foreground: 210 40% 98%; /* Slate 50 */
+    --popover: 222.2 84% 4.9%; /* Slate 950 */
+    --popover-foreground: 210 40% 98%; /* Slate 50 */
+    --primary: 217.2 91.2% 59.8%; /* Blue 500 */
+    --primary-foreground: 222.2 47.4% 11.2%; /* Slate 900 */
+    --secondary: 217.2 32.6% 17.5%; /* Slate 800 */
+    --secondary-foreground: 210 40% 98%; /* Slate 50 */
+    --muted: 217.2 32.6% 17.5%; /* Slate 800 */
+    --muted-foreground: 215 20.2% 65.1%; /* Slate 400 */
+    --accent: 217.2 32.6% 17.5%; /* Slate 800 */
+    --accent-foreground: 210 40% 98%; /* Slate 50 */
+    --destructive: 0 62.8% 30.6%; /* Red 900 */
+    --destructive-foreground: 210 40% 98%; /* Slate 50 */
+    --border: 217.2 32.6% 17.5%; /* Slate 800 */
+    --input: 217.2 32.6% 17.5%; /* Slate 800 */
+    --ring: 224.3 76.3% 48%; /* Blue 700 */
+  }
 }
 
 @layer components {
   .header {
-    @apply font-header text-xl font-bold text-zinc-900 dark:text-white;
+    @apply font-header text-xl font-bold text-zinc-900 dark:text-white [text-wrap:balance];
   }
 
   .title {
@@ -203,6 +249,6 @@ path:focus {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  position: absolute;
-  left: 10px;
+  display: none;
+  -webkit-appearance: none;
 }
