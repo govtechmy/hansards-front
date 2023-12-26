@@ -49,7 +49,7 @@ const KehadiranTable = ({
   loading,
   party,
 }: KehadiranTableProps) => {
-  const { t } = useTranslation(["demografi", "kehadiran"]);
+  const { t } = useTranslation(["kehadiran", "demografi"]);
   const [tab_idx, setTabIdx] = useState<number>(0);
 
   const kehadiranPerc = (value: Kehadiran) => (

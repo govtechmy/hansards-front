@@ -35,7 +35,7 @@ const Keyword = ({ dewan, keyword, timeseries }: KeywordProps) => {
 
   const { data, setData } = useData({
     loading: false,
-    minmax: [0, 1],
+    minmax: [0, 365],
   });
   const { coordinate } = useSlice(timeseries, data.minmax);
 
@@ -118,7 +118,7 @@ const Keyword = ({ dewan, keyword, timeseries }: KeywordProps) => {
                 {coordinate.freq.length === 0 && (
                   <>
                     <FaceFrownIcon className="h-6 w-6" />
-                    {t("placeholder.no_results")}
+                    {t("placeholder.no_results", { ns: "common" })}
                   </>
                 )}
                 {!keyword && (
