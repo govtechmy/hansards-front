@@ -17,16 +17,22 @@ export function getMatchText(
   if (typeof text === "number") {
     textStr = `${text}`;
   }
+  const regexp = new RegExp(
+    `\\**${escapeStr(keywordStr).split("").join("\\**")}\\**${
+      ignorecase ? "gi" : "g"
+    }`
+  );
+
   if (
     typeof keywordStr !== "string" ||
     !keywordStr.trim() ||
     typeof textStr !== "string" ||
     !textStr.trim() ||
-    !textStr.toLowerCase().includes(keywordStr.toLowerCase()) // case insensitive
+    !textStr.toLowerCase().match(regexp)
   ) {
     return text;
   }
-  const regexp = new RegExp(escapeStr(keywordStr), ignorecase ? "gi" : "g");
+  
   const matches: string[] = []; // save matched string, we will use this to overwrite keywordStr in the result string
   const textWithMark = textStr.replace(regexp, (match) => {
     matches.push(match);
