@@ -1,6 +1,6 @@
 import { cn } from "@lib/helpers";
 import { ResponsiveCirclePacking } from "@nivo/circle-packing";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 interface BubbleCloudProps {
   className?: string;
@@ -8,7 +8,6 @@ interface BubbleCloudProps {
 }
 
 const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
-  const [zoomedId, setZoomedId] = useState<string | null>(null);
   const _data = useMemo(() => {
     let chart_data = {
       id: "root",
@@ -22,26 +21,78 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
       <div className={cn(className)}>
         <ResponsiveCirclePacking
           data={_data}
-          theme={{ labels: { text: { fontSize: 14 } } }}
-          colors={{ scheme: "nivo" }}
-          colorBy="id"
-          childColor={{
-            from: "color",
-            modifiers: [["brighter", 0.4]],
+          colors={(data) => {
+            if (data.radius > 100) return "#DDD6B0";
+            if (data.radius > 60) return "#E4DFC3";
+            if (data.radius > 40) return "#EBE8D6";
+            if (data.radius > 25) return "#F1F1E9";
+            else return "#FAFAF3";
           }}
+          
           padding={4}
           leavesOnly
           enableLabels
           label="id"
-          labelTextColor={{
-            from: "color",
-            modifiers: [["darker", 2.4]],
-          }}
-          borderColor={{
-            from: "color",
-            modifiers: [["darker", 0.3]],
-          }}
-          animate={true}
+          labelComponent={({ label, node }) => (
+            <>
+              <text
+                x={node.x}
+                y={node.y}
+                textAnchor="middle"
+                dominantBaseline="central"
+                style={{
+                  fontWeight: 600,
+                  pointerEvents: "none",
+                }}
+                className={cn(
+                  "font-header truncate",
+                  node.radius > 100
+                    ? "text-[32px]"
+                    : node.radius > 60
+                    ? "text-[22px]"
+                    : node.radius > 40
+                    ? "text-[18px]"
+                    : node.radius > 25
+                    ? "text-[10px]"
+                    : node.radius > 20
+                    ? "text-[9px]"
+                    : "text-[8px]"
+                )}
+              >
+                {label}
+              </text>
+              <text
+                x={node.x}
+                y={node.y}
+                textAnchor="middle"
+                dominantBaseline="central"
+                dy={
+                  node.radius > 100
+                    ? 32
+                    : node.radius > 60
+                    ? 24
+                    : node.radius > 40
+                    ? 20
+                    : node.radius > 25
+                    ? 12
+                    : 10
+                }
+                className={cn(
+                  node.radius > 100
+                    ? "text-[16px]"
+                    : node.radius > 60
+                    ? "text-[12px]"
+                    : node.radius > 40
+                    ? "text-[10px]"
+                    : node.radius > 25
+                    ? "text-[8px]"
+                    : "text-[6px]"
+                )}
+              >
+                {node.value}
+              </text>
+            </>
+          )}
           tooltip={({ color, data, value }) => (
             <div className="flex min-w-max items-center justify-center rounded bg-zinc-900 py-[5px] px-[9px] text-sm text-white animate-appear">
               <span
@@ -51,11 +102,7 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
               {`${data.id}: ${value}`}
             </div>
           )}
-          zoomedId={zoomedId}
-          motionConfig="slow"
-          onClick={(node) => {
-            setZoomedId(zoomedId === node.id ? null : node.id);
-          }}
+          animate={false}
         />
       </div>
     </>
