@@ -72,6 +72,7 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
         <ThemeToggle />
         <Dropdown
           width="w-fit"
+          anchor="right"
           selected={languages.find((lang) => lang.value === language)}
           onChange={onLanguageChange}
           options={languages}

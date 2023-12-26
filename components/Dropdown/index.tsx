@@ -68,7 +68,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   enableSearch,
   title,
   description,
-  anchor = "right",
+  anchor = "left",
   placeholder,
   width = "w-full lg:w-fit",
   label,
@@ -213,8 +213,9 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
 
               {/* Sublabel */}
               {sublabel && (
-                <span className="text-zinc-500 block w-fit min-w-min truncate">
+                <span className="text-zinc-900 dark:text-white block w-fit min-w-min truncate">
                   {sublabel}
+                  {!multiple && selected && ":"}
                 </span>
               )}
 
@@ -240,7 +241,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               <span className="flex flex-grow truncate">
                 {multiple
                   ? title
-                  : (selected as OptionType)?.label || placeholder || "Select"}
+                  : (selected as OptionType)?.label || placeholder}
               </span>
               {/* Label (multiple) */}
               {multiple && (selected as OptionType[])?.length > 0 && (
@@ -250,7 +251,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               )}
 
               {/* ChevronDown Icon */}
-              <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
+              <ChevronDownIcon className="-mx-[5px] h-5 w-5 text-zinc-900 dark:text-white" />
             </>
           </Listbox.Button>
           <Transition

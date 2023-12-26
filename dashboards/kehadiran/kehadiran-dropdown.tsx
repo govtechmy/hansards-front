@@ -247,7 +247,6 @@ const KehadiranDropdown = ({
       {/* Desktop */}
       <div className="mb-8 lg:mb-12 hidden items-center gap-2 lg:flex mx-auto w-fit">
         <Dropdown
-          anchor="left"
           placeholder={t("pilih_parlimen")}
           options={PARLIMEN_OPTIONS}
           selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
@@ -267,7 +266,6 @@ const KehadiranDropdown = ({
           }}
         />
         <Dropdown
-          anchor="left"
           placeholder={t("pilih_penggal")}
           options={PENGGAL_OPTIONS}
           selected={PENGGAL_OPTIONS.find((e) => e.value === data.penggal)}
@@ -286,7 +284,6 @@ const KehadiranDropdown = ({
           disabled={!data.parlimen || data.parlimen === "all"}
         />
         <Dropdown
-          anchor="left"
           placeholder={t("pilih_mesyuarat")}
           options={MESYUARAT_OPTIONS}
           selected={MESYUARAT_OPTIONS.find((e) => e.value === data.mesyuarat)}
