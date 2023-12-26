@@ -38,10 +38,7 @@ const Section: FunctionComponent<SectionProps> = forwardRef(
       return toDate(date, "dd MMM yyyy, HH:mm", i18n.language);
     }, [date]);
     return (
-      <section
-        className={cn("py-8 lg:py-12 flex flex-col gap-6 lg:gap-8", className)}
-        ref={ref}
-      >
+      <section className="py-8 lg:py-12 flex flex-col gap-6 lg:gap-8" ref={ref}>
         {title || date || description ? (
           <div className="flex flex-col gap-y-3">
             <div className="flex flex-col flex-wrap items-start gap-2 lg:flex-row lg:items-center lg:justify-between">
@@ -86,7 +83,9 @@ const Section: FunctionComponent<SectionProps> = forwardRef(
         ) : (
           <></>
         )}
-        <div>{children}</div>
+        <div className={className}>
+          {children}
+        </div>
       </section>
     );
   }
