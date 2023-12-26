@@ -142,6 +142,8 @@ export type MetaPage = Record<string, any> & {
 export type WithData<T> = { data_as_of: string; data: T };
 
 /* Hansard */
+export type Dewan = "dewan-rakyat" | "dewan-negara" | "kamar-khas";
+
 export type Period = {
   start_date: string;
   end_date: string;

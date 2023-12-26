@@ -14,7 +14,7 @@ export type SpeechBubbleProps = Omit<Speech, "timestamp" | "speech"> & {
   timeString: string;
   children: ReactNode;
   keyword?: string;
-  id: string;
+  hansard_id: string;
   date: string;
 };
 
@@ -25,7 +25,7 @@ const SpeechBubble = ({
   children,
   index,
   timeString,
-  id,
+  hansard_id,
   date,
 }: SpeechBubbleProps) => {
   const [name, title] = author ? author.split("[") : [];
@@ -53,10 +53,12 @@ const SpeechBubble = ({
         key={index}
         className={cn("bubble", position === "left" ? "lt" : "rt")}
       >
+        {/* Speaker Picture */}
         <div className="flex items-end">
           <div className="usr"></div>
         </div>
-        <div className="flex flex-col gap-2">
+        {/* Speech Bubble */}
+        <div>
           <div className={cn("bub", party == "ydp" && "ydp")}>
             <div className="flex flex-wrap text-sm">
               <p className={cn("font-bold", colour)}>
@@ -70,9 +72,8 @@ const SpeechBubble = ({
             </div>
 
             {children}
-
-            <ShareButton date={date} hansard_id={id} index={index} />
-            <p className={"ts"}>{timeString}</p>
+            <ShareButton date={date} hansard_id={hansard_id} index={index} />
+            <span className="ts">{timeString}</span>
           </div>
         </div>
       </div>

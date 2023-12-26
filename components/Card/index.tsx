@@ -12,7 +12,7 @@ const Card: FunctionComponent<CardProps> = ({ children, className, onClick }) =>
     <div
       className={cn(
         "border-slate-200 dark:border-zinc-800 rounded-xl border transition",
-        onClick && "cursor-pointer transition",
+        onClick && "cursor-pointer",
         className
       )}
       tabIndex={onClick ? 0 : -1}

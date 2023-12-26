@@ -38,50 +38,55 @@ const Section: FunctionComponent<SectionProps> = forwardRef(
       return toDate(date, "dd MMM yyyy, HH:mm", i18n.language);
     }, [date]);
     return (
-      <section className={cn("py-8 lg:py-12", className)} ref={ref}>
-        <div className="flex flex-col gap-6 lg:gap-8">
-          {title || date || description ? (
-            <div className="flex flex-col gap-y-3">
-              <div className="flex flex-col flex-wrap items-start gap-2 lg:flex-row lg:items-center lg:justify-between">
-                {title && typeof title === "string" ? <h2 className="header">{title}</h2> : title}
-                {date && date !== null && (
-                  <span className="text-zinc-500 text-right text-sm">
-                    {t("data_of", { date: displayDate })}
-                  </span>
-                )}
-              </div>
-              {(description || menu) && (
-                <div
-                  className={cn(
-                    "text-zinc-500 flex w-full flex-wrap justify-between gap-y-3 md:flex-nowrap md:items-start",
-                    description && menu && "gap-x-6"
-                  )}
-                >
-                  {description && typeof description === "string" ? (
-                    <p
-                      className={[
-                        "whitespace-pre-line text-base",
-                        menu ? "md:max-w-[70%]" : "",
-                      ].join(" ")}
-                    >
-                      {description}
-                    </p>
-                  ) : (
-                    <div>{description}</div>
-                  )}
-                  {menu && (
-                    <div className="flex w-full gap-3 md:w-auto md:justify-end">
-                      {menu}
-                    </div>
-                  )}
-                </div>
+      <section
+        className={cn("py-8 lg:py-12 flex flex-col gap-6 lg:gap-8", className)}
+        ref={ref}
+      >
+        {title || date || description ? (
+          <div className="flex flex-col gap-y-3">
+            <div className="flex flex-col flex-wrap items-start gap-2 lg:flex-row lg:items-center lg:justify-between">
+              {title && typeof title === "string" ? (
+                <h2 className="header">{title}</h2>
+              ) : (
+                title
+              )}
+              {date && date !== null && (
+                <span className="text-zinc-500 text-right text-sm">
+                  {t("data_of", { date: displayDate })}
+                </span>
               )}
             </div>
-          ) : (
-            <></>
-          )}
-          <div>{children}</div>
-        </div>
+            {(description || menu) && (
+              <div
+                className={cn(
+                  "text-zinc-500 flex w-full flex-wrap justify-between gap-y-3 md:flex-nowrap md:items-start",
+                  description && menu && "gap-x-6"
+                )}
+              >
+                {description && typeof description === "string" ? (
+                  <p
+                    className={[
+                      "whitespace-pre-line text-base",
+                      menu ? "md:max-w-[70%]" : "",
+                    ].join(" ")}
+                  >
+                    {description}
+                  </p>
+                ) : (
+                  <div>{description}</div>
+                )}
+                {menu && (
+                  <div className="flex w-full gap-3 md:w-auto md:justify-end">
+                    {menu}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <></>
+        )}
+        <div>{children}</div>
       </section>
     );
   }

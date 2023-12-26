@@ -165,7 +165,6 @@ const SejarahParlimen = ({
 
           <div className="pb-6 lg:pb-8 items-center gap-2 flex flex-col sm:flex-row mx-auto w-fit">
             <Dropdown
-              anchor="left"
               placeholder={t("pilih_parlimen")}
               options={PARLIMEN_OPTIONS}
               selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
