@@ -237,6 +237,12 @@ const Hansard = ({
   };
 
   const IS_DR = cycle.house === 0;
+  const IS_KK = cycle.house === 2;
+  const dewan_route = IS_KK
+    ? routes.HANSARD_KK
+    : IS_DR
+    ? routes.KATALOG_DR
+    : routes.KATALOG_DN;
 
   return (
     <HansardSidebar
@@ -253,43 +259,28 @@ const Hansard = ({
           <Hero>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
               <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
-                <Link
-                  href={IS_DR ? routes.KATALOG_DR : routes.KATALOG_DN}
-                  className={styles.link_dim}
-                >
+                <Link href={dewan_route} className={styles.link_dim}>
                   {t("archive", {
-                    context: IS_DR ? "dr" : "dn",
+                    context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
                   })}
                 </Link>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
                 <Link
-                  href={
-                    IS_DR
-                      ? `${routes.KATALOG_DR}/parlimen-${cycle.term}`
-                      : `${routes.KATALOG_DN}/parlimen-${cycle.term}`
-                  }
+                  href={`${dewan_route}/parlimen-${cycle.term}`}
                   className={styles.link_dim}
                 >
                   {t("parlimen_full", { ns: "enum", n: cycle.term })}
                 </Link>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
                 <Link
-                  href={
-                    IS_DR
-                      ? `${routes.KATALOG_DR}/parlimen-${cycle.term}/penggal-${cycle.session}`
-                      : `${routes.KATALOG_DN}/parlimen-${cycle.term}/penggal-${cycle.session}`
-                  }
+                  href={`${dewan_route}/parlimen-${cycle.term}/penggal-${cycle.session}`}
                   className={styles.link_dim}
                 >
                   {t("penggal_full", { ns: "enum", n: cycle.session })}
                 </Link>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
                 <Link
-                  href={
-                    IS_DR
-                      ? `${routes.KATALOG_DR}/parlimen-${cycle.term}/penggal-${cycle.session}/mesyuarat-${cycle.meeting}`
-                      : `${routes.KATALOG_DN}/parlimen-${cycle.term}/penggal-${cycle.session}/mesyuarat-${cycle.meeting}`
-                  }
+                  href={`${dewan_route}/parlimen-${cycle.term}/penggal-${cycle.session}/mesyuarat-${cycle.meeting}`}
                   className={styles.link_dim}
                 >
                   {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
