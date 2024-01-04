@@ -15,16 +15,17 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       captionLayout="dropdown-buttons"
       fromYear={1959}
-      toYear={2023}
+      toYear={new Date().getFullYear()}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "relative inline-flex items-center px-1 whitespace-nowrap",
+        caption_label:
+          "relative inline-flex items-center px-1 whitespace-nowrap",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors", 
+          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
@@ -42,7 +43,7 @@ function Calendar({
             : "[&:has([aria-selected])]:rounded-md"
         ),
         day: cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors", 
+          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground",
           "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
         ),
@@ -58,7 +59,8 @@ function Calendar({
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
         caption_dropdowns: "relativ inline-flex",
-        dropdown: "appearance-none bg-transparent absolute inset-0 opacity-0 w-full z-10",
+        dropdown:
+          "appearance-none bg-transparent absolute inset-0 opacity-0 w-full z-10",
         dropdown_icon: "ml-[5px]",
         dropdown_month: "relative inline-flex items-center",
         dropdown_year: "relative inline-flex items-center",
@@ -66,12 +68,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => (
-          <ChevronLeftIcon className="h-4 w-4" {...props} />
-        ),
-        IconRight: ({ ...props }) => (
-          <ChevronRightIcon className="h-4 w-4" {...props} />
-        ),
+        IconLeft: () => <ChevronLeftIcon className="h-5 w-5" />,
+        IconRight: () => <ChevronRightIcon className="h-5 w-5" />,
       }}
       {...props}
     />
