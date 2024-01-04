@@ -91,16 +91,14 @@ const ExcerptCard = ({ excerpt, keyword }: ExcerptCardProps) => {
             </span>
             /
             <span>
-              {t("penggal", {
-                ordinal: true,
-                count: sitting.meeting,
+              {t("penggal_full", {
+                n: sitting.session,
               })}
             </span>
             /
             <span>
-              {t("mesyuarat", {
-                ordinal: true,
-                count: sitting.session,
+              {t("mesyuarat_full", {
+                n: sitting.meeting,
               })}
             </span>
           </span>
