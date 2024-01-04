@@ -120,11 +120,14 @@ export default function CatalogueFolder({
               )}
             >
               {sitting_list.map((sitting, i) => {
+                const { filename, date } = sitting;
                 const hansard_id = `${
-                  sitting.filename.startsWith("dr")
+                  filename.startsWith("kk")
+                    ? "kamar-khas"
+                    : filename.startsWith("dr")
                     ? "dewan-rakyat"
                     : "dewan-negara"
-                }/${sitting.date}`;
+                }/${date}`;
                 const { download, share } = useAnalytics(hansard_id);
                 const URL = `https://hansard.parlimen.gov.my/hansard/${hansard_id}`;
 
@@ -142,7 +145,7 @@ export default function CatalogueFolder({
                     key={i}
                     className="flex items-center gap-x-4.5 p-3 shadow-button border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900"
                   >
-                    <DateCard date={sitting.date} size="sm" />
+                    <DateCard date={date} size="sm" />
                     <div className="flex flex-col gap-y-1.5">
                       <Link
                         href={`/hansard/${hansard_id}`}
@@ -150,15 +153,12 @@ export default function CatalogueFolder({
                         onClick={() => setOpen(false)}
                         className="font-medium hover:underline [text-underline-position:from-font] text-zinc-900 dark:text-white"
                       >
-                        {new Date(sitting.date).toLocaleDateString(
-                          i18n.language,
-                          {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          }
-                        )}
+                        {new Date(date).toLocaleDateString(i18n.language, {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </Link>
                       <div>
                         <p className="text-blue-600 dark:text-primary-dark flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap">
@@ -183,10 +183,10 @@ export default function CatalogueFolder({
                             onChange={({ value: filetype }) => {
                               window.open(
                                 `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                                  sitting.filename.startsWith("dr")
+                                  filename.startsWith("dr")
                                     ? "dewanrakyat"
                                     : "dewannegara"
-                                }/${sitting.filename}.${filetype}`,
+                                }/${filename}.${filetype}`,
                                 "_blank"
                               );
                               download(filetype);
