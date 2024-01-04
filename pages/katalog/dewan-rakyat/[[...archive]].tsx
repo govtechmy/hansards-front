@@ -55,7 +55,6 @@ export const getStaticProps: GetStaticProps = withi18n(
           archive: data.catalogue_list,
           params: params,
         },
-        revalidate: 86400, // 1 day (in seconds)
       };
     } catch (error) {
       console.error(error);
