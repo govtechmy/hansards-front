@@ -269,7 +269,7 @@ const Hansard = ({
                   href={`${dewan_route}/parlimen-${cycle.term}`}
                   className={styles.link_dim}
                 >
-                  {t("parlimen_full", { ns: "enum", n: cycle.term })}
+                  {t("parlimen", { ns: "enum", count: cycle.term })}
                 </Link>
                 <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
                 <Link
