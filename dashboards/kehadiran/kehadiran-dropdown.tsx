@@ -102,8 +102,10 @@ const KehadiranDropdown = ({
       _mesyuarat = Object.keys(dropdown[data.parlimen][data.penggal])
         .reverse()
         .filter((e) => !["start_date", "end_date"].includes(e))
-        .filter(
-          (e) => data.parlimen === "14" && data.penggal === "3" && +e === 0
+        .filter((e) =>
+          data.parlimen === "14" && data.penggal === "3" && +e !== 0
+            ? false
+            : true
         )
         .map((mesyuarat: string) => {
           const { start_date, end_date } =
@@ -132,115 +134,117 @@ const KehadiranDropdown = ({
             <Filter onClick={() => setOpen(!open)} />
           </WindowProvider>
         </DialogTrigger>
-        <DialogContent className="w-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-0 flex flex-col gap-y-0">
-          <DialogHeading className="p-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
-            <span className="font-bold text-sm text-zinc-900 dark:text-white">
-              {t("filters", { ns: "common" }) + ":"}
-            </span>
-            <DialogClose></DialogClose>
-          </DialogHeading>
-          <DialogDescription>
-            <div className="flex flex-col">
-              <div className="bg-white dark:bg-zinc-900">
-                <div className="dark:divide-washed-dark divide-y px-3 pb-3">
-                  <div className="dark:border-zinc-700 py-3 space-y-1">
-                    <Label label={t("pilih_parlimen") + ":"} />
-                    <Dropdown
-                      width="w-full"
-                      placeholder={t("pilih_parlimen")}
-                      options={PARLIMEN_OPTIONS}
-                      selected={PARLIMEN_OPTIONS.find(
-                        (e) => e.value === data.parlimen
-                      )}
-                      onChange={(selected) => {
-                        if (selected.value === "all") {
-                          setData("parlimen", "all");
-                          setData("penggal", "all");
-                          setData("mesyuarat", "all");
-                        } else {
-                          setData("parlimen", selected.value);
-                          setData("penggal", null);
-                          setData("mesyuarat", null);
-                        }
-                      }}
-                    />
+        <DialogContent className="p-0">
+          <div className="w-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col gap-y-0">
+            <DialogHeading className="p-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
+              <span className="font-bold text-sm text-zinc-900 dark:text-white">
+                {t("filters", { ns: "common" }) + ":"}
+              </span>
+              <DialogClose/>
+            </DialogHeading>
+            <DialogDescription>
+              <div className="flex flex-col">
+                <div className="bg-white dark:bg-zinc-900">
+                  <div className="dark:divide-washed-dark divide-y px-3 pb-3">
+                    <div className="dark:border-zinc-700 py-3 space-y-1">
+                      <Label label={t("pilih_parlimen") + ":"} />
+                      <Dropdown
+                        width="w-full"
+                        placeholder={t("pilih_parlimen")}
+                        options={PARLIMEN_OPTIONS}
+                        selected={PARLIMEN_OPTIONS.find(
+                          (e) => e.value === data.parlimen
+                        )}
+                        onChange={(selected) => {
+                          if (selected.value === "all") {
+                            setData("parlimen", "all");
+                            setData("penggal", "all");
+                            setData("mesyuarat", "all");
+                          } else {
+                            setData("parlimen", selected.value);
+                            setData("penggal", null);
+                            setData("mesyuarat", null);
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="dark:border-zinc-700 py-3 space-y-1">
+                      <Label label={t("pilih_penggal") + ":"} />
+                      <Dropdown
+                        width="w-full"
+                        anchor="right-0 bottom-10"
+                        placeholder={t("pilih_penggal")}
+                        options={PENGGAL_OPTIONS}
+                        selected={PENGGAL_OPTIONS.find(
+                          (e) => e.value === data.penggal
+                        )}
+                        onChange={(selected) => {
+                          if (selected.value === "all") {
+                            setData("penggal", "all");
+                            setData("mesyuarat", "all");
+                          } else {
+                            setData("penggal", selected.value);
+                            setData("mesyuarat", null);
+                          }
+                        }}
+                        disabled={!data.parlimen || data.parlimen === "all"}
+                      />
+                    </div>
+                    <div className="py-3 space-y-1">
+                      <Label label={t("pilih_mesyuarat") + ":"} />
+                      <Dropdown
+                        width="w-full"
+                        anchor="right-0 bottom-10"
+                        placeholder={t("pilih_mesyuarat")}
+                        options={MESYUARAT_OPTIONS}
+                        selected={MESYUARAT_OPTIONS.find(
+                          (e) => e.value === data.mesyuarat
+                        )}
+                        onChange={(selected) => {
+                          if (selected.value === "all") {
+                            setData("mesyuarat", "all");
+                          } else {
+                            setData("mesyuarat", selected.value);
+                          }
+                        }}
+                        disabled={!data.penggal || data.penggal === "all"}
+                      />
+                    </div>
                   </div>
-                  <div className="dark:border-zinc-700 py-3 space-y-1">
-                    <Label label={t("pilih_penggal") + ":"} />
-                    <Dropdown
-                      width="w-full"
-                      anchor="right-0 bottom-10"
-                      placeholder={t("pilih_penggal")}
-                      options={PENGGAL_OPTIONS}
-                      selected={PENGGAL_OPTIONS.find(
-                        (e) => e.value === data.penggal
-                      )}
-                      onChange={(selected) => {
-                        if (selected.value === "all") {
-                          setData("penggal", "all");
-                          setData("mesyuarat", "all");
-                        } else {
-                          setData("penggal", selected.value);
-                          setData("mesyuarat", null);
-                        }
+                  <div className="dark:border-washed-dark flex w-full flex-col gap-2 border-t bg-white p-3 dark:bg-black">
+                    <Button
+                      variant={"primary"}
+                      className="w-full justify-center"
+                      onClick={() => {
+                        onLoad();
+                        setFilter(
+                          "parlimen",
+                          data.parlimen === "all" ? "all" : data.parlimen
+                        );
+                        setFilter(
+                          "penggal",
+                          data.penggal === "all" ? null : data.penggal
+                        );
+                        setFilter(
+                          "mesyuarat",
+                          data.mesyuarat === "all" ? null : data.mesyuarat
+                        );
+                        setOpen(false);
                       }}
-                      disabled={!data.parlimen || data.parlimen === "all"}
-                    />
+                    >
+                      {t("filter", { ns: "common" })}
+                    </Button>
+                    <Button
+                      className="btn w-full justify-center px-3 py-1.5"
+                      onClick={() => setOpen(false)}
+                    >
+                      {t("close", { ns: "common" })}
+                    </Button>
                   </div>
-                  <div className="py-3 space-y-1">
-                    <Label label={t("pilih_mesyuarat") + ":"} />
-                    <Dropdown
-                      width="w-full"
-                      anchor="right-0 bottom-10"
-                      placeholder={t("pilih_mesyuarat")}
-                      options={MESYUARAT_OPTIONS}
-                      selected={MESYUARAT_OPTIONS.find(
-                        (e) => e.value === data.mesyuarat
-                      )}
-                      onChange={(selected) => {
-                        if (selected.value === "all") {
-                          setData("mesyuarat", "all");
-                        } else {
-                          setData("mesyuarat", selected.value);
-                        }
-                      }}
-                      disabled={!data.penggal || data.penggal === "all"}
-                    />
-                  </div>
-                </div>
-                <div className="dark:border-washed-dark flex w-full flex-col gap-2 border-t bg-white p-3 dark:bg-black">
-                  <Button
-                    variant={"primary"}
-                    className="w-full justify-center"
-                    onClick={() => {
-                      onLoad();
-                      setFilter(
-                        "parlimen",
-                        data.parlimen === "all" ? "all" : data.parlimen
-                      );
-                      setFilter(
-                        "penggal",
-                        data.penggal === "all" ? null : data.penggal
-                      );
-                      setFilter(
-                        "mesyuarat",
-                        data.mesyuarat === "all" ? null : data.mesyuarat
-                      );
-                      setOpen(false);
-                    }}
-                  >
-                    {t("filter", { ns: "common" })}
-                  </Button>
-                  <Button
-                    className="btn w-full justify-center px-3 py-1.5"
-                    onClick={() => setOpen(false)}
-                  >
-                    {t("close", { ns: "common" })}
-                  </Button>
                 </div>
               </div>
-            </div>
-          </DialogDescription>
+            </DialogDescription>
+          </div>
         </DialogContent>
       </Dialog>
 
