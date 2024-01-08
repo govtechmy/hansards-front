@@ -3,7 +3,6 @@ export { default as At } from "./At";
 export { default as Button } from "./Button";
 export { default as Card } from "./Card";
 export { default as DateCard } from "./Card/date-card";
-export { default as ExcerptCard } from "./Card/excerpt-card";
 export { default as Checkbox } from "./Checkbox";
 export { default as Chips } from "./Chips";
 export { default as CodeBlock } from "./CodeBlock";
