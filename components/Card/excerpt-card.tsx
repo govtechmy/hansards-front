@@ -2,7 +2,7 @@ import DateCard from "./date-card";
 import Markdown from "@components/Markdown";
 import ArrowUpRightIcon from "@heroicons/react/24/solid/ArrowUpRightIcon";
 import { useTranslation } from "@hooks/useTranslation";
-import { routes } from "@lib/routes";
+import { Dewan } from "@lib/types";
 import Link from "next/link";
 import { useMemo } from "react";
 import rehypeRaw from "rehype-raw";
@@ -20,11 +20,12 @@ export type Excerpt = {
 };
 
 interface ExcerptCardProps {
+  dewan: Dewan;
   excerpt: Excerpt;
   keyword: string;
 }
 
-const ExcerptCard = ({ excerpt, keyword }: ExcerptCardProps) => {
+const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
   const { t } = useTranslation("enum");
   const { index, sitting, speaker, trimmed_speech } = excerpt;
   const [name, title] = speaker.split("[");
@@ -49,7 +50,7 @@ const ExcerptCard = ({ excerpt, keyword }: ExcerptCardProps) => {
   return (
     <>
       <Link
-        href={`${routes.HANSARD_DR}/${sitting.date}#${index}`}
+        href={`hansard/${dewan}/${sitting.date}#${index}`}
         className="shadow-button p-6 max-w-3xl group border-slate-200 dark:border-zinc-800 rounded-xl border transition hover:border-slate-400 hover:bg-slate-50 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/50"
       >
         <div className="flex flex-col gap-3 relative h-full">
