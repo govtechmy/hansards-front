@@ -107,10 +107,12 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
                         ref={(ref) => (scrollRef.current[parlimen_id] = ref)}
                       >
                         <h2 className="header flex flex-wrap w-fit sm:whitespace-nowrap">
-                          {t("parlimen_full", {
+                          {t("parlimen", {
                             ns: "enum",
-                            n: id,
-                          }).concat(yearRange)}
+                            count: id,
+                            ordinal: true,
+                          })}
+                          {yearRange}
                         </h2>
                         <span className={classNames.hr} />
                       </div>
@@ -136,7 +138,8 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
                                 {t("penggal_full", {
                                   ns: "enum",
                                   n: id,
-                                }).concat(yearRange)}
+                                })}
+                                {yearRange}
                               </h3>
 
                               <div
