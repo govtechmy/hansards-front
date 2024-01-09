@@ -69,11 +69,11 @@ export default function ShareButton({
         )}
       </DialogTrigger>
       <DialogContent className="lg:w-fit border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 p-6 flex flex-col gap-y-5">
-        <DialogHeading className="flex justify-between">
+        <DialogHeading className="flex w-full justify-between">
           <span className="text-center font-medium text-zinc-900 dark:text-white w-full">
             {t("share_hansard")}
           </span>
-          <DialogClose></DialogClose>
+          <DialogClose />
         </DialogHeading>
         <DialogDescription className="flex flex-col gap-6 max-h-[80vh]">
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-button p-3 flex gap-4.5 w-fit mx-auto items-center">
@@ -90,14 +90,14 @@ export default function ShareButton({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               {
-                name: "Twitter",
-                icon: <XShare className="h-4 w-4" />,
-                link: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
-              },
-              {
                 name: "Facebook",
                 icon: <FBShare className="h-5 w-5" />,
                 link: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
+              },
+              {
+                name: "Twitter",
+                icon: <XShare className="h-5 w-5" />,
+                link: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
               },
               {
                 name: "E-mail",
