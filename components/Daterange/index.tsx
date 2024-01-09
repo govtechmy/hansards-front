@@ -2,13 +2,18 @@ import Calendar from "@components/Calendar";
 import { Transition, Popover } from "@headlessui/react";
 import { ArrowRightIcon, CalendarIcon } from "@heroicons/react/20/solid";
 import { cn } from "@lib/helpers";
-import { format, isAfter, isBefore, isValid, parse } from "date-fns";
-import enGB from "date-fns/locale/en-GB";
-import ms from "date-fns/locale/ms";
-import { useTranslation } from "next-i18next";
-import { ChangeEventHandler, useState } from "react";
 import {
-  type DateBefore,
+  format,
+  isAfter,
+  isBefore,
+  isValid,
+  parse,
+  subSeconds,
+} from "date-fns";
+import { enGB, ms } from "date-fns/locale";
+import { useTranslation } from "next-i18next";
+import { ChangeEventHandler, Dispatch, SetStateAction, useState } from "react";
+import {
   type DayPickerRangeProps,
   type DateRange,
   SelectRangeEventHandler,
@@ -20,8 +25,7 @@ interface DateRangeProps extends Omit<DayPickerRangeProps, "mode"> {
   placeholder?: string;
   label?: string;
   numberOfMonths?: number;
-  from: (date: string) => void;
-  to: (date: string) => void;
+  setSelected: Dispatch<SetStateAction<DateRange | undefined>>;
 }
 
 const Daterange = ({
@@ -32,71 +36,84 @@ const Daterange = ({
   label,
   numberOfMonths = 2,
   selected,
-  from,
-  to,
+  setSelected,
 }: DateRangeProps) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("home");
 
-  const FIRST_PARLIMEN_DATE: DateBefore = {
-    before: new Date(1959, 8, 11),
-  };
+  const PARLIMEN_START_DATE = new Date("1959-08-11T00:00:00");
 
-  const DEFAULT_DATE = new Date();
-  DEFAULT_DATE.setMonth(
-    DEFAULT_DATE.getMonth() - (numberOfMonths === 2 ? 1 : 0)
-  );
+  const TODAY = new Date();
+  const DEFAULT = new Date();
+  DEFAULT.setMonth(TODAY.getMonth() - (numberOfMonths === 2 ? 1 : 0));
 
-  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
-    undefined
-  );
   const [fromValue, setFromValue] = useState<string>("");
   const [toValue, setToValue] = useState<string>("");
+  const [invalidFromValue, setInvalidFromValue] = useState<string>("");
+  const [invalidToValue, setInvalidToValue] = useState<string>("");
 
   const handleFromChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setFromValue(e.target.value);
-    from(e.target.value);
-    const date = parse(e.target.value, "y-MM-dd", new Date());
+    const date = parse(e.target.value, "yyyy-MM-dd", TODAY);
 
-    if (!isValid(date)) {
-      return setSelectedRange({ from: undefined, to: undefined });
-    }
-    if (selectedRange?.to && isAfter(date, selectedRange.to)) {
-      setSelectedRange({ from: selectedRange.to, to: date });
+    // if year below 1000
+    if (e.target.value.startsWith("0")) setInvalidFromValue("");
+    else if (
+      isValid(date) &&
+      isAfter(date, subSeconds(PARLIMEN_START_DATE, 1)) &&
+      isBefore(date, TODAY)
+    ) {
+      setSelected({ from: date, to: selected?.to });
+      setInvalidFromValue("");
     } else {
-      setSelectedRange({ from: date, to: selectedRange?.to });
+      setSelected({ from: undefined, to: undefined });
+      setInvalidFromValue(() => {
+        if (isBefore(date, PARLIMEN_START_DATE)) return t("invalid_min");
+        else if (isAfter(date, TODAY)) return t("invalid_max");
+        else return t("invalid");
+      });
     }
   };
 
   const handleToChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setToValue(e.target.value);
-    to(e.target.value);
-    const date = parse(e.target.value, "y-MM-dd", new Date());
+    const date = parse(e.target.value, "yyyy-MM-dd", TODAY);
+    const fromDate = subSeconds(
+      selected?.from ? selected.from : PARLIMEN_START_DATE,
+      1
+    );
 
-    if (!isValid(date)) {
-      return setSelectedRange({ from: selectedRange?.from, to: undefined });
-    }
-    if (selectedRange?.from && isBefore(date, selectedRange.from)) {
-      setSelectedRange({ from: date, to: selectedRange.from });
+    // if year below 1000
+    if (e.target.value.startsWith("0")) setInvalidToValue("");
+    else if (
+      isValid(date) &&
+      isAfter(date, fromDate) &&
+      isBefore(date, TODAY)
+    ) {
+      setSelected({ from: selected?.from, to: date });
+      setInvalidToValue("");
     } else {
-      setSelectedRange({ from: selectedRange?.from, to: date });
+      setSelected({ from: selected?.from, to: undefined });
+      setInvalidToValue(() => {
+        if (isBefore(date, fromDate)) return t("invalid_min");
+        else if (isAfter(date, TODAY)) return t("invalid_max");
+        else return t("invalid");
+      });
     }
   };
 
   const handleRangeSelect: SelectRangeEventHandler = (
     range: DateRange | undefined
   ) => {
-    setSelectedRange(range);
+    setSelected(range);
     if (range?.from) {
-      const from_date = format(range.from, "y-MM-dd");
+      const from_date = format(range.from, "yyyy-MM-dd");
       setFromValue(from_date);
-      from(from_date);
     } else {
       setFromValue("");
     }
     if (range?.to) {
-      const to_date = format(range.to, "y-MM-dd");
+      const to_date = format(range.to, "yyyy-MM-dd");
       setToValue(to_date);
-      to(to_date);
     } else {
       setToValue("");
     }
@@ -118,19 +135,24 @@ const Daterange = ({
         <CalendarIcon className="text-zinc-900 dark:text-white h-4.5 w-4.5" />
         <span className="text-zinc-900 dark:text-white">
           {label}
-          {selected && ":"}
+          {(selected || placeholder) && ":"}
         </span>
         {selected?.from ? (
           selected?.to ? (
             <>
-              {format(new Date(selected?.from), "P", { locale: ms })} -{" "}
-              {format(new Date(selected?.to), "P", { locale: ms })}
+              {format(new Date(selected?.from), "dd-MM-yyyy", { locale: ms })}
+              <ArrowRightIcon className="h-3 w-3" />
+              {format(new Date(selected?.to), "dd-MM-y", { locale: ms })}
             </>
           ) : (
-            format(new Date(selected?.from), "P", { locale: ms })
+            <>
+              {format(new Date(selected?.from), "dd-MM-yyyy", { locale: ms })}
+              <ArrowRightIcon className="h-3 w-3" />
+              dd/mm/yyyy
+            </>
           )
         ) : (
-          <span>{placeholder}</span>
+          <>{placeholder}</>
         )}
       </Popover.Button>
       <Transition
@@ -141,7 +163,7 @@ const Daterange = ({
       >
         <Popover.Panel
           className={cn(
-            "max-h-100 dark:ring-slate-800 shadow-floating absolute z-20 mt-1 overflow-clip rounded-md bg-white text-sm ring-1 ring-zinc-900 ring-opacity-5 focus:outline-none dark:bg-zinc-900",
+            "min-w-full max-h-100 shadow-floating absolute z-20 mt-1 rounded-md bg-white text-sm focus:outline-none dark:bg-zinc-900",
             anchor === "right"
               ? "right-0"
               : anchor === "left"
@@ -149,34 +171,54 @@ const Daterange = ({
               : anchor
           )}
         >
-          <form className="pt-3 px-3 hidden sm:flex items-center gap-x-3">
-            <input
-              type="date"
-              className="text-center w-full rounded-md px-3 py-1.5 text-sm dark:bg-zinc-900 dark:text-white focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none"
-              value={fromValue}
-              onChange={handleFromChange}
-              min="1959-08-11"
-              max={new Date().toISOString().slice(0, 10)}
-            />
-            <ArrowRightIcon className="h-4.5 w-4.5 shrink-0 text-zinc-500" />
-            <input
-              type="date"
-              className="text-center w-full rounded-md px-3 py-1.5 text-sm dark:bg-zinc-900 dark:text-white focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none"
-              value={toValue}
-              onChange={handleToChange}
-              min={fromValue}
-              max={new Date().toISOString().slice(0, 10)}
-            />
+          <form className="pt-3 px-3 flex flex-col">
+            <div className="flex items-center gap-x-3">
+              <input
+                type="date"
+                className={cn(
+                  "btn-default text-center w-full focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none focus:border-none",
+                  invalidFromValue && "invalid:ring-red-600"
+                )}
+                value={fromValue}
+                onChange={handleFromChange}
+                onClick={(event) => event.preventDefault()}
+                min="1959-08-11"
+                max={toValue ? toValue : TODAY.toISOString().slice(0, 10)}
+              />
+              <ArrowRightIcon className="h-4.5 w-4.5 shrink-0 text-zinc-500" />
+              <input
+                type="date"
+                className={cn(
+                  "btn-default text-center w-full focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none focus:border-none",
+                  invalidToValue && "invalid:ring-red-600"
+                )}
+                value={toValue}
+                onChange={handleToChange}
+                onClick={(event) => event.preventDefault()}
+                min={fromValue ? fromValue : "1959-08-11"}
+                max={new Date().toISOString().slice(0, 10)}
+              />
+            </div>
+            <div className="flex gap-[42px] pt-1">
+              <p className="text-xs text-red-600 w-full">{invalidFromValue}</p>
+              <p className="text-xs text-red-600 w-full">{invalidToValue}</p>
+            </div>
           </form>
+
           <Calendar
             locale={i18n.language.startsWith("ms") ? ms : enGB}
             initialFocus
             mode="range"
-            defaultMonth={DEFAULT_DATE}
-            selected={selectedRange}
+            defaultMonth={DEFAULT}
+            selected={selected}
             onSelect={handleRangeSelect}
             numberOfMonths={numberOfMonths}
-            disabled={[FIRST_PARLIMEN_DATE, { after: new Date() }]}
+            disabled={[
+              {
+                before: PARLIMEN_START_DATE,
+              },
+              { after: TODAY },
+            ]}
           />
         </Popover.Panel>
       </Transition>
