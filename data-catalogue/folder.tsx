@@ -93,153 +93,157 @@ export default function CatalogueFolder({
         <span className="text-zinc-500 text-sm font-normal">{dateRange}</span>
       </DialogTrigger>
       {open && (
-        <DialogContent className="w-full border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 p-6 flex flex-col gap-y-5">
-          <DialogHeading className="gap-x-3 flex items-center justify-between">
-            <span className="gap-x-3 flex items-center max-[360px]:flex-wrap font-medium text-zinc-900 dark:text-white">
-              <Image
-                src="/static/images/icons/open-folder.png"
-                width={32}
-                height={20}
-                alt="Open Folder"
-              />
-              {t("mesyuarat_full", {
-                ns: "enum",
-                n: meeting_id,
-              })}
-              <span className="font-normal text-zinc-500">{dateRange}</span>
-            </span>
-            <DialogClose></DialogClose>
-          </DialogHeading>
-          <DialogDescription>
-            <div
-              className={cn(
-                "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[80vh]",
-                sitting_list.length < 4
-                  ? "overflow-visible"
-                  : "overflow-y-auto scroll"
-              )}
-            >
-              {sitting_list.map((sitting, i) => {
-                const { filename, date } = sitting;
-                const hansard_id = `${
-                  filename.startsWith("kk")
-                    ? "kamar-khas"
-                    : filename.startsWith("dr")
-                    ? "dewan-rakyat"
-                    : "dewan-negara"
-                }/${date}`;
-                const { download, share } = useAnalytics(hansard_id);
-                const URL = `https://hansard.parlimen.gov.my/hansard/${hansard_id}`;
+        <DialogContent className="p-0">
+          <div className="w-full border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 p-6 flex flex-col gap-y-5 rounded-t-xl">
+            <DialogHeading className="gap-x-3 flex items-center justify-between">
+              <span className="gap-x-3 flex items-center ">
+                <Image
+                  src="/static/images/icons/open-folder.png"
+                  width={32}
+                  height={20}
+                  alt="Open Folder"
+                />
+                <span className="flex flex-wrap gap-x-3 font-medium text-zinc-900 dark:text-white">
+                  {t("mesyuarat_full", {
+                    ns: "enum",
+                    n: meeting_id,
+                  })}
+                  <span className="font-normal text-zinc-500">{dateRange}</span>
+                </span>
+              </span>
+              <DialogClose />
+            </DialogHeading>
+            <DialogDescription>
+              <div
+                className={cn(
+                  "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[80vh]",
+                  sitting_list.length < 4
+                    ? "overflow-visible"
+                    : "overflow-y-auto scroll"
+                )}
+              >
+                {sitting_list.map((sitting, i) => {
+                  const { filename, date } = sitting;
+                  const hansard_id = `${
+                    filename.startsWith("kk")
+                      ? "kamar-khas"
+                      : filename.startsWith("dr")
+                      ? "dewan-rakyat"
+                      : "dewan-negara"
+                  }/${date}`;
+                  const { download, share } = useAnalytics(hansard_id);
+                  const URL = `https://hansard.parlimen.gov.my/hansard/${hansard_id}`;
 
-                const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
-                const modulo = sitting_list.length % cols;
-                const itemsInLastRow =
-                  size.width < BREAKPOINTS.MD
-                    ? 1
-                    : modulo === 0
-                    ? cols
-                    : modulo;
+                  const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
+                  const modulo = sitting_list.length % cols;
+                  const itemsInLastRow =
+                    size.width < BREAKPOINTS.MD
+                      ? 1
+                      : modulo === 0
+                      ? cols
+                      : modulo;
 
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-x-4.5 p-3 shadow-button border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900"
-                  >
-                    <DateCard date={date} size="sm" />
-                    <div className="flex flex-col gap-y-1.5">
-                      <Link
-                        href={`/hansard/${hansard_id}`}
-                        prefetch={false}
-                        onClick={() => setOpen(false)}
-                        className="font-medium hover:underline [text-underline-position:from-font] text-zinc-900 dark:text-white"
-                      >
-                        {new Date(date).toLocaleDateString(i18n.language, {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </Link>
-                      <div>
-                        <p className="text-blue-600 dark:text-primary-dark flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap">
-                          <span className="dark:hover:text-blue-600 hover:underline [text-underline-position:from-font]">
-                            {t("cite")}
-                          </span>
-                          •
-                          <Dropdown
-                            className="p-0 border-none shadow-none text-blue-600 dark:text-primary-dark hover:underline [text-underline-position:from-font] font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
-                            width="w-fit"
-                            placeholder={t("download")}
-                            selected={undefined}
-                            options={[
-                              { label: "PDF", value: "pdf" },
-                              { label: t("csv"), value: "csv" },
-                            ]}
-                            anchor={
-                              i > sitting_list.length - itemsInLastRow - 1
-                                ? "bottom-6"
-                                : ""
-                            }
-                            onChange={({ value: filetype }) => {
-                              window.open(
-                                `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                                  filename.startsWith("dr")
-                                    ? "dewanrakyat"
-                                    : "dewannegara"
-                                }/${filename}.${filetype}`,
-                                "_blank"
-                              );
-                              download(filetype);
-                            }}
-                          />
-                          •
-                          <Dropdown
-                            className="p-0 border-none shadow-none text-blue-600 dark:text-primary-dark hover:underline [text-underline-position:from-font] font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
-                            width="w-fit"
-                            placeholder={t("share")}
-                            selected={undefined}
-                            options={[
-                              {
-                                label: "Twitter",
-                                value: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
-                              },
-                              {
-                                label: "Facebook",
-                                value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
-                              },
-                              {
-                                label: "E-mail",
-                                value: `mailto:?subject=${title}&body=${URL}`,
-                              },
-                              {
-                                label: t(copyText, { ns: "common" }),
-                                value: "copy",
-                              },
-                            ]}
-                            anchor={
-                              i > sitting_list.length - itemsInLastRow - 1
-                                ? "bottom-6 right-0"
-                                : "right"
-                            }
-                            onChange={({ value: link }) => {
-                              share();
-                              if (link === "copy") {
-                                copyClipboard(URL);
-                                setCopyText("copied");
-                                setTimeout(() => {
-                                  setCopyText("copy");
-                                }, 1000);
-                              } else window.open(link, "_blank");
-                            }}
-                          />
-                        </p>
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-x-4.5 p-3 shadow-button border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900"
+                    >
+                      <DateCard date={date} size="sm" />
+                      <div className="flex flex-col gap-y-1.5">
+                        <Link
+                          href={`/hansard/${hansard_id}`}
+                          prefetch={false}
+                          onClick={() => setOpen(false)}
+                          className="font-medium hover:underline [text-underline-position:from-font] text-zinc-900 dark:text-white"
+                        >
+                          {new Date(date).toLocaleDateString(i18n.language, {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </Link>
+                        <div>
+                          <p className="text-blue-600 dark:text-primary-dark flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap">
+                            <span className="dark:hover:text-blue-600 hover:underline [text-underline-position:from-font]">
+                              {t("cite")}
+                            </span>
+                            •
+                            <Dropdown
+                              className="p-0 border-none shadow-none text-blue-600 dark:text-primary-dark hover:underline [text-underline-position:from-font] font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
+                              width="w-fit"
+                              placeholder={t("download")}
+                              selected={undefined}
+                              options={[
+                                { label: "PDF", value: "pdf" },
+                                { label: t("csv"), value: "csv" },
+                              ]}
+                              anchor={
+                                i > sitting_list.length - itemsInLastRow - 1
+                                  ? "bottom-6"
+                                  : ""
+                              }
+                              onChange={({ value: filetype }) => {
+                                window.open(
+                                  `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                                    filename.startsWith("dr")
+                                      ? "dewanrakyat"
+                                      : "dewannegara"
+                                  }/${filename}.${filetype}`,
+                                  "_blank"
+                                );
+                                download(filetype);
+                              }}
+                            />
+                            •
+                            <Dropdown
+                              className="p-0 border-none shadow-none text-blue-600 dark:text-primary-dark hover:underline [text-underline-position:from-font] font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
+                              width="w-fit"
+                              placeholder={t("share")}
+                              selected={undefined}
+                              options={[
+                                {
+                                  label: "Twitter",
+                                  value: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
+                                },
+                                {
+                                  label: "Facebook",
+                                  value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
+                                },
+                                {
+                                  label: "E-mail",
+                                  value: `mailto:?subject=${title}&body=${URL}`,
+                                },
+                                {
+                                  label: t(copyText, { ns: "common" }),
+                                  value: "copy",
+                                },
+                              ]}
+                              anchor={
+                                i > sitting_list.length - itemsInLastRow - 1
+                                  ? "bottom-6 right-0"
+                                  : "right"
+                              }
+                              onChange={({ value: link }) => {
+                                share();
+                                if (link === "copy") {
+                                  copyClipboard(URL);
+                                  setCopyText("copied");
+                                  setTimeout(() => {
+                                    setCopyText("copy");
+                                  }, 1000);
+                                } else window.open(link, "_blank");
+                              }}
+                            />
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </DialogDescription>
+                  );
+                })}
+              </div>
+            </DialogDescription>
+          </div>
         </DialogContent>
       )}
     </Dialog>
