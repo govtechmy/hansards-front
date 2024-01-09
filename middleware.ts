@@ -2,7 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Triggers on relevant pages. Authentication to be removed at launch
 export const config = {
-  matcher: ["/((?!api).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * Missing array ignore link prefetches that don't need to go through middleware
+     */
+    {
+      source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
+    },
+  ],
 };
 
 export async function middleware(request: NextRequest) {
