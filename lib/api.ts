@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { parseCookies } from "./helpers";
 
 type BaseURL = "api" | "app" | string;
 
@@ -16,18 +15,15 @@ const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const urls: Record<BaseURL, string> = {
     api: process.env.NEXT_PUBLIC_API_URL,
     app: process.env.NEXT_PUBLIC_APP_URL,
+    sejarah: process.env.NEXT_PUBLIC_SEJARAH_URL,
     tinybird: process.env.NEXT_PUBLIC_TINYBIRD_URL,
   };
   const BROWSER_RUNTIME = typeof window === "object";
 
-  const authorization = !BROWSER_RUNTIME
-    ? process.env.NEXT_PUBLIC_AUTHORIZATION_TOKEN
-    : parseCookies(document.cookie).rolling_token;
-
   const config: AxiosRequestConfig = {
     baseURL: urls[base] || base,
     headers: {
-      Authorization: `Bearer ${authorization}`,
+      Authorization: !BROWSER_RUNTIME ? `Bearer ${process.env.NEXT_PUBLIC_AUTHORIZATION_TOKEN}` : null,
       ...headers,
     },
   };
