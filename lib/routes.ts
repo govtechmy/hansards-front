@@ -1,5 +1,6 @@
 export const routes = {
   HOME: "/",
+  CARI_MP: "/cari-mp",
   KATALOG_DR: "/katalog/dewan-rakyat",
   KATALOG_DN: "/katalog/dewan-negara",
   KATALOG_KK: "/katalog/kamar-khas",
