@@ -1,4 +1,3 @@
-import Filter from "./filter-button";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import {
   PartyFlag,
 } from "@components/index";
 import {
+  ArrowRightIcon,
   ChevronDownIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
@@ -23,9 +23,19 @@ import {
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
-import { WindowProvider } from "@lib/contexts/window";
-import { Dewan, OptionType } from "@lib/types";
-import { useState } from "react";
+import { OptionType } from "@lib/types";
+import { format } from "date-fns";
+import { ParsedUrlQuery } from "querystring";
+import { useRef, useState } from "react";
+import { DateRange } from "react-day-picker";
+import {
+  ALL_AGES,
+  ALL_ETHNICITIES,
+  ALL_PARTIES,
+  BOTH_SEXES,
+  DEWAN_ENUM,
+  DEWAN_INDEX_ENUM,
+} from "../filter-options";
 
 /**
  * Keyword - Filter
@@ -33,50 +43,36 @@ import { useState } from "react";
  */
 
 export interface KeywordFilterProps {
-  dewan?: Dewan;
-  keyword: string;
   onLoad: () => void;
+  query: ParsedUrlQuery;
 }
 
-const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
+const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const DEWAN_INDEX_ENUM: { [key: string]: number } = {
-    "dewan-rakyat": 0,
-    "dewan-negara": 1,
-    "kamar-khas": 2,
-  };
-
-  const DEWAN_ENUM: { [key: number]: Dewan } = {
-    0: "dewan-rakyat",
-    1: "dewan-negara",
-    2: "kamar-khas",
-  };
-
-  const ALL_AGES = "all_ages";
-  const ALL_ETHNICITIES = "all_ethnicities";
-  const ALL_PARTIES = "all_parties";
-  const BOTH_SEXES = "both_sexes";
+  const { q, dewan, start_date, end_date } = query;
 
   const { data, setData } = useData({
-    query: keyword ?? "",
-    start_date: "",
-    end_date: "",
-    dewan_idx: dewan ? DEWAN_INDEX_ENUM[dewan] : 0,
+    query: q ?? "",
+    dewan_idx: dewan ? DEWAN_INDEX_ENUM[dewan.toString()] : 0,
     dewan: dewan ?? "dewan-rakyat",
-    state: "mys",
     age: ALL_AGES,
     etnik: ALL_ETHNICITIES,
     party: ALL_PARTIES,
     sex: BOTH_SEXES,
   });
 
+  const [selectedDateRange, setSelectedDateRange] = useState<
+    DateRange | undefined
+  >(undefined);
+
   const { setFilter } = useFilter({
-    q: keyword,
+    q: q,
     dewan: dewan,
-    start_date: "",
-    end_date: "",
+    start_date: start_date ?? "",
+    end_date: end_date ?? "",
   });
 
   const DEWAN_OPTIONS: OptionType[] = [
@@ -107,7 +103,7 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
     { label: t(ALL_AGES, { ns: "demografi" }), value: ALL_AGES },
   ].concat(
     ["18-29", "30-39", "40-49", "50-59", "60-69", "70+"].map((key: string) => ({
-      label: t(key),
+      label: key,
       value: key,
     }))
   );
@@ -136,12 +132,25 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
     onLoad();
     setFilter("q", data.query);
     setFilter("dewan", data.dewan);
-    setFilter("start_date", data.start_date);
-    setFilter("end_date", data.end_date);
+    setFilter(
+      "start_date",
+      selectedDateRange?.from
+        ? format(selectedDateRange.from, "yyyy-MM-dd")
+        : ""
+    );
+    setFilter(
+      "end_date",
+      selectedDateRange?.to
+        ? format(selectedDateRange.to, "yyyy-MM-dd")
+        : selectedDateRange?.from
+        ? format(selectedDateRange.from, "yyyy-MM-dd")
+        : ""
+    );
   };
 
   const handleClear = () => {
     setData("query", "");
+    setSelectedDateRange(undefined);
     setData("start_date", "");
     setData("end_date", "");
     setData("party", ALL_PARTIES);
@@ -152,7 +161,7 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
 
   return (
     <>
-      <div className="pt-6 pb-3 space-y-6">
+      <div className="sm:pt-6 pb-3 space-y-6">
         {/* Dewan Selector */}
         <div className="mx-auto sm:block hidden w-fit rounded-full p-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
           <List
@@ -168,12 +177,9 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
 
         {/* Search Bar */}
         <div className="h-[50px] flex mx-auto pl-4.5 pr-1.5 py-3 gap-2.5 items-center w-full sm:w-[500px] bg-white dark:bg-zinc-900 select-none rounded-full border border-slate-200 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 focus:outline-none">
-          <span className="flex items-center">
-            <MagnifyingGlassIcon className="dark:text-zinc-500 h-5 w-5 text-zinc-900" />
-          </span>
           <input
             required
-            autoFocus
+            spellCheck="false"
             type="text"
             value={data.query}
             onChange={(e) => setData("query", e.target.value)}
@@ -182,11 +188,16 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
             }}
             placeholder={t("search_keyword")}
             className="grow truncate border-none bg-white focus:outline-none focus:ring-0 dark:bg-zinc-900"
+            ref={inputRef}
           />
           {data.query && (
             <Button
-              className="group flex h-8 w-8 justify-center p-0 rounded-full hover:bg-slate-100 dark:hover:bg-zinc-800"
-              onClick={() => setData("query", "")}
+              variant="ghost"
+              className="group flex sm:-mx-1.5 sm:h-8 sm:w-8 p-0 justify-center rounded-full"
+              onClick={() => {
+                setData("query", "");
+                inputRef.current && inputRef.current.focus();
+              }}
             >
               <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
             </Button>
@@ -204,24 +215,24 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
       </div>
 
       {/* Desktop Bar */}
-      <div className="justify-center hidden sm:flex gap-x-2">
+      <div className="justify-center hidden sm:flex flex-wrap gap-2">
         <Daterange
           className="text-blue-600"
-          from={(start_date) => setData("start_date", start_date)}
-          to={(end_date) => setData("end_date", end_date)}
+          placeholder={t("current_parlimen")}
           label={t("date", { ns: "home" })}
-          selected={
-            data.start_date && data.end_date
-              ? { from: data.start_date, to: data.end_date }
-              : undefined
-          }
+          selected={selectedDateRange}
+          setSelected={setSelectedDateRange}
         />
 
         <Dropdown
           sublabel={t("party", { ns: "common" })}
           className="text-blue-600"
+          width="w-fit"
           enableFlag
-          flag={(party) => <PartyFlag party={party} children={() => true} />}
+          flag={(party) => {
+            if (party === ALL_PARTIES) return <></>;
+            else return <PartyFlag party={party} children={() => true} />;
+          }}
           options={PARTY_OPTIONS}
           selected={PARTY_OPTIONS.find((e) => e.value === data.party)}
           onChange={(e) => setData("party", e.value)}
@@ -229,6 +240,7 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
         <Dropdown
           sublabel={t("sex", { ns: "demografi" })}
           className="text-blue-600"
+          width="w-fit"
           options={SEX_OPTIONS}
           selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
           onChange={(e) => setData("sex", e.value)}
@@ -236,6 +248,7 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
         <Dropdown
           sublabel={t("age_group", { ns: "demografi" })}
           className="text-blue-600"
+          width="w-fit"
           options={AGE_OPTIONS}
           selected={AGE_OPTIONS.find((e) => e.value === data.age)}
           onChange={(e) => setData("age", e.value)}
@@ -243,18 +256,17 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
         <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
           className="text-blue-600"
+          width="w-fit"
           options={ETNIK_OPTIONS}
           selected={ETNIK_OPTIONS.find((e) => e.value === data.etnik)}
           onChange={(e) => setData("etnik", e.value)}
         />
 
-        {(data.query ||
-          data.start_date ||
-          data.end_date ||
-          data.party ||
-          data.sex ||
-          data.age ||
-          data.etnik) && (
+        {(selectedDateRange ||
+          data.party !== ALL_PARTIES ||
+          data.sex !== BOTH_SEXES ||
+          data.age !== ALL_AGES ||
+          data.etnik !== ALL_ETHNICITIES) && (
           <Button
             variant="ghost"
             className="w-fit justify-center"
@@ -266,72 +278,67 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
         )}
       </div>
 
-      <Button
-        variant="default"
-        className="shadow-button ml-auto sm:hidden"
-        onClick={() => setOpen(true)}
-      >
-        <span>{t("filters", { ns: "common" })}</span>
-        <span className="bg-blue-600 dark:bg-primary-dark w-4.5 leading-5 rounded-md text-center text-white">
-          6
-        </span>
-        <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
-      </Button>
-
       {/* Mobile Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger>
-          <WindowProvider>
-            <Filter onClick={() => setOpen(!open)} />
-          </WindowProvider>
-        </DialogTrigger>
-        <DialogContent className="w-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-0 flex flex-col gap-y-0">
-          <DialogHeading className="p-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
-            <span className="font-bold text-sm text-zinc-900 dark:text-white">
-              {t("filters", { ns: "common" }) + ":"}
+        <DialogTrigger asChild>
+          <Button
+            variant="default"
+            className="shadow-button ml-auto sm:hidden"
+            onClick={() => setOpen(true)}
+          >
+            <span>{t("filters", { ns: "common" })}</span>
+            <span className="bg-blue-600 dark:bg-primary-dark w-4.5 leading-5 rounded-md text-center text-white">
+              6
             </span>
-            <DialogClose />
-          </DialogHeading>
-          <DialogDescription>
-            <div className="flex flex-col">
-              <div className="bg-white dark:bg-zinc-900">
-                <div className="dark:divide-washed-dark divide-y px-3 pb-3">
-                  <div className="py-3 space-y-1">
-                    <Label label={t("dewan", { ns: "home" }) + ":"} />
-                    <Dropdown
-                      options={DEWAN_OPTIONS}
-                      selected={DEWAN_OPTIONS.find(
-                        (e) => e.value === data.dewan
-                      )}
-                      onChange={(e) => setData("dewan", e.value)}
-                    />
-                  </div>
+            <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="p-0">
+          <div className="w-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-t-xl flex flex-col gap-y-0">
+            <DialogHeading className="px-3 py-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
+              <span className="font-bold text-sm text-zinc-900 dark:text-white">
+                {t("filters", { ns: "common" }) + ":"}
+              </span>
+              <DialogClose />
+            </DialogHeading>
+            <DialogDescription>
+              <div className="flex flex-col">
+                <div className="bg-white dark:bg-zinc-900">
+                  <div className="dark:divide-washed-dark divide-y px-3 pb-3">
+                    <div className="py-3 space-y-1">
+                      <Label label={t("dewan", { ns: "home" }) + ":"} />
+                      <Dropdown
+                        options={DEWAN_OPTIONS}
+                        selected={DEWAN_OPTIONS.find(
+                          (e) => e.value === data.dewan
+                        )}
+                        onChange={(e) => setData("dewan", e.value)}
+                      />
+                    </div>
 
-                  <div className="py-3 space-y-1">
-                    <Label label={t("date") + ":"} />
-                    <Daterange
-                      className="w-full"
-                      numberOfMonths={1}
-                      from={(start_date) => setData("start_date", start_date)}
-                      to={(end_date) => setData("end_date", end_date)}
-                      placeholder="dd/mm/yyyy - dd/mm/yyyy"
-                      selected={
-                        data.start_date && data.end_date
-                          ? { from: data.start_date, to: data.end_date }
-                          : undefined
-                      }
-                    />
-                  </div>
+                    <div className="py-3 space-y-1">
+                      <Label label={t("date") + ":"} />
+                      <Daterange
+                        className="w-full"
+                        numberOfMonths={1}
+                        placeholder={t("current_parlimen")}
+                        selected={selectedDateRange}
+                        setSelected={setSelectedDateRange}
+                      />
+                    </div>
 
-                  <div className="flex gap-2 py-3">
-                    <div className="space-y-1 w-full">
+                    <div className="py-3 space-y-1 w-full">
                       <Label label={t("party", { ns: "common" }) + ":"} />
                       <Dropdown
                         enableFlag
-                        flag={(party) => (
-                          <PartyFlag party={party} children={() => ""} />
-                        )}
-                        anchor="left bottom-10"
+                        flag={(party) => {
+                          if (party === ALL_PARTIES) return <></>;
+                          else
+                            return (
+                              <PartyFlag party={party} children={() => true} />
+                            );
+                        }}
+                        anchor="left"
                         options={PARTY_OPTIONS}
                         selected={PARTY_OPTIONS.find(
                           (e) => e.value === data.party
@@ -339,27 +346,32 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
                         onChange={(e) => setData("party", e.value)}
                       />
                     </div>
-                    <div className="space-y-1 w-full">
-                      <Label label={t("age", { ns: "demografi" }) + ":"} />
-                      <Dropdown
-                        anchor="left bottom-10"
-                        options={AGE_OPTIONS}
-                        selected={AGE_OPTIONS.find((e) => e.value === data.age)}
-                        onChange={(e) => setData("age", e.value)}
-                      />
-                    </div>
-                  </div>
+                    <div className="grid grid-cols-2 gap-2 py-3">
+                      <div className="space-y-1 w-full">
+                        <Label label={t("age", { ns: "demografi" }) + ":"} />
+                        <Dropdown
+                          anchor="left bottom-10"
+                          options={AGE_OPTIONS}
+                          selected={AGE_OPTIONS.find(
+                            (e) => e.value === data.age
+                          )}
+                          onChange={(e) => setData("age", e.value)}
+                        />
+                      </div>
 
-                  <div className="flex gap-2 py-3">
-                    <div className="space-y-1 w-full">
-                      <Label label={t("sex", { ns: "demografi" }) + ":"} />
-                      <Dropdown
-                        options={SEX_OPTIONS}
-                        selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
-                        onChange={(e) => setData("sex", e.value)}
-                      />
+                      <div className="space-y-1 w-full">
+                        <Label label={t("sex", { ns: "demografi" }) + ":"} />
+                        <Dropdown
+                          options={SEX_OPTIONS}
+                          selected={SEX_OPTIONS.find(
+                            (e) => e.value === data.sex
+                          )}
+                          onChange={(e) => setData("sex", e.value)}
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-1 w-full">
+
+                    <div className="py-3 space-y-1 w-full">
                       <Label
                         label={t("ethnicity", { ns: "demografi" }) + ":"}
                       />
@@ -373,30 +385,30 @@ const KeywordFilter = ({ dewan, keyword, onLoad }: KeywordFilterProps) => {
                       />
                     </div>
                   </div>
-                </div>
 
-                <div className="dark:border-washed-dark flex w-full flex-col gap-2 border-t bg-white p-3 dark:bg-black">
-                  <Button
-                    variant={"primary"}
-                    className="w-full justify-center"
-                    onClick={() => {
-                      setOpen(false);
-                      onLoad();
-                      handleSearch();
-                    }}
-                  >
-                    {t("filter", { ns: "common" })}
-                  </Button>
-                  <Button
-                    className="btn w-full justify-center px-3 py-1.5"
-                    onClick={handleClear}
-                  >
-                    {t("clear_all", { ns: "common" })}
-                  </Button>
+                  <div className="dark:border-washed-dark flex w-full flex-col gap-2 border-t bg-white p-3 dark:bg-black">
+                    <Button
+                      variant={"primary"}
+                      className="w-full justify-center"
+                      onClick={() => {
+                        setOpen(false);
+                        onLoad();
+                        handleSearch();
+                      }}
+                    >
+                      {t("filter", { ns: "common" })}
+                    </Button>
+                    <Button
+                      className="btn w-full justify-center px-3 py-1.5"
+                      onClick={handleClear}
+                    >
+                      {t("clear_all", { ns: "common" })}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </DialogDescription>
+            </DialogDescription>
+          </div>
         </DialogContent>
       </Dialog>
     </>

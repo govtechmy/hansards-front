@@ -28,10 +28,13 @@ export interface KeywordProps extends Omit<KeywordFilterProps, "onLoad"> {
   timeseries: Record<"date" | "freq", number[]>;
 }
 
-const Keyword = ({ dewan, keyword, timeseries }: KeywordProps) => {
+const Keyword = ({ query, timeseries }: KeywordProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
   const ref = useRef<HTMLDivElement | null>(null);
   const { theme } = useTheme();
+
+  const { q } = query;
+  const keyword = q ? String(q) : undefined;
 
   const { data, setData } = useData({
     loading: false,
@@ -58,15 +61,11 @@ const Keyword = ({ dewan, keyword, timeseries }: KeywordProps) => {
         {/* Search for any keywords or phrases! */}
         <h2 className="header text-center">{t("search_keywords")}</h2>
 
-        <KeywordFilter
-          dewan={dewan}
-          keyword={keyword}
-          onLoad={() => setData("loading", true)}
-        />
+        <KeywordFilter onLoad={() => setData("loading", true)} query={query} />
 
         <div className="w-full relative mt-6" ref={ref}>
           {/* Time-series of "keyword” in Parliament */}
-          <h3 className="title h-7 block mb-3">
+          <h3 className="title leading-7 h-7 block mb-3">
             {keyword &&
               t("timeseries_title", {
                 keyword: keyword,
@@ -78,7 +77,7 @@ const Keyword = ({ dewan, keyword, timeseries }: KeywordProps) => {
                 <Timeseries
                   className={cn(
                     !data.loading && isEmpty && "opacity-10",
-                    "h-[400px]"
+                    "h-[300px]"
                   )}
                   isLoading={data.loading}
                   enableAnimation={!play}
@@ -113,18 +112,17 @@ const Keyword = ({ dewan, keyword, timeseries }: KeywordProps) => {
             )}
           </SliderProvider>
           {!data.loading && isEmpty && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-slate-200 dark:bg-zinc-800 flex items-center gap-2 rounded-md px-3 py-1.5">
-                {coordinate.freq.length === 0 && (
+                {keyword && coordinate.freq.length === 0 ? (
                   <>
                     <FaceFrownIcon className="h-6 w-6" />
                     {t("placeholder.no_results", { ns: "common" })}
                   </>
-                )}
-                {!keyword && (
+                ) : (
                   <>
                     <MagnifyingGlassIcon className="h-6 w-6" />
-                    {t("start_searching")}
+                    {t("start_search")}
                   </>
                 )}
               </div>

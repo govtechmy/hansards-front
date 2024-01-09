@@ -24,28 +24,21 @@ interface SearchKeywordProps extends ExcerptsProps, KeywordProps {
 
 const SearchKeyword = ({
   count,
-  dewan,
   excerpts,
-  keyword,
   query,
   timeseries,
   top_word_freq,
   top_speakers,
 }: SearchKeywordProps) => (
   <Container className="divide-y divide-slate-200 dark:divide-zinc-800">
-    <Keyword dewan={dewan} keyword={keyword} timeseries={timeseries} />
+    <Keyword query={query} timeseries={timeseries} />
     {count > 0 && (
       <>
-        <Excerpts
-          count={count}
-          excerpts={excerpts}
-          keyword={keyword}
-          query={query}
-        />
+        <Excerpts count={count} excerpts={excerpts} query={query} />
         {top_word_freq && (
-          <Section title="Top Word Frequency">
+          <Section title="Related Words">
             <BubbleCloud
-              className="w-full h-[350px] sm:h-[700px]"
+              className="w-full h-[350px] sm:h-[600px]"
               data={Object.entries(top_word_freq).map(([word, freq]) => ({
                 id: word,
                 value: freq,

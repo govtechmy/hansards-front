@@ -1,4 +1,5 @@
 import Excerpts, { ExcerptsProps } from "./excerpts";
+import MP, { MPProps } from "./mp";
 import { Container } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
 
@@ -7,15 +8,30 @@ import { useTranslation } from "@hooks/useTranslation";
  * @overview Status: In-development
  */
 
-interface Props extends ExcerptsProps {}
+interface SearchMPProps extends ExcerptsProps, MPProps {}
 
-const SearchMP = ({ count, excerpts, keyword, query }: Props) => {
+const SearchMP = ({
+  count,
+  excerpts,
+  individu_list,
+  query,
+  timeseries,
+}: SearchMPProps) => {
   const { t } = useTranslation();
 
   return (
     <>
       <Container className="min-h-screen">
-        <Excerpts count={count} excerpts={excerpts} keyword={keyword} query={query} />
+        <MP
+          individu_list={individu_list}
+          query={query}
+          timeseries={timeseries}
+        />
+        {count > 0 && (
+          <>
+            <Excerpts count={count} excerpts={excerpts} query={query} />
+          </>
+        )}
       </Container>
     </>
   );

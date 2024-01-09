@@ -1,4 +1,4 @@
-import { Button, Section, Skeleton, Toast, toast } from "@components/index";
+import { Button, Section, Skeleton, toast } from "@components/index";
 import ExcerptCard, { Excerpt } from "@dashboards/home/excerpts/excerpt-card";
 import { useTranslation } from "@hooks/useTranslation";
 import { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ export interface ExcerptsProps {
 const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
   const { t } = useTranslation("home");
   const [loading, setLoading] = useState(false);
-  const [_excerpts, setExcerpts] = useState<Excerpt[]>([]);
+  const [_excerpts, setExcerpts] = useState<Excerpt[]>(excerpts);
   const [nextPage, setNextPage] = useState<number>(2);
 
   const { q, dewan, ...dates } = query;
@@ -54,7 +54,6 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
 
   return (
     <>
-      <Toast />
       <Section className="space-y-6 lg:space-y-8">
         <h2 className="header">{t("excerpts", { count: count })}</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
