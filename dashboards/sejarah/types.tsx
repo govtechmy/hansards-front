@@ -27,16 +27,6 @@ export type Kawasan = {
   majority: Record<"abs" | "perc", number>;
 };
 
-export type OverallKawasan = {
-  date: string;
-  seat: string;
-  name: string;
-  party: string;
-  majority: Record<"abs" | "perc", number>;
-  voter_turnout: Record<"abs" | "perc", number>;
-  votes_rejected: Record<"abs" | "perc", number>;
-};
-
 export type BaseResult = {
   election_name: string;
   date: string;
