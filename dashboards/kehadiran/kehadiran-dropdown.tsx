@@ -256,6 +256,7 @@ const KehadiranDropdown = ({
           selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
           onChange={(selected) => {
             if (selected.value === "all") {
+              onLoad();
               setData("parlimen", "all");
               setData("penggal", "all");
               setData("mesyuarat", "all");
@@ -275,6 +276,7 @@ const KehadiranDropdown = ({
           selected={PENGGAL_OPTIONS.find((e) => e.value === data.penggal)}
           onChange={(selected) => {
             if (selected.value === "all") {
+              onLoad();
               setData("penggal", "all");
               setData("mesyuarat", "all");
               setFilter("parlimen", data.parlimen);

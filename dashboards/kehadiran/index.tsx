@@ -4,10 +4,9 @@ import KehadiranDropdown, {
 } from "./kehadiran-dropdown";
 import KehadiranTable, { KehadiranTableProps } from "./kehadiran-table";
 import Container from "@components/Container";
-import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Kehadiran Dashboard
@@ -25,17 +24,15 @@ const KehadiranDashboard = ({
   Omit<KehadiranTableProps, "loading">) => {
   const { t } = useTranslation(["kehadiran", "enum"]);
   const { events } = useRouter();
-  const { data, setData } = useData({
-    loading: false,
-  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     events.on("routeChangeComplete", () => {
-      setData("loading", false);
+      setLoading(false);
     });
     return () => {
       events.off("routeChangeComplete", () => {
-        setData("loading", false);
+        setLoading(false);
       });
     };
   }, []);
@@ -49,20 +46,20 @@ const KehadiranDashboard = ({
 
             <KehadiranDropdown
               dropdown={dropdown}
-              onLoad={() => setData("loading", true)}
+              onLoad={() => setLoading(true)}
               params={params}
             />
 
             {/* Individual/Party Attendance */}
             <KehadiranTable
               individual={individual}
-              loading={data.loading}
+              loading={loading}
               party={party}
             />
           </section>
 
           {/* A breakdown of attendance by key demographics */}
-          <Barmeter barmeter={barmeter} loading={data.loading} />
+          <Barmeter barmeter={barmeter} loading={loading} />
 
           <p className="text-zinc-500 text-center">{t("disclaimer")}</p>
         </div>
