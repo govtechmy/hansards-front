@@ -52,14 +52,15 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
       {data ? (
         data.map(({ id, penggal, yearRange }) => {
           const parlimen_id = `parlimen-${id}/`;
-          const parlimen_full = t("parlimen_full", {
+          const parlimen = t("parlimen", {
             ns: "enum",
-            n: id,
+            count: id,
+            ordinal: true,
           });
           return (
             <li
               key={id}
-              title={`${parlimen_full}${yearRange}`}
+              title={`${parlimen}${yearRange}`}
               className={cn(
                 "text-sm relative",
                 selected && selected.startsWith(parlimen_id)
@@ -71,7 +72,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                 open={selected?.startsWith(parlimen_id)}
                 summary={
                   <span className="flex flex-col">
-                    <span className="font-medium">{parlimen_full}</span>
+                    <span className="font-medium">{parlimen}</span>
                     {yearRange}
                   </span>
                 }
@@ -135,7 +136,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
-              ? "lg:w-[250px] duration-300"
+              ? "lg:w-60 duration-300"
               : "hide-scrollbar duration-500"
           )}
         >
@@ -197,7 +198,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             <Transition
               show={mobileSidebar}
               as="nav"
-              className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[250px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
+              className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[200px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
               enter="transition-opacity duration-75"
               enterFrom="opacity-0"
               enterTo="opacity-100"
@@ -219,7 +220,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                 <Sidebar />
               </div>
               <div
-                className="w-[calc(100%-250px)] lg:hidden fixed right-0 top-0 z-30 h-screen bg-zinc-900 bg-opacity-25"
+                className="w-[calc(100%-200px)] lg:hidden fixed right-0 top-0 z-30 h-screen bg-zinc-900 bg-opacity-25"
                 onClick={() => setMobileSidebar(false)}
               />
             </Transition>
