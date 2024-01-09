@@ -57,7 +57,8 @@ const HansardSidebar = ({
               key={key}
               title={key}
               className={cn(
-                "ml-2.5 text-sm relative",
+                prev_id && "ml-2.5",
+                "text-sm relative",
                 !first &&
                   "border-l border-slate-400 last-of-type:border-transparent",
                 selected && selected.startsWith(id)
@@ -137,7 +138,7 @@ const HansardSidebar = ({
         <div
           className={cn(
             "dark:border-r-slate-800 border-r shrink-0 hidden lg:block",
-            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll sidebar-scrollbar",
+            "sticky top-[56px] h-[calc(100vh-56px)] overflow-y-scroll",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar
               ? "w-[250px] duration-300"
@@ -154,7 +155,7 @@ const HansardSidebar = ({
               className={cn(
                 "title",
                 !showSidebar &&
-                  `absolute -rotate-90 origin-top-left ${
+                  `absolute -rotate-90 origin-top-left text-zinc-500 ${
                     i18n.language === "en-GB"
                       ? "translate-y-28"
                       : "translate-y-36"
