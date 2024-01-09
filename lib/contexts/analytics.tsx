@@ -66,10 +66,9 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
     track(process.env.NEXT_PUBLIC_POST_VIEW, meta.id);
   }, []);
 
-  // increment activity count
   const track = (name: string, hansard_id: string, type?: "pdf" | "csv") => {
     post(
-      `/events?name=${name}`,
+      `/events?name=${name}&wait=true`,
       { timestamp: new Date().toISOString(), hansard_id, type },
       "tinybird",
       {
@@ -78,7 +77,8 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
         )}`,
       }
     )
-      .then(() =>
+      .then(({ data }: { data: { quarantined_rows: number } }) => {
+        if (data.quarantined_rows > 0) console.error("Error: Rows in quarantine");
         get(
           `/pipes/${process.env.NEXT_PUBLIC_GET_COUNTS}.json`,
           {
@@ -92,8 +92,8 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({
           .then(({ data }) => {
             if (data.data) setData(data.data);
           })
-          .catch((e) => console.error(e))
-      )
+          .catch((e) => console.error(e));
+      })
       .catch((e) => console.error(e));
   };
 
