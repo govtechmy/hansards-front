@@ -184,13 +184,13 @@ export const DialogContent = forwardRef<
                   className={cn(
                     header.variable,
                     body.variable,
-                    "relative flex w-full max-w-6xl flex-col overflow-auto p-6 rounded-t-xl font-sans lg:h-fit lg:justify-center lg:rounded-xl shadow-floating",
+                    "relative flex w-full h-full max-w-6xl flex-col overflow-auto p-6 rounded-t-xl font-sans sm:h-fit sm:justify-center items-center sm:rounded-xl shadow-floating",
                     props.className
                   )}
                 >
-                  {/* <div onClick={close} className="min-h-[15vh] grow lg:hidden"></div> */}
+                  <div onClick={close} className="grow lg:hidden"></div>
 
-                  {props.children}
+                  <>{props.children}</>
                 </div>
               </Transition.Child>
             </div>
@@ -248,13 +248,17 @@ export const DialogClose = forwardRef<
   ButtonHTMLAttributes<HTMLButtonElement>
 >(function DialogClose(props, ref) {
   const { setOpen } = useDialogContext();
+  const { className, ...rest} = props
   return (
     <Button
-      {...props}
       ref={ref}
       variant="ghost"
-      className="hover:bg-slate-100 dark:hover:bg-zinc-800 group rounded-full p-2 -m-2"
+      className={cn(
+        "hover:bg-slate-100 dark:hover:bg-zinc-800 group rounded-full p-2 -m-2",
+        className
+      )}
       onClick={() => setOpen(false)}
+      {...rest}
     >
       <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
     </Button>
