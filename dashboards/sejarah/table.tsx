@@ -1,3 +1,5 @@
+import BarPerc from "@charts/bar-perc";
+import { PartyFlag, Spinner, Tooltip } from "@components/index";
 import { FaceFrownIcon } from "@heroicons/react/24/outline";
 import {
   ColumnDef,
@@ -5,11 +7,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import BarPerc from "@charts/bar-perc";
-import { PartyFlag, Spinner, Tooltip } from "@components/index";
-import { cn, numFormat, toDate } from "@lib/helpers";
 import { useTranslation } from "@hooks/useTranslation";
+import { cn, numFormat, toDate } from "@lib/helpers";
 import { FunctionComponent, ReactNode } from "react";
+import ResultBadge from "./result-badge";
+import { ElectionResult } from "./types";
 
 export interface TableProps {
   className?: string;
@@ -18,6 +20,7 @@ export interface TableProps {
   data?: any;
   columns: Array<ColumnDef<any, any>>;
   highlightedRows?: Array<number>;
+  result?: ElectionResult;
   isLoading: boolean;
 }
 
@@ -67,9 +70,9 @@ const Table: FunctionComponent<TableProps> = ({
         return highlightedRows.includes(+cell.row.id) ? (
           <>
             <span className="pr-1">{value}</span>
-            {/* <span className="inline-flex translate-y-0.5">
+            <span className="inline-flex translate-y-0.5">
               <ResultBadge hidden value={cell.row.original.result} />
-            </span> */}
+            </span>
           </>
         ) : (
           value
@@ -93,7 +96,10 @@ const Table: FunctionComponent<TableProps> = ({
                   {value === "By-Election"
                     ? t(value, { ns: "election" })
                     : value.slice(0, -5) +
-                      t(value.slice(-5), { ns: "election" })}
+                      t(value.slice(-5, value.indexOf("-")), {
+                        ns: "election",
+                      }) +
+                      value.slice(value.indexOf("-"))}
                 </div>
               )}
             </Tooltip>
@@ -114,8 +120,8 @@ const Table: FunctionComponent<TableProps> = ({
             }`}</p>
           </div>
         );
-      // case "result":
-      //   return <ResultBadge value={value} />;
+      case "result":
+        return <ResultBadge value={value} />;
 
       case "votes":
       case "majority":
@@ -157,21 +163,23 @@ const Table: FunctionComponent<TableProps> = ({
       case "party":
         return (
           <PartyFlag party={value}>
-            {(party) => cell.row.original.name ? (
-              <span>
-                <span className="pr-1 font-medium">
-                  {cell.row.original.name}
+            {(party) =>
+              cell.row.original.name ? (
+                <span>
+                  <span className="pr-1 font-medium">
+                    {cell.row.original.name}
+                  </span>
+                  <span className="inline-flex pr-1">{` (${party})`}</span>
+                  <span className="inline-flex translate-y-0.5">
+                    {highlightedRows.includes(+cell.row.id) && (
+                      <ResultBadge hidden value={cell.row.original.result} />
+                    )}
+                  </span>
                 </span>
-                <span className="inline-flex pr-1">{` (${party})`}</span>
-                {/* <span className="inline-flex translate-y-0.5">
-                  {highlightedRows.includes(+cell.row.id) && (
-                    <ResultBadge hidden value={cell.row.original.result} />
-                  )}
-                </span> */}
-              </span>
-            ) : (
-              <span className="font-medium">{t(party, { ns: "party" })}</span>
-            )}
+              ) : (
+                <span className="font-medium">{t(party, { ns: "party" })}</span>
+              )
+            }
           </PartyFlag>
         );
       case "election_name":
@@ -180,7 +188,9 @@ const Table: FunctionComponent<TableProps> = ({
             <p className="font-medium">
               {value === "By-Election"
                 ? t(value, { ns: "election" })
-                : value.slice(0, -5) + t(value.slice(-5), { ns: "election" })}
+                : value.slice(0, -5) +
+                  t(value.slice(-5, value.indexOf("-")), { ns: "election" }) +
+                  value.slice(value.indexOf("-"))}
             </p>
             {cell.row.original.date && (
               <p className="text-zinc-500">
@@ -214,49 +224,53 @@ const Table: FunctionComponent<TableProps> = ({
             <p className="text-zinc-500 font-medium">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <BarPerc hidden value={value.perc} />
-              <p>{`${
-                value.abs !== null ? numFormat(value.abs, "standard") : "—"
-              } (${
-                value.perc !== null
-                  ? `${numFormat(value.perc, "compact", [1, 1])}%`
-                  : "—"
-              })`}</p>
-            </div>
+            {typeof value === "undefined" ? (
+              <p className="font-bold">{value}</p>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                <BarPerc hidden value={value.perc} />
+                <p>{`${
+                  value.abs !== null ? numFormat(value.abs, "standard") : "—"
+                } (${
+                  value.perc !== null
+                    ? `${numFormat(value.perc, "compact", 1)}%`
+                    : "—"
+                })`}</p>
+              </div>
+            )}
           </div>
         );
-      // case "majority":
-      //   return (
-      //     <div className="flex flex-row gap-2">
-      //       <p className="text-zinc-500 font-medium">
-      //         {flexRender(cell.column.columnDef.header, cell.getContext())}
-      //       </p>
-      //       {typeof value === "number" ? (
-      //         <p className="font-bold">{value}</p>
-      //       ) : (
-      //         <div className="flex items-center gap-2">
-      //           <BarPerc hidden value={value.perc} />
-      //           <p>{`${
-      //             value.abs !== null ? numFormat(value.abs, "standard") : "—"
-      //           } (${
-      //             value.perc !== null
-      //               ? `${numFormat(value.perc, "compact", [1, 1])}%`
-      //               : "—"
-      //           })`}</p>
-      //         </div>
-      //       )}
-      //     </div>
-      //   );
-      // case "result":
-      //   return (
-      //     <div className="flex flex-col space-y-1">
-      //       <p className="text-zinc-500 font-medium">
-      //         {flexRender(cell.column.columnDef.header, cell.getContext())}
-      //       </p>
-      //       <ResultBadge value={value} />
-      //     </div>
-      //   );
+      case "majority":
+        return (
+          <div className="flex flex-row gap-2">
+            <p className="text-zinc-500 font-medium">
+              {flexRender(cell.column.columnDef.header, cell.getContext())}
+            </p>
+            {typeof value === "number" ? (
+              <p className="font-bold">{value}</p>
+            ) : (
+              <div className="flex items-center gap-2">
+                <BarPerc hidden value={value.perc} />
+                <p>{`${
+                  value.abs !== null ? numFormat(value.abs, "standard") : "—"
+                } (${
+                  value.perc !== null
+                    ? `${numFormat(value.perc, "compact", 1)}%`
+                    : "—"
+                })`}</p>
+              </div>
+            )}
+          </div>
+        );
+      case "result":
+        return (
+          <div className="flex flex-col space-y-1">
+            <p className="text-zinc-500 font-medium">
+              {flexRender(cell.column.columnDef.header, cell.getContext())}
+            </p>
+            <ResultBadge value={value} />
+          </div>
+        );
       default:
         return flexRender(cell.column.columnDef.cell, cell.getContext());
     }
@@ -352,13 +366,14 @@ const Table: FunctionComponent<TableProps> = ({
               )}
               key={index}
             >
-              {/* Row 1 - Election Name / Date */}
+              {/* Row 1 - Election Name / Date / Full result */}
               {["election_name"].some((id) => ids.includes(id)) && (
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex gap-x-2">
                     {_row.index}
                     {_row.election_name}
                   </div>
+                  {_row.full_result}
                 </div>
               )}
               {/* Row 2 - Seat (if available)*/}
@@ -371,12 +386,12 @@ const Table: FunctionComponent<TableProps> = ({
               {_row.party && <div>{_row.party}</div>}
 
               {/* Row 4 - Result *Depends on page shown */}
-              {/* {_row.name && ( // SEATS
+              {_row.name && ( // SEATS
                 <div className="flex flex-row gap-2">
                   {_row.majority}
                   {_row.votes}
                 </div>
-              )} */}
+              )}
               {_row.result && ( // CANDIDATES
                 <div className="flex flex-row space-x-4">
                   {_row.votes}

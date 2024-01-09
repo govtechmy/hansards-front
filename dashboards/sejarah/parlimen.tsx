@@ -1,4 +1,3 @@
-import BarPerc from "@charts/bar-perc";
 import {
   Container,
   Dropdown,
@@ -17,6 +16,7 @@ import { generateSchema } from "@lib/schema/election";
 import { Archive, OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
+import { Individu, Parti } from "./types";
 
 /**
  * Sejarah Parlimen Dashboard
@@ -35,36 +35,11 @@ const Table = dynamic(() => import("@charts/table"), {
   ssr: false,
 });
 
-type Party = {
-  seats: {
-    total: number;
-    perc: number;
-    won: number;
-  };
-  votes: {
-    abs: number;
-    perc: number;
-  };
-  party: string;
-  seats_won: number;
-  seats_pct: number;
-  votes_pct: number;
-  total_seats: number;
-};
-
-type Individu = {
-  date: string;
-  election_name: string;
-  name: string;
-  party: string;
-  seat: string;
-};
-
 interface SejarahParlimenProps {
   dropdown: Archive;
   params: { election: string; state: string };
   dr_individu: Individu[];
-  dr_party: Party[];
+  dr_party: Parti[];
 }
 
 const SejarahParlimen = ({
@@ -81,21 +56,6 @@ const SejarahParlimen = ({
     tab_idx: 0,
     loading: false,
   });
-
-  const sejarahPerc = (value: Party) => (
-    <div className="flex items-center gap-2 md:flex-col md:items-start lg:flex-row lg:items-center">
-      <div>
-        <BarPerc hidden value={value.total_seats} />
-      </div>
-      {/* <p className="whitespace-nowrap">{`${value.total_attended} / ${
-        value.total_seats
-      } ${
-        value.attendance_pct !== null
-          ? ` (${numFormat(value.attendance_pct, "compact", 1)}%)`
-          : " (—)"
-      }`}</p> */}
-    </div>
-  );
 
   const { setFilter } = useFilter({
     ke: params.election,
@@ -115,42 +75,6 @@ const SejarahParlimen = ({
       };
     });
 
-  const individu_schema = generateSchema<Individu>([
-    { key: "seat", id: "seat", header: t("seat") },
-    {
-      key: "party",
-      id: "party",
-      header: t("party", { ns: "common" }),
-    },
-    { key: "name", id: "name", header: t("name") },
-  ]);
-
-  const party_schema = generateSchema<Party>([
-    {
-      key: "party",
-      id: "party",
-      header: t("party", { ns: "common" }),
-    },
-    {
-      key: "seats_won",
-      id: "seats_won",
-      header: t("seats_won"),
-      cell: ({ row }) => sejarahPerc(row.original),
-    },
-    {
-      key: "seats_pct",
-      id: "%_seats",
-      header: t("%_seats"),
-      cell: ({ row }) => sejarahPerc(row.original),
-    },
-    {
-      key: "votes_pct",
-      id: "%_votes",
-      header: t("%_votes"),
-      cell: ({ row }) => sejarahPerc(row.original),
-    },
-  ]);
-
   useEffect(() => {
     setData("parlimen", params.election ?? "15");
     setData("state", params.state ?? "mys");
@@ -164,19 +88,6 @@ const SejarahParlimen = ({
           <h2 className="header text-center pb-6">{t("parlimen.header")}</h2>
 
           <div className="pb-6 lg:pb-8 items-center gap-2 flex flex-col sm:flex-row mx-auto w-fit">
-            <Dropdown
-              placeholder={t("pilih_parlimen")}
-              options={PARLIMEN_OPTIONS}
-              selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
-              onChange={(selected) => {
-                setData("loading", true);
-                setData("parlimen", selected.value);
-                if (data.state) {
-                  setFilter("ke", selected.value);
-                  setFilter("negeri", data.state);
-                }
-              }}
-            />
             <StateDropdown
               currentState={data.state}
               onChange={(selected) => {
@@ -190,17 +101,30 @@ const SejarahParlimen = ({
               anchor="left"
               width="w-full"
             />
+            <Dropdown
+              placeholder={t("pilih_parlimen")}
+              options={PARLIMEN_OPTIONS}
+              selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
+              onChange={(selected) => {
+                setData("loading", true);
+                setData("parlimen", selected.value);
+                if (data.state) {
+                  setFilter("ke", selected.value);
+                  setFilter("negeri", data.state);
+                }
+              }}
+            />
           </div>
 
           <div className="flex flex-col lg:flex-row justify-between">
-            <h3 className="title pt-6 pb-3">
+            <h3 className="title py-6">
+              {CountryAndStates[params.state ?? "mys"]}
+              {": "}
               {
                 PARLIMEN_OPTIONS.find(
                   (e) => e.value === (params.election ?? "15")
                 )?.label
               }
-              {": "}
-              {CountryAndStates[params.state ?? "mys"]}
             </h3>
 
             <List
@@ -217,7 +141,7 @@ const SejarahParlimen = ({
               onChange={(index) => setData("tab_idx", index)}
             />
           </div>
-          <Tabs hidden current={data.tab_idx} className="pt-6">
+          <Tabs hidden current={data.tab_idx} >
             <Panel
               name={t("dewan_rakyat", { ns: "common" }).concat(
                 ` (${t("party", { ns: "common" })})`
@@ -228,7 +152,7 @@ const SejarahParlimen = ({
               ) : (
                 <ParlimenTable
                   data={dr_party.filter((e) => e.seats.won > 0)}
-                  columns={generateSchema<Party>([
+                  columns={generateSchema<Parti>([
                     {
                       key: "party",
                       id: "party",

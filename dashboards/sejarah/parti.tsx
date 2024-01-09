@@ -2,18 +2,21 @@ import {
   Container,
   StateDropdown,
   ImageWithFallback,
-  PartyFlag,
   Skeleton,
+  toast,
 } from "@components/index";
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
-import { slugify } from "@lib/helpers";
 import { generateSchema } from "@lib/schema/election";
 import { OptionType } from "@lib/types";
 import { Trans } from "next-i18next";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
+import { Parti, PartiResult } from "./types";
+import { useCache } from "@hooks/useCache";
+import FullResults, { Result } from "./full-results";
+import { get } from "@lib/api";
 
 /**
  * Sejarah Parti Dashboard
@@ -28,22 +31,6 @@ const PartiTable = dynamic(() => import("./table"), {
   ssr: false,
 });
 
-type Parti = {
-  seats: {
-    total: number;
-    perc: number;
-    won: number;
-  };
-  votes: {
-    abs: number;
-    perc: number;
-  };
-  election_name: string;
-  date: string;
-  party: string;
-  name: string;
-};
-
 interface SejarahPartiProps {
   dropdown: Array<string>;
   parti: any;
@@ -52,6 +39,7 @@ interface SejarahPartiProps {
 
 const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
   const { t } = useTranslation(["sejarah", "party"]);
+  const { cache } = useCache();
 
   const PARTI_OPTIONS: Array<OptionType> = dropdown.map((key) => ({
     label: t(key, { ns: "party" }),
@@ -90,7 +78,82 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
       id: "votes",
       header: t("votes_won"),
     },
+    {
+      key: (item) => item,
+      id: "full_result",
+      header: "",
+      cell: ({ row }) => (
+        <FullResults
+          options={parti}
+          currentIndex={row.index}
+          onChange={(option: Parti) =>
+            fetchFullResult(option.election_name, option.state)
+          }
+          columns={generateSchema<PartiResult[number]>([
+            {
+              key: "party",
+              id: "party",
+              header: t("party", { ns: "common" }),
+            },
+            {
+              key: "seats",
+              id: "seats",
+              header: t("seats_won"),
+            },
+            {
+              key: "votes",
+              id: "votes",
+              header: t("votes_won"),
+            },
+          ])}
+          highlighted={data.parti_option ? data.parti_option.value : ""}
+        />
+      ),
+    },
   ]);
+
+  const fetchFullResult = async (
+    election: string,
+    state: string
+  ): Promise<Result<PartiResult>> => {
+    const identifier = `${election}_${state}`;
+    return new Promise((resolve) => {
+      if (cache.has(identifier)) return resolve(cache.get(identifier));
+      get(
+        "/explorer",
+        {
+          explorer: "ELECTIONS",
+          chart: "full_result",
+          type: "party",
+          election,
+          state,
+        },
+        "sejarah"
+      )
+        .then(({ data }: { data: { data: PartiResult } }) => {
+          const result: Result<PartiResult> = {
+            data: data.data.sort(
+              (a: PartiResult[number], b: PartiResult[number]) => {
+                if (a.seats.won === b.seats.won) {
+                  return b.votes.abs - a.votes.abs;
+                } else {
+                  return b.seats.won - a.seats.won;
+                }
+              }
+            ),
+          };
+          cache.set(identifier, result);
+          resolve(result);
+        })
+        .catch((e) => {
+          toast.error(
+            t("toast.request_failure", { ns: "common" }),
+            t("toast.try_again", { ns: "common" })
+          );
+          console.error(e);
+        });
+    });
+  };
 
   useEffect(() => {
     setData("loading", false);
@@ -141,27 +204,31 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
           </div>
 
           <div className="text-lg leading-9 py-6">
-            <PartyFlag party={params.name ?? DEFAULT_PARTI}>
-              {(party) => (
-                <span>
-                  <span className="font-bold">{t(party, { ns: "party" })}</span>
-                  <Trans>{t("parti.title")}</Trans>
-                  <StateDropdown
-                    currentState={params.state ?? "mys"}
-                    onChange={(selected) => {
-                      setData("loading", true);
-                      setData("state", selected.value);
-                      if (data.parti_option) {
-                        setFilter("nama", data.parti_option);
-                        setFilter("negeri", selected.value);
-                      }
-                    }}
-                    width="inline-flex ml-0.5"
-                    anchor="left"
-                  />
-                </span>
-              )}
-            </PartyFlag>
+            <ImageWithFallback
+              className="border-slate-200 dark:border-zinc-800 mr-2 inline-block rounded border"
+              src={`/static/images/parties/${params.name ?? DEFAULT_PARTI}.png`}
+              width={32}
+              height={18}
+              alt={t(params.name ?? DEFAULT_PARTI)}
+              inline
+            />
+            <span className="font-bold">
+              {t(params.name ?? DEFAULT_PARTI, { ns: "party" })}
+            </span>
+            <Trans>{t("parti.title")}</Trans>
+            <StateDropdown
+              currentState={params.state ?? "mys"}
+              onChange={(selected) => {
+                setData("loading", true);
+                setData("state", selected.value);
+                if (data.parti_option) {
+                  setFilter("nama", data.parti_option);
+                  setFilter("negeri", selected.value);
+                }
+              }}
+              width="inline-flex ml-0.5"
+              anchor="left"
+            />
           </div>
 
           <PartiTable
