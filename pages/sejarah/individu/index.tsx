@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             explorer: "ELECTIONS",
             dropdown: "candidate_list",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
         get(
           "/explorer",
@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             chart: "candidates",
             name: name ?? "tunku-abdul-rahman-putra-alhaj",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
       ]).catch((e) => {
         throw new Error("Invalid candidate name. Message: " + e);

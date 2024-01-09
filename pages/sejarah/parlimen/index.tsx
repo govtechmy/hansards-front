@@ -67,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             election: election ?? "GE-15",
             state: state ?? "mys",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
         get(
           "/explorer",
@@ -78,7 +78,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             election: election ?? "GE-15",
             state: state ?? "mys",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
       ]).catch((e) => {
         throw new Error("Invalid parliament term/state. Message: " + e);

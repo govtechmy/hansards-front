@@ -32,7 +32,7 @@ const SejarahParti: Page = ({
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  ["party", "sejarah"],
+  ["election", "party", "sejarah"],
   async ({ query }) => {
     try {
       const [name, state] =
@@ -47,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             explorer: "ELECTIONS",
             dropdown: "party_list",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
         get(
           "/explorer",
@@ -57,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             party_name: name ?? "PERIKATAN",
             state: state ?? "mys",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
       ]).catch((e) => {
         throw new Error("Invalid party. Message: " + e);

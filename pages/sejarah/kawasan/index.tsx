@@ -32,7 +32,7 @@ const SejarahKawasan: Page = ({
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  ["party", "sejarah"],
+  ["election", "party", "sejarah"],
   async ({ query }) => {
     try {
       const name = Object.keys(query).length === 0 ? null : query.nama;
@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             explorer: "ELECTIONS",
             dropdown: "seats_list",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
         get(
           "/explorer",
@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             seat_name: name ?? "padang-besar-perlis",
             type: "parlimen",
           },
-          process.env.NEXT_PUBLIC_SEJARAH_URL
+          "sejarah"
         ),
       ]).catch((e) => {
         throw new Error("Invalid seat name. Message: " + e);
