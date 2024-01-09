@@ -67,9 +67,9 @@ const Daterange = ({
     } else {
       setSelected({ from: undefined, to: undefined });
       setInvalidFromValue(() => {
-        if (isBefore(date, PARLIMEN_START_DATE)) return t("invalid_min");
-        else if (isAfter(date, TODAY)) return t("invalid_max");
-        else return t("invalid");
+        if (isBefore(date, PARLIMEN_START_DATE)) return t("choose_later_date");
+        else if (isAfter(date, TODAY)) return t("today_or_earlier");
+        else return t("invalid_date");
       });
     }
   };
@@ -94,9 +94,9 @@ const Daterange = ({
     } else {
       setSelected({ from: selected?.from, to: undefined });
       setInvalidToValue(() => {
-        if (isBefore(date, fromDate)) return t("invalid_min");
-        else if (isAfter(date, TODAY)) return t("invalid_max");
-        else return t("invalid");
+        if (isBefore(date, fromDate)) return t("choose_later_date");
+        else if (isAfter(date, TODAY)) return t("today_or_earlier");
+        else return t("invalid_date");
       });
     }
   };
