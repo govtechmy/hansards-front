@@ -136,7 +136,7 @@ const KehadiranDropdown = ({
         </DialogTrigger>
         <DialogContent className="p-0">
           <div className="w-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col gap-y-0">
-            <DialogHeading className="p-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
+            <DialogHeading className="px-3 py-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
               <span className="font-bold text-sm text-zinc-900 dark:text-white">
                 {t("filters", { ns: "common" }) + ":"}
               </span>
