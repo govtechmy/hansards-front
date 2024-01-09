@@ -28,34 +28,14 @@ const Home: Page = ({
         }
       />
       <HomeLayout>
-        {(tab) => (
-          <>
-            {
-              {
-                who: (
-                  <SearchKeyword
-                    count={count}
-                    dewan={query.dewan}
-                    excerpts={excerpts}
-                    keyword={query.q}
-                    query={query}
-                    timeseries={timeseries}
-                    top_word_freq={top_word_freq}
-                    top_speakers={top_speakers}
-                  />
-                ),
-                what: (
-                  <SearchMP
-                    count={count}
-                    excerpts={excerpts}
-                    keyword={query.q}
-                    query={query}
-                  />
-                ),
-              }[tab]
-            }
-          </>
-        )}
+        <SearchKeyword
+          count={count}
+          excerpts={excerpts}
+          query={query}
+          timeseries={timeseries}
+          top_word_freq={top_word_freq}
+          top_speakers={top_speakers}
+        />
       </HomeLayout>
     </>
   );
@@ -66,12 +46,32 @@ export const getServerSideProps: GetServerSideProps = withi18n(
   async ({ query }) => {
     try {
       const { q, dewan, ...dates } = query;
+
+      if (!q)
+        return {
+          props: {
+            meta: {
+              id: "home",
+              type: "misc",
+            },
+            count: 0,
+            excerpts: null,
+            query: query ?? null,
+            timeseries: {
+              date: Array.from({ length: 365 }, (_, i) => i * 86400000),
+              freq: [],
+            },
+            top_word_freq: null,
+            top_speakers: null,
+          },
+        };
+
       const results = await Promise.allSettled([
         get("api/search/", {
           q: q,
           house: dewan,
           window_size: 30,
-          page: 1, 
+          page: 1,
           ...dates,
         }),
         get("api/search-plot/", {
@@ -92,15 +92,12 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             id: "home",
             type: "misc",
           },
-          count: excerpt.count ?? 0,
-          excerpts: excerpt.results ?? null,
-          query: query ?? null,
-          timeseries: data.chart_data ?? {
-            date: Array.from({ length: 365 }, (_, i) => i * 86400000),
-            freq: [],
-          },
-          top_word_freq: data.top_word_freq ?? null,
-          top_speakers: data.top_speakers ?? null,
+          count: excerpt.count,
+          excerpts: excerpt.results,
+          query,
+          timeseries: data.chart_data,
+          top_word_freq: data.top_word_freq,
+          top_speakers: data.top_speakers,
         },
       };
     } catch (error: any) {
