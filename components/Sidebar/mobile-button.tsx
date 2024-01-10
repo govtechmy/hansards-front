@@ -16,7 +16,7 @@ const MobileButton = ({ mobileSidebar, onClick }: MobileButtonProps) => {
       variant="default"
       key="key"
       className={cn(
-        "shadow-floating sticky top-32 left-3 lg:hidden z-10 w-fit",
+        "shadow-floating sticky top-32 left-3 lg:hidden z-50 w-fit",
         mobileSidebar && "hidden"
       )}
       title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
