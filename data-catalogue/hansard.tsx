@@ -37,6 +37,7 @@ import ShareButton from "./share";
 import { getMatchText } from "./match-text";
 import Link from "next/link";
 import { routes } from "@lib/routes";
+import remarkGfm from "remark-gfm";
 
 /**
  * Hansard
@@ -127,6 +128,7 @@ const Hansard = ({
           <Markdown
             className={cn(is_annotation && "a")}
             rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
             components={{
               mark(props) {
                 const { node, id, ...rest } = props;
@@ -156,6 +158,8 @@ const Hansard = ({
 
         const _speech = useMemo<ReactNode>(() => {
           if (typeof matchData === "string") {
+            if (matchData.includes("\n")) console.log(matchData)
+            const x = `| Pakar Perubatan | |\n|-|-|\n | Tahun | Jumlah (Orang) | \n | 2016 | 158 | \n | 2017 | 170 | \n | 2018 | 198 | \n | 2019 | 229 | \n | 2020 | 161 | \n | Sehingga Jun 2021 | 32 | \n | Keseluruhan | 948 |`
             return parseMarkdown(matchData);
           } else {
             let str = "";
@@ -378,7 +382,10 @@ const Hansard = ({
                 <Button
                   variant="reset"
                   className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
-                  onClick={() => onSearchChange("")}
+                  onClick={() => {
+                    setQuery("");
+                    onSearchChange("");
+                  }}
                 >
                   <XMarkIcon className="text-dim h-5 w-5 group-hover:text-black dark:group-hover:text-white" />
                 </Button>
