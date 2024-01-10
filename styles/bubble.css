@@ -54,6 +54,15 @@
     absolute bottom-4.5 right-3.5 transition-transform duration-300 [mask-image:linear-gradient(279deg,#FFF_80%,rgba(0,0,0,0)_95%)] 
     bg-white dark:bg-zinc-800 text-blue-600 hover:text-primary dark:hover:text-primary-dark;
   }
+
+  table td,
+  th {
+    @apply tabular-nums px-3 py-1.5 text-start font-normal;
+  }
+
+  table tr {
+    @apply border-slate-200 dark:border-zinc-800 border-b;
+  }
 }
 
 .bubble.lt {
