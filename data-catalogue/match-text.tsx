@@ -18,9 +18,8 @@ export function getMatchText(
     textStr = `${text}`;
   }
   const regexp = new RegExp(
-    `\\**${escapeStr(keywordStr).split("").join("\\**")}\\**${
-      ignorecase ? "gi" : "g"
-    }`
+    `\\**${escapeStr(keywordStr).split("").join("\\**")}\\**`,
+    ignorecase ? "gi" : "g"
   );
 
   if (
