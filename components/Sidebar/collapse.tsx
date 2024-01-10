@@ -14,7 +14,7 @@ export function Collapse({
   horizontal?: boolean;
 }): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLUListElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef(0);
   const initialOpen = useRef(isOpen);
   const initialRender = useRef(true);
@@ -65,7 +65,7 @@ export function Collapse({
       className="transform-gpu overflow-hidden transition-all ease-in-out motion-reduce:transition-none"
       style={initialOpen.current || horizontal ? undefined : { height: 0 }}
     >
-      <ul
+      <div
         ref={innerRef}
         className={cn(
           "py-1 transition-opacity duration-500 ease-in-out motion-reduce:transition-none",
@@ -74,7 +74,7 @@ export function Collapse({
         )}
       >
         {children}
-      </ul>
+      </div>
     </div>
   );
 }

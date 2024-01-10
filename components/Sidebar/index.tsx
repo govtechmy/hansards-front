@@ -48,7 +48,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   };
 
   const Sidebar = () => (
-    <Collapse isOpen={showSidebar} horizontal>
+    <ul>
       {data ? (
         data.map(({ id, penggal, yearRange }) => {
           const parlimen_id = `parlimen-${id}/`;
@@ -98,7 +98,9 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                         className={cn(
                           "hover:bg-slate-100 dark:hover:bg-zinc-800 relative ml-2.5",
                           styles.base,
-                          selected === parlimen_penggal ? styles.active : styles.inactive
+                          selected === parlimen_penggal
+                            ? styles.active
+                            : styles.inactive
                         )}
                       >
                         <p className="font-medium whitespace-nowrap">
@@ -111,7 +113,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                   })}
                   <div
                     className="absolute left-2.5 top-0 w-px border-l border-slate-400 z-10"
-                    style={{ height: (penggal.length - 1) * 47 + 10.5}}
+                    style={{ height: (penggal.length - 1) * 47 + 10.5 }}
                   />
                 </>
               </Details>
@@ -123,7 +125,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
           {t("no_entries")}
         </p>
       )}
-    </Collapse>
+    </ul>
   );
 
   return (
@@ -135,9 +137,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             "dark:border-r-slate-800 border-r shrink-0 w-11 max-lg:hide-scrollbar",
             "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
-            showSidebar
-              ? "lg:w-60 duration-300"
-              : "hide-scrollbar duration-500"
+            showSidebar ? "lg:w-60 duration-300" : "hide-scrollbar duration-500"
           )}
         >
           <div
@@ -178,18 +178,20 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               />
             </Button>
           </div>
-          {size.width > BREAKPOINTS.LG && (
-            <nav className="max-lg:hidden">
-              <Sidebar />
-              <div
-                className={
-                  showSidebar
-                    ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
-                    : "hidden"
-                }
-              />
-            </nav>
-          )}
+          <Collapse isOpen={showSidebar} horizontal>
+            {size.width > BREAKPOINTS.LG && (
+              <>
+                <Sidebar />
+                <div
+                  className={
+                    showSidebar
+                      ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
+                      : "hidden"
+                  }
+                />
+              </>
+            )}
+          </Collapse>
         </div>
 
         {/* Mobile */}

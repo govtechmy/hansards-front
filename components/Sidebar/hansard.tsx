@@ -53,12 +53,12 @@ const HansardSidebar = ({
           const key = keys[0];
           const id = prev_id ? `${prev_id}_${key}` : key;
           return (
-            <li
+            <div
               key={key}
               title={key}
               className={cn(
-                prev_id && "ml-2.5",
                 "text-sm relative",
+                prev_id && "ml-2.5",
                 !first &&
                   "border-l border-slate-400 last-of-type:border-transparent",
                 selected && selected.startsWith(id)
@@ -108,26 +108,24 @@ const HansardSidebar = ({
                     </>
                   }
                 >
-                  <>{recurTitle(s[key], false, id)}</>
+                  {recurTitle(s[key], false, id)}
                 </Details>
               )}
-            </li>
+            </div>
           );
         }
       });
     };
     return (
-      <Collapse isOpen={showSidebar} horizontal>
-        <>
-          {speeches ? (
-            recurTitle(speeches)
-          ) : (
-            <p className={cn(styles.base, "text-zinc-500 text-sm italic")}>
-              {t("no_entries", { ns: "common" })}
-            </p>
-          )}
-        </>
-      </Collapse>
+      <>
+        {speeches ? (
+          recurTitle(speeches)
+        ) : (
+          <p className={cn(styles.base, "text-zinc-500 text-sm italic")}>
+            {t("no_entries", { ns: "common" })}
+          </p>
+        )}
+      </>
     );
   };
 
@@ -183,16 +181,18 @@ const HansardSidebar = ({
               />
             </Button>
           </div>
-          <nav className={showSidebar ? "max-lg:hidden" : "hidden"}>
-            <Sidebar />
-            <div
-              className={
-                showSidebar
-                  ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
-                  : "hidden"
-              }
-            />
-          </nav>
+          <Collapse isOpen={showSidebar} horizontal>
+            <nav className={showSidebar ? "max-lg:hidden" : "hidden"}>
+              <Sidebar />
+              <div
+                className={
+                  showSidebar
+                    ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
+                    : "hidden"
+                }
+              />
+            </nav>
+          </Collapse>
         </div>
 
         {/* Mobile */}
