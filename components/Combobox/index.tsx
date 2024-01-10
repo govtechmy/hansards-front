@@ -140,15 +140,16 @@ const ComboBox = <T extends unknown>({
           )}
         </div>
       </div>
-      {isOpen && (
-        <div className="absolute top-[54px] left-0 w-full z-10">
-          <ul
-            {...getMenuProps({
-              ref: listRef,
-            })}
-            className="text-sm shadow-floating relative max-h-60 max-w-full overflow-y-auto bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md"
-          >
-            {loading ? (
+      <div className="absolute top-[54px] left-0 w-full z-10">
+        <ul
+          {...getMenuProps({ ref: listRef })}
+          className={cn(
+            "text-sm shadow-floating relative max-h-60 max-w-full overflow-y-auto bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md",
+            !(isOpen && items.length) && "hidden"
+          )}
+        >
+          {isOpen &&
+            (loading ? (
               <li className="text-zinc-500 flex cursor-default select-none items-center gap-2 px-4 py-2">
                 <Spinner loading={loading} /> {t("placeholder.loading")}
               </li>
@@ -178,7 +179,7 @@ const ComboBox = <T extends unknown>({
                         onChange(items[virtualRow.index]);
                         setInputValue(items[virtualRow.index].label);
                         closeMenu();
-                      }
+                      },
                     })}
                     style={{
                       position: "absolute",
@@ -207,15 +208,14 @@ const ComboBox = <T extends unknown>({
                       onChange(items[i]);
                       setInputValue(items[i].label);
                       closeMenu();
-                    }
+                    },
                   })}
                   index={i}
                 />
               ))
-            )}
-          </ul>
-        </div>
-      )}
+            ))}
+        </ul>
+      </div>
     </div>
   );
 };
