@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Triggers on relevant pages. Authentication to be removed at launch
 export const config = {
   matcher: [
+    '/', '/cari-mp', '/hansard/:path*', '/katalog/:path*', '/kehadiran/:path*', '/sejarah/:path*',
     /*
      * Match all request paths except for the ones starting with:
      * - api (API routes)
@@ -12,7 +12,7 @@ export const config = {
      * Missing array ignore link prefetches that don't need to go through middleware
      */
     {
-      source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+      source: '/((?!api|_next/static|_next/image|favicon.ico).*)', 
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
         { type: 'header', key: 'purpose', value: 'prefetch' },
@@ -31,9 +31,9 @@ export async function middleware(request: NextRequest) {
 
   // Request authenticated
   if (["development"].includes(process.env.NEXT_PUBLIC_APP_ENV)) {
-  response = NextResponse.next({ request: { headers } });
-  return response;
-}
+    response = NextResponse.next({ request: { headers } });
+    return response;
+  }
 
   const basicAuth = request.headers.get("authorization");
   if (basicAuth) {
