@@ -1,28 +1,28 @@
 import Container from "@components/Container";
 import Nav from "@components/Nav";
 import { useTranslation } from "@hooks/useTranslation";
-import Image from "next/image";
+import { ParlimenIcon } from "@icons/index";
 import Link from "next/link";
-import { FunctionComponent, ReactNode } from "react";
+import { ReactNode } from "react";
 
 interface HeaderProps {
   stateSelector?: ReactNode;
 }
 
-const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
+const Header = ({ stateSelector }: HeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <div className="dark:border-zinc-800 fixed left-0 top-0 z-30 w-full border-b h-14">
+    <div className="dark:border-zinc-800 fixed inset-x-0 top-0 z-30 w-screen border-b h-14">
       <Container
-        background="bg-white dark:bg-zinc-900"
+        background="bg-background"
         className="flex items-center gap-4 py-[11px]"
       >
         <div className="flex w-full items-center gap-1 lg:gap-4">
           <Link href="/">
             <div className="flex gap-2.5">
-              <div className="flex w-7 h-7 items-center justify-center">
-                <Image src="/static/images/logo.png" width={108} height={109} alt="datagovmy_logo" />
+              <div className="flex w-8 items-center justify-center">
+                <ParlimenIcon />
               </div>
               <div className="header whitespace-nowrap">Hansard Parlimen</div>
             </div>
@@ -32,7 +32,7 @@ const Header: FunctionComponent<HeaderProps> = ({ stateSelector }) => {
             {(close) => (
               <>
                 <Nav.Item
-                  key={"/"}
+                  key="/"
                   title={t("nav.home")}
                   link="/"
                   onClick={close}
