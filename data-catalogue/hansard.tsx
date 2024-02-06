@@ -1,43 +1,32 @@
 import {
   At,
-  Button,
   DateCard,
   HansardSidebar,
   Hero,
   Markdown,
-  Search,
   Toggle,
 } from "@components/index";
-import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-  ShareIcon,
-  XMarkIcon,
-} from "@heroicons/react/20/solid";
+import { SidebarOpen } from "@components/Sidebar/hansard";
+import MobileButton from "@components/Sidebar/mobile-button";
+import { ChevronRightIcon, ShareIcon } from "@heroicons/react/20/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useTranslation } from "@hooks/useTranslation";
 import { CiteIcon, DownloadIcon } from "@icons/index";
+import { COLOR } from "@lib/constants";
 import { cn, numFormat } from "@lib/helpers";
+import { routes } from "@lib/routes";
 import { NestedSpeech, Speech, Speeches } from "@lib/types";
 import { DateTime } from "luxon";
-import {
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import Link from "next/link";
+import { ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import rehypeRaw from "rehype-raw";
 
 import SpeechBubble from "./bubble";
-import { SearchContext, SearchEventContext } from "./context";
+import { SearchContext, SearchEventContext } from "./hansard/search/context";
+import { highlightKeyword } from "./hansard/search/highlight";
+import { getMatchText } from "./hansard/search/match-text";
 import ShareButton from "./share";
-import { getMatchText } from "./match-text";
-import Link from "next/link";
-import { routes } from "@lib/routes";
-import remarkGfm from "remark-gfm";
+import HansardSearch from "./search-bar";
 
 /**
  * Hansard
@@ -66,49 +55,41 @@ const Hansard = ({
 }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
-  const [narrowMode, setNarrowMode] = useState<boolean>(false);
-  const [query, setQuery] = useState<string>("");
+
+  const sidebarRef = useRef<SidebarOpen>(null);
+  function handleClick() {
+    if (sidebarRef.current) sidebarRef.current.open();
+  }
+  // const [narrowMode, setNarrowMode] = useState<boolean>(false);
 
   const { counts, download } = useAnalytics(hansard_id);
-  const [downloads, shares, views]: number[] =
-    counts && counts.length > 0
-      ? [
-          counts.find((e) => e.type === "downloads")?.counts ?? 0,
-          counts.find((e) => e.type === "shares")?.counts ?? 0,
-          counts.find((e) => e.type === "views")?.counts ?? 0,
-        ]
-      : [0, 0, 0];
-
-  const { searchValue, activeCount, totalCount } = useContext(SearchContext);
-  const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
+  const { downloads, shares, views } = counts 
 
   let curr = DateTime.fromISO("00:00");
-  const recurSpeech = (
-    speeches: Speeches,
-    keyword?: string,
-    prev_id?: string
-  ): ReactNode => {
+
+  const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
+    let { searchValue, activeId } = useContext(SearchContext);
+    const { onUpdateMatchList } = useContext(SearchEventContext);
+
     return speeches.map((s) => {
       if (isSpeech(s)) {
         const { speech, author, timestamp, is_annotation, index } = s;
 
+        // Timestamp
         const hr = String(timestamp).slice(0, 2);
         const mn = String(timestamp).slice(2, 4);
         const _timestamp = DateTime.fromISO(`${hr}:${mn}`);
         const prev = curr; // temp store
-        if (
-          !_timestamp.hasSame(curr, "hour") &&
-          !_timestamp.hasSame(curr, "minute")
-        ) {
-          curr = _timestamp;
-        }
+        const timestampChangedFrom = (datetime: DateTime) =>
+          !_timestamp.hasSame(datetime, "hour") ||
+          !_timestamp.hasSame(datetime, "minute");
+
+        if (timestampChangedFrom(curr)) curr = _timestamp;
         const timeString = _timestamp.toLocaleString(DateTime.TIME_SIMPLE, {
           locale: "en-US",
         });
 
-        let { searchValue } = useContext(SearchContext);
-        const { onUpdateMatchList } = useContext(SearchEventContext);
-
+        // Search
         const matchData = useMemo(
           () => getMatchText(searchValue, speech),
           [searchValue, speech]
@@ -121,30 +102,29 @@ const Hansard = ({
               idCount: i,
             }));
             onUpdateMatchList(matchIds);
-          }
+          } else onUpdateMatchList([]);
         }, [matchData]);
 
         const parseMarkdown = (children: string) => (
           <Markdown
             className={cn(is_annotation && "a")}
             rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
+            disallowedElements={["code"]}
             components={{
               mark(props) {
                 const { node, id, ...rest } = props;
                 const matchId = `${index}_${id}`;
                 const { activeId } = useContext(SearchContext);
-                const color = matchId === activeId ? "#DC2626" : "#2563EB";
-
+                const backgroundColor =
+                  matchId === activeId ? COLOR.PRIMARY : "#DDD6B0";
+                const color = matchId === activeId ? COLOR.WHITE : COLOR.BLACK;
                 return (
                   <span
                     key={index}
                     id={matchId}
                     style={{
-                      backgroundColor: color,
-                      color: "white",
-                      display: "inline-block",
-                      whiteSpace: "pre-wrap",
+                      backgroundColor,
+                      color,
                     }}
                     {...rest}
                   />
@@ -157,49 +137,41 @@ const Hansard = ({
         );
 
         const _speech = useMemo<ReactNode>(() => {
-          if (typeof matchData === "string") {
-            if (matchData.includes("\n")) console.log(matchData)
-            const x = `| Pakar Perubatan | |\n|-|-|\n | Tahun | Jumlah (Orang) | \n | 2016 | 158 | \n | 2017 | 170 | \n | 2018 | 198 | \n | 2019 | 229 | \n | 2020 | 161 | \n | Sehingga Jun 2021 | 32 | \n | Keseluruhan | 948 |`
-            return parseMarkdown(matchData);
-          } else {
+          if (typeof matchData === "string") return parseMarkdown(matchData);
+          else {
             let str = "";
             for (let i = 0; i < matchData.slices.length; i++) {
               if (i === matchData.slices.length - 1) str += matchData.slices[i];
               else
-                str +=
-                  matchData.slices[i] +
-                  `<mark id='${i}'>${matchData.matches[i]}</mark>`;
+                str += `${matchData.slices[i]} <mark id='${i}'>${matchData.matches[i]}</mark>`;
             }
             return parseMarkdown(str);
           }
-        }, [speech, keyword]);
+        }, [searchValue]);
+
+        const IS_YDP = [
+          "Tuan Yang di-Pertua",
+          "Timbalan Yang di-Pertua",
+          "Tuan Pengerusi",
+        ].some((ydp) => author.includes(ydp));
 
         return (
           <>
-            {!_timestamp.hasSame(prev, "hour") &&
-              !_timestamp.hasSame(prev, "minute") && (
-                <p className="text-zinc-500 text-center italic">{timeString}</p>
-              )}
+            {timestampChangedFrom(prev) && <p className="time">{timeString}</p>}
             {author === "ANNOTATION" ? (
-              <div
-                key={index}
-                className="text-zinc-900 dark:text-white text-center italic"
-              >
-                {_speech}
-              </div>
+              <p className="anno">{highlightKeyword(matchData, `${index}`)}</p>
             ) : (
               <SpeechBubble
-                party={["Tuan Yang di-Pertua"].includes(author) ? "ydp" : ""}
-                position={
-                  ["Tuan Yang di-Pertua"].includes(author) ? "right" : "left"
-                }
+                party={IS_YDP ? "ydp" : ""}
+                position={IS_YDP ? "right" : "left"}
                 author={author}
                 is_annotation={is_annotation}
                 timeString={timeString}
                 index={index}
-                keyword={keyword}
+                keyword={searchValue}
                 hansard_id={hansard_id}
                 date={date}
+                length={speech.length}
               >
                 {_speech}
               </SpeechBubble>
@@ -207,28 +179,45 @@ const Hansard = ({
           </>
         );
       } else {
-        const keys = Object.keys(s);
-        const key = keys[0];
-        const id = prev_id ? `${prev_id}_${key}` : key;
+        const heading = Object.keys(s)[0];
+        const isFirstHeading = !prev_id;
+        const sidebarId = isFirstHeading ? heading : `${prev_id}_${heading}`;
+
+        const matchData = useMemo(
+          () => getMatchText(searchValue, heading),
+          [searchValue, heading]
+        );
+
+        useEffect(() => {
+          if (typeof matchData === "object") {
+            const matchIds = matchData.matches.map((_, i) => ({
+              id: `${heading}_${i}`,
+              idCount: i,
+            }));
+            onUpdateMatchList(matchIds);
+          } else onUpdateMatchList([]);
+        }, [matchData]);
+
+        const _heading = useMemo<ReactNode>(
+          () => highlightKeyword(matchData, heading),
+          [searchValue, activeId]
+        );
 
         return (
           <div
-            key={key}
-            ref={(ref) => (scrollRef.current[id] = ref)}
-            className="flex flex-col gap-y-3 lg:gap-y-6"
+            key={heading}
+            ref={(ref) => (scrollRef.current[sidebarId] = ref)}
+            className="flex flex-col bg-background gap-y-3 lg:gap-y-6 scroll-mt-40 lg:scroll-mt-28"
           >
             <p
-              onClick={() => {
-                scrollRef.current[id]?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-              }}
-              className="text-zinc-900 dark:text-white text-center font-bold py-3 lg:sticky top-28 bg-white dark:bg-zinc-900 z-10"
+              className={cn(
+                "text-foreground text-center py-3 lg:sticky top-28 bg-background z-10",
+                isFirstHeading ? "font-bold" : "font-medium"
+              )}
             >
-              {key}
+              {_heading}
             </p>
-            {recurSpeech(s[key], keyword, id)}
+            {recurSpeech(s[heading], sidebarId)}
           </div>
         );
       }
@@ -236,20 +225,32 @@ const Hansard = ({
   };
 
   const styles = {
-    link_blue: "flex gap-1 items-center link-blue",
-    link_dim: "hover:underline [text-underline-position:from-font]",
+    link_blue: "flex gap-1 items-center text-blue-600 font-medium link",
   };
 
   const IS_DR = cycle.house === 0;
   const IS_KK = cycle.house === 2;
   const dewan_route = IS_KK
-    ? routes.HANSARD_KK
+    ? routes.KATALOG_KK
     : IS_DR
     ? routes.KATALOG_DR
     : routes.KATALOG_DN;
 
+  const parlimen_link = `${dewan_route}/parlimen-${cycle.term}`;
+  const penggal_link = `${parlimen_link}/penggal-${cycle.session}`;
+  const mesyuarat_link = `${penggal_link}/mesyuarat-${cycle.meeting}`;
+
+  const hansard_url = `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+    filename.startsWith("kk")
+      ? "kamarkhas"
+      : filename.startsWith("dr")
+      ? "dewanrakyat"
+      : "dewannegara"
+  }/${filename}`;
+
   return (
     <HansardSidebar
+      ref={sidebarRef}
       speeches={speeches}
       onClick={(selected) => {
         scrollRef.current[selected]?.scrollIntoView({
@@ -258,166 +259,110 @@ const Hansard = ({
         });
       }}
     >
-      {(sidebarButton) => (
-        <div className="flex flex-col w-full items-center">
-          <Hero>
-            <div className="space-y-6 py-8 lg:py-12 xl:w-full">
-              <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
-                <Link href={dewan_route} className={styles.link_dim}>
-                  {t("archive", {
+      <div className="flex flex-col w-full items-center border-r border-border relative">
+        <Hero>
+          <div className="space-y-6 py-8 lg:py-12 xl:w-full">
+            <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
+              <Link href={dewan_route} className="link" prefetch={false}>
+                {t("archive", {
+                  context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
+                })}
+              </Link>
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+              <Link href={parlimen_link} className="link" prefetch={false}>
+                {t("parlimen", { ns: "enum", count: cycle.term })}
+              </Link>
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+              <Link href={penggal_link} className="link" prefetch={false}>
+                {t("penggal_full", { ns: "enum", n: cycle.session })}
+              </Link>
+              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+              <Link href={mesyuarat_link} className="link" prefetch={false}>
+                {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
+              </Link>
+            </div>
+            <div className="flex justify-between gap-3 lg:gap-6 items-center">
+              <DateCard size="lg" date={date} />
+              <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
+                <h1
+                  className="text-3xl font-bold leading-[38px] text-foreground"
+                  data-testid="hero-header"
+                >
+                  {t("header", {
                     context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
                   })}
-                </Link>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <Link
-                  href={`${dewan_route}/parlimen-${cycle.term}`}
-                  className={styles.link_dim}
-                >
-                  {t("parlimen", { ns: "enum", count: cycle.term })}
-                </Link>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <Link
-                  href={`${dewan_route}/parlimen-${cycle.term}/penggal-${cycle.session}`}
-                  className={styles.link_dim}
-                >
-                  {t("penggal_full", { ns: "enum", n: cycle.session })}
-                </Link>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <Link
-                  href={`${dewan_route}/parlimen-${cycle.term}/penggal-${cycle.session}/mesyuarat-${cycle.meeting}`}
-                  className={styles.link_dim}
-                >
-                  {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
-                </Link>
-              </div>
-              <div className="flex justify-between gap-3 lg:gap-6 items-center">
-                <DateCard size="lg" date={date} />
-                <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
-                  <h1
-                    className="text-3xl font-bold leading-[38px] text-zinc-900 dark:text-white"
-                    data-testid="hero-header"
+                </h1>
+                {(views || shares || downloads) ? (
+                  <p
+                    className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
+                    data-testid="hero-views"
                   >
-                    {t("header", {
-                      context: cycle.house === 0 ? "dr" : "dn",
-                    })}
-                  </h1>
-                  {counts && counts.length > 0 && (
-                    <p
-                      className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
-                      data-testid="hero-views"
-                    >
-                      <span>{`${numFormat(views, "compact")} ${t("views", {
+                    <span>{`${numFormat(views, "compact")} ${t("views", {
+                      ns: "common",
+                      count: views,
+                    })}`}</span>
+                    •
+                    <span>{`${numFormat(shares, "compact")} ${t("shares", {
+                      count: shares,
+                    })}`}</span>
+                    •
+                    <span>{`${numFormat(downloads, "compact")} ${t(
+                      "downloads",
+                      {
                         ns: "common",
-                        count: views,
-                      })}`}</span>
-                      •
-                      <span>{`${numFormat(shares, "compact")} ${t("shares", {
-                        count: shares,
-                      })}`}</span>
-                      •
-                      <span>{`${numFormat(downloads, "compact")} ${t(
-                        "downloads",
-                        {
-                          ns: "common",
-                          count: downloads,
-                        }
-                      )}`}</span>
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
-                <span className={styles.link_blue}>
-                  <CiteIcon className="h-5 w-5" />
-                  {t("cite")}
-                </span>
-                <At
-                  external
-                  href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                    filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
-                  }/${filename}.pdf`}
-                  onClick={() => download("pdf")}
-                  className={styles.link_blue}
-                >
-                  <DownloadIcon className="h-5 w-5" />
-                  {t("download", { context: "pdf" })}
-                </At>
-                <At
-                  external
-                  href={`${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                    filename.startsWith("dr") ? "dewanrakyat" : "dewannegara"
-                  }/${filename}.csv`}
-                  onClick={() => download("csv")}
-                  className={styles.link_blue}
-                >
-                  <DownloadIcon className="h-5 w-5" />
-                  {t("download", { context: "csv" })}
-                </At>
-                <ShareButton
-                  date={date}
-                  hansard_id={hansard_id}
-                  trigger={(onClick) => (
-                    <div className={styles.link_blue} onClick={onClick}>
-                      <ShareIcon className="h-5 w-5" />
-                      {t("share")}
-                    </div>
-                  )}
-                />
+                        count: downloads,
+                      }
+                    )}`}</span>
+                  </p>
+                ) : (<div className="h-5 w-full"/>)}
               </div>
             </div>
-          </Hero>
-          <div className="dark:border-washed-dark sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-3 w-full border-b bg-white py-1.5 dark:bg-black lg:px-8">
-            <div className="flex gap-3 items-center w-full">
-              <Search
-                className="border-none py-[3.5px] w-full"
-                query={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  onSearchChange(e.target.value);
-                }}
+
+            <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
+              <span className={styles.link_blue}>
+                <CiteIcon className="h-5 w-5" />
+                {t("cite")}
+              </span>
+              <At
+                external
+                href={`${hansard_url}.pdf`}
+                onClick={() => download("pdf")}
+                className={styles.link_blue}
+              >
+                <DownloadIcon className="h-5 w-5" />
+                {t("download", { context: "pdf" })}
+              </At>
+              <At
+                external
+                href={`${hansard_url}.csv`}
+                onClick={() => download("csv")}
+                className={styles.link_blue}
+              >
+                <DownloadIcon className="h-5 w-5" />
+                {t("download", { context: "csv" })}
+              </At>
+              <ShareButton
+                date={date}
+                hansard_id={hansard_id}
+                trigger={(onClick) => (
+                  <button className={styles.link_blue} onClick={onClick}>
+                    <ShareIcon className="h-5 w-5" />
+                    {t("share")}
+                  </button>
+                )}
               />
-
-              {searchValue && searchValue.length > 0 && (
-                <Button
-                  variant="reset"
-                  className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
-                  onClick={() => {
-                    setQuery("");
-                    onSearchChange("");
-                  }}
-                >
-                  <XMarkIcon className="text-dim h-5 w-5 group-hover:text-black dark:group-hover:text-white" />
-                </Button>
-              )}
             </div>
-            {searchValue && searchValue.length > 0 && (
-              <div className="flex gap-3 items-center">
-                <p className="text-zinc-500 max-sm:text-sm whitespace-nowrap">{`${activeCount} of ${totalCount} found`}</p>
-                <Button
-                  variant="reset"
-                  className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
-                  onClick={onPrev}
-                >
-                  <ChevronUpIcon className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="reset"
-                  className="h-fit hover:bg-washed dark:hover:bg-washed-dark text-dim group rounded-full p-1 hover:text-black dark:hover:text-white"
-                  onClick={onNext}
-                >
-                  <ChevronDownIcon className="w-5 h-5" />
-                </Button>
-              </div>
-            )}
           </div>
-          <div
-            className={cn(
-              "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-white dark:bg-zinc-900 gap-y-6 flex flex-col relative",
-              narrowMode ? "w-[500px]" : "w-full"
-            )}
-          >
-            <div
+        </Hero>
+
+        <HansardSearch />
+        <div
+          className={cn(
+            "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-background gap-y-6 flex flex-col relative mx-auto"
+            // narrowMode ? "w-max" : "max-w-[1000px]"
+          )}
+        >
+          {/* <div
               className={cn(
                 "hidden lg:block absolute top-2 right-40 p-1.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-button",
                 narrowMode ? "right-8" : "right-40"
@@ -430,12 +375,11 @@ const Hansard = ({
                 }}
                 label={t("narrow")}
               />
-            </div>
-            {sidebarButton}
-            {recurSpeech(speeches, searchValue)}
-          </div>
+            </div> */}
+          <MobileButton onClick={handleClick} />
+          {recurSpeech(speeches)}
         </div>
-      )}
+      </div>
     </HansardSidebar>
   );
 };
