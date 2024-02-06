@@ -4,6 +4,9 @@ import Image from "next/image";
 
 const Footer = () => {
   const { t } = useTranslation();
+  const styles = {
+    link: "link text-zinc-500 cursor-pointer text-sm hover:text-foreground"
+  }
 
   return (
     <Container background="bg-slate-50 dark:bg-zinc-900 border-t border-slate-200 dark:border-zinc-800 max-sm:px-3 pt-12 pb-16 z-10">
@@ -32,16 +35,16 @@ const Footer = () => {
           <div className="flex w-full flex-col gap-y-3 md:w-[200px]">
             <p className="font-bold">{t("footer.open_source")}</p>
 
-            <At className="link-dim" scrollTop={false} href="#">
+            <At className={styles.link} scrollTop={false} href="#">
               {t("footer.frontend")}
             </At>
-            <At className="link-dim" scrollTop={false} href="#">
+            <At className={styles.link} scrollTop={false} href="#">
               {t("footer.backend")}
             </At>
-            <At className="link-dim" scrollTop={false} href="#">
+            <At className={styles.link} scrollTop={false} href="#">
               {t("footer.parser")}
             </At>
-            <At className="link-dim" scrollTop={false} href="#">
+            <At className={styles.link} scrollTop={false} href="#">
               {t("footer.ui_ux")}
             </At>
           </div>
@@ -50,10 +53,10 @@ const Footer = () => {
           <div className="flex w-full flex-col gap-y-3 md:w-[200px]">
             <p className="font-bold">{t("footer.open_data")}</p>
 
-            <At className="link-dim" scrollTop={false} href="#">
+            <At className={styles.link} scrollTop={false} href="#">
               {t("footer.guiding_principles")}
             </At>
-            <At className="link-dim" scrollTop={false} href="#">
+            <At className={styles.link} scrollTop={false} href="#">
               {t("footer.terms_of_use")}
             </At>
           </div>

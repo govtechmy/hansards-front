@@ -40,7 +40,7 @@ const List: FunctionComponent<ListProps> = ({ options, current, onChange, icons,
         <li
           key={option}
           className={cn(
-            "flex cursor-pointer select-none self-center whitespace-nowrap rounded-full px-2.5 py-1 text-sm outline-none transition-colors",
+            "flex cursor-pointer select-none self-center whitespace-nowrap rounded-full px-2.5 py-1 text-sm transition-colors",
             current === index
               ? "bg-slate-200 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-white"
               : "text-zinc-500 bg-transparent hover:text-zinc-900 dark:hover:text-white"
@@ -93,7 +93,7 @@ const Tabs: FunctionComponent<TabsProps> & { Panel: typeof Panel; List: typeof L
                   key={index}
                   className={({ selected }) =>
                     cn(
-                      "group flex flex-row rounded-full px-[10px] py-1 text-sm outline-none transition-colors",
+                      "group flex flex-row rounded-full px-[10px] py-1 text-sm transition-colors",
                       selected
                         ? "bg-slate-200 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-white"
                         : "text-zinc-500 bg-transparent hover:text-zinc-900 dark:hover:text-white"

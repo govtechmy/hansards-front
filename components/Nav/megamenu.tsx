@@ -1,6 +1,6 @@
 import { Fragment, useState, useContext, FunctionComponent, ReactNode } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { BREAKPOINTS } from "@lib/constants";
 import { WindowContext } from "@lib/contexts/window"
 
@@ -20,18 +20,18 @@ const Megamenu: FunctionComponent<MegamenuProps> = ({ icon, title, children }) =
         <>
           <div
             onClick={() => setIsOpen(!isOpen)}
-            className="hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center gap-2 rounded-none px-2 py-2 text-sm font-medium transition hover:cursor-pointer md:rounded-md md:py-[6px]"
+            className="hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center gap-1.5 rounded-none px-3 py-2 text-sm font-medium transition hover:cursor-pointer md:rounded-md md:py-[6px]"
           >
-            {icon}
+            {/* {icon} */}
             {title}
             {isOpen ? (
               <ChevronUpIcon
-                className={`h-4 w-4 transition duration-150 ease-in-out group-hover:text-opacity-80`}
+                className="h-5 w-5 -mx-[5px] transition duration-150 ease-in-out group-hover:text-opacity-80"
                 aria-hidden="true"
               />
             ) : (
               <ChevronDownIcon
-                className={`h-4 w-4 transition duration-150 ease-in-out group-hover:text-opacity-80`}
+                className="h-5 w-5 -mx-[5px] transition duration-150 ease-in-out group-hover:text-opacity-80"
                 aria-hidden="true"
               />
             )}
@@ -45,17 +45,17 @@ const Megamenu: FunctionComponent<MegamenuProps> = ({ icon, title, children }) =
           className="relative"
         >
           <>
-            <Popover.Button className="hover:bg-slate-100 dark:hover:bg-zinc-800 button-dashboard flex items-center gap-2 rounded-none px-2 py-2 text-sm font-medium transition hover:cursor-pointer dark:text-white md:rounded-md md:py-[6px]">
-              {icon}
+            <Popover.Button className="hover:bg-bg-hover button-dashboard flex items-center gap-1.5 rounded-none px-3 py-2 text-sm font-medium transition hover:cursor-pointer text-foreground md:rounded-md md:py-[6px]">
+              {/* {icon} */}
               {title}
               {isOpen ? (
                 <ChevronUpIcon
-                  className={`dar:text-white h-4 w-4 transition duration-150 ease-in-out group-hover:text-opacity-80`}
+                  className="h-5 w-5 -mx-[5px] transition duration-150 ease-in-out group-hover:text-opacity-80"
                   aria-hidden="true"
                 />
               ) : (
                 <ChevronDownIcon
-                  className={`h-4 w-4 transition duration-150 ease-in-out group-hover:text-opacity-80`}
+                  className="h-5 w-5 -mx-[5px] transition duration-150 ease-in-out group-hover:text-opacity-80"
                   aria-hidden="true"
                 />
               )}
