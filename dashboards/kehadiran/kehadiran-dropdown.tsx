@@ -3,8 +3,7 @@ import {
   Dialog,
   DialogContent,
   DialogClose,
-  DialogDescription,
-  DialogHeading,
+  DialogHeader,
   DialogTrigger,
 } from "@components/Dialog";
 import { Button, Dropdown, Label } from "@components/index";
@@ -134,15 +133,14 @@ const KehadiranDropdown = ({
             <Filter onClick={() => setOpen(!open)} />
           </WindowProvider>
         </DialogTrigger>
-        <DialogContent className="p-0">
+        <DialogContent>
           <div className="w-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col gap-y-0">
-            <DialogHeading className="px-3 py-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
+            <DialogHeader className="px-3 py-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
               <span className="font-bold text-sm text-zinc-900 dark:text-white">
                 {t("filters", { ns: "common" }) + ":"}
               </span>
               <DialogClose/>
-            </DialogHeading>
-            <DialogDescription>
+            </DialogHeader>
               <div className="flex flex-col">
                 <div className="bg-white dark:bg-zinc-900">
                   <div className="dark:divide-washed-dark divide-y px-3 pb-3">
@@ -243,7 +241,6 @@ const KehadiranDropdown = ({
                   </div>
                 </div>
               </div>
-            </DialogDescription>
           </div>
         </DialogContent>
       </Dialog>
