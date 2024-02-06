@@ -75,7 +75,7 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
             {loading ? (
               <Skeleton />
             ) : (
-              <Button variant="default" onClick={handleClick}>
+              <Button variant="outline" onClick={handleClick}>
                 {t("load_more")}
               </Button>
             )}
