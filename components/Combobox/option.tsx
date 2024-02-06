@@ -64,7 +64,7 @@ function ComboOptionInner<T>(
             {icon && icon(option.value)}
             <p
               className={cn(
-                "block grow self-center",
+                "block grow self-center truncate",
                 isSelected ? "font-medium" : "font-normal"
               )}
             >
