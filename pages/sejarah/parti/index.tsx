@@ -7,6 +7,7 @@ import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { routes } from "@lib/routes";
 
 const SejarahParti: Page = ({
   meta,
@@ -18,7 +19,7 @@ const SejarahParti: Page = ({
   const { t } = useTranslation("sejarah");
 
   return (
-    <AnalyticsProvider meta={meta}>
+    <AnalyticsProvider>
       <Metadata
         title={t("sejarah_parti")}
         description={t("parti.header")}
@@ -71,8 +72,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       return {
         props: {
           meta: {
-            id: "sejarah_parti",
-            type: "dashboard",
+            id: routes.SEJARAH_PARTI,
           },
           params: { name, state },
           dropdown,

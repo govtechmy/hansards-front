@@ -8,6 +8,7 @@ import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { CountryAndStates } from "@lib/constants";
+import { routes } from "@lib/routes";
 
 const SejarahParlimen: Page = ({
   meta,
@@ -20,7 +21,7 @@ const SejarahParlimen: Page = ({
   const { t } = useTranslation("sejarah");
 
   return (
-    <AnalyticsProvider meta={meta}>
+    <AnalyticsProvider>
       <Metadata
         title={t("sejarah_parlimen")}
         description={t("parlimen.header")}
@@ -92,8 +93,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       return {
         props: {
           meta: {
-            id: "sejarah_parlimen",
-            type: "dashboard",
+            id: routes.SEJARAH_PARLIMEN,
           },
           dropdown: dropdown.catalogue_list,
           last_updated: seats.data_last_updated,

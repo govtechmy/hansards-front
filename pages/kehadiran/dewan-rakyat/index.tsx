@@ -5,6 +5,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { get } from "@lib/api";
 import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
+import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
@@ -19,7 +20,7 @@ const Kehadiran: Page = ({
   const { t } = useTranslation("kehadiran");
 
   return (
-    <AnalyticsProvider meta={meta}>
+    <AnalyticsProvider>
       <Metadata
         title={t("hero.header")}
         description={t("hero.description")}
@@ -65,8 +66,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
     return {
       props: {
         meta: {
-          id: "kehadiran-dr",
-          type: "dashboard",
+          id: routes.KEHADIRAN_DR,
         },
         barmeter: data.charts,
         dropdown: dropdown.catalogue_list,

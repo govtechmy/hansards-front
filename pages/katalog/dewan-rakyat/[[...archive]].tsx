@@ -5,6 +5,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { get } from "@lib/api";
 import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
+import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 
@@ -22,7 +23,7 @@ const CatalogueIndexPage: Page = ({
         description={t("hero.description")}
         keywords={""}
       />
-      <AnalyticsProvider meta={meta}>
+      <AnalyticsProvider>
         <CatalogueIndexLayout>
           <CatalogueIndex archive={archive} params={params} />
         </CatalogueIndexLayout>
@@ -49,8 +50,7 @@ export const getStaticProps: GetStaticProps = withi18n(
       return {
         props: {
           meta: {
-            id: "catalogue-index-dr",
-            type: "misc",
+            id: routes.KATALOG_DR,
           },
           archive: data.catalogue_list,
           params: params,

@@ -5,6 +5,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { get } from "@lib/api";
 import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
+import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
@@ -18,7 +19,7 @@ const SejarahIndividu: Page = ({
   const { t } = useTranslation("sejarah");
 
   return (
-    <AnalyticsProvider meta={meta}>
+    <AnalyticsProvider>
       <Metadata
         title={t("sejarah_individu")}
         description={t("individu.header")}
@@ -67,8 +68,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       return {
         props: {
           meta: {
-            id: "sejarah_individu",
-            type: "dashboard",
+            id: routes.SEJARAH_INDIVIDU,
           },
           dropdown,
           last_updated: data.data_last_updated,

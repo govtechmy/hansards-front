@@ -51,8 +51,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         return {
           props: {
             meta: {
-              id: "home",
-              type: "misc",
+              id: "/",
             },
             count: 0,
             excerpts: null,
@@ -89,8 +88,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       return {
         props: {
           meta: {
-            id: "home",
-            type: "misc",
+            id: "/",
           },
           count: excerpt.count ?? 0,
           excerpts: excerpt.results ?? null,
