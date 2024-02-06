@@ -3,9 +3,8 @@ import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
 import { Archive } from "@lib/types";
 import { Fragment, useEffect, useMemo, useRef } from "react";
-import CatalogueFolder from "./folder";
+import CatalogueFolder, { FolderOpen } from "./folder";
 import { ParsedUrlQuery } from "querystring";
-import { WindowProvider } from "@lib/contexts/window";
 
 /**
  * Catalogue Index
@@ -20,6 +19,7 @@ interface CatalogueIndexProps {
 const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
   const { t } = useTranslation(["catalogue", "common", "enum"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
+  const folderRef = useRef<Record<string, FolderOpen | null>>({});
 
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
@@ -72,7 +72,11 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
 
   useEffect(() => {
     if (params && params.archive) {
-      const [parlimen, penggal] = params.archive;
+      const [parlimen, penggal, mesyuarat] = params.archive;
+      const url = `${parlimen}/${penggal}/${mesyuarat}`;
+      if (mesyuarat && folderRef.current) {
+        folderRef.current[url]?.open(url);
+      }
       if (penggal) {
         scrollToPenggal(`${parlimen}/${penggal}`);
       } else {
@@ -93,17 +97,17 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
             });
           }}
         >
-          <section className="flex flex-col pl-6 sm:pl-8 pt-3 pb-6 lg:pb-8 w-full h-full">
-            <WindowProvider>
-              {data ? (
-                PARLIMENS.map((_, index) => {
-                  const { id, penggal, yearRange } = data[index];
-                  const parlimen_id = `parlimen-${id}/`;
+          <div className="flex flex-col px-4.5 sm:px-8 pt-3 pb-6 lg:pb-8 w-full h-full">
+            {data ? (
+              PARLIMENS.map((_, index) => {
+                const { id, penggal, yearRange } = data[index];
+                const parlimen_id = `parlimen-${id}/`;
 
-                  return (
-                    <Fragment key={id}>
+                return (
+                  <Fragment key={id}>
+                    <div className="flex flex-col">
                       <div
-                        className="py-3 bg-white dark:bg-zinc-900 flex gap-3 items-center sticky top-[113px] z-10"
+                        className="py-3 bg-background flex gap-3 items-center sticky top-28 z-10"
                         ref={(ref) => (scrollRef.current[parlimen_id] = ref)}
                       >
                         <h2 className="header flex flex-wrap w-fit sm:whitespace-nowrap">
@@ -134,7 +138,7 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
                                   "absolute top-3.5 left-0 -z-10 border-dashed"
                                 )}
                               />
-                              <h3 className="title flex flex-wrap w-fit sm:whitespace-nowrap bg-white dark:bg-zinc-900 pr-3">
+                              <h3 className="title flex flex-wrap w-fit sm:whitespace-nowrap bg-background pr-3">
                                 {t("penggal_full", {
                                   ns: "enum",
                                   n: id,
@@ -150,25 +154,17 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
                                   ] = ref)
                                 }
                               >
-                                {MEETINGS.map((mesyuarat_id) => {
+                                {MEETINGS.map((id) => {
                                   return (
                                     <CatalogueFolder
-                                      key={mesyuarat_id}
-                                      isOpen={
-                                        params && params.archive
-                                          ? params.archive.includes(
-                                              `parlimen-${parlimen_id}`
-                                            ) &&
-                                            params.archive.includes(
-                                              `penggal-${penggal_id}`
-                                            ) &&
-                                            params.archive.includes(
-                                              `mesyuarat-${mesyuarat_id}`
-                                            )
-                                          : false
+                                      ref={(ref) =>
+                                        (folderRef.current[
+                                          `${parlimen_id}${penggal_id}/mesyuarat-${id}`
+                                        ] = ref)
                                       }
-                                      meeting={meetings[mesyuarat_id]}
-                                      meeting_id={mesyuarat_id}
+                                      key={id}
+                                      meeting={meetings[id]}
+                                      meeting_id={id}
                                     />
                                   );
                                 })}
@@ -177,16 +173,16 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
                           );
                         })}
                       </div>
-                    </Fragment>
-                  );
-                })
-              ) : (
-                <p className="text-zinc-500 p-2 pt-16 lg:p-8">
-                  {t("no_entries", { ns: "common" })}.
-                </p>
-              )}
-            </WindowProvider>
-          </section>
+                    </div>
+                  </Fragment>
+                );
+              })
+            ) : (
+              <p className="text-zinc-500 p-2 pt-16 lg:p-8">
+                {t("no_entries", { ns: "common" })}.
+              </p>
+            )}
+          </div>
         </Sidebar>
       </Container>
     </>
