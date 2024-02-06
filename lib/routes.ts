@@ -15,11 +15,5 @@ export const routes = {
   SEJARAH_PARTI: "/sejarah/parti",
 };
 
-export const static_routes: string[] = (() => {
-  let s_routes = [routes.KATALOG_DR, routes.KATALOG_DN, routes.KATALOG_KK];
-  
-  s_routes.forEach(route => {
-    s_routes.push(`/en-GB${route}`);
-  });
-  return s_routes;
-})();
+export const hansard_routes = [routes.HANSARD_DR, routes.HANSARD_DN, routes.HANSARD_KK];
+export const katalog_routes = [routes.KATALOG_DR, routes.KATALOG_DN, routes.KATALOG_KK];

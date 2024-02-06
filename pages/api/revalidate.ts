@@ -1,5 +1,4 @@
-import { static_routes } from "@lib/routes";
-import { STATES } from "@lib/constants";
+import { hansard_routes, katalog_routes } from "@lib/routes";
 import { NextApiRequest, NextApiResponse } from "next";
 
 type RevalidateData = {
@@ -25,15 +24,15 @@ export default async function handler(
   }
 
   try {
-    const { route: _route }: { route: string } = req.body;
-    if (!_route) throw new Error("Route(s) missing");
+    const { route }: { route: string } = req.body;
+    if (!route) throw new Error("Route(s) missing");
 
-    const routes: string[] = _route.split(",");
+    const routes: string[] = route.split(",");
 
     await Promise.all(
       routes.map(async route =>
         validate(route)
-          .then(valid_route => rebuild(res, valid_route, routes))
+          .then(valid_route => rebuild(res, valid_route))
           .catch(e => {
             throw new Error(e);
           })
@@ -48,40 +47,33 @@ export default async function handler(
   }
 }
 
+function hasValidDate(dateString: string) {
+  const regEx = /[12]{1}\d{3}-[01]\d{1}-[0123]\d{1}/;
+  const match = dateString.match(regEx);
+  if (!match) return false;  // Invalid format
+  const d = new Date(match[0]);
+  const dNum = d.getTime();
+  if (!dNum && dNum !== 0) return false; // NaN value, Invalid date
+  return d.toISOString().slice(0, 10) === match[0];
+}
+
 // Checks if route exists. Routes only valid for static pages
 const validate = (route: string): Promise<string> =>
   new Promise((resolve, reject) => {
-    if (static_routes.includes(route)) resolve(route);
+    if (katalog_routes.includes(route)) resolve(route);
+    if (hansard_routes.some((h_route) =>
+      route.startsWith(h_route) && hasValidDate(route)
+    )) resolve(route);
     else reject(`Route does not exist or is not a static page. Route: ${route}`);
   });
 
 // Rebuilds the relevant page(s).
-const rebuild = async (res: NextApiResponse, route: string, routes: string[]) =>
+const rebuild = async (res: NextApiResponse, route: string) =>
   new Promise(async (resolve, reject) => {
-    switch (route) {
-      // For routes with dynamic /[state] pages
-
-        // await res.revalidate(route);
-        // const result = revalidateWithStates(res, route);
-        // routes.push.apply(routes, result);
-        // resolve(true);
-        // break;
-
-      // Simple route
-      default:
-        await res.revalidate(route).catch(e => reject(e));
-        resolve(true);
-        break;
-    }
+    await res.revalidate(route)
+      .then(() =>
+        res.revalidate(`/en-GB/${route}`)
+          .catch(e => reject(e)))
+      .catch(e => reject(e));
+    resolve(true);
   });
-
-const revalidateWithStates = (res: NextApiResponse, route: string, except?: string[]): string[] => {
-  let states = except ? STATES.filter(item => !except?.includes(item.key)) : STATES;
-  states.forEach(
-    async state =>
-      await res.revalidate(route.concat("/", state.key)).catch(e => {
-        throw new Error(e);
-      })
-  );
-  return states.map(({ key }) => route.concat("/", key));
-};
