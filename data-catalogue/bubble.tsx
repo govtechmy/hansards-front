@@ -16,6 +16,7 @@ export type SpeechBubbleProps = Omit<Speech, "timestamp" | "speech"> & {
   keyword?: string;
   hansard_id: string;
   date: string;
+  length: number;
 };
 
 const SpeechBubble = ({
@@ -27,6 +28,7 @@ const SpeechBubble = ({
   timeString,
   hansard_id,
   date,
+  length,
 }: SpeechBubbleProps) => {
   const [name, title] = author ? author.split("[") : [];
   const colour = useMemo<string>(() => {
@@ -51,30 +53,38 @@ const SpeechBubble = ({
       <div
         id={`${index}`}
         key={index}
-        className={cn("bubble", position === "left" ? "lt" : "rt")}
+        className={cn("speech", position === "left" ? "lt" : "rt")}
       >
-        {/* Speaker Picture */}
-        <div className="flex items-end">
-          <div className="usr"></div>
+        {/* Avatar */}
+        <div className={cn("avatar-wrapper", party === "ydp" && "ydp")}>
+          <div className="avatar"></div>
         </div>
         {/* Speech Bubble */}
-        <div>
-          <div className={cn("bub", party == "ydp" && "ydp")}>
-            <div className="flex flex-wrap text-sm">
-              <p className={cn("font-bold", colour)}>
+        <div
+          className={cn(
+            "bubble",
+            party == "ydp" && "ydp",
+            length <= 222 && "max-w-prose"
+          )}
+        >
+          {name || title ? (
+            <div className="speaker-wrapper">
+              <p className={cn("speaker", colour)}>
                 {name}
                 {title && (
-                  <span className="text-zinc-500 font-normal">
+                  <span className="text-zinc-500 dark:text-zinc-400 font-normal">
                     {"- " + title.slice(0, -1)}
                   </span>
                 )}
               </p>
             </div>
+          ) : (
+            <></>
+          )}
+          <div className="space-y-3">{children}</div>
 
-            {children}
-            <ShareButton date={date} hansard_id={hansard_id} index={index} />
-            <span className="ts">{timeString}</span>
-          </div>
+          <ShareButton date={date} hansard_id={hansard_id} index={index} />
+          <span className="ts">{timeString}</span>
         </div>
       </div>
     </>
