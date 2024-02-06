@@ -135,7 +135,6 @@ export type DCConfig = {
 export type MetaPage = Record<string, any> & {
   meta: {
     id: string;
-    type: "dashboard" | "data-catalogue" | "misc";
   };
 };
 
