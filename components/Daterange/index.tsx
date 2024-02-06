@@ -46,8 +46,12 @@ const Daterange = ({
   const DEFAULT = new Date();
   DEFAULT.setMonth(TODAY.getMonth() - (numberOfMonths === 2 ? 1 : 0));
 
-  const [fromValue, setFromValue] = useState<string>("");
-  const [toValue, setToValue] = useState<string>("");
+  const [fromValue, setFromValue] = useState<string>(
+    selected?.from ? selected.from.toISOString().split("T")[0] : ""
+  );
+  const [toValue, setToValue] = useState<string>(
+    selected?.to ? selected.to.toISOString().split("T")[0] : ""
+  );
   const [invalidFromValue, setInvalidFromValue] = useState<string>("");
   const [invalidToValue, setInvalidToValue] = useState<string>("");
 
@@ -123,17 +127,17 @@ const Daterange = ({
     <Popover className="relative">
       <Popover.Button
         className={cn(
-          "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-zinc-900 dark:text-white",
-          "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-white dark:bg-zinc-900",
-          "border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:dark:border-zinc-700 border outline-none",
+          "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-foreground",
+          "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-background",
+          "border-border hover:border-border-hover border",
           disabled &&
-            "disabled:bg-slate-200 dark:disabled:bg-zinc-800 disabled:border-slate-200 dark:disabled:border-zinc-800 disabled:text-slate-400 dark:disabled:text-zinc-700 disabled:pointer-events-none disabled:cursor-not-allowed",
+            "disabled:bg-border disabled:border-border disabled:text-border-hover disabled:pointer-events-none disabled:cursor-not-allowed",
           className
         )}
         disabled={disabled}
       >
-        <CalendarIcon className="text-zinc-900 dark:text-white h-4.5 w-4.5" />
-        <span className="text-zinc-900 dark:text-white">
+        <CalendarIcon className="text-foreground h-4.5 w-4.5" />
+        <span className="text-foreground">
           {label}
           {(selected || placeholder) && ":"}
         </span>
@@ -163,7 +167,7 @@ const Daterange = ({
       >
         <Popover.Panel
           className={cn(
-            "min-w-full max-h-100 shadow-floating absolute z-20 mt-1 rounded-md bg-white text-sm focus:outline-none dark:bg-zinc-900",
+            "min-w-full max-h-100 shadow-floating absolute z-20 mt-1 rounded-md bg-background text-sm focus:outline-none border border-border",
             anchor === "right"
               ? "right-0"
               : anchor === "left"
