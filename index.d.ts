@@ -10,14 +10,13 @@ declare namespace NodeJS {
     NEXT_PUBLIC_SEJARAH_URL: string;
     NEXT_PUBLIC_AUTHORIZATION_TOKEN: string;
 
-    NEXT_PUBLIC_TINYBIRD_URL: string;
-    NEXT_PUBLIC_TINYBIRD_AUTH: string;
-    NEXT_PUBLIC_GET_TOKEN: string;
-    NEXT_PUBLIC_POST_TOKEN: string;
-    NEXT_PUBLIC_GET_COUNTS: string;
-    NEXT_PUBLIC_POST_VIEW: string;
-    NEXT_PUBLIC_POST_SHARE: string;
-    NEXT_PUBLIC_POST_DL: string;
+    TINYBIRD_API: string;
+    GET_TOKEN: string;
+    POST_TOKEN: string;
+    GET_COUNTS: string;
+    POST_VIEW: string;
+    POST_SHARE: string;
+    POST_DL: string;
 
     REVALIDATE_TOKEN: string;
     AUTH_TOKEN: string;

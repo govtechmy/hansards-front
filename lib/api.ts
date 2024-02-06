@@ -16,7 +16,6 @@ const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
     api: process.env.NEXT_PUBLIC_API_URL,
     app: process.env.NEXT_PUBLIC_APP_URL,
     sejarah: process.env.NEXT_PUBLIC_SEJARAH_URL,
-    tinybird: process.env.NEXT_PUBLIC_TINYBIRD_URL,
   };
   const BROWSER_RUNTIME = typeof window === "object";
 
@@ -34,7 +33,7 @@ const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
  * Universal GET helper function.
  * @param {string} route Endpoint URL
  * @param {Record<string, string>} params Queries
- * @param {"api" | "app"} base api | local
+ * @param {"api" | "app"} base api | app
  * @returns {Promise<AxiosResponse>} Promised response
  */
 export const get = (
@@ -54,7 +53,7 @@ export const get = (
  * Universal POST helper function.
  * @param route Endpoint route
  * @param payload Body payload
- * @param {"api" | "app"} base api | local
+ * @param {"api" | "app"} base api | app
  * @param {Record<string, string>} headers Additional headers
  * @returns {Promise<AxiosResponse>} Promised response
  */
