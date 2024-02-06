@@ -40,9 +40,21 @@ const config: Config = {
         "outline": "#E2E8F0", // Slate 200
         "outlineHover": "#94A3B8", // Slate 400
         "outlineHover-dark": "#3F3F46", // Zinc 700
-        "background": "#F8FAFC", // Slate 50
-        "background-dark": "#121212",
         "purple": "#7C3AED", // Violet 600
+        "bg-hover": "hsl(var(--bg-hover))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        foreground: "hsl(var(--foreground))",
+        background: "hsl(var(--background))",
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: "hsl(var(--accent))",
+        border: {
+          DEFAULT: "hsl(var(--border))",
+          hover: "hsl(var(--border-hover))",
+        },
       },
       boxShadow: {
         button: "0 1px 2px rgba(0, 0, 0, 0.1)",
@@ -72,6 +84,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }
 export default config

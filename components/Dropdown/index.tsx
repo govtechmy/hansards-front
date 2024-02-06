@@ -68,7 +68,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   enableSearch,
   title,
   description,
-  anchor = "right",
+  anchor = "left",
   placeholder,
   width = "w-full lg:w-fit",
   label,
@@ -178,7 +178,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       {!multiple &&
         selected &&
         (selected as OptionType).value === option.value && (
-          <CheckCircleIcon className="text-primary dark:text-secondary h-4 w-4" />
+          <CheckCircleIcon className="text-primary dark:text-secondary h-4 w-4 disabled:" />
         )}
     </Listbox.Option>
   );
@@ -197,7 +197,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         <div className="relative text-sm">
           <Listbox.Button
             className={cn(
-              "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5",
+              "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 min-w-full",
               "text-start text-sm font-medium text-zinc-900 dark:text-white",
               "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-white dark:bg-zinc-900",
               "border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:dark:border-zinc-700 border outline-none",
@@ -213,8 +213,9 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
 
               {/* Sublabel */}
               {sublabel && (
-                <span className="text-zinc-500 block w-fit min-w-min truncate">
+                <span className="text-zinc-900 dark:text-white block w-fit min-w-min truncate">
                   {sublabel}
+                  {!multiple && selected && ":"}
                 </span>
               )}
 
@@ -240,7 +241,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               <span className="flex flex-grow truncate">
                 {multiple
                   ? title
-                  : (selected as OptionType)?.label || placeholder || "Select"}
+                  : (selected as OptionType)?.label || placeholder}
               </span>
               {/* Label (multiple) */}
               {multiple && (selected as OptionType[])?.length > 0 && (
@@ -250,7 +251,13 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               )}
 
               {/* ChevronDown Icon */}
-              <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
+              <ChevronDownIcon
+                className={cn(
+                  "-mx-[5px] h-5 w-5 shrink-0",
+                  sublabel ? "text-zinc-900 dark:text-white" : "text-inherit",
+                  disabled && "text-slate-400"
+                )}
+              />
             </>
           </Listbox.Button>
           <Transition

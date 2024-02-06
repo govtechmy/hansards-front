@@ -47,14 +47,14 @@ const KehadiranLayout = ({ children }: KehadiranLayoutProps) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-slate-200 bg-white dark:border-b-zinc-800 dark:bg-zinc-900 justify-start min-[350px]:justify-center lg:static">
+      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-border bg-background justify-start min-[350px]:justify-center lg:static">
         <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
           {TAB_OPTIONS.map((tab) => (
             <div key={tab.value} className="snap-start">
               <At
                 href={tab.value}
                 scrollTop={false}
-                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center outline-none"
+                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center"
               >
                 <div
                   className={cn(

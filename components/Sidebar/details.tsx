@@ -24,7 +24,7 @@ export const Details = ({
   }, [openState]);
   return (
     <details
-      className="bg-white dark:bg-neutral-900"
+      className="bg-background"
       {...props}
       open={delayedOpenState}
       {...(openState && { "data-expanded": true })}

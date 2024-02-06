@@ -1,25 +1,20 @@
 import Button from "@components/Button";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn } from "@lib/helpers";
 
 interface MobileButtonProps {
-  mobileSidebar: boolean;
   onClick: () => void;
 }
 
-const MobileButton = ({ mobileSidebar, onClick }: MobileButtonProps) => {
+const MobileButton = ({ onClick }: MobileButtonProps) => {
   const { t } = useTranslation("hansard");
 
   return (
     <Button
-      variant="default"
+      variant="outline"
       key="key"
-      className={cn(
-        "shadow-floating sticky top-32 left-3 lg:hidden z-50 w-fit",
-        mobileSidebar && "hidden"
-      )}
-      title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
+      className="shadow-floating sticky top-32 left-3 lg:hidden z-20 w-fit"
+      title={t("show_sidebar")}
       onClick={onClick}
     >
       {t("toc")}

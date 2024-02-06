@@ -204,10 +204,12 @@ export const SearchProvider = (props: SearchProviderProps) => {
     if (store.matchedList.length > 0) {
       dispatch({
         type: IActionTypes.setActiveMatch,
-        payload: {
-          activeId: store.matchedList[0].id,
-          activeCount: 1,
-        },
+        payload: { activeId: store.matchedList[0].id, activeCount: 1 },
+      });
+    } else {
+      dispatch({
+        type: IActionTypes.setActiveMatch,
+        payload: { activeId: "", activeCount: 0 },
       });
     }
   }, [store.matchedList]);

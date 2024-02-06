@@ -131,32 +131,18 @@ export type DCConfig = {
   exclude_openapi: boolean;
 };
 
-/*************************** MIXPANEL ***************************** */
-
-export type EventType =
-  | "image_download"
-  | "file_download"
-  | "page_view"
-  | "change_language"
-  | "select_dropdown"
-  | "code_copy";
-
-export type MixpanelBase = {
-  project_id: string | number;
-  event: EventType;
-};
-
 /**************************MISCELLANEOUS ******************************/
 export type MetaPage = Record<string, any> & {
   meta: {
     id: string;
-    type: "dashboard" | "data-catalogue" | "misc";
   };
 };
 
 export type WithData<T> = { data_as_of: string; data: T };
 
 /* Hansard */
+export type Dewan = "dewan-rakyat" | "dewan-negara" | "kamar-khas";
+
 export type Period = {
   start_date: string;
   end_date: string;

@@ -11,6 +11,15 @@ import { generateSchema } from "@lib/schema/election";
 import { OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo } from "react";
+import {
+  BaseResult,
+  Individu,
+  IndividuResult,
+} from "./types";
+import FullResults, { Result } from "./full-results";
+import { useCache } from "@hooks/useCache";
+import { Toast, toast } from "@components/index";
+import { get } from "@lib/api";
 
 /**
  * Sejarah Individu Dashboard
@@ -30,13 +39,6 @@ const Table = dynamic(() => import("@charts/table"), {
   ssr: false,
 });
 
-type Individu = {
-  seat: string;
-  election_name: string;
-  date: string;
-  party: string;
-};
-
 interface SejarahIndividuProps {
   dropdown: Array<string>;
   params: { name: string };
@@ -49,6 +51,7 @@ const SejarahIndividu = ({
   parlimen,
 }: SejarahIndividuProps) => {
   const { t } = useTranslation("sejarah");
+  const { cache } = useCache();
 
   const INDIVIDU_OPTIONS: Array<OptionType> = dropdown.map((key: string) => {
     return { label: key, value: slugify(key) };
@@ -63,6 +66,7 @@ const SejarahIndividu = ({
 
   const { data, setData } = useData({
     individu_option: INDIVIDU_OPTION,
+    parlimen: parlimen,
     loading: false,
   });
 
@@ -75,7 +79,7 @@ const SejarahIndividu = ({
       key: "election_name",
       id: "election_name",
       header: t("election"),
-      cell: ({ getValue }) => <PartyFlag party={getValue()}></PartyFlag>,
+      cell: ({ getValue }) => <PartyFlag party={getValue()} />,
     },
     { key: "seat", id: "seat", header: t("seat") },
     {
@@ -83,7 +87,94 @@ const SejarahIndividu = ({
       id: "party",
       header: t("party", { ns: "common" }),
     },
+    { key: "votes", id: "votes", header: t("votes_won") },
+    { key: "result", id: "result", header: t("result") },
+    {
+      key: (item) => item,
+      id: "full_result",
+      header: "",
+      cell: ({ row }) => (
+        <FullResults
+          options={parlimen.dewan_rakyat}
+          currentIndex={row.index}
+          onChange={(option: Individu) =>
+            fetchFullResult(option.election_name, option.seat)
+          }
+          columns={generateSchema<BaseResult>([
+            {
+              key: "name",
+              id: "name",
+              header: t("name"),
+            },
+            {
+              key: "party",
+              id: "party",
+              header: t("party", { ns: "common" }),
+            },
+            {
+              key: "votes",
+              id: "votes",
+              header: t("votes_won"),
+            },
+          ])}
+          highlighted={data.individu_option ? data.individu_option.value : ""}
+        />
+      ),
+    },
   ]);
+
+  const fetchFullResult = async (
+    election: string,
+    seat: string
+  ): Promise<Result<BaseResult[]>> => {
+    const identifier = `${election}_${seat}`;
+    return new Promise((resolve) => {
+      if (cache.has(identifier)) return resolve(cache.get(identifier));
+      get(
+        "/explorer",
+        {
+          explorer: "ELECTIONS",
+          chart: "full_result",
+          type: "candidates",
+          election,
+          seat,
+        },
+        "sejarah"
+      )
+        .then(({ data }: { data: { data: IndividuResult } }) => {
+          const data2 = data.data;
+          const result: Result<BaseResult[]> = {
+            data: data2.data.sort((a, b) => b.votes.abs - a.votes.abs),
+            votes: [
+              {
+                x: "majority",
+                abs: data2.votes.majority,
+                perc: data2.votes.majority_perc,
+              },
+              {
+                x: "voter_turnout",
+                abs: data2.votes.voter_turnout,
+                perc: data2.votes.voter_turnout_perc,
+              },
+              {
+                x: "rejected_votes",
+                abs: data2.votes.votes_rejected,
+                perc: data2.votes.votes_rejected_perc,
+              },
+            ],
+          };
+          cache.set(identifier, result);
+          resolve(result);
+        })
+        .catch((e) => {
+          toast.error(
+            t("toast.request_failure", { ns: "common" }),
+            t("toast.try_again", { ns: "common" })
+          );
+          console.error(e);
+        });
+    });
+  };
 
   useEffect(() => {
     setData("loading", false);
@@ -91,10 +182,11 @@ const SejarahIndividu = ({
 
   return (
     <Container>
+      <Toast />
       <Section>
         <div className="xl:grid xl:grid-cols-12">
           <div className="xl:col-span-10 xl:col-start-2">
-            <h4 className="text-center">{t("individu.header")}</h4>
+            <h2 className="header text-center">{t("individu.header")}</h2>
             <div className="mx-auto w-full py-6 sm:w-[500px]">
               <ComboBox
                 placeholder={t("cari_individu")}
@@ -118,10 +210,10 @@ const SejarahIndividu = ({
 
             <Tabs
               title={
-                <h5 className="py-6">
+                <h3 className="title py-6">
                   {t("individu.title")}
                   <span className="text-primary">{INDIVIDU_OPTION?.label}</span>
-                </h5>
+                </h3>
               }
               current={data.tab_idx}
               onChange={(index) => setData("tab_idx", index)}
@@ -185,10 +277,6 @@ const SejarahIndividu = ({
                 )}
               </Panel>
             </Tabs>
-
-            <p className="text-zinc-500 text-center pt-8 lg:pt-12">
-              {t("individu.disclaimer")}
-            </p>
           </div>
         </div>
       </Section>

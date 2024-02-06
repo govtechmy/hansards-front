@@ -1,11 +1,10 @@
 import { Container, Sidebar } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn, toDate } from "@lib/helpers";
+import { cn } from "@lib/helpers";
 import { Archive } from "@lib/types";
-import { FunctionComponent, useEffect, useRef } from "react";
-import CatalogueFolder from "./folder";
+import { Fragment, useEffect, useMemo, useRef } from "react";
+import CatalogueFolder, { FolderOpen } from "./folder";
 import { ParsedUrlQuery } from "querystring";
-import { WindowProvider } from "@lib/contexts/window";
 
 /**
  * Catalogue Index
@@ -14,15 +13,13 @@ import { WindowProvider } from "@lib/contexts/window";
 
 interface CatalogueIndexProps {
   archive: Archive;
-  params?: ParsedUrlQuery;
+  params: ParsedUrlQuery;
 }
 
-const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
-  archive,
-  params,
-}) => {
-  const { t, i18n } = useTranslation(["catalogue", "common", "enum"]);
+const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
+  const { t } = useTranslation(["catalogue", "common", "enum"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
+  const folderRef = useRef<Record<string, FolderOpen | null>>({});
 
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
@@ -38,9 +35,48 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
     }
   };
 
+  const data = useMemo(
+    () =>
+      Object.keys(archive)
+        .reverse()
+        .map((p) => {
+          const { start_date, end_date, ...sessions } = archive[p];
+          const start = start_date.substring(0, 4);
+          const end = end_date.substring(0, 4);
+          const yearRange =
+            start === end ? ` (${start})` : ` (${start} - ${end})`;
+
+          return {
+            id: p,
+            yearRange,
+            penggal: Object.keys(sessions)
+              .reverse()
+              .map((s) => {
+                const { start_date, end_date, ...mesyuarat } = sessions[s];
+
+                const start = start_date.substring(0, 4);
+                const end = end_date.substring(0, 4);
+                const yearRange =
+                  start === end ? ` (${start})` : ` (${start} - ${end})`;
+
+                return {
+                  id: s,
+                  yearRange,
+                  mesyuarat,
+                };
+              }),
+          };
+        }),
+    []
+  );
+
   useEffect(() => {
     if (params && params.archive) {
       const [parlimen, penggal, mesyuarat] = params.archive;
+      const url = `${parlimen}/${penggal}/${mesyuarat}`;
+      if (mesyuarat && folderRef.current) {
+        folderRef.current[url]?.open(url);
+      }
       if (penggal) {
         scrollToPenggal(`${parlimen}/${penggal}`);
       } else {
@@ -51,9 +87,9 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
 
   return (
     <>
-      <Container className="min-h-screen">
+      <Container>
         <Sidebar
-          data={archive}
+          data={data}
           onClick={(selected) => {
             scrollRef.current[selected]?.scrollIntoView({
               behavior: "smooth",
@@ -61,97 +97,75 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
             });
           }}
         >
-          <div className="flex flex-col pl-6 sm:pl-8 pt-3 pb-6 lg:pb-8 gap-y-[42px] w-full">
-            <>
-              {PARLIMENS ? (
-                PARLIMENS.map((num) => {
-                  const { start_date, end_date, ...sessions } = archive[num];
-                  const SESSIONS = Object.keys(sessions).reverse();
-                  const start = start_date.substring(0, 4);
-                  const end = end_date.substring(0, 4);
-                  const yearRange =
-                    start === end ? ` (${start})` : ` (${start} - ${end})`;
-                  const parlimen = `parlimen-${num}`;
-                  return (
-                    <section key={num}>
-                      <div
-                        className="sticky top-[113px] z-10 py-3 bg-white dark:bg-zinc-900 flex gap-3 items-center"
-                        ref={(ref) => (scrollRef.current[parlimen] = ref)}
-                      >
-                        <h4 className="flex flex-wrap sm:whitespace-nowrap">
-                          {t("parlimen_full", {
-                            ns: "enum",
-                            n: num,
-                          }).concat(yearRange)}
-                        </h4>
-                        <span className={classNames.hr}></span>
-                      </div>
-                      <div className="flex flex-col gap-y-8 pt-3">
-                        {SESSIONS.map((session) => {
-                          const { start_date, end_date, ...meetings } =
-                            sessions[session];
+          <div className="flex flex-col px-4.5 sm:px-8 pt-3 pb-6 lg:pb-8 w-full h-full">
+            {data ? (
+              PARLIMENS.map((_, index) => {
+                const { id, penggal, yearRange } = data[index];
+                const parlimen_id = `parlimen-${id}/`;
 
+                return (
+                  <Fragment key={id}>
+                    <div className="flex flex-col">
+                      <div
+                        className="py-3 bg-background flex gap-3 items-center sticky top-28 z-10"
+                        ref={(ref) => (scrollRef.current[parlimen_id] = ref)}
+                      >
+                        <h2 className="header flex flex-wrap w-fit sm:whitespace-nowrap">
+                          {t("parlimen", {
+                            ns: "enum",
+                            count: id,
+                            ordinal: true,
+                          })}
+                          {yearRange}
+                        </h2>
+                        <span className={classNames.hr} />
+                      </div>
+
+                      <div className="space-y-8 pt-3 pb-[42px]">
+                        {penggal.map(({ id, mesyuarat, yearRange }) => {
+                          const meetings = mesyuarat;
                           const MEETINGS = Object.keys(meetings).sort(
                             (a, b) =>
                               Date.parse(meetings[a].end_date) -
                               Date.parse(meetings[b].end_date)
                           );
-                          const start = start_date.substring(0, 4);
-                          const end = end_date.substring(0, 4);
-                          const yearRange =
-                            start === end
-                              ? ` (${start})`
-                              : ` (${start} - ${end})`;
-                          const parlimen_penggal = `${parlimen}/penggal-${session}`;
+                          const penggal_id = `penggal-${id}`;
                           return (
-                            <div
-                              key={session}
-                              className="flex flex-col gap-y-6"
-                            >
-                              <div className="flex gap-3 items-center">
-                                <h5 className="flex flex-wrap sm:whitespace-nowrap">
-                                  {t("penggal_full", {
-                                    ns: "enum",
-                                    n: session,
-                                  }).concat(yearRange)}
-                                </h5>
-                                <span
-                                  className={cn(classNames.hr, "border-dashed")}
-                                ></span>
-                              </div>
+                            <div key={id} className="relative">
+                              <span
+                                className={cn(
+                                  classNames.hr,
+                                  "absolute top-3.5 left-0 -z-10 border-dashed"
+                                )}
+                              />
+                              <h3 className="title flex flex-wrap w-fit sm:whitespace-nowrap bg-background pr-3">
+                                {t("penggal_full", {
+                                  ns: "enum",
+                                  n: id,
+                                })}
+                                {yearRange}
+                              </h3>
+
                               <div
-                                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-[54px] py-6"
+                                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-[54px] pt-12 pb-6"
                                 ref={(ref) =>
-                                  (scrollRef.current[parlimen_penggal] = ref)
+                                  (scrollRef.current[
+                                    `${parlimen_id}${penggal_id}`
+                                  ] = ref)
                                 }
                               >
-                                {MEETINGS.map((meeting) => {
-                                  const { start_date, end_date, sitting_list } =
-                                    meetings[meeting];
-
-                                  function getShortDate(date: string) {
-                                    return toDate(
-                                      date,
-                                      "dd MMM",
-                                      i18n.language
-                                    );
-                                  }
-                                  const start = getShortDate(start_date);
-                                  const end = getShortDate(end_date);
-                                  const dateRange =
-                                    start === end
-                                      ? `${start}`
-                                      : `${start} - ${end}`;
-
+                                {MEETINGS.map((id) => {
                                   return (
-                                    <WindowProvider>
-                                      <CatalogueFolder
-                                        key={meeting}
-                                        dateRange={dateRange}
-                                        meeting={meeting}
-                                        sitting_list={sitting_list}
-                                      />
-                                    </WindowProvider>
+                                    <CatalogueFolder
+                                      ref={(ref) =>
+                                        (folderRef.current[
+                                          `${parlimen_id}${penggal_id}/mesyuarat-${id}`
+                                        ] = ref)
+                                      }
+                                      key={id}
+                                      meeting={meetings[id]}
+                                      meeting_id={id}
+                                    />
                                   );
                                 })}
                               </div>
@@ -159,15 +173,15 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
                           );
                         })}
                       </div>
-                    </section>
-                  );
-                })
-              ) : (
-                <p className="text-zinc-500 p-2 pt-16 lg:p-8">
-                  {t("no_entries", { ns: "common" })}.
-                </p>
-              )}
-            </>
+                    </div>
+                  </Fragment>
+                );
+              })
+            ) : (
+              <p className="text-zinc-500 p-2 pt-16 lg:p-8">
+                {t("no_entries", { ns: "common" })}.
+              </p>
+            )}
           </div>
         </Sidebar>
       </Container>

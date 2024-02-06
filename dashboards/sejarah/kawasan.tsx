@@ -1,12 +1,18 @@
+import Container from "@components/Container";
 import Skeleton from "@components/Skeleton";
+import { toast } from "@components/Toast";
+import { useCache } from "@hooks/useCache";
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
+import { get } from "@lib/api";
 import { slugify } from "@lib/helpers";
 import { generateSchema } from "@lib/schema/election";
 import { OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo } from "react";
+import FullResults, { Result } from "./full-results";
+import { BaseResult, Kawasan, KawasanResult } from "./types";
 
 /**
  * Sejarah Kawasan Dashboard
@@ -21,14 +27,6 @@ const KawasanTable = dynamic(() => import("./table"), {
   ssr: false,
 });
 
-type Kawasan = {
-  seat: string;
-  election_name: string;
-  date: string;
-  party: string;
-  name: string;
-};
-
 interface SejarahKawasanProps {
   dropdown: Array<{ seat_name: string; type: string }>;
   kawasan: Kawasan[];
@@ -37,6 +35,7 @@ interface SejarahKawasanProps {
 
 const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
   const { t } = useTranslation("sejarah");
+  const { cache } = useCache();
 
   const KAWASAN_OPTIONS: Array<OptionType> = dropdown
     .filter((e) => e.type !== "dun")
@@ -75,17 +74,100 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
       header: t("party", { ns: "common" }),
     },
     { key: "name", id: "name", header: t("name") },
+    { key: "majority", id: "majority", header: t("majority") },
+    {
+      key: (item) => item,
+      id: "full_result",
+      header: "",
+      cell: ({ row, getValue }) => {
+        return (
+          <FullResults
+            options={kawasan}
+            currentIndex={row.index}
+            onChange={(option: Kawasan) =>
+              fetchFullResult(option.election_name, option.seat)
+            }
+            columns={generateSchema<BaseResult>([
+              { key: "name", id: "name", header: t("name") },
+              {
+                key: "party",
+                id: "party",
+                header: t("party", { ns: "common" }),
+              },
+              {
+                key: "votes",
+                id: "votes",
+                header: t("votes_won"),
+              },
+            ])}
+          />
+        );
+      },
+    },
   ]);
+
+  const fetchFullResult = async (
+    election: string,
+    seat: string
+  ): Promise<Result<BaseResult[]>> => {
+    const identifier = `${election}_${seat}`;
+    return new Promise((resolve) => {
+      if (cache.has(identifier)) return resolve(cache.get(identifier));
+      get(
+        "/explorer",
+        {
+          explorer: "ELECTIONS",
+          chart: "full_result",
+          type: "candidates",
+          election,
+          seat,
+        },
+        "sejarah"
+      )
+        .then(({ data }: { data: { data: KawasanResult } }) => {
+          const data2 = data.data;
+          const result: Result<BaseResult[]> = {
+            data: data2.data.sort((a, b) => b.votes.abs - a.votes.abs),
+            votes: [
+              {
+                x: "majority",
+                abs: data2.votes.majority,
+                perc: data2.votes.majority_perc,
+              },
+              {
+                x: "voter_turnout",
+                abs: data2.votes.voter_turnout,
+                perc: data2.votes.voter_turnout_perc,
+              },
+              {
+                x: "rejected_votes",
+                abs: data2.votes.votes_rejected,
+                perc: data2.votes.votes_rejected_perc,
+              },
+            ],
+          };
+          cache.set(identifier, result);
+          resolve(result);
+        })
+        .catch((e) => {
+          toast.error(
+            t("toast.request_failure", { ns: "common" }),
+            t("toast.try_again", { ns: "common" })
+          );
+          console.error(e);
+        });
+    });
+  };
 
   useEffect(() => {
     setData("loading", false);
   }, [params]);
 
   return (
-    <div className="flex h-full w-full justify-center">
-      <div className="flex flex-col h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+    <>
+      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
         <div className="xl:col-span-10 xl:col-start-2">
-          <h4 className="text-center">{t("kawasan.header")}</h4>
+          <h2 className="header text-center">{t("kawasan.header")}</h2>
           <div className="mx-auto w-full py-6 sm:w-[500px]">
             <ComboBox
               placeholder={t("cari_kawasan")}
@@ -107,23 +189,19 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
             />
           </div>
 
-          <h5 className="py-6">
+          <h3 className="title py-6">
             {t("kawasan.title")}
             <span className="text-primary">{KAWASAN_OPTION?.label}</span>
-          </h5>
+          </h3>
 
           <KawasanTable
             data={kawasan}
             columns={kawasan_schema}
             isLoading={data.loading}
           />
-
-          <p className="text-zinc-500 text-center pt-8 lg:pt-12">
-            {t("kawasan.disclaimer")}
-          </p>
         </div>
-      </div>
-    </div>
+      </Container>
+    </>
   );
 };
 

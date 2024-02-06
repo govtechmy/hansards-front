@@ -1,5 +1,5 @@
-import BarPerc from "@charts/bar-perc";
 import {
+  Container,
   Dropdown,
   List,
   Panel,
@@ -16,13 +16,16 @@ import { generateSchema } from "@lib/schema/election";
 import { Archive, OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
+import { Individu, Parti } from "./types";
 
 /**
  * Sejarah Parlimen Dashboard
  * @overview Status: In-development
  */
 
-const skeleton = () => <Skeleton height="h-[400px] lg:h-[500px]" width="w-auto" />;
+const skeleton = () => (
+  <Skeleton height="h-[400px] lg:h-[500px]" width="w-auto" />
+);
 const ParlimenTable = dynamic(() => import("./table"), {
   loading: skeleton,
   ssr: false,
@@ -32,36 +35,11 @@ const Table = dynamic(() => import("@charts/table"), {
   ssr: false,
 });
 
-type Party = {
-  seats: {
-    total: number;
-    perc: number;
-    won: number;
-  };
-  votes: {
-    abs: number;
-    perc: number;
-  };
-  party: string;
-  seats_won: number;
-  seats_pct: number;
-  votes_pct: number;
-  total_seats: number;
-};
-
-type Individu = {
-  date: string;
-  election_name: string;
-  name: string;
-  party: string;
-  seat: string;
-};
-
 interface SejarahParlimenProps {
   dropdown: Archive;
   params: { election: string; state: string };
   dr_individu: Individu[];
-  dr_party: Party[];
+  dr_party: Parti[];
 }
 
 const SejarahParlimen = ({
@@ -78,21 +56,6 @@ const SejarahParlimen = ({
     tab_idx: 0,
     loading: false,
   });
-
-  const sejarahPerc = (value: Party) => (
-    <div className="flex items-center gap-2 md:flex-col md:items-start lg:flex-row lg:items-center">
-      <div>
-        <BarPerc hidden value={value.total_seats} />
-      </div>
-      {/* <p className="whitespace-nowrap">{`${value.total_attended} / ${
-        value.total_seats
-      } ${
-        value.attendance_pct !== null
-          ? ` (${numFormat(value.attendance_pct, "compact", 1)}%)`
-          : " (—)"
-      }`}</p> */}
-    </div>
-  );
 
   const { setFilter } = useFilter({
     ke: params.election,
@@ -112,42 +75,6 @@ const SejarahParlimen = ({
       };
     });
 
-  const individu_schema = generateSchema<Individu>([
-    { key: "seat", id: "seat", header: t("seat") },
-    {
-      key: "party",
-      id: "party",
-      header: t("party", { ns: "common" }),
-    },
-    { key: "name", id: "name", header: t("name") },
-  ]);
-
-  const party_schema = generateSchema<Party>([
-    {
-      key: "party",
-      id: "party",
-      header: t("party", { ns: "common" }),
-    },
-    {
-      key: "seats_won",
-      id: "seats_won",
-      header: t("seats_won"),
-      cell: ({ row }) => sejarahPerc(row.original),
-    },
-    {
-      key: "seats_pct",
-      id: "%_seats",
-      header: t("%_seats"),
-      cell: ({ row }) => sejarahPerc(row.original),
-    },
-    {
-      key: "votes_pct",
-      id: "%_votes",
-      header: t("%_votes"),
-      cell: ({ row }) => sejarahPerc(row.original),
-    },
-  ]);
-
   useEffect(() => {
     setData("parlimen", params.election ?? "15");
     setData("state", params.state ?? "mys");
@@ -155,26 +82,12 @@ const SejarahParlimen = ({
   }, [params]);
 
   return (
-    <div className="flex h-full w-full justify-center">
-      <div className="flex flex-col h-full w-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+    <>
+      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
         <div className="xl:col-span-10 xl:col-start-2">
-          <h4 className="text-center pb-6">{t("parlimen.header")}</h4>
+          <h2 className="header text-center pb-6">{t("parlimen.header")}</h2>
 
           <div className="pb-6 lg:pb-8 items-center gap-2 flex flex-col sm:flex-row mx-auto w-fit">
-            <Dropdown
-              anchor="left"
-              placeholder={t("pilih_parlimen")}
-              options={PARLIMEN_OPTIONS}
-              selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
-              onChange={(selected) => {
-                setData("loading", true);
-                setData("parlimen", selected.value);
-                if (data.state) {
-                  setFilter("ke", selected.value);
-                  setFilter("negeri", data.state);
-                }
-              }}
-            />
             <StateDropdown
               currentState={data.state}
               onChange={(selected) => {
@@ -188,20 +101,31 @@ const SejarahParlimen = ({
               anchor="left"
               width="w-full"
             />
+            <Dropdown
+              placeholder={t("pilih_parlimen")}
+              options={PARLIMEN_OPTIONS}
+              selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
+              onChange={(selected) => {
+                setData("loading", true);
+                setData("parlimen", selected.value);
+                if (data.state) {
+                  setFilter("ke", selected.value);
+                  setFilter("negeri", data.state);
+                }
+              }}
+            />
           </div>
 
           <div className="flex flex-col lg:flex-row justify-between">
-            <h5 className="pt-6 pb-3">
-              <span>
-                {
-                  PARLIMEN_OPTIONS.find(
-                    (e) => e.value === (params.election ?? "15")
-                  )?.label
-                }
-                {": "}
-              </span>
+            <h3 className="title py-6">
               {CountryAndStates[params.state ?? "mys"]}
-            </h5>
+              {": "}
+              {
+                PARLIMEN_OPTIONS.find(
+                  (e) => e.value === (params.election ?? "15")
+                )?.label
+              }
+            </h3>
 
             <List
               options={[
@@ -217,7 +141,7 @@ const SejarahParlimen = ({
               onChange={(index) => setData("tab_idx", index)}
             />
           </div>
-          <Tabs hidden current={data.tab_idx} className="pt-6">
+          <Tabs hidden current={data.tab_idx} >
             <Panel
               name={t("dewan_rakyat", { ns: "common" }).concat(
                 ` (${t("party", { ns: "common" })})`
@@ -228,7 +152,7 @@ const SejarahParlimen = ({
               ) : (
                 <ParlimenTable
                   data={dr_party.filter((e) => e.seats.won > 0)}
-                  columns={generateSchema<Party>([
+                  columns={generateSchema<Parti>([
                     {
                       key: "party",
                       id: "party",
@@ -321,8 +245,8 @@ const SejarahParlimen = ({
             </Panel>
           </Tabs>
         </div>
-      </div>
-    </div>
+      </Container>
+    </>
   );
 };
 

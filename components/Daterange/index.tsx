@@ -1,203 +1,233 @@
-import { CSSProperties, FunctionComponent, useRef } from "react";
+import Calendar from "@components/Calendar";
 import { Transition, Popover } from "@headlessui/react";
-import { CheckCircleIcon, ChevronDownIcon, ClockIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import { useTranslation } from "next-i18next";
+import { ArrowRightIcon, CalendarIcon } from "@heroicons/react/20/solid";
 import { cn } from "@lib/helpers";
-import { FixedSizeList as List } from "react-window";
-import Button from "@components/Button";
+import {
+  format,
+  isAfter,
+  isBefore,
+  isValid,
+  parse,
+  subSeconds,
+} from "date-fns";
+import { enGB, ms } from "date-fns/locale";
+import { useTranslation } from "next-i18next";
+import { ChangeEventHandler, Dispatch, SetStateAction, useState } from "react";
+import {
+  type DayPickerRangeProps,
+  type DateRange,
+  SelectRangeEventHandler,
+} from "react-day-picker";
 
-interface DaterangeProps {
-  className?: string;
+interface DateRangeProps extends Omit<DayPickerRangeProps, "mode"> {
   disabled?: boolean;
-  startYear: number;
-  endYear: number;
-  selectedStart?: string;
-  selectedEnd?: string;
   anchor?: "left" | "right" | string;
-  onChange: (selected: [string?, string?]) => void;
-  onReset?: () => void;
+  placeholder?: string;
+  label?: string;
+  numberOfMonths?: number;
+  setSelected: Dispatch<SetStateAction<DateRange | undefined>>;
 }
 
-const YearRange: FunctionComponent<DaterangeProps> = ({
+const Daterange = ({
   className,
   disabled,
-  startYear,
-  endYear,
-  selectedStart,
-  selectedEnd,
-  onChange,
-  onReset,
-  anchor = "right",
-}) => {
-  const { t } = useTranslation(["catalogue", "common"]);
-  const startRef = useRef<List>(null);
-  const endRef = useRef<List>(null);
+  anchor = "left",
+  placeholder,
+  label,
+  numberOfMonths = 2,
+  selected,
+  setSelected,
+}: DateRangeProps) => {
+  const { t, i18n } = useTranslation("home");
 
-  const YEAR_OPTIONS: Array<string> = Array(endYear - startYear + 1)
-    .fill(startYear)
-    .map((year, index) => `${year + index}`);
+  const PARLIMEN_START_DATE = new Date("1959-08-11T00:00:00");
 
-  const DateOption = ({
-    type,
-    year,
-    index,
-    selectedStart,
-    selectedEnd,
-    style,
-  }: {
-    type: "begin" | "end";
-    year: string;
-    index: number;
-    selectedStart?: string;
-    selectedEnd?: string;
-    style: CSSProperties;
-  }) => (
-    <li
-      key={`${type}_${index}`}
-      style={style}
-      className={cn(
-        "flex select-none items-center justify-between px-4 py-1.5",
-        (type === "begin" && year === selectedStart) || (type === "end" && year === selectedEnd)
-          ? "bg-slate-100 dark:bg-zinc-800"
-          : "bg-inherit",
-        isDisabled(type, year, type === "begin" ? selectedEnd : selectedStart)
-          ? "text-slate-200 dark:text-zinc-700 cursor-not-allowed hover:bg-white dark:hover:bg-zinc-900"
-          : "hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer text-zinc-900 dark:text-white"
-      )}
-      onClick={() => {
-        if (!isDisabled(type, year, type === "begin" ? selectedEnd : selectedStart)) {
-          onChange(type === "begin" ? [year, selectedEnd] : [selectedStart, year]);
-        }
-      }}
-    >
-      {year}
-      {((type === "begin" && year === selectedStart) ||
-        (type === "end" && year === selectedEnd)) && (
-        <CheckCircleIcon className="text-primary dark:text-secondary h-4 w-4" />
-      )}
-    </li>
+  const TODAY = new Date();
+  const DEFAULT = new Date();
+  DEFAULT.setMonth(TODAY.getMonth() - (numberOfMonths === 2 ? 1 : 0));
+
+  const [fromValue, setFromValue] = useState<string>(
+    selected?.from ? selected.from.toISOString().split("T")[0] : ""
   );
+  const [toValue, setToValue] = useState<string>(
+    selected?.to ? selected.to.toISOString().split("T")[0] : ""
+  );
+  const [invalidFromValue, setInvalidFromValue] = useState<string>("");
+  const [invalidToValue, setInvalidToValue] = useState<string>("");
 
-  const isDisabled = (type: "begin" | "end", value: string, selected?: string) => {
-    if (!selected) return false;
-    if (type === "begin") return +value > +selected;
-    return +value < +selected;
+  const handleFromChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setFromValue(e.target.value);
+    const date = parse(e.target.value, "yyyy-MM-dd", TODAY);
+
+    // if year below 1000
+    if (e.target.value.startsWith("0")) setInvalidFromValue("");
+    else if (
+      isValid(date) &&
+      isAfter(date, subSeconds(PARLIMEN_START_DATE, 1)) &&
+      isBefore(date, TODAY)
+    ) {
+      setSelected({ from: date, to: selected?.to });
+      setInvalidFromValue("");
+    } else {
+      setSelected({ from: undefined, to: undefined });
+      setInvalidFromValue(() => {
+        if (isBefore(date, PARLIMEN_START_DATE)) return t("choose_later_date");
+        else if (isAfter(date, TODAY)) return t("today_or_earlier");
+        else return t("invalid_date");
+      });
+    }
+  };
+
+  const handleToChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setToValue(e.target.value);
+    const date = parse(e.target.value, "yyyy-MM-dd", TODAY);
+    const fromDate = subSeconds(
+      selected?.from ? selected.from : PARLIMEN_START_DATE,
+      1
+    );
+
+    // if year below 1000
+    if (e.target.value.startsWith("0")) setInvalidToValue("");
+    else if (
+      isValid(date) &&
+      isAfter(date, fromDate) &&
+      isBefore(date, TODAY)
+    ) {
+      setSelected({ from: selected?.from, to: date });
+      setInvalidToValue("");
+    } else {
+      setSelected({ from: selected?.from, to: undefined });
+      setInvalidToValue(() => {
+        if (isBefore(date, fromDate)) return t("choose_later_date");
+        else if (isAfter(date, TODAY)) return t("today_or_earlier");
+        else return t("invalid_date");
+      });
+    }
+  };
+
+  const handleRangeSelect: SelectRangeEventHandler = (
+    range: DateRange | undefined
+  ) => {
+    setSelected(range);
+    if (range?.from) {
+      const from_date = format(range.from, "yyyy-MM-dd");
+      setFromValue(from_date);
+    } else {
+      setFromValue("");
+    }
+    if (range?.to) {
+      const to_date = format(range.to, "yyyy-MM-dd");
+      setToValue(to_date);
+    } else {
+      setToValue("");
+    }
   };
 
   return (
     <Popover className="relative">
-      {({ open }) => {
-        if (open && selectedStart && selectedEnd && startRef.current && endRef.current) {
-          startRef.current.scrollToItem(
-            YEAR_OPTIONS.findIndex(e => e === selectedStart),
-            "smart"
-          );
-          endRef.current.scrollToItem(
-            YEAR_OPTIONS.findIndex(e => e === selectedEnd),
-            "smart"
-          );
-        }
-        return (
-          <>
-            <Popover.Button
-              className={cn(
-                "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-zinc-900 dark:text-white",
-                "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-white dark:bg-zinc-900",
-                "border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:dark:border-zinc-700 border outline-none",
-                disabled &&
-                  "disabled:bg-slate-200 dark:disabled:bg-zinc-800 disabled:border-slate-200 dark:disabled:border-zinc-800 disabled:text-slate-400 dark:disabled:text-zinc-700 disabled:pointer-events-none disabled:cursor-not-allowed",
-                className
-              )}
-              disabled={disabled}
-            >
-              <ClockIcon className="h-4 w-4" />
-              <p className="text-sm">
-                {selectedStart ?? t("begin")} - {selectedEnd ?? t("end")}
-              </p>
-              <ChevronDownIcon className="-mx-[5px] h-5 w-5" aria-hidden="true" />
-            </Popover.Button>
-            <Transition
-              as={"div"}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Popover.Panel
+      <Popover.Button
+        className={cn(
+          "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-foreground",
+          "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-background",
+          "border-border hover:border-border-hover border",
+          disabled &&
+            "disabled:bg-border disabled:border-border disabled:text-border-hover disabled:pointer-events-none disabled:cursor-not-allowed",
+          className
+        )}
+        disabled={disabled}
+      >
+        <CalendarIcon className="text-foreground h-4.5 w-4.5" />
+        <span className="text-foreground">
+          {label}
+          {(selected || placeholder) && ":"}
+        </span>
+        {selected?.from ? (
+          selected?.to ? (
+            <>
+              {format(new Date(selected?.from), "dd-MM-yyyy", { locale: ms })}
+              <ArrowRightIcon className="h-3 w-3" />
+              {format(new Date(selected?.to), "dd-MM-y", { locale: ms })}
+            </>
+          ) : (
+            <>
+              {format(new Date(selected?.from), "dd-MM-yyyy", { locale: ms })}
+              <ArrowRightIcon className="h-3 w-3" />
+              dd/mm/yyyy
+            </>
+          )
+        ) : (
+          <>{placeholder}</>
+        )}
+      </Popover.Button>
+      <Transition
+        as={"div"}
+        leave="transition ease-in duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <Popover.Panel
+          className={cn(
+            "min-w-full max-h-100 shadow-floating absolute z-20 mt-1 rounded-md bg-background text-sm focus:outline-none border border-border",
+            anchor === "right"
+              ? "right-0"
+              : anchor === "left"
+              ? "left-0"
+              : anchor
+          )}
+        >
+          <form className="pt-3 px-3 flex flex-col">
+            <div className="flex items-center gap-x-3">
+              <input
+                type="date"
                 className={cn(
-                  "max-h-100 dark:ring-slate-800  shadow-floating absolute z-20 mt-1 min-w-full overflow-clip rounded-md bg-white text-sm ring-1 ring-zinc-900 ring-opacity-5 focus:outline-none dark:bg-zinc-900",
-                  anchor === "right" ? "right-0" : anchor === "left" ? "left-0" : anchor
+                  "btn-default text-center w-full focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none focus:border-none",
+                  invalidFromValue && "invalid:ring-red-600"
                 )}
-              >
-                <div>
-                  <div className="dark:border-zinc-800 sticky top-0 z-20 grid w-[250px] grid-cols-2 border-b bg-white px-4 py-3 dark:bg-zinc-900">
-                    <p className="text-zinc-500">
-                      {t("begin")}:{" "}
-                      <span className="text-zinc-900 dark:text-white">{selectedStart}</span>
-                    </p>
-                    <p className="text-zinc-500">
-                      {t("end")}: <span className="text-zinc-900 dark:text-white">{selectedEnd}</span>
-                    </p>
-                  </div>
-                  <div className="dark:border-zinc-800 grid h-full grid-cols-2 overflow-auto border-b">
-                    <List
-                      ref={startRef}
-                      height={320}
-                      width={"100%"}
-                      itemCount={endYear - startYear + 1}
-                      itemSize={32}
-                    >
-                      {({ index, style }: { index: number; style: CSSProperties }) => {
-                        const year = YEAR_OPTIONS[index];
-                        return (
-                          <DateOption
-                            type="begin"
-                            year={year}
-                            index={index}
-                            style={style}
-                            selectedStart={selectedStart}
-                            selectedEnd={selectedEnd}
-                          />
-                        );
-                      }}
-                    </List>
-                    <List
-                      ref={endRef}
-                      height={320}
-                      width={"100%"}
-                      itemCount={endYear - startYear + 1}
-                      itemSize={32}
-                    >
-                      {({ index, style }: { index: number; style: CSSProperties }) => {
-                        const year = YEAR_OPTIONS[index];
-                        return (
-                          <DateOption
-                            type="end"
-                            year={year}
-                            index={index}
-                            style={style}
-                            selectedStart={selectedStart}
-                            selectedEnd={selectedEnd}
-                          />
-                        );
-                      }}
-                    </List>
-                  </div>
-                </div>
-                <Button
-                  className="btn text-zinc-500 w-full px-4 py-3 hover:text-zinc-900 dark:hover:text-white"
-                  onClick={onReset}
-                  disabled={!selectedStart || !selectedEnd}
-                >
-                  <XMarkIcon className="h-4 w-4" />
-                  {t("reset_default")}
-                </Button>
-              </Popover.Panel>
-            </Transition>
-          </>
-        );
-      }}
+                value={fromValue}
+                onChange={handleFromChange}
+                onClick={(event) => event.preventDefault()}
+                min="1959-08-11"
+                max={toValue ? toValue : TODAY.toISOString().slice(0, 10)}
+              />
+              <ArrowRightIcon className="h-4.5 w-4.5 shrink-0 text-zinc-500" />
+              <input
+                type="date"
+                className={cn(
+                  "btn-default text-center w-full focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none focus:border-none",
+                  invalidToValue && "invalid:ring-red-600"
+                )}
+                value={toValue}
+                onChange={handleToChange}
+                onClick={(event) => event.preventDefault()}
+                min={fromValue ? fromValue : "1959-08-11"}
+                max={new Date().toISOString().slice(0, 10)}
+              />
+            </div>
+            <div className="flex gap-[42px] pt-1">
+              <p className="text-xs text-red-600 w-full">{invalidFromValue}</p>
+              <p className="text-xs text-red-600 w-full">{invalidToValue}</p>
+            </div>
+          </form>
+
+          <Calendar
+            locale={i18n.language.startsWith("ms") ? ms : enGB}
+            initialFocus
+            mode="range"
+            defaultMonth={DEFAULT}
+            selected={selected}
+            onSelect={handleRangeSelect}
+            numberOfMonths={numberOfMonths}
+            disabled={[
+              {
+                before: PARLIMEN_START_DATE,
+              },
+              { after: TODAY },
+            ]}
+          />
+        </Popover.Panel>
+      </Transition>
     </Popover>
   );
 };
 
-export default YearRange;
+export default Daterange;

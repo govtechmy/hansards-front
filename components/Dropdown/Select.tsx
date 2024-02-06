@@ -59,7 +59,7 @@ const Select: FunctionComponent<SelectProps> = ({
           className="dark:border-zinc-700 relative w-full bg-white dark:bg-zinc-900"
           key={key}
         >
-          {key && <h5 className="bg-slate-100 sticky top-0 z-10 px-4 py-1.5 text-sm">{key}</h5>}
+          {key && <h3 className="font-bold text-zinc-900 dark:text-white bg-slate-100 sticky top-0 z-10 px-4 py-1.5 text-sm">{key}</h3>}
           <div>
             {options.map(option => (
               <Listbox.Option

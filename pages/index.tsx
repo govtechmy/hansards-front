@@ -1,7 +1,7 @@
 import Metadata from "@components/Metadata";
 import HomeLayout from "@dashboards/home/layout";
-import WhoSaidX from "@dashboards/home/who-said-x";
-import WhatDidXSay from "@dashboards/home/what-did-x-say";
+import SearchKeyword from "@dashboards/home/search-keyword";
+import SearchMP from "@dashboards/home/search-mp";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
@@ -15,7 +15,10 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 const Home: Page = ({
   count,
   excerpts,
-  keyword,
+  query,
+  timeseries,
+  top_word_freq,
+  top_speakers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
@@ -25,43 +28,77 @@ const Home: Page = ({
         }
       />
       <HomeLayout>
-        {(tab) => (
-          <>
-            {
-              {
-                who: <WhoSaidX count={count} excerpts={excerpts} keyword={keyword}/>,
-                what: <WhatDidXSay count={count} excerpts={excerpts} keyword={keyword} />,
-              }[tab]
-            }
-          </>
-        )}
+        <SearchKeyword
+          count={count}
+          excerpts={excerpts}
+          query={query}
+          timeseries={timeseries}
+          top_word_freq={top_word_freq}
+          top_speakers={top_speakers}
+        />
       </HomeLayout>
     </>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  ["enum", "home"],
+  ["demografi", "enum", "home", "kehadiran", "party"],
   async ({ query }) => {
     try {
-      const keyword = query.keyword ? query.keyword : "petrol";
-      const { data } = await get("api/search/", {
-        q: keyword,
-        house: "dewan-rakyat",
-        window_size: 50,
-        page: 1,
+      const { q, dewan, ...dates } = query;
+
+      if (!query)
+        return {
+          props: {
+            meta: {
+              id: "/",
+            },
+            count: 0,
+            excerpts: null,
+            query: null,
+            timeseries: {
+              date: Array.from({ length: 365 }, (_, i) => i * 86400000),
+              freq: [],
+            },
+            top_word_freq: null,
+            top_speakers: null,
+          },
+        };
+
+      const results = await Promise.allSettled([
+        get("api/search/", {
+          q: q,
+          house: dewan,
+          window_size: 30,
+          page: 1,
+          ...dates,
+        }),
+        get("api/search-plot/", {
+          q: q,
+          house: dewan,
+          ...dates,
+        }),
+      ]);
+
+      const [excerpt, data] = results.map((e) => {
+        if (e.status === "rejected") return {};
+        else return e.value.data;
       });
 
       return {
-        notFound: false,
         props: {
           meta: {
-            id: "home",
-            type: "misc",
+            id: "/",
           },
-          count: data.count,
-          excerpts: data.results,
-          keyword: keyword,
+          count: excerpt.count ?? 0,
+          excerpts: excerpt.results ?? null,
+          query: query ?? null,
+          timeseries: data.chart_data ?? {
+            date: Array.from({ length: 365 }, (_, i) => i * 86400000),
+            freq: [],
+          },
+          top_word_freq: data.top_word_freq ?? null,
+          top_speakers: data.top_speakers ?? null,
         },
       };
     } catch (error: any) {

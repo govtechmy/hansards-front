@@ -1,15 +1,14 @@
 import { cn } from "@lib/helpers";
 import { OptionType } from "@lib/types";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { CSSProperties, ForwardedRef, forwardRef, ReactNode } from "react";
-import { useId } from "@floating-ui/react";
+import { CSSProperties, ForwardedRef, forwardRef, MouseEventHandler, ReactNode } from "react";
 
 export type ComboOptionProp<T extends unknown> = OptionType & T;
 
 export type ComboOptionProps<T> = {
   option: ComboOptionProp<T>;
   format?: (option: ComboOptionProp<T>) => ReactNode;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<Element> | undefined;
   icon?: (value: string) => ReactNode;
   isSelected: boolean;
   active: boolean;
@@ -29,28 +28,23 @@ function ComboOptionInner<T>(
     index,
     total,
     style,
-    ...rest
   }: ComboOptionProps<T>,
-  ref: ForwardedRef<HTMLDivElement>
+  ref: ForwardedRef<HTMLLIElement>
 ) {
-  const id = useId();
 
   return (
-    <div
-      key={id}
-      id={id}
+    <li
+      key={index}
       ref={ref}
       role="option"
       aria-selected={active}
       onClick={onClick}
-      {...rest}
       // As the list is virtualized, this lets the assistive tech know
       // how many options there are total without looking at the DOM.
       aria-setsize={total}
       aria-posinset={index + 1}
       className={cn(
         "px-4 py-2 w-full cursor-pointer select-none z-10",
-        "hover:bg-slate-100 hover:dark:bg-zinc-800",
         active && "bg-slate-100 dark:bg-zinc-800"
       )}
       style={style}
@@ -70,7 +64,7 @@ function ComboOptionInner<T>(
             {icon && icon(option.value)}
             <p
               className={cn(
-                "block grow self-center",
+                "block grow self-center truncate",
                 isSelected ? "font-medium" : "font-normal"
               )}
             >
@@ -84,7 +78,7 @@ function ComboOptionInner<T>(
           </span>
         )}
       </div>
-    </div>
+    </li>
   );
 }
 

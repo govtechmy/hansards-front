@@ -21,12 +21,12 @@ export interface KehadiranBarMeterProps {
 }
 
 const KehadiranBarMeter = ({ barmeter, loading }: KehadiranBarMeterProps) => {
-  const { t } = useTranslation("kehadiran");
+  const { t } = useTranslation(["demografi", "kehadiran"]);
   const DEMOGRAPHY = ["sex", "ethnicity", "age"] as DemographyKeys[];
 
   return (
     <section className="py-8 lg:py-12 space-y-6">
-      <h5>{t("barmeter_title")}</h5>
+      <h3 className="title">{t("barmeter_title", { ns: "kehadiran" })}</h3>
 
       {loading ? (
         <Skeleton height="h-[300px]" width="w-auto" />
@@ -42,8 +42,8 @@ const KehadiranBarMeter = ({ barmeter, loading }: KehadiranBarMeterProps) => {
                   layout="horizontal"
                   unit="%"
                   data={barmeter[k]}
-                  sort={["age"].includes(k) ? undefined : "desc"}
-                  formatX={(key) => t(key)}
+                  sort={k === "age" ? undefined : "desc"}
+                  formatX={(key) => k === "age" ? key : t(key)}
                 />
               </div>
             );

@@ -3,10 +3,16 @@ import { Button, Spinner } from "..";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { body } from "@lib/configs/font";
 import { useCombobox } from "downshift";
 import { matchSorter, MatchSorterOptions } from "match-sorter";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useVirtual } from "react-virtual";
 
 type ComboBoxProps<T> = Omit<
@@ -20,6 +26,8 @@ type ComboBoxProps<T> = Omit<
   placeholder?: string;
   loading?: boolean;
   config?: MatchSorterOptions<ComboOptionProp<T>>;
+  className?: string;
+  dropdown?: ReactNode;
 };
 
 const ComboBox = <T extends unknown>({
@@ -32,6 +40,8 @@ const ComboBox = <T extends unknown>({
   icon,
   loading = false,
   config = { keys: ["label"] },
+  className,
+  dropdown,
 }: ComboBoxProps<T>) => {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState<string>(
@@ -80,14 +90,23 @@ const ComboBox = <T extends unknown>({
     <div className="relative">
       <div>
         <label {...getLabelProps()}>{}</label>
-        <div className="h-[50px] bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 relative flex w-full select-none overflow-hidden rounded-full border focus:outline-none focus-visible:ring-0">
-          <span className="ml-4 flex h-auto max-h-8 w-8 shrink-0 justify-center self-center z-10">
-            {icon && selected ? (
-              icon(selected.value)
-            ) : (
-              <MagnifyingGlassIcon className="dark:text-zinc-500 h-5 w-5 text-zinc-900" />
-            )}
-          </span>
+        <div
+          className={cn(
+            "h-[50px] bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 relative flex w-full select-none overflow-visible rounded-full border focus:outline-none focus-visible:ring-0",
+            className
+          )}
+        >
+          {dropdown ? (
+            dropdown
+          ) : (
+            <span className="ml-4 flex h-auto max-h-8 w-8 shrink-0 justify-center self-center z-10">
+              {icon && selected ? (
+                icon(selected.value)
+              ) : (
+                <MagnifyingGlassIcon className="dark:text-zinc-500 h-5 w-5 text-zinc-900" />
+              )}
+            </span>
+          )}
           <input
             {...getInputProps({
               "aria-autocomplete": "list",
@@ -99,9 +118,14 @@ const ComboBox = <T extends unknown>({
                 if (onSearch) onSearch(event.target.value);
               },
             })}
-            className="absolute top-0 left-0 w-full h-12 truncate border-none bg-white pl-14 pr-9 py-3 focus:outline-none focus:ring-0 dark:bg-zinc-900"
+            className={cn(
+              "w-full h-12 truncate border-none pr-9 py-3 focus:outline-none focus:ring-0 bg-white dark:bg-zinc-900",
+              dropdown
+                ? "pl-2.5 rounded-r-full"
+                : "absolute top-0 left-0 pl-14 rounded-full"
+            )}
           />
-          {(inputValue.length > 0 || selected) && (
+          {inputValue && (
             <Button
               className="hover:bg-slate-100 dark:hover:bg-zinc-800 group absolute right-2 top-2 flex h-8 w-8 items-center rounded-full"
               onClick={() => {
@@ -116,19 +140,16 @@ const ComboBox = <T extends unknown>({
           )}
         </div>
       </div>
-      {isOpen && (
-        <div className="absolute top-[54px] left-0 w-full z-10">
-          <ul
-            {...getMenuProps({
-              ref: listRef,
-            })}
-            className={cn(
-              body.variable,
-              "font-body text-sm shadow-floating relative max-h-60 max-w-full overflow-y-auto bg-white dark:bg-zinc-900",
-              "border border-slate-200 dark:border-zinc-800 rounded-md"
-            )}
-          >
-            {loading ? (
+      <div className="absolute top-[54px] left-0 w-full z-10">
+        <ul
+          {...getMenuProps({ ref: listRef })}
+          className={cn(
+            "text-sm shadow-floating relative max-h-60 max-w-full overflow-y-auto bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md",
+            !(isOpen && items.length) && "hidden"
+          )}
+        >
+          {isOpen &&
+            (loading ? (
               <li className="text-zinc-500 flex cursor-default select-none items-center gap-2 px-4 py-2">
                 <Spinner loading={loading} /> {t("placeholder.loading")}
               </li>
@@ -142,28 +163,32 @@ const ComboBox = <T extends unknown>({
                   key="total-size"
                   style={{ height: rowVirtualizer.totalSize }}
                 />
-                {rowVirtualizer.virtualItems.map((virtualRow, i) => (
+                {rowVirtualizer.virtualItems.map((virtualRow) => (
                   <ComboOption<T>
-                    option={items[i]}
-                    onClick={() => {
-                      onChange(items[i]);
-                      setInputValue(items[i].label);
-                      closeMenu();
-                    }}
+                    option={items[virtualRow.index]}
                     total={options.length}
                     format={format}
                     icon={icon}
-                    isSelected={selected?.value === items[i].value}
-                    active={highlightedIndex === i}
-                    index={i}
+                    isSelected={selected === items[virtualRow.index]}
+                    active={highlightedIndex === virtualRow.index}
+                    index={virtualRow.index}
+                    {...getItemProps({
+                      index: virtualRow.index,
+                      item: items[virtualRow.index],
+                      onClick: () => {
+                        onChange(items[virtualRow.index]);
+                        setInputValue(items[virtualRow.index].label);
+                        closeMenu();
+                      },
+                    })}
                     style={{
                       position: "absolute",
                       top: 0,
                       left: 0,
+                      width: "100%",
                       height: virtualRow.size,
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
-                    {...getItemProps}
                   />
                 ))}
               </>
@@ -171,24 +196,26 @@ const ComboBox = <T extends unknown>({
               items.map((item, i) => (
                 <ComboOption<T>
                   option={item}
-                  onClick={() => {
-                    onChange(item);
-                    setInputValue(item.label);
-                    closeMenu();
-                  }}
                   total={options.length}
                   format={format}
                   icon={icon}
-                  isSelected={selected?.value === items[i].value}
+                  isSelected={selected === items[i]}
                   active={highlightedIndex === i}
+                  {...getItemProps({
+                    index: i,
+                    item: item,
+                    onClick: () => {
+                      onChange(items[i]);
+                      setInputValue(items[i].label);
+                      closeMenu();
+                    },
+                  })}
                   index={i}
-                  {...getItemProps}
                 />
               ))
-            )}
-          </ul>
-        </div>
-      )}
+            ))}
+        </ul>
+      </div>
     </div>
   );
 };

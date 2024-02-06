@@ -44,7 +44,7 @@ const Search = ({
         value={query}
         autoComplete="off"
         spellCheck="false"
-        className="placeholder:text-zinc-500 text-zinc-900 dark:text-white block w-full bg-inherit pl-10 focus:ring-0 py-1.5"
+        className="placeholder:text-zinc-500 text-foreground block w-full bg-inherit pl-10 focus:outline-none py-1.5"
         {...props}
       />
       <div className="absolute inset-y-0 left-0 flex items-center pl-3">

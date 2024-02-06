@@ -72,6 +72,7 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
         <ThemeToggle />
         <Dropdown
           width="w-fit"
+          anchor="right"
           selected={languages.find((lang) => lang.value === language)}
           onChange={onLanguageChange}
           options={languages}
@@ -99,7 +100,7 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
         )}
       >
         {children(close)}
-        <div className="flex justify-between py-3 gap-x-3">
+        <div className="flex justify-between py-2 gap-x-3">
           <ThemeToggle />
           <Dropdown
             width="w-fit"
