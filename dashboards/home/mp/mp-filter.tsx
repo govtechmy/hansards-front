@@ -1,11 +1,11 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogClose,
-  DialogDescription,
-  DialogHeading,
-  DialogTrigger,
-} from "@components/Dialog";
+  Drawer,
+  DrawerContent,
+  DrawerClose,
+  DrawerHeader,
+  DrawerTrigger,
+  DrawerFooter,
+} from "@components/Drawer";
 import {
   Button,
   ComboBox,
@@ -209,7 +209,7 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
               dropdown={
                 <div className="flex self-center pl-4.5">
                   <Dropdown
-                    className="p-0 border-none shadow-none hover:underline [text-underline-position:from-font] active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit"
+                    className="link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit"
                     width="w-fit"
                     options={INDIVIDU_OR_GROUP}
                     selected={INDIVIDU_OR_GROUP.find(
@@ -229,7 +229,7 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
             <div className="pl-4.5 pr-1.5 py-2 flex mx-auto w-full sm:w-fit rounded-full border border-slate-200 dark:border-zinc-800 justify-between">
               <div className="flex self-center">
                 <Dropdown
-                  className="p-0 border-none shadow-none hover:underline [text-underline-position:from-font] active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit"
+                  className="link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit"
                   width="w-fit"
                   options={INDIVIDU_OR_GROUP}
                   selected={INDIVIDU_OR_GROUP.find(
@@ -321,11 +321,11 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
               )}
             </div>
 
-            {/* Mobile Dialog */}
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
+            {/* Mobile Drawer */}
+            <Drawer open={open} onOpenChange={setOpen}>
+              <DrawerTrigger asChild>
                 <Button
-                  variant="default"
+                  variant="outline"
                   className="shadow-button ml-auto md:hidden"
                   onClick={() => setOpen(true)}
                 >
@@ -335,132 +335,111 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
                   </span>
                   <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="p-0">
-                <div className="w-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-t-xl flex flex-col gap-y-0">
-                  <DialogHeading className="px-3 py-4.5 flex justify-between border-b border-slate-200 dark:border-zinc-800">
-                    <span className="font-bold text-sm text-zinc-900 dark:text-white">
-                      {t("filters", { ns: "common" }) + ":"}
-                    </span>
-                    <DialogClose />
-                  </DialogHeading>
-                  <DialogDescription>
-                    <div className="flex flex-col">
-                      <div className="bg-white dark:bg-zinc-900">
-                        <div className="dark:divide-washed-dark divide-y px-3 pb-3">
-                          <div className="py-3 space-y-1">
-                            <Label label={t("dewan", { ns: "home" }) + ":"} />
-                            <Dropdown
-                              options={DEWAN_OPTIONS}
-                              selected={DEWAN_OPTIONS.find(
-                                (e) => e.value === data.dewan
-                              )}
-                              onChange={(e) => setData("dewan", e.value)}
-                            />
-                          </div>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader className="flex justify-between border-b border-slate-200 dark:border-zinc-700">
+                  <span className="font-semibold text-foreground">
+                    {t("filters", { ns: "common" }) + ":"}
+                  </span>
+                  <DrawerClose />
+                </DrawerHeader>
+                <div className="flex flex-col bg-background dark:divide-zinc-800 divide-y px-4">
+                  <div className="py-3 space-y-1">
+                    <Label label={t("dewan", { ns: "home" }) + ":"} />
+                    <Dropdown
+                      options={DEWAN_OPTIONS}
+                      selected={DEWAN_OPTIONS.find(
+                        (e) => e.value === data.dewan
+                      )}
+                      onChange={(e) => setData("dewan", e.value)}
+                    />
+                  </div>
 
-                          <div className="py-3 space-y-1">
-                            <Label label={t("date") + ":"} />
-                            <Daterange
-                              className="w-full"
-                              numberOfMonths={1}
-                              placeholder={t("current_parlimen")}
-                              selected={selectedDateRange}
-                              setSelected={setSelectedDateRange}
-                            />
-                          </div>
+                  <div className="py-3 space-y-1">
+                    <Label label={t("date") + ":"} />
+                    <Daterange
+                      className="w-full"
+                      numberOfMonths={1}
+                      placeholder={t("current_parlimen")}
+                      selected={selectedDateRange}
+                      setSelected={setSelectedDateRange}
+                    />
+                  </div>
 
-                          <div className="py-3 space-y-1 w-full">
-                            <Label label={t("party", { ns: "common" }) + ":"} />
-                            <Dropdown
-                              enableFlag
-                              flag={(party) => {
-                                if (party === ALL_PARTIES) return <></>;
-                                else
-                                  return (
-                                    <PartyFlag
-                                      party={party}
-                                      children={() => true}
-                                    />
-                                  );
-                              }}
-                              anchor="left"
-                              options={PARTY_OPTIONS}
-                              selected={PARTY_OPTIONS.find(
-                                (e) => e.value === data.party
-                              )}
-                              onChange={(e) => setData("party", e.value)}
-                            />
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 py-3">
-                            <div className="space-y-1 w-full">
-                              <Label
-                                label={t("age", { ns: "demografi" }) + ":"}
-                              />
-                              <Dropdown
-                                anchor="left bottom-10"
-                                options={AGE_OPTIONS}
-                                selected={AGE_OPTIONS.find(
-                                  (e) => e.value === data.age
-                                )}
-                                onChange={(e) => setData("age", e.value)}
-                              />
-                            </div>
-
-                            <div className="space-y-1 w-full">
-                              <Label
-                                label={t("sex", { ns: "demografi" }) + ":"}
-                              />
-                              <Dropdown
-                                options={SEX_OPTIONS}
-                                selected={SEX_OPTIONS.find(
-                                  (e) => e.value === data.sex
-                                )}
-                                onChange={(e) => setData("sex", e.value)}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="py-3 space-y-1 w-full">
-                            <Label
-                              label={t("ethnicity", { ns: "demografi" }) + ":"}
-                            />
-                            <Dropdown
-                              anchor="left bottom-10"
-                              options={ETNIK_OPTIONS}
-                              selected={ETNIK_OPTIONS.find(
-                                (e) => e.value === data.etnik
-                              )}
-                              onChange={(e) => setData("etnik", e.value)}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="dark:border-washed-dark flex w-full flex-col gap-2 border-t bg-white p-3 dark:bg-black">
-                          <Button
-                            variant={"primary"}
-                            className="w-full justify-center"
-                            onClick={() => {
-                              setOpen(false);
-                              onLoad();
-                              handleSearch();
-                            }}
-                          >
-                            {t("filter", { ns: "common" })}
-                          </Button>
-                          <Button
-                            className="btn w-full justify-center px-3 py-1.5"
-                            onClick={handleClear}
-                          >
-                            {t("clear_all", { ns: "common" })}
-                          </Button>
-                        </div>
-                      </div>
+                  <div className="py-3 space-y-1 w-full">
+                    <Label label={t("party", { ns: "common" }) + ":"} />
+                    <Dropdown
+                      enableFlag
+                      flag={(party) => {
+                        if (party === ALL_PARTIES) return <></>;
+                        else
+                          return (
+                            <PartyFlag party={party} children={() => true} />
+                          );
+                      }}
+                      anchor="left"
+                      options={PARTY_OPTIONS}
+                      selected={PARTY_OPTIONS.find(
+                        (e) => e.value === data.party
+                      )}
+                      onChange={(e) => setData("party", e.value)}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 py-3">
+                    <div className="space-y-1 w-full">
+                      <Label label={t("age", { ns: "demografi" }) + ":"} />
+                      <Dropdown
+                        anchor="left bottom-10"
+                        options={AGE_OPTIONS}
+                        selected={AGE_OPTIONS.find((e) => e.value === data.age)}
+                        onChange={(e) => setData("age", e.value)}
+                      />
                     </div>
-                  </DialogDescription>
+
+                    <div className="space-y-1 w-full">
+                      <Label label={t("sex", { ns: "demografi" }) + ":"} />
+                      <Dropdown
+                        options={SEX_OPTIONS}
+                        selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
+                        onChange={(e) => setData("sex", e.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="py-3 space-y-1 w-full">
+                    <Label label={t("ethnicity", { ns: "demografi" }) + ":"} />
+                    <Dropdown
+                      anchor="left bottom-10"
+                      options={ETNIK_OPTIONS}
+                      selected={ETNIK_OPTIONS.find(
+                        (e) => e.value === data.etnik
+                      )}
+                      onChange={(e) => setData("etnik", e.value)}
+                    />
+                  </div>
                 </div>
-              </DialogContent>
-            </Dialog>
+
+                <DrawerFooter>
+                  <Button
+                    variant={"primary"}
+                    className="w-full justify-center"
+                    onClick={() => {
+                      setOpen(false);
+                      onLoad();
+                      handleSearch();
+                    }}
+                  >
+                    {t("filter", { ns: "common" })}
+                  </Button>
+                  <Button
+                    className="btn w-full justify-center px-3 py-1.5"
+                    onClick={handleClear}
+                  >
+                    {t("clear_all", { ns: "common" })}
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           </div>
         )}
       </div>
