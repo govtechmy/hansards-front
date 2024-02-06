@@ -1,7 +1,6 @@
 import { At, Hero } from "@components/index";
 import { BuildingLibraryIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "@hooks/useTranslation";
-import { WindowProvider } from "@lib/contexts/window";
 import { cn } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { OptionType } from "@lib/types";
@@ -41,14 +40,14 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black justify-start min-[350px]:justify-center">
+      <nav className="h-14 sticky top-14 z-20 flex overflow-hidden border-b border-b-border bg-background justify-start min-[350px]:justify-center">
         <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
           {TAB_OPTIONS.map((tab) => (
             <div key={tab.value} className="snap-start">
               <At
                 href={tab.value}
                 scrollTop={false}
-                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center outline-none"
+                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center"
               >
                 <div
                   className={cn(
@@ -88,7 +87,7 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
         </div>
       </nav>
 
-      <WindowProvider>{children}</WindowProvider>
+      {children}
     </>
   );
 };
