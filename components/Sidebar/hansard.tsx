@@ -152,7 +152,7 @@ const HansardSidebar = forwardRef(
           <div
             className={cn(
               "relative border-r border-r-border shrink-0 w-16 hidden lg:block pl-4",
-              "sticky top-14 h-[calc(100vh-56px)] overflow-y-auto sidebar-scrollbar",
+              "sticky top-14 h-[calc(100dvh-56px)] overflow-y-auto sidebar-scrollbar",
               "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
               showSidebar
                 ? "w-[300px] duration-300"

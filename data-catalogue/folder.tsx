@@ -90,7 +90,7 @@ const CatalogueFolder = forwardRef(
     const MesyuaratDates = () => (
       <div
         className={cn(
-          "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[80vh] max-md:p-4",
+          "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[80dvh] max-md:p-4",
           sitting_list.length < 4
             ? "overflow-visible"
             : "overflow-y-auto scroll"
@@ -236,7 +236,7 @@ const CatalogueFolder = forwardRef(
       <>
         <div
           className={cn(
-            "border group-hover:border-slate-200 dark:group-hover:border-zinc-800 rounded-md w-[100px] h-20 relative mb-1.5",
+            "border group-hover:border-border rounded-md w-[100px] h-20 relative mb-1.5",
             open ? "visible pl-2 pt-2" : "p-2 border-transparent"
           )}
         >
@@ -255,7 +255,7 @@ const CatalogueFolder = forwardRef(
               alt="Closed Folder"
             />
           )}
-          <span className="absolute bottom-3 right-3 bg-slate-400 rounded-md flex gap-0.5 items-center py-0.5 px-1.5 text-white ">
+          <span className="absolute bottom-3 right-3 bg-slate-400 rounded-md flex gap-0.5 items-center py-0.5 px-1.5 text-white">
             <BookmarkIcon className="h-3.5 w-3.5" />
             {sitting_list.length}
           </span>

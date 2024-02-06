@@ -47,7 +47,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
 
   const Sidebar = () => (
     <div className="sticky top-14 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
-      <ul className="h-[calc(100vh-56px)] lg:h-[calc(100vh-168px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-1.5">
+      <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-168px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-1.5">
         {data ? (
           data.map(({ id, penggal, yearRange }) => {
             const parlimen_id = `parlimen-${id}/`;
@@ -137,7 +137,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
       <div className="flex w-full">
         <div
           className={cn(
-            "border-r border-r-border shrink-0 w-14 h-[calc(100vh-112px)] sticky top-28",
+            "border-r border-r-border shrink-0 w-14 h-[calc(100dvh-112px)] sticky top-28",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar ? "lg:w-60 duration-300" : "hide-scrollbar duration-500"
           )}
