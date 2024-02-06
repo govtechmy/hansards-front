@@ -12,6 +12,13 @@
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 @layer base {
+  html {
+    box-sizing: border-box;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
   input[type="search"]::-webkit-search-decoration,
   input[type="search"]::-webkit-search-cancel-button,
   input[type="search"]::-webkit-search-results-button,
@@ -26,45 +33,30 @@
   /* Radix UI HSL Variables */
   :root {
     --background: 0 0% 100%; /* White */
-    --foreground: 222.2 84% 4.9%; /* Slate 950 */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 222.2 84% 4.9%; /* Slate 950 */
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 222.2 84% 4.9%; /* Slate 950 */
+    --foreground: 240 5.9% 10%; /* Zinc 950 */
     --primary: 221.2 83.2% 53.3%; /* Blue 600 */
-    --primary-foreground: 210 40% 98%; /* Slate 50 */
     --secondary: 210 40% 96.1%; /* Slate 100 */
-    --secondary-foreground: 222.2 47.4% 11.2%; /* Slate 900 */
     --muted: 210 40% 96.1%; /* Slate 100 */
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 16.3% 46.9%; /* Slate 500 */
     --accent: 210 40% 96.1%; /* Slate 100 */
-    --accent-foreground: 222.2 47.4% 11.2%; /* Slate 900 */
-    --destructive: 0 84.2% 60.2%; /* Red 500 */
-    --destructive-foreground: 210 40% 98%; /* Slate 50 */
     --border: 214.3 31.8% 91.4%; /* Slate 200 */
+    --border-hover: 215 20.2% 65.1%; /* Slate 400 */
+    --bg-hover: 210 40% 96.1%; /* Slate 100 */
     --input: 214.3 31.8% 91.4%; /* Slate 200 */
     --ring: 221.2 83.2% 53.3%; /* Blue 600 */
-    --radius: 0.5rem; /* 8px */
   }
- 
+
   .dark {
-    --background: 222.2 84% 4.9%; /* Slate 950 */
-    --foreground: 210 40% 98%; /* Slate 50 */
-    --card: 222.2 84% 4.9%; /* Slate 950 */
-    --card-foreground: 210 40% 98%; /* Slate 50 */
-    --popover: 222.2 84% 4.9%; /* Slate 950 */
-    --popover-foreground: 210 40% 98%; /* Slate 50 */
+    --background: 240 5.9% 10%; /* Zinc 950 */
+    --foreground: 0 0% 100%; /* White */
     --primary: 217.2 91.2% 59.8%; /* Blue 500 */
-    --primary-foreground: 222.2 47.4% 11.2%; /* Slate 900 */
     --secondary: 217.2 32.6% 17.5%; /* Slate 800 */
-    --secondary-foreground: 210 40% 98%; /* Slate 50 */
     --muted: 217.2 32.6% 17.5%; /* Slate 800 */
     --muted-foreground: 215 20.2% 65.1%; /* Slate 400 */
     --accent: 217.2 32.6% 17.5%; /* Slate 800 */
-    --accent-foreground: 210 40% 98%; /* Slate 50 */
-    --destructive: 0 62.8% 30.6%; /* Red 900 */
-    --destructive-foreground: 210 40% 98%; /* Slate 50 */
-    --border: 217.2 32.6% 17.5%; /* Slate 800 */
+    --border: 240 3.7% 15.88%; /* Zinc 800 */
+    --border-hover: 240 5.26% 26.08%; /* Zinc 700 */
+    --bg-hover: 240 3.7% 15.88%; /* Zinc 800 */
     --input: 217.2 32.6% 17.5%; /* Slate 800 */
     --ring: 224.3 76.3% 48%; /* Blue 700 */
   }
@@ -72,15 +64,19 @@
 
 @layer components {
   .header {
-    @apply font-header text-xl font-bold text-zinc-900 dark:text-white [text-wrap:balance];
+    @apply font-header text-xl font-bold text-foreground [text-wrap:balance];
   }
 
   .title {
-    @apply text-lg font-bold text-zinc-900 dark:text-white;
+    @apply text-lg font-bold text-foreground;
+  }
+
+  .link {
+    @apply hover:underline [text-underline-position:from-font];
   }
 
   .btn {
-    @apply flex select-none items-center gap-1.5 rounded-md border border-transparent text-start text-sm font-medium outline-none transition;
+    @apply flex select-none items-center gap-1.5 rounded-md border border-transparent text-start text-sm font-medium transition;
   }
 
   .btn-primary {
@@ -96,7 +92,7 @@
   }
 
   .btn-default {
-    @apply btn btn-border active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 bg-white px-3 py-1.5 text-zinc-900 dark:bg-zinc-900 dark:text-white;
+    @apply btn btn-border active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 bg-background px-3 py-1.5 text-foreground;
   }
 
   .btn-border {
@@ -108,14 +104,6 @@
     disabled:border-slate-200 dark:disabled:border-zinc-800 
     disabled:text-slate-400 dark:disabled:text-zinc-700 
     disabled:pointer-events-none disabled:cursor-not-allowed;
-  }
-
-  .link-blue {
-    @apply text-blue-600 cursor-pointer font-medium [text-underline-position:from-font] hover:underline;
-  }
-
-  .link-dim {
-    @apply text-zinc-500 cursor-pointer text-sm [text-underline-position:from-font] hover:text-zinc-900 hover:underline dark:hover:text-white;
   }
 
   /* HERO MESH GRADIENTS */
@@ -159,7 +147,7 @@ path:focus {
   outline: none;
 }
 
-:focus-visible {
+:focus:not(:focus-visible) {
   outline: unset;
 }
 
@@ -223,7 +211,7 @@ path:focus {
 
 .sidebar-scrollbar {
   scrollbar-width: thin;
-  /* scrollbar-color: rgba(115, 115, 115, 0.4) transparent; */
+  scrollbar-color: rgba(115, 115, 115, 0.4) transparent;
   scrollbar-gutter: auto;
 }
 .sidebar-scrollbar::-webkit-scrollbar {
@@ -251,5 +239,5 @@ path:focus {
 input[type="date"]::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
-  visibility: hidden
+  visibility: hidden;
 }
