@@ -64,7 +64,7 @@
 
 @layer components {
   .header {
-    @apply font-header text-xl font-bold text-foreground [text-wrap:balance];
+    @apply font-header text-xl font-bold text-foreground;
   }
 
   .title {
