@@ -23,7 +23,7 @@ const CatalogueIndexPage: Page = ({
         description={t("hero.description")}
         keywords={""}
       />
-      <AnalyticsProvider>
+      <AnalyticsProvider id={meta.id}>
         <CatalogueIndexLayout>
           <CatalogueIndex archive={archive} params={params} />
         </CatalogueIndexLayout>

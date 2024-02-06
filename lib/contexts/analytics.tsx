@@ -1,5 +1,4 @@
 import { get, post } from "@lib/api";
-import { useRouter } from "next/router";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
 /**
@@ -21,18 +20,21 @@ export const AnalyticsContext = createContext<AnalyticsContextProps>({
   post_events() {},
 });
 
-export function AnalyticsProvider({ children }: { children: ReactNode }) {
+export function AnalyticsProvider({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) {
   const [counts, setCounts] = useState<Record<string, number>>({});
-
-  const { asPath, isReady } = useRouter();
 
   // get view count for id
   useEffect(() => {
-    if (isReady)
-      get("/api/count", { id: asPath }, "app")
-        .then(({ data }) => setCounts(data))
-        .catch((e) => console.error(e));
-  }, [isReady]);
+    get("/api/count", { id }, "app")
+      .then(({ data }) => setCounts(data))
+      .catch((e) => console.error(e));
+  }, []);
 
   const post_events = (
     event: string,
@@ -53,10 +55,14 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       }
     )
       .then(
-        ({ data }: { data: { successful_rows: number; quarantined_rows: number }}) => {
+        ({
+          data,
+        }: {
+          data: { successful_rows: number; quarantined_rows: number };
+        }) => {
           if (data.quarantined_rows > 0) console.error("Row quarantined");
           else
-            get("/api/count", { id: asPath }, "app")
+            get("/api/count", { id }, "app")
               .then(({ data }) => setCounts(data))
               .catch((e) => console.error(e));
         }

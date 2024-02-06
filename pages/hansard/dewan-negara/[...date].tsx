@@ -20,7 +20,7 @@ const HansardPage: Page = ({
 
   return (
     <>
-      <AnalyticsProvider>
+      <AnalyticsProvider id={meta.id}>
         <Metadata
           title={date.concat(
             ` ${t("header", { context: `${filename}`.slice(0, 2) })}`
