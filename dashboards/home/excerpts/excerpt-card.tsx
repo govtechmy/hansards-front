@@ -30,25 +30,26 @@ const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
   const { index, sitting, speaker, trimmed_speech } = excerpt;
   const [name, title] = speaker.split("[");
 
-  const quotes = useMemo<string>(() => {
-    const quotes = trimmed_speech.replaceAll("\n\n", " ").split("==");
+  const speech = useMemo<string>(() => {
+    const quotes = trimmed_speech.replaceAll("\n\n", " ").replaceAll("== ==", " ").split("==");
     if (quotes.length === 1) {
       return quotes[0];
     } else {
       let str = "";
       for (let i = 0; i < quotes.length; i++) {
         if (!quotes[i]) continue;
-        if (quotes[i].toLowerCase() === keyword)
+        if (keyword.toLowerCase().includes(quotes[i].toLowerCase()))
           str += `<mark>${quotes[i]}</mark>`;
         else str += quotes[i];
       }
-      return `...${str}...`;
+      return str;
     }
   }, [excerpt]);
 
   return (
     <Link
       href={`hansard/${dewan}/${sitting.date}#${index}`}
+      prefetch={false}
       className="shadow-button p-6 max-w-3xl group rounded-xl border border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:bg-slate-50 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/50"
     >
       <div className="flex flex-col gap-3 relative h-full">
@@ -78,7 +79,7 @@ const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
               },
             }}
           >
-            {quotes}
+            {speech}
           </Markdown>
         </div>
         <span className="flex text-zinc-500 text-xs gap-1 pt-3 border-t dark:border-zinc-800">
