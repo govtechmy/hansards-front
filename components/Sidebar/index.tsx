@@ -1,16 +1,19 @@
-import { Details } from "./details";
-import { Collapse } from "./collapse";
 import Button from "@components/Button";
-import { Transition } from "@headlessui/react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger,
+} from "@components/Sheet";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
-import { WindowContext } from "@lib/contexts/window";
-import { BREAKPOINTS } from "@lib/constants";
 import { cn } from "@lib/helpers";
 import { Mesyuarat } from "@lib/types";
-import { FunctionComponent, ReactNode, useContext, useState } from "react";
+import { ReactNode, useState } from "react";
+import { Details } from "./details";
+import { Collapse } from "./collapse";
 
 interface SidebarProps {
   children: ReactNode;
@@ -28,56 +31,52 @@ interface SidebarProps {
   onClick: (index: string) => void;
 }
 
-const Sidebar: FunctionComponent<SidebarProps> = ({
-  children,
-  data,
-  onClick,
-}) => {
+export default function Sidebar({ children, data, onClick }: SidebarProps) {
   const { t } = useTranslation(["catalogue", "enum"]);
-  const { size } = useContext(WindowContext);
   const [selected, setSelected] = useState<string>();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
   const [showSidebar, setSidebar] = useState<boolean>(true);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
-  const [_, setToggleAnimation] = useState(false);
 
   const styles = {
     base: "px-5 py-1.5 w-full text-start leading-tight",
-    active:
-      "bg-slate-100 font-medium dark:bg-zinc-800 text-zinc-900 dark:text-white",
+    active: "bg-slate-100 font-medium dark:bg-zinc-800 text-foreground",
     inactive: "text-zinc-500",
   };
 
   const Sidebar = () => (
-    <ul>
-      {data ? (
-        data.map(({ id, penggal, yearRange }) => {
-          const parlimen_id = `parlimen-${id}/`;
-          const parlimen = t("parlimen", {
-            ns: "enum",
-            count: id,
-            ordinal: true,
-          });
-          return (
-            <li
-              key={id}
-              title={`${parlimen}${yearRange}`}
-              className={cn(
-                "text-sm relative",
-                selected && selected.startsWith(parlimen_id)
-                  ? styles.active
-                  : styles.inactive
-              )}
-            >
-              <Details
-                open={selected?.startsWith(parlimen_id)}
-                summary={
-                  <span className="flex flex-col">
-                    <span className="font-medium">{parlimen}</span>
-                    {yearRange}
-                  </span>
-                }
+    <div className="sticky top-14 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
+      <ul className="h-[calc(100vh-56px)] lg:h-[calc(100vh-168px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-1.5">
+        {data ? (
+          data.map(({ id, penggal, yearRange }) => {
+            const parlimen_id = `parlimen-${id}/`;
+            const parlimen = t("parlimen", {
+              ns: "enum",
+              count: id,
+              ordinal: true,
+            });
+            return (
+              <li
+                key={id}
+                title={`${parlimen}${yearRange}`}
+                className={cn(
+                  "text-sm relative",
+                  selected && selected.startsWith(parlimen_id)
+                    ? styles.active
+                    : styles.inactive
+                )}
               >
-                <>
+                <Details
+                  key={parlimen_id}
+                  open={selected?.startsWith(parlimen_id)}
+                  summary={
+                    <span className="flex flex-col">
+                      <span className="font-medium">{parlimen}</span>
+                      {yearRange}
+                    </span>
+                  }
+                >
                   {penggal.map(({ id, yearRange }) => {
                     const parlimen_penggal = `${parlimen_id}penggal-${id}`;
                     const penggal_full = t("penggal_full", {
@@ -91,12 +90,10 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                         onClick={() => {
                           setSelected(parlimen_penggal);
                           onClick(parlimen_penggal);
-                          if (size.width < BREAKPOINTS.LG) {
-                            setMobileSidebar(false);
-                          }
+                          setMobileSidebar(false);
                         }}
                         className={cn(
-                          "hover:bg-slate-100 dark:hover:bg-zinc-800 relative ml-2.5",
+                          "hover:bg-bg-hover relative ml-2.5",
                           styles.base,
                           selected === parlimen_penggal
                             ? styles.active
@@ -107,7 +104,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                           {penggal_full}
                         </p>
                         {yearRange}
-                        <SidebarL className="absolute -left-[0.5px] bottom-1/2" />
+                        <SidebarL className="absolute left-[-0.5px] bottom-1/2" />
                       </li>
                     );
                   })}
@@ -115,40 +112,45 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
                     className="absolute left-2.5 top-0 w-px border-l border-slate-400 z-10"
                     style={{ height: (penggal.length - 1) * 47 + 10.5 }}
                   />
-                </>
-              </Details>
-            </li>
-          );
-        })
-      ) : (
-        <p className={cn(styles.base, "text-zinc-500 text-sm italic")}>
-          {t("no_entries")}
-        </p>
-      )}
-    </ul>
+                </Details>
+              </li>
+            );
+          })
+        ) : (
+          <li className={cn(styles.base, "text-zinc-500 text-sm italic")}>
+            {t("no_entries")}
+          </li>
+        )}
+        <div
+          className={
+            showSidebar || mobileSidebar
+              ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-background"
+              : "hidden"
+          }
+        />
+      </ul>
+    </div>
   );
 
-  return (
-    <>
+  if (isDesktop)
+    return (
       <div className="flex w-full">
-        {/* Desktop */}
         <div
           className={cn(
-            "dark:border-r-slate-800 border-r shrink-0 w-11 max-lg:hide-scrollbar",
-            "sticky top-[113px] h-[calc(100vh-113px)] overflow-y-auto",
+            "border-r border-r-border shrink-0 w-14 h-[calc(100vh-112px)] sticky top-28",
             "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
             showSidebar ? "lg:w-60 duration-300" : "hide-scrollbar duration-500"
           )}
         >
           <div
             className={cn(
-              "sticky top-0 z-10 bg-white dark:bg-zinc-900 flex gap-3 px-0 py-3 items-baseline justify-between whitespace-nowrap",
-              showSidebar && "lg:px-5"
+              "sticky top-0 z-10 bg-background flex gap-3 p-3 pb-1.5 items-end justify-between whitespace-nowrap",
+              showSidebar && "lg:pl-5"
             )}
           >
             <h4
               className={cn(
-                "title max-lg:absolute max-lg:-rotate-90 origin-top-left max-lg:translate-y-[150px]",
+                "title",
                 !showSidebar &&
                   "absolute -rotate-90 origin-top-left translate-y-[150px] text-zinc-500"
               )}
@@ -156,22 +158,15 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               {t("full_archive")}
             </h4>
             <Button
-              variant="default"
+              variant="outline"
               className="p-1.5 shadow-button"
               title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
-              onClick={() => {
-                setToggleAnimation(true);
-                if (size.width < BREAKPOINTS.LG) {
-                  setMobileSidebar(true);
-                } else {
-                  setSidebar(!showSidebar);
-                }
-              }}
+              onClick={() => setSidebar(!showSidebar)}
             >
               <ChevronRightIcon
                 className={cn(
                   "h-4.5 w-4.5 transition-transform ease-in-out motion-reduce:transform-none",
-                  showSidebar && size.width >= BREAKPOINTS.LG
+                  showSidebar
                     ? "-rotate-180 duration-500"
                     : "rotate-0 duration-300"
                 )}
@@ -179,61 +174,43 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             </Button>
           </div>
           <Collapse isOpen={showSidebar} horizontal>
-            {size.width > BREAKPOINTS.LG && (
-              <>
-                <Sidebar />
-                <div
-                  className={
-                    showSidebar
-                      ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-white dark:to-zinc-900"
-                      : "hidden"
-                  }
-                />
-              </>
-            )}
+            <Sidebar />
           </Collapse>
         </div>
 
-        {/* Mobile */}
-        {size.width <= BREAKPOINTS.LG && (
-          <>
-            <Transition
-              show={mobileSidebar}
-              as="nav"
-              className="lg:hidden dark:border-zinc-800 shadow-floating fixed inset-0 z-30 flex h-screen w-[200px] flex-col border-r bg-white dark:bg-zinc-900 overflow-y-scroll"
-              enter="transition-opacity duration-75"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="transition-opacity duration-150"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="flex flex-col gap-1 pb-3">
-                <div className="sticky top-0 flex items-center justify-between pt-2 pr-3 z-10 bg-white dark:bg-zinc-900">
-                  <h3 className={cn("title", styles.base)}>
-                    {t("full_archive")}
-                  </h3>
-                  <XMarkIcon
-                    onClick={() => setMobileSidebar(false)}
-                    className="text-zinc-500 h-5 w-5"
-                  />
-                </div>
+        {children}
+      </div>
+    );
 
+  return (
+    <>
+      <div className="flex w-full">
+        <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-border">
+          <div className="sticky top-28 bg-background flex gap-3 py-3 px-2">
+            <h4 className="title absolute -rotate-90 origin-top-left translate-y-[150px]">
+              {t("full_archive")}
+            </h4>
+            <Sheet open={mobileSidebar} onOpenChange={setMobileSidebar}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="p-1.5 shadow-button"
+                  title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
+                >
+                  <ChevronRightIcon className="h-4.5 w-4.5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="pl-3 pr-0">
+                <SheetHeader>
+                  <h3 className="title px-5 mb-1">{t("full_archive")}</h3>
+                </SheetHeader>
                 <Sidebar />
-              </div>
-              <div
-                className="w-[calc(100%-200px)] lg:hidden fixed right-0 top-0 z-30 h-screen bg-zinc-900 bg-opacity-25"
-                onClick={() => setMobileSidebar(false)}
-              />
-            </Transition>
-          </>
-        )}
-
-        {/* Content */}
-        <>{children}</>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+        {children}
       </div>
     </>
   );
-};
-
-export default Sidebar;
+}
