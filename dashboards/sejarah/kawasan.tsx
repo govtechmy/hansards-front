@@ -199,10 +199,6 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
             columns={kawasan_schema}
             isLoading={data.loading}
           />
-
-          <p className="text-zinc-500 text-center pt-8 lg:pt-12">
-            {t("kawasan.disclaimer")}
-          </p>
         </div>
       </Container>
     </>

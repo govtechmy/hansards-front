@@ -277,10 +277,6 @@ const SejarahIndividu = ({
                 )}
               </Panel>
             </Tabs>
-
-            <p className="text-zinc-500 text-center pt-8 lg:pt-12">
-              {t("individu.disclaimer")}
-            </p>
           </div>
         </div>
       </Section>

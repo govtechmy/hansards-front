@@ -60,8 +60,6 @@ const KehadiranDashboard = ({
 
           {/* A breakdown of attendance by key demographics */}
           <Barmeter barmeter={barmeter} loading={loading} />
-
-          <p className="text-zinc-500 text-center">{t("disclaimer")}</p>
         </div>
       </Container>
     </>
