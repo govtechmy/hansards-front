@@ -97,7 +97,7 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
             });
           }}
         >
-          <div className="flex flex-col px-4.5 sm:px-8 pt-3 pb-6 lg:pb-8 w-full h-full">
+          <div className="flex flex-col pl-4.5 sm:pl-8 pt-3 pb-6 lg:pb-8 w-full h-full">
             {data ? (
               PARLIMENS.map((_, index) => {
                 const { id, penggal, yearRange } = data[index];
