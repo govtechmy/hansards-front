@@ -3,7 +3,6 @@ import {
   FaceFrownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
-import { useData } from "@hooks/useData";
 import { useSlice } from "@hooks/useSlice";
 import { useTranslation } from "@hooks/useTranslation";
 import { COLOR } from "@lib/constants";
@@ -11,7 +10,7 @@ import { SliderProvider } from "@lib/contexts/slider";
 import { cn } from "@lib/helpers";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import KeywordFilter, { KeywordFilterProps } from "./keyword-filter";
 
 /**
@@ -36,11 +35,9 @@ const Keyword = ({ query, timeseries }: KeywordProps) => {
   const { q } = query;
   const keyword = q ? String(q) : undefined;
 
-  const { data, setData } = useData({
-    loading: false,
-    minmax: [0, timeseries.date.length - 1],
-  });
-  const { coordinate } = useSlice(timeseries, data.minmax);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [range, setRange] = useState<number[]>([0, timeseries.date.length - 1]);
+  const { coordinate } = useSlice(timeseries, range as [number, number]);
 
   const isEmpty = coordinate.freq.length === 0 || !keyword;
   const dummyFreq = useMemo(
@@ -49,7 +46,8 @@ const Keyword = ({ query, timeseries }: KeywordProps) => {
   );
 
   useEffect(() => {
-    setData("loading", false);
+    setLoading(false);
+    setRange([0, timeseries.date.length - 1]);
     if (keyword && ref && ref.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
@@ -61,11 +59,11 @@ const Keyword = ({ query, timeseries }: KeywordProps) => {
         {/* Search for any keywords or phrases! */}
         <h2 className="header text-center">{t("search_keywords")}</h2>
 
-        <KeywordFilter onLoad={() => setData("loading", true)} query={query} />
+        <KeywordFilter onLoad={() => setLoading(true)} query={query} />
 
         <div className="w-full relative mt-6" ref={ref}>
           {/* Time-series of "keyword” in Parliament */}
-          <h3 className="title leading-7 h-7 block mb-3">
+          <h3 className="title leading-7 block mb-3">
             {keyword &&
               t("timeseries_title", {
                 keyword: keyword,
@@ -76,12 +74,12 @@ const Keyword = ({ query, timeseries }: KeywordProps) => {
               <>
                 <Timeseries
                   className={cn(
-                    !data.loading && isEmpty && "opacity-10",
+                    !loading && isEmpty && "opacity-10",
                     "h-[300px]"
                   )}
-                  isLoading={data.loading}
+                  isLoading={loading}
                   enableAnimation={!play}
-                  interval="day"
+                  interval={coordinate.date.length > 1095 ? "month": "day"}
                   data={{
                     labels: coordinate.date,
                     datasets: [
@@ -103,15 +101,15 @@ const Keyword = ({ query, timeseries }: KeywordProps) => {
                 <Slider
                   className={cn(isEmpty && "opacity-10", "pt-8")}
                   type="range"
-                  period="day"
-                  value={data.minmax}
+                  period={coordinate.date.length > 1095 ? "month": "day"}
+                  value={range}
                   data={timeseries.date}
-                  onChange={(e) => setData("minmax", e)}
+                  onChange={(e) => setRange(e)}
                 />
               </>
             )}
           </SliderProvider>
-          {!data.loading && isEmpty && (
+          {!loading && isEmpty && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-slate-200 dark:bg-zinc-800 flex items-center gap-2 rounded-md px-3 py-1.5">
                 {keyword && coordinate.freq.length === 0 ? (
