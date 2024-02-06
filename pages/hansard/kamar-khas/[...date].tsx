@@ -1,14 +1,15 @@
-import Hansard from "@data-catalogue/hansard";
-import { get } from "@lib/api";
 import Metadata from "@components/Metadata";
-import { withi18n } from "@lib/decorators";
+import { SearchProvider } from "@data-catalogue/hansard/search/context";
+import Hansard from "@data-catalogue/hansard";
 import { useTranslation } from "@hooks/useTranslation";
+import { get } from "@lib/api";
+import { AnalyticsProvider } from "@lib/contexts/analytics";
+import { withi18n } from "@lib/decorators";
+import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import { AnalyticsProvider } from "@lib/contexts/analytics";
-import { SearchProvider } from "@data-catalogue/context";
 
-const CatalogueIndexPage: Page = ({
+const HansardPage: Page = ({
   meta,
   cycle,
   date,
@@ -19,7 +20,7 @@ const CatalogueIndexPage: Page = ({
 
   return (
     <>
-      <AnalyticsProvider meta={meta}>
+      <AnalyticsProvider>
         <Metadata
           title={date.concat(
             ` ${t("header", { context: `${filename}`.slice(0, 2) })}`
@@ -56,20 +57,17 @@ export const getStaticProps: GetStaticProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async ({ params }) => {
     try {
-      const [house, date] = params?.sitting
-        ? (params.sitting as string[])
-        : ["dewan-rakyat", "2023-03-21"];
+      const date = params?.date ? params.date.toString() : null;
 
       const { data } = await get("api/sitting/", {
-        house,
+        house: "kamar-khas",
         date,
       });
 
       return {
         props: {
           meta: {
-            id: `${house}/${date}`,
-            type: "data-catalogue",
+            id: `${routes.HANSARD_KK}/${date}`,
           },
           cycle: data.meta.cycle,
           date: date,
@@ -84,4 +82,4 @@ export const getStaticProps: GetStaticProps = withi18n(
   }
 );
 
-export default CatalogueIndexPage;
+export default HansardPage;
