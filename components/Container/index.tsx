@@ -8,7 +8,7 @@ type ContainerProps = {
 };
 
 const Container: FunctionComponent<ContainerProps> = ({
-  background,
+  background = "bg-background",
   className,
   children,
 }) => {
