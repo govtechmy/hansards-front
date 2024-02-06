@@ -45,10 +45,7 @@ const Hero: FunctionComponent<HeroProps> = ({
   const { t, i18n } = useTranslation();
 
   const { counts } = useContext(AnalyticsContext);
-  const hasCounts = counts && counts.length > 0;
-  const views: number = hasCounts
-    ? counts.find((e) => e.type === "views")?.counts ?? 0
-    : 0;
+  const { views } = counts;
 
   const background_style = useMemo<string>(() => {
     switch (background) {
@@ -83,12 +80,12 @@ const Hero: FunctionComponent<HeroProps> = ({
                 </div>
               )}
 
-              {(header || description || hasCounts) && (
+              {(header || description || views) && (
                 <div className="space-y-3">
                   {header && (
                     <h1
                       className={cn(
-                        "font-header text-3xl font-bold leading-[38px] text-zinc-900 dark:text-white",
+                        "font-header text-3xl font-bold leading-[38px] text-foreground",
                         header[1]
                       )}
                       data-testid="hero-header"
@@ -111,7 +108,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                     description
                   )}
 
-                  {hasCounts && (
+                  {views && (
                     <p
                       className="text-zinc-500 flex gap-2 text-sm"
                       data-testid="hero-views"
