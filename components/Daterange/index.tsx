@@ -175,7 +175,7 @@ const Daterange = ({
               : anchor
           )}
         >
-          <form className="pt-3 px-3 flex flex-col">
+          <form className="max-sm:hidden pt-3 px-3 flex flex-col">
             <div className="flex items-center gap-x-3">
               <input
                 type="date"
