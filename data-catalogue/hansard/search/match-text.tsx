@@ -17,10 +17,7 @@ export function getMatchText(
   if (typeof text === "number") {
     textStr = `${text}`;
   }
-  const regexp = new RegExp(
-    `\\**${escapeStr(keywordStr).split("").join("\\**")}\\**`,
-    ignorecase ? "gi" : "g"
-  );
+  const regexp = new RegExp(escapeStr(keywordStr), ignorecase ? "gi" : "g");
 
   if (
     typeof keywordStr !== "string" ||

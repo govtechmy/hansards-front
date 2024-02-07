@@ -60,10 +60,9 @@ const Hansard = ({
   function handleClick() {
     if (sidebarRef.current) sidebarRef.current.open();
   }
-  // const [narrowMode, setNarrowMode] = useState<boolean>(false);
 
   const { counts, download } = useAnalytics(hansard_id);
-  const { downloads, shares, views } = counts 
+  const { downloads, shares, views } = counts;
 
   let curr = DateTime.fromISO("00:00");
 
@@ -91,7 +90,13 @@ const Hansard = ({
 
         // Search
         const matchData = useMemo(
-          () => getMatchText(searchValue, speech),
+          () =>
+            getMatchText(
+              searchValue,
+              searchValue
+                ? speech.replaceAll("*", "").replaceAll("**", "")
+                : speech
+            ),
           [searchValue, speech]
         );
 
@@ -143,7 +148,7 @@ const Hansard = ({
             for (let i = 0; i < matchData.slices.length; i++) {
               if (i === matchData.slices.length - 1) str += matchData.slices[i];
               else
-                str += `${matchData.slices[i]} <mark id='${i}'>${matchData.matches[i]}</mark>`;
+                str += `${matchData.slices[i]}<mark id='${i}'>${matchData.matches[i]}</mark>`;
             }
             return parseMarkdown(str);
           }
@@ -207,7 +212,7 @@ const Hansard = ({
           <div
             key={heading}
             ref={(ref) => (scrollRef.current[sidebarId] = ref)}
-            className="flex flex-col bg-background gap-y-3 lg:gap-y-6 scroll-mt-40 lg:scroll-mt-28"
+            className="flex flex-col bg-background gap-y-3 lg:gap-y-6 scroll-mt-40 lg:scroll-mt-28 max-w-[1000px]"
           >
             <p
               className={cn(
@@ -259,127 +264,117 @@ const Hansard = ({
         });
       }}
     >
-      <div className="flex flex-col w-full items-center border-r border-border relative">
-        <Hero>
-          <div className="space-y-6 py-8 lg:py-12 xl:w-full">
-            <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
-              <Link href={dewan_route} className="link" prefetch={false}>
-                {t("archive", {
-                  context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
-                })}
-              </Link>
-              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-              <Link href={parlimen_link} className="link" prefetch={false}>
-                {t("parlimen", { ns: "enum", count: cycle.term })}
-              </Link>
-              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-              <Link href={penggal_link} className="link" prefetch={false}>
-                {t("penggal_full", { ns: "enum", n: cycle.session })}
-              </Link>
-              <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-              <Link href={mesyuarat_link} className="link" prefetch={false}>
-                {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
-              </Link>
-            </div>
-            <div className="flex justify-between gap-3 lg:gap-6 items-center">
-              <DateCard size="lg" date={date} />
-              <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
-                <h1
-                  className="text-3xl font-bold leading-[38px] text-foreground"
-                  data-testid="hero-header"
-                >
-                  {t("header", {
+      {(open) => (
+        <div className="flex flex-col w-full items-center border-r border-border relative">
+          <Hero>
+            <div className="space-y-6 py-8 lg:py-12 xl:w-full">
+              <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
+                <Link href={dewan_route} className="link" prefetch={false}>
+                  {t("archive", {
                     context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
                   })}
-                </h1>
-                {(views || shares || downloads) ? (
-                  <p
-                    className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
-                    data-testid="hero-views"
+                </Link>
+                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+                <Link href={parlimen_link} className="link" prefetch={false}>
+                  {t("parlimen", { ns: "enum", count: cycle.term })}
+                </Link>
+                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+                <Link href={penggal_link} className="link" prefetch={false}>
+                  {t("penggal_full", { ns: "enum", n: cycle.session })}
+                </Link>
+                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+                <Link href={mesyuarat_link} className="link" prefetch={false}>
+                  {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
+                </Link>
+              </div>
+              <div className="flex justify-between gap-3 lg:gap-6 items-center">
+                <DateCard size="lg" date={date} />
+                <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
+                  <h1
+                    className="text-3xl font-bold leading-[38px] text-foreground"
+                    data-testid="hero-header"
                   >
-                    <span>{`${numFormat(views, "compact")} ${t("views", {
-                      ns: "common",
-                      count: views,
-                    })}`}</span>
-                    •
-                    <span>{`${numFormat(shares, "compact")} ${t("shares", {
-                      count: shares,
-                    })}`}</span>
-                    •
-                    <span>{`${numFormat(downloads, "compact")} ${t(
-                      "downloads",
-                      {
+                    {t("header", {
+                      context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
+                    })}
+                  </h1>
+                  {views >= 0 || shares >= 0 || downloads >= 0 ? (
+                    <p
+                      className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
+                      data-testid="hero-views"
+                    >
+                      <span>{`${numFormat(views, "compact")} ${t("views", {
                         ns: "common",
-                        count: downloads,
-                      }
-                    )}`}</span>
-                  </p>
-                ) : (<div className="h-5 w-full"/>)}
+                        count: views,
+                      })}`}</span>
+                      •
+                      <span>{`${numFormat(shares, "compact")} ${t("shares", {
+                        count: shares,
+                      })}`}</span>
+                      •
+                      <span>{`${numFormat(downloads, "compact")} ${t(
+                        "downloads",
+                        {
+                          ns: "common",
+                          count: downloads,
+                        }
+                      )}`}</span>
+                    </p>
+                  ) : (
+                    <div className="h-5 w-full" />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
+                <span className={styles.link_blue}>
+                  <CiteIcon className="h-5 w-5" />
+                  {t("cite")}
+                </span>
+                <At
+                  external
+                  href={`${hansard_url}.pdf`}
+                  onClick={() => download("pdf")}
+                  className={styles.link_blue}
+                >
+                  <DownloadIcon className="h-5 w-5" />
+                  {t("download", { context: "pdf" })}
+                </At>
+                <At
+                  external
+                  href={`${hansard_url}.csv`}
+                  onClick={() => download("csv")}
+                  className={styles.link_blue}
+                >
+                  <DownloadIcon className="h-5 w-5" />
+                  {t("download", { context: "csv" })}
+                </At>
+                <ShareButton
+                  date={date}
+                  hansard_id={hansard_id}
+                  trigger={(onClick) => (
+                    <button className={styles.link_blue} onClick={onClick}>
+                      <ShareIcon className="h-5 w-5" />
+                      {t("share")}
+                    </button>
+                  )}
+                />
               </div>
             </div>
+          </Hero>
 
-            <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
-              <span className={styles.link_blue}>
-                <CiteIcon className="h-5 w-5" />
-                {t("cite")}
-              </span>
-              <At
-                external
-                href={`${hansard_url}.pdf`}
-                onClick={() => download("pdf")}
-                className={styles.link_blue}
-              >
-                <DownloadIcon className="h-5 w-5" />
-                {t("download", { context: "pdf" })}
-              </At>
-              <At
-                external
-                href={`${hansard_url}.csv`}
-                onClick={() => download("csv")}
-                className={styles.link_blue}
-              >
-                <DownloadIcon className="h-5 w-5" />
-                {t("download", { context: "csv" })}
-              </At>
-              <ShareButton
-                date={date}
-                hansard_id={hansard_id}
-                trigger={(onClick) => (
-                  <button className={styles.link_blue} onClick={onClick}>
-                    <ShareIcon className="h-5 w-5" />
-                    {t("share")}
-                  </button>
-                )}
-              />
-            </div>
+          <HansardSearch />
+          <div
+            className={cn(
+              "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-background gap-y-6 flex flex-col relative",
+              open && "mx-auto"
+            )}
+          >
+            <MobileButton onClick={handleClick} />
+            {recurSpeech(speeches)}
           </div>
-        </Hero>
-
-        <HansardSearch />
-        <div
-          className={cn(
-            "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-background gap-y-6 flex flex-col relative mx-auto"
-            // narrowMode ? "w-max" : "max-w-[1000px]"
-          )}
-        >
-          {/* <div
-              className={cn(
-                "hidden lg:block absolute top-2 right-40 p-1.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-button",
-                narrowMode ? "right-8" : "right-40"
-              )}
-            >
-              <Toggle
-                enabled={false}
-                onStateChanged={() => {
-                  setNarrowMode(!narrowMode);
-                }}
-                label={t("narrow")}
-              />
-            </div> */}
-          <MobileButton onClick={handleClick} />
-          {recurSpeech(speeches)}
         </div>
-      </div>
+      )}
     </HansardSidebar>
   );
 };
