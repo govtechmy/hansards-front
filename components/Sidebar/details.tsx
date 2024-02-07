@@ -7,9 +7,10 @@ export const Details = ({
   children,
   className,
   open,
+  onOpen,
   summary,
   ...props
-}: ComponentProps<"details"> & { summary: ReactElement }): ReactElement => {
+}: ComponentProps<"details"> & { summary: ReactElement; onOpen: () => void }): ReactElement => {
   const [openState, setOpen] = useState(!!open);
 
   // To animate the close animation we have to delay the DOM node state here.
@@ -38,12 +39,13 @@ export const Details = ({
         onClick={(e) => {
           e.preventDefault();
           setOpen((v) => !v);
+          onOpen();
         }}
       >
         {summary}
         <ChevronRightIcon
           className={cn(
-            "h-4.5 w-4.5 -mx-2 shrink-0 transition-transform",
+            "h-4.5 w-4.5 -mx-1 shrink-0 transition-transform",
             openState && "rotate-90"
           )}
         />

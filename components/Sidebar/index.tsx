@@ -31,6 +31,8 @@ interface SidebarProps {
   onClick: (index: string) => void;
 }
 
+const TreeState: Record<string, boolean> = Object.create(null);
+
 export default function Sidebar({ children, data, onClick }: SidebarProps) {
   const { t } = useTranslation(["catalogue", "enum"]);
   const [selected, setSelected] = useState<string>();
@@ -41,7 +43,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
 
   const styles = {
     base: "px-5 py-1.5 w-full text-start leading-tight",
-    active: "bg-slate-100 font-medium dark:bg-zinc-800 text-foreground",
+    active: "bg-bg-hover font-medium text-foreground",
     inactive: "text-zinc-500",
   };
 
@@ -56,6 +58,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
               count: id,
               ordinal: true,
             });
+            const open = TreeState === undefined ? false : TreeState[id]
             return (
               <li
                 key={id}
@@ -69,7 +72,8 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
               >
                 <Details
                   key={parlimen_id}
-                  open={selected?.startsWith(parlimen_id)}
+                  open={open || selected?.startsWith(parlimen_id)}
+                  onOpen={() => TreeState[id] = !open}
                   summary={
                     <span className="flex flex-col">
                       <span className="font-medium">{parlimen}</span>
@@ -93,8 +97,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                           setMobileSidebar(false);
                         }}
                         className={cn(
-                          "hover:bg-bg-hover relative ml-2.5",
-                          styles.base,
+                          "hover:bg-bg-hover relative ml-2.5 px-5 py-0.5",
                           selected === parlimen_penggal
                             ? styles.active
                             : styles.inactive
@@ -117,7 +120,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
             );
           })
         ) : (
-          <li className={cn(styles.base, "text-zinc-500 text-sm italic")}>
+          <li className="px-5 py-1.5 text-zinc-500 text-sm italic">
             {t("no_entries")}
           </li>
         )}

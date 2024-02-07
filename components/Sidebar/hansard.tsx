@@ -17,7 +17,7 @@ import { Details } from "./details";
 import { Collapse } from "./collapse";
 
 interface HansardSidebarProps {
-  children: ReactNode;
+  children: (open: boolean) => ReactNode;
   onClick: (index: string) => void;
   speeches: Speeches;
 }
@@ -26,12 +26,15 @@ export interface SidebarOpen {
   open: () => void;
 }
 
+const TreeState: Record<string, boolean> = Object.create(null);
+
 const HansardSidebar = forwardRef(
   (
     { children, speeches, onClick }: HansardSidebarProps,
     ref: ForwardedRef<SidebarOpen>
   ) => {
     const { t, i18n } = useTranslation(["hansard", "common"]);
+    const [selected, setSelected] = useState<string>();
     const [showSidebar, setSidebar] = useState<boolean>(true);
     const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
 
@@ -46,14 +49,11 @@ const HansardSidebar = forwardRef(
     );
 
     const styles = {
-      base: "px-5 py-1.5 w-full text-start leading-tight",
-      active: "bg-slate-100 font-medium dark:bg-zinc-800 text-foreground",
+      active: "bg-bg-hover font-medium text-foreground",
       inactive: "text-zinc-500",
     };
 
     const Sidebar = () => {
-      const [selected, setSelected] = useState<string>();
-
       const recurTitle = (
         speeches: Speeches,
         first: boolean = true,
@@ -66,6 +66,8 @@ const HansardSidebar = forwardRef(
             const keys = Object.keys(s);
             const key = keys[0];
             const id = prev_id ? `${prev_id}_${key}` : key;
+            const open = TreeState[id] === undefined ? false : TreeState[id];
+
             return (
               <li
                 key={id}
@@ -88,8 +90,7 @@ const HansardSidebar = forwardRef(
                       setMobileSidebar(false);
                     }}
                     className={cn(
-                      "relative hover:bg-slate-100 dark:hover:bg-zinc-800",
-                      styles.base,
+                      "relative hover:bg-bg-hover box-border px-5 py-1.5 w-full text-start",
                       selected === id ? styles.active : styles.inactive
                     )}
                   >
@@ -107,7 +108,8 @@ const HansardSidebar = forwardRef(
                   <Details
                     className="relative"
                     key={id}
-                    open={selected?.startsWith(id)}
+                    open={open || selected?.startsWith(id)}
+                    onOpen={() => (TreeState[id] = !open)}
                     summary={
                       <>
                         <span title={key} className="font-medium">
@@ -133,15 +135,24 @@ const HansardSidebar = forwardRef(
         });
       };
       return (
-        <ul>
-          {speeches ? (
-            recurTitle(speeches)
-          ) : (
-            <li className={cn(styles.base, "text-zinc-500 text-sm italic")}>
-              {t("no_entries", { ns: "common" })}
-            </li>
-          )}
-        </ul>
+        <div className="sticky top-0 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
+          <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-112px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-1.5">
+            {speeches ? (
+              recurTitle(speeches)
+            ) : (
+              <li className="px-5 py-1.5 text-zinc-500 text-sm italic">
+                {t("no_entries", { ns: "common" })}
+              </li>
+            )}
+            <div
+              className={
+                showSidebar || mobileSidebar
+                  ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-background"
+                  : "hidden"
+              }
+            />
+          </ul>
+        </div>
       );
     };
 
@@ -151,18 +162,17 @@ const HansardSidebar = forwardRef(
           {/* Desktop */}
           <div
             className={cn(
-              "relative border-r border-r-border shrink-0 w-16 hidden lg:block pl-4",
-              "sticky top-14 h-[calc(100dvh-56px)] overflow-y-auto sidebar-scrollbar",
+              "border-r border-r-border shrink-0 w-14 hidden lg:block md:ml-4.5 lg:ml-6 sticky top-14 h-[calc(100dvh-56px)]",
               "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
               showSidebar
-                ? "w-[300px] duration-300"
+                ? "w-[250px] duration-300"
                 : "hide-scrollbar duration-500"
             )}
           >
             <div
               className={cn(
-                "sticky top-0 z-10 bg-background flex gap-3 max-lg:px-2 py-3 items-baseline justify-between whitespace-nowrap",
-                showSidebar ? "lg:pl-5 lg:pr-2" : "lg:px-2"
+                "sticky top-14 z-10 bg-background flex gap-3 p-3 pb-1.5 items-baseline justify-between whitespace-nowrap",
+                showSidebar && "lg:pl-5"
               )}
             >
               <h3
@@ -196,13 +206,6 @@ const HansardSidebar = forwardRef(
             </div>
             <Collapse isOpen={showSidebar} horizontal>
               <Sidebar />
-              <div
-                className={
-                  showSidebar
-                    ? "sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-background"
-                    : "hidden"
-                }
-              />
             </Collapse>
           </div>
 
@@ -213,12 +216,11 @@ const HansardSidebar = forwardRef(
                 <h3 className="title px-5 mb-1">{t("toc")}</h3>
               </SheetHeader>
               <Sidebar />
-              <div className="sticky bottom-0 h-6 bg-gradient-to-b from-transparent to-background" />
             </SheetContent>
           </Sheet>
 
           {/* Content */}
-          {children}
+          {children(showSidebar)}
         </div>
       </div>
     );
