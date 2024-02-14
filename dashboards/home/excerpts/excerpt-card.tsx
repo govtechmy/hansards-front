@@ -68,7 +68,6 @@ const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
         </div>
         <div className="flex-grow">
           <Markdown
-            className=""
             rehypePlugins={[rehypeRaw]}
             components={{
               mark(props) {
