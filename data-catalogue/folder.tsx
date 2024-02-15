@@ -53,7 +53,7 @@ const CatalogueFolder = forwardRef(
     { meeting, meeting_id }: CatalogueFolderProps,
     ref: ForwardedRef<FolderOpen>
   ) => {
-    const { t, i18n } = useTranslation(["catalogue", "enum"]);
+    const { t, i18n } = useTranslation(["catalogue", "enum", "hansard"]);
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const [open, setOpen] = useState<boolean>(false);
@@ -106,7 +106,7 @@ const CatalogueFolder = forwardRef(
               : routes.HANSARD_DN
           }/${date}`;
           const { download, share } = useAnalytics(hansard_id);
-          const URL = `https://hansard.parlimen.gov.my/${hansard_id}`;
+          const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
 
           const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
           const modulo = sitting_list.length % cols;
@@ -181,7 +181,7 @@ const CatalogueFolder = forwardRef(
                           value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
                         },
                         {
-                          label: "E-mail",
+                          label: t("email", {ns: "hansard"}),
                           value: `mailto:?subject=${title}&body=${URL}`,
                         },
                         {

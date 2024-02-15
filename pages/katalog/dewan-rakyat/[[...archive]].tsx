@@ -40,7 +40,7 @@ export const getStaticPaths: GetStaticPaths = () => {
 };
 
 export const getStaticProps: GetStaticProps = withi18n(
-  ["catalogue", "enum"],
+  ["catalogue", "enum", "hansard"],
   async ({ params }) => {
     try {
       const { data } = await get("api/catalogue/", {
