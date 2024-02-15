@@ -29,11 +29,21 @@ interface ListProps {
   onChange: (index: number) => void;
 }
 
-const Panel: FunctionComponent<PanelProps> = ({ children, className, name }) => {
+const Panel: FunctionComponent<PanelProps> = ({
+  children,
+  className,
+  name,
+}) => {
   return <div className={className}>{children}</div>;
 };
 
-const List: FunctionComponent<ListProps> = ({ options, current, onChange, icons, className }) => {
+const List: FunctionComponent<ListProps> = ({
+  options,
+  current,
+  onChange,
+  icons,
+  className,
+}) => {
   return (
     <ul className={cn("flex flex-wrap", className)}>
       {options.map((option, index) => (
@@ -55,7 +65,10 @@ const List: FunctionComponent<ListProps> = ({ options, current, onChange, icons,
   );
 };
 
-const Tabs: FunctionComponent<TabsProps> & { Panel: typeof Panel; List: typeof List } = ({
+const Tabs: FunctionComponent<TabsProps> & {
+  Panel: typeof Panel;
+  List: typeof List;
+} = ({
   className = "",
   hidden,
   children,
@@ -71,14 +84,17 @@ const Tabs: FunctionComponent<TabsProps> & { Panel: typeof Panel; List: typeof L
   return (
     <>
       <Tab.Group selectedIndex={current} onChange={onChange}>
-        <div className={cn("flex flex-wrap items-end justify-between gap-3", className)}>
-          <div>
-            {title && typeof title === "string" ? (
-              <span className="text-base font-bold">{title}</span>
-            ) : (
-              title
-            )}
-          </div>
+        <div
+          className={cn(
+            "flex flex-wrap items-end justify-between gap-3",
+            className
+          )}
+        >
+          {title && typeof title === "string" ? (
+            <span className="text-base font-bold">{title}</span>
+          ) : (
+            title
+          )}
 
           <Tab.List
             className={cn(
