@@ -1,90 +1,62 @@
 import { cn } from "@lib/helpers";
-import { ReactNode, useMemo } from "react";
-import { Speech } from "@lib/types";
+import { ReactNode } from "react";
 import ShareButton from "./share";
+import ImageWithFallback from "@components/ImageWithFallback";
 
 /**
  * Speech Bubble
  * @overview Status: In-development
  */
 
-export type SpeechBubbleProps = Omit<Speech, "timestamp" | "speech"> & {
-  position: "left" | "right";
-  party: "bn" | "gps" | "ph" | "pn" | "ydp" | string;
-  timeString: string;
+export type SpeechBubbleProps = {
+  speaker: ReactNode;
   children: ReactNode;
-  keyword?: string;
-  hansard_id: string;
   date: string;
+  hansard_id: string;
+  index: number;
+  isYDP: boolean;
   length: number;
+  speech_id: string;
+  timeString: string;
 };
 
 const SpeechBubble = ({
-  party,
-  position,
-  author,
+  speaker,
   children,
-  index,
-  timeString,
-  hansard_id,
   date,
+  hansard_id,
+  index,
+  isYDP,
   length,
+  speech_id,
+  timeString,
 }: SpeechBubbleProps) => {
-  const [name, title] = author ? author.split("[") : [];
-  const colour = useMemo<string>(() => {
-    switch (party) {
-      case "bn":
-        return "bn";
-      case "gps":
-        return "gps";
-      case "ph":
-        return "ph";
-      case "pn":
-        return "pn";
-      case "ydp":
-        return "text-secondary";
-      default:
-        return "text-zinc-500";
-    }
-  }, [party]);
-
   return (
     <>
-      <div
-        id={`${index}`}
-        key={index}
-        className={cn("speech", position === "left" ? "lt" : "rt")}
-      >
+      <div id={`${index}`} key={speech_id} className={cn("s", isYDP && "ydp")}>
         {/* Avatar */}
-        <div className={cn("avatar-wrapper", party === "ydp" && "ydp")}>
-          <div className="avatar"></div>
+        <div className={cn("aw", isYDP && "ydp")}>
+          <div className="a">
+            <ImageWithFallback
+              fallback={<div className="border border-border w-9 h-9 rounded-full" />}
+              src={`/static/`}
+              width={36}
+              height={1}
+              alt={``}
+              className="p"
+              priority={index <= 5}
+            />
+          </div>
         </div>
-        {/* Speech Bubble */}
+        {/* Bubble */}
         <div
-          className={cn(
-            "bubble",
-            party == "ydp" && "ydp",
-            length <= 222 && "max-w-prose"
-          )}
+          className={cn("b", isYDP && "ydp", length <= 222 && "max-w-prose")}
         >
-          {name || title ? (
-            <div className="speaker-wrapper">
-              <p className={cn("speaker", colour)}>
-                {name}
-                {title && (
-                  <span className="text-zinc-500 dark:text-zinc-400 font-normal">
-                    {"- " + title.slice(0, -1)}
-                  </span>
-                )}
-              </p>
-            </div>
-          ) : (
-            <></>
-          )}
+          {speaker ? <div className="nw">{speaker}</div> : <></>}
           <div className="space-y-3">{children}</div>
 
-          <ShareButton date={date} hansard_id={hansard_id} index={index} />
-          <span className="ts">{timeString}</span>
+          <ShareButton date={date} hansard_id={hansard_id} index={`${index}`} />
+          <span className="t">{timeString}</span>
         </div>
       </div>
     </>
