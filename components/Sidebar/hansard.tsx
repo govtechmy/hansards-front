@@ -65,14 +65,14 @@ const HansardSidebar = forwardRef(
           } else {
             const keys = Object.keys(s);
             const key = keys[0];
-            const id = prev_id ? `${prev_id}_${key}` : key;
+            const id = prev_id ? `${prev_id}_${i}` : `${i}`;
             const open = TreeState[id] === undefined ? false : TreeState[id];
 
             return (
               <li
                 key={id}
                 className={cn(
-                  "text-sm relative",
+                  "text-sm relative mr-px",
                   prev_id && "ml-2.5",
                   !first &&
                     "border-l border-slate-400 last-of-type:border-transparent",
@@ -134,9 +134,10 @@ const HansardSidebar = forwardRef(
           }
         });
       };
+
       return (
         <div className="sticky top-0 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
-          <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-112px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-1.5">
+          <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-112px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-3">
             {speeches ? (
               recurTitle(speeches)
             ) : (
@@ -171,7 +172,7 @@ const HansardSidebar = forwardRef(
           >
             <div
               className={cn(
-                "sticky top-14 z-10 bg-background flex gap-3 p-3 pb-1.5 items-baseline justify-between whitespace-nowrap",
+                "sticky top-14 z-10 bg-background flex gap-3 p-3 pb-0 items-baseline justify-between whitespace-nowrap",
                 showSidebar && "lg:pl-5"
               )}
             >
