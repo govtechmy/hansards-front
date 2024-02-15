@@ -4,7 +4,6 @@ import {
   HansardSidebar,
   Hero,
   Markdown,
-  Toggle,
 } from "@components/index";
 import { SidebarOpen } from "@components/Sidebar/hansard";
 import MobileButton from "@components/Sidebar/mobile-button";
@@ -67,12 +66,17 @@ const Hansard = ({
   let curr = DateTime.fromISO("00:00");
 
   const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
-    let { searchValue, activeId } = useContext(SearchContext);
+    let { searchValue } = useContext(SearchContext);
     const { onUpdateMatchList } = useContext(SearchEventContext);
+    const isFirstLevel = !prev_id;
 
-    return speeches.map((s) => {
+    return speeches.map((s, i) => {
+      const sidebar_id = isFirstLevel ? `${i}` : `${prev_id}_${i}`;
+
+      // if annotation, speech, timestamp
       if (isSpeech(s)) {
-        const { speech, author, timestamp, is_annotation, index } = s;
+        const { author, is_annotation, index, speech, timestamp } = s;
+        const speech_id = `${sidebar_id}-${index}`;
 
         // Timestamp
         const hr = String(timestamp).slice(0, 2);
@@ -88,7 +92,58 @@ const Hansard = ({
           locale: "en-US",
         });
 
+        const time = timestampChangedFrom(prev) ? (
+          <p className="t">
+            {highlightKeyword(timeString, `${speech_id}_time`)}
+          </p>
+        ) : (
+          <></>
+        );
+
         // Search
+        const names = author !== "ANNOTATION" ? author.split("[") : ["", ""];
+
+        const IS_YDP = [
+          "Tuan Yang di-Pertua",
+          "Timbalan Yang di-Pertua",
+          "Tuan Pengerusi",
+        ].some((ydp) => author.includes(ydp));
+
+        const party: string = IS_YDP ? "ydp" : "";
+        const colour = useMemo<string>(() => {
+          switch (party) {
+            case "bn":
+              return "bn";
+            case "gps":
+              return "gps";
+            case "ph":
+              return "ph";
+            case "pn":
+              return "pn";
+            case "ydp":
+              return "text-secondary";
+            default:
+              return "text-zinc-500";
+          }
+        }, [party]);
+
+        const speaker =
+          author !== "ANNOTATION" ? (
+            <p className={cn("n", colour)}>
+              {highlightKeyword(names[0], `${speech_id}_title`)}
+              {names[1] ? (
+                <span className="o">
+                  {highlightKeyword(
+                    `- ${names[1].slice(0, -1)}`,
+                    `${speech_id}_subtitle`
+                  )}
+                </span>
+              ) : undefined}
+            </p>
+          ) : (
+            <></>
+          );
+
         const matchData = useMemo(
           () =>
             getMatchText(
@@ -103,7 +158,7 @@ const Hansard = ({
         useEffect(() => {
           if (typeof matchData === "object") {
             const matchIds = matchData.matches.map((_, i) => ({
-              id: `${index}_${i}`,
+              id: `${speech_id}_${i}`,
               idCount: i,
             }));
             onUpdateMatchList(matchIds);
@@ -112,13 +167,12 @@ const Hansard = ({
 
         const parseMarkdown = (children: string) => (
           <Markdown
-            className={cn(is_annotation && "a")}
             rehypePlugins={[rehypeRaw]}
             disallowedElements={["code"]}
             components={{
               mark(props) {
                 const { node, id, ...rest } = props;
-                const matchId = `${index}_${id}`;
+                const matchId = `${speech_id}_${id}`;
                 const { activeId } = useContext(SearchContext);
                 const backgroundColor =
                   matchId === activeId ? COLOR.PRIMARY : "#DDD6B0";
@@ -154,29 +208,21 @@ const Hansard = ({
           }
         }, [searchValue]);
 
-        const IS_YDP = [
-          "Tuan Yang di-Pertua",
-          "Timbalan Yang di-Pertua",
-          "Tuan Pengerusi",
-        ].some((ydp) => author.includes(ydp));
-
         return (
           <>
-            {timestampChangedFrom(prev) && <p className="time">{timeString}</p>}
+            {time}
             {author === "ANNOTATION" ? (
-              <p className="anno">{highlightKeyword(matchData, `${index}`)}</p>
+              <div className="a">{_speech}</div>
             ) : (
               <SpeechBubble
-                party={IS_YDP ? "ydp" : ""}
-                position={IS_YDP ? "right" : "left"}
-                author={author}
-                is_annotation={is_annotation}
+                speaker={speaker}
                 timeString={timeString}
                 index={index}
-                keyword={searchValue}
+                speech_id={speech_id}
                 hansard_id={hansard_id}
                 date={date}
                 length={speech.length}
+                isYDP={IS_YDP}
               >
                 {_speech}
               </SpeechBubble>
@@ -185,44 +231,22 @@ const Hansard = ({
         );
       } else {
         const heading = Object.keys(s)[0];
-        const isFirstHeading = !prev_id;
-        const sidebarId = isFirstHeading ? heading : `${prev_id}_${heading}`;
-
-        const matchData = useMemo(
-          () => getMatchText(searchValue, heading),
-          [searchValue, heading]
-        );
-
-        useEffect(() => {
-          if (typeof matchData === "object") {
-            const matchIds = matchData.matches.map((_, i) => ({
-              id: `${heading}_${i}`,
-              idCount: i,
-            }));
-            onUpdateMatchList(matchIds);
-          } else onUpdateMatchList([]);
-        }, [matchData]);
-
-        const _heading = useMemo<ReactNode>(
-          () => highlightKeyword(matchData, heading),
-          [searchValue, activeId]
-        );
 
         return (
           <div
             key={heading}
-            ref={(ref) => (scrollRef.current[sidebarId] = ref)}
+            ref={(ref) => (scrollRef.current[sidebar_id] = ref)}
             className="flex flex-col bg-background gap-y-3 lg:gap-y-6 scroll-mt-40 lg:scroll-mt-28 max-w-[1000px]"
           >
             <p
               className={cn(
-                "text-foreground text-center py-3 lg:sticky top-28 bg-background z-10",
-                isFirstHeading ? "font-bold" : "font-medium"
+                "text-foreground text-center py-3 lg:sticky top-28 bg-background z-10 [text-wrap:balance]",
+                isFirstLevel ? "font-bold" : "font-medium"
               )}
             >
-              {_heading}
+              {highlightKeyword(heading, sidebar_id)}
             </p>
-            {recurSpeech(s[heading], sidebarId)}
+            {recurSpeech(s[heading], sidebar_id)}
           </div>
         );
       }
