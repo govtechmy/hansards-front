@@ -34,7 +34,7 @@ import { ReactNode, useState } from "react";
 interface ShareDialogDrawerProps {
   date: string;
   hansard_id: string;
-  index?: number;
+  index?: string;
   trigger?: (onClick: () => void) => ReactNode;
 }
 
@@ -51,7 +51,7 @@ export default function ShareDialogDrawer({
   const [copyText, setCopyText] = useState<string>("copy_link");
   const { share } = useAnalytics(hansard_id);
   const title = `Hansard Parlimen`;
-  const URL = `https://hansard.parlimen.gov.my/hansard/${hansard_id}${
+  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}${
     index ? `#${index}` : ""
   }`;
 
@@ -78,8 +78,9 @@ export default function ShareDialogDrawer({
     },
   ];
 
-  const onClick = () => {
+  const handleClick = () => {
     if (navigator.share) {
+      setOpen(false);
       share();
       navigator
         .share({
@@ -88,12 +89,12 @@ export default function ShareDialogDrawer({
           url: URL,
         })
         .catch((error) => console.error("Error sharing", error));
-    } else setOpen(!open);
+    } else setOpen(true);
   };
 
   const ShareButton = () => (
     <div className="max-md:p-4 space-y-5">
-      <div className="bg-background border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-button p-3 flex gap-4.5 w-fit mx-auto items-center">
+      <div className="bg-background border border-border rounded-2xl shadow-button p-3 flex gap-4.5 w-fit mx-auto items-center">
         <DateCard date={date} size="sm" />
         <p>
           {new Date(date).toLocaleDateString(i18n.language, {
@@ -140,12 +141,12 @@ export default function ShareDialogDrawer({
   if (isDesktop)
     return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
+        <DialogTrigger asChild onClick={(e) => e.preventDefault()}>
           {trigger ? (
-            trigger(onClick)
+            trigger(handleClick)
           ) : (
-            <Button className="bt" onClick={onClick}>
-              <div className="shr" />
+            <Button variant="reset" className="bt" onClick={handleClick}>
+              <div className="i" />
               {t("share")}
             </Button>
           )}
@@ -163,12 +164,12 @@ export default function ShareDialogDrawer({
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
+      <DrawerTrigger asChild onClick={(e) => e.preventDefault()}>
         {trigger ? (
-          trigger(onClick)
+          trigger(handleClick)
         ) : (
-          <Button className="bt" onClick={onClick}>
-            <div className="shr" />
+          <Button variant="reset" className="bt" onClick={handleClick}>
+            <div className="i" />
             {t("share")}
           </Button>
         )}
