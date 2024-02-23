@@ -134,56 +134,6 @@ export const COLOR = {
 } as const;
 
 /**
- * Convert locale code to shorter code.
- * @example SHORT_LANG["ms-MY"] -> "bm"
- */
-export const SHORT_LANG = {
-  "ms-MY": "bm",
-  "en-GB": "en",
-} as const;
-
-/**
- * Color ordering for catalogue.
- * @example CATALOGUE_COLORS[0] -> COLOR.PRIMARY
- */
-export const CATALOGUE_COLORS = [
-  COLOR.PRIMARY,
-  COLOR.GREY,
-  "#E2A614",
-  COLOR.DANGER,
-] as const;
-
-/**
- * Convert API periods to the designated timeseries interval.
- * @example SHORT_PERIOD["WEEKLY"] -> "weekly"
- */
-export const SHORT_PERIOD = {
-  DAILY: "auto",
-  WEEKLY: "day",
-  MONTHLY: "month",
-  QUARTERLY: "quarter",
-  YEARLY: "year",
-  INTRADAY: "hour",
-  INFREQUENT: "auto",
-  AS_REQUIRED: "auto",
-} as const;
-
-/**
- * Convert API periods to the designated timeseries tooltip format.
- * @example SHORT_PERIOD_FORMAT["WEEKLY"] -> "weekly"
- */
-export const SHORT_PERIOD_FORMAT = {
-  DAILY: "dd MMM yyyy",
-  WEEKLY: "dd MMM yyyy",
-  MONTHLY: "MMM yyyy",
-  QUARTERLY: "qQ yyyy",
-  YEARLY: "yyyy",
-  INTRADAY: "dd MMM yyyy",
-  INFREQUENT: "dd MMM yyyy",
-  AS_REQUIRED: "dd MMM yyyy",
-} as const;
-
-/**
  * PARTY_COLOURS defs.
  */
 export const PARTY_COLOURS: Array<Record<string, any>> = [
