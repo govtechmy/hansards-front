@@ -180,6 +180,8 @@ export type Speech = {
   index: number;
 };
 
-export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
+export type NestedSidebar = { [key: string]: Array<string | NestedSidebar> };
+export type Sidebar = Array<string | NestedSidebar>;
 
+export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
 export type Speeches = Array<Speech | NestedSpeech>;
