@@ -32,7 +32,7 @@ export const Details = ({
     >
       <summary
         className={cn(
-          "mr-px flex justify-between gap-3 cursor-pointer list-none items-center px-5 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800",
+          "mr-px flex justify-between gap-3 cursor-pointer list-none items-center px-5 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 font-medium",
           className
         )}
         {...props}
