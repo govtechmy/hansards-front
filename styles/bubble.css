@@ -5,7 +5,7 @@ p.t {
 
 /* annotation */
 div.a {
-  @apply italic text-foreground text-center;
+  @apply italic text-foreground text-center scroll-mt-40 lg:scroll-mt-60;
 }
 
 /* speech */
@@ -20,6 +20,16 @@ div.s {
     text-[15px] sm:text-base min-w-[100px];
   }
 
+  /* speech container */
+  .c {
+    @apply space-y-3;
+  }
+
+  /* annotation */
+  .d {
+    @apply italic text-foreground;
+  }
+
   div.b:hover {
     button.bt {
       @apply visible translate-x-2 transition-transform;
@@ -27,11 +37,11 @@ div.s {
   }
 
   /* avatar-wrapper */
-  .aw {
+  .w {
     @apply absolute inset-0 flex flex-col-reverse;
   }
 
-  .aw.ydp {
+  .w.ydp {
     @apply items-end;
   }
 
@@ -64,14 +74,14 @@ div.s {
     @apply text-[#003152] dark:text-[#0080AF];
   }
 
-  /* name-wrapper */
-  .nw {
+  /* Minister or MP */
+  .m {
     @apply flex flex-wrap text-sm mb-1;
   }
   
   /* name */
   .n {
-    @apply font-bold [text-wrap:balance];
+    @apply font-bold text-balance;
   }
 
   /* other name */
@@ -82,6 +92,11 @@ div.s {
   /* timestamp */
   .t {
     @apply absolute bottom-1.5 right-4.5 text-xs text-zinc-500;
+  }
+
+  /* Max width */
+  .x {
+    @apply max-w-prose;
   }
 
   /* button */
