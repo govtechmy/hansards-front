@@ -1,10 +1,12 @@
-import { DateTime } from "luxon";
 import { createElement, ReactElement } from "react";
 import { CountryAndStates } from "@lib/constants";
 import DomToImage from "dom-to-image";
 import canvasToSvg from "canvas2svg";
 import { twMerge } from "tailwind-merge";
 import clsx, { ClassValue } from 'clsx'
+import { format, parseISO } from "date-fns";
+import ms from "date-fns/locale/ms";
+import { enGB } from "date-fns/locale";
 
 /**
  * Conditional class joiner.
@@ -123,39 +125,23 @@ export const numFormat = (
 };
 
 /**
- * @todo Refactor this later. To be deprecated.
- * */
-export function smartNumFormat({
-  value,
-  type = "compact",
-  precision = 1,
-  locale,
-}: {
-  value: number;
-  type?: "compact" | "standard" | "scientific" | "engineering" | undefined;
-  precision?: number | [min: number, max: number];
-  locale: string;
-}): string {
-  return numFormat(value, type, precision, "long", locale, true);
-}
-
-/**
  * Returns a formatted date string from epoch millis or SQL date (YYYY-MM-DD)
- * @param {number | string} timestamp epoch millis | sql date
+ * @param {number | string} date epoch millis | sql date
+ * @param {string} formatStr dd MMM yyyy
  * @param {string} locale en-GB | ms-MY
- * @param {string} format dd MMM yyyy
  * @returns {string} Formatted date
  */
 export const toDate = (
-  timestamp: number | string,
-  format: string = "dd MMM yyyy",
+  date: number | string,
+  formatStr: string = "dd MMM yyyy",
   locale: string = "ms-MY"
 ): string => {
-  const date =
-    typeof timestamp === "number" ? DateTime.fromMillis(timestamp) : DateTime.fromSQL(timestamp);
-  const formatted_date = date.setLocale(locale).toFormat(format);
+  const formatted_date =
+    typeof date === "number"
+      ? format(date, formatStr)
+      : format(parseISO(date), formatStr,{ locale: locale === "ms-MY" ? ms : enGB });
 
-  return formatted_date !== "Invalid DateTime" ? formatted_date : "N/A";
+  return formatted_date !== "Invalid Date" ? formatted_date : "N/A";
 };
 
 /**
@@ -213,23 +199,6 @@ export const copyClipboard = async (text: string): Promise<void> => {
   } catch (err) {
     console.error("Failed to copy: ", err);
   }
-};
-
-/**
- * Returns indices of top n largest/smallest item from an array
- */
-export const getTopIndices = (arr: number[], n: number, reverse = false): number[] => {
-  // create an array of [value, index] pairs
-  const pairs = arr.map((value, index) => [value, index]);
-
-  // sort the pairs by value (in descending or ascending order depending on the "reverse" flag)
-  pairs.sort((a, b) => (reverse ? b[0] - a[0] : a[0] - b[0]));
-
-  // extract the first n indices from the sorted pairs
-  const topPairs = pairs.slice(0, n);
-
-  // extract the indices from the top pairs and return them
-  return topPairs.map(pair => pair[1]);
 };
 
 /**
