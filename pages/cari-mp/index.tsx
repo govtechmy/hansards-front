@@ -14,9 +14,9 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 const CariMP: Page = ({
   count,
   excerpts,
-  individu_list,
   query,
   timeseries,
+  top_speakers,
   top_word_freq,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
@@ -30,9 +30,10 @@ const CariMP: Page = ({
         <SearchMP
           count={count}
           excerpts={excerpts}
-          individu_list={individu_list}
           query={query}
           timeseries={timeseries}
+          top_speakers={top_speakers}
+          top_word_freq={top_word_freq}
         />
       </HomeLayout>
     </>
@@ -43,20 +44,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
   async ({ query }) => {
     try {
-      const { q, dewan, ...dates } = query;
-
-      const { data: individu_list } = await get(
-        "/explorer",
-        {
-          explorer: "ELECTIONS",
-          dropdown: "candidate_list",
-        },
-        "sejarah"
-      ).catch((e) => {
-        throw new Error("Invalid candidate name. Message: " + e);
-      });
-
-      if (!q)
+      if (Object.keys(query).length === 0)
         return {
           props: {
             meta: {
@@ -64,7 +52,6 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             },
             count: 0,
             excerpts: null,
-            individu_list,
             query: query ?? null,
             timeseries: {
               date: Array.from({ length: 365 }, (_, i) => i * 86400000),
@@ -75,18 +62,30 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
         };
 
+      const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } = query;
+
       const results = await Promise.allSettled([
         get("api/search/", {
-          q: q,
+          uid: uid,
           house: dewan,
-          window_size: 30,
+          window_size: 150,
           page: 1,
-          ...dates,
+          start_date: tarikh_mula,
+          end_date: tarikh_akhir,
+          age_group: umur,
+          ethnicity: etnik,
+          party: parti,
+          sex: jantina,
         }),
         get("api/search-plot/", {
-          q: q,
+          uid: uid,
           house: dewan,
-          ...dates,
+          start_date: tarikh_mula,
+          end_date: tarikh_akhir,
+          age_group: umur,
+          ethnicity: etnik,
+          party: parti,
+          sex: jantina,
         }),
       ]);
 
@@ -102,7 +101,6 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
           count: excerpt.count ?? 0,
           excerpts: excerpt.results ?? null,
-          individu_list,
           query: query ?? null,
           timeseries: data.chart_data ?? {
             date: Array.from({ length: 365 }, (_, i) => i * 86400000),
