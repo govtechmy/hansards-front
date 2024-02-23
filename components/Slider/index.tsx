@@ -51,9 +51,9 @@ const Slider: FunctionComponent<SliderProps> = ({
     auto: "dd MMM yyyy",
     day: "dd MMM yyyy",
     month: "MMM yyyy",
-    quarter: "qQ yyyy",
+    quarter: "qqq yyyy",
     year: "yyyy",
-    hour: "dd MMM yy HH:mm ",
+    hour: "dd MMM yy HH:mm",
   };
 
   useWatch(() => {
