@@ -47,10 +47,10 @@ const Daterange = ({
   DEFAULT.setMonth(TODAY.getMonth() - (numberOfMonths === 2 ? 1 : 0));
 
   const [fromValue, setFromValue] = useState<string>(
-    selected?.from ? selected.from.toISOString().split("T")[0] : ""
+    selected?.from ? selected.from.toISOString().slice(0, 10) : ""
   );
   const [toValue, setToValue] = useState<string>(
-    selected?.to ? selected.to.toISOString().split("T")[0] : ""
+    selected?.to ? selected.to.toISOString().slice(0, 10) : ""
   );
   const [invalidFromValue, setInvalidFromValue] = useState<string>("");
   const [invalidToValue, setInvalidToValue] = useState<string>("");
