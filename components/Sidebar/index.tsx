@@ -2,7 +2,7 @@ import Button from "@components/Button";
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
+  SheetHeading,
   SheetTrigger,
 } from "@components/Sheet";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
@@ -76,8 +76,8 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                   onOpen={() => TreeState[id] = !open}
                   summary={
                     <span className="flex flex-col">
-                      <span className="font-medium">{parlimen}</span>
-                      {yearRange}
+                      {parlimen}
+                      <span className="font-normal">{yearRange}</span>
                     </span>
                   }
                 >
@@ -204,9 +204,9 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                 </Button>
               </SheetTrigger>
               <SheetContent className="pl-3 pr-0">
-                <SheetHeader>
+                <SheetHeading>
                   <h3 className="title px-5 mb-1">{t("full_archive")}</h3>
-                </SheetHeader>
+                </SheetHeading>
                 <Sidebar />
               </SheetContent>
             </Sheet>
