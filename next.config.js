@@ -23,7 +23,7 @@ const nextConfig = {
   publicRuntimeConfig: {
     APP_NAME: "hansard.parlimen.gov.my",
     META_AUTHOR: "Parliament of Malaysia",
-    META_THEME: "#13293D",
+    META_THEME: "B49B1A",
     META_KEYWORDS: "hansard parlimen malaysia",
     META_DOMAIN: "hansard.parlimen.gov.my",
     META_URL: process.env.NEXT_PUBLIC_APP_URL,
