@@ -35,10 +35,12 @@ const SpeechBubble = ({
     <>
       <div id={`${index}`} key={speech_id} className={cn("s", isYDP && "ydp")}>
         {/* Avatar */}
-        <div className={cn("aw", isYDP && "ydp")}>
+        <div className={cn("w", isYDP && "ydp")}>
           <div className="a">
             <ImageWithFallback
-              fallback={<div className="border border-border w-9 h-9 rounded-full" />}
+              fallback={
+                <div className="border border-border w-9 h-9 rounded-full" />
+              }
               src={`/static/`}
               width={36}
               height={1}
@@ -50,10 +52,10 @@ const SpeechBubble = ({
         </div>
         {/* Bubble */}
         <div
-          className={cn("b", isYDP && "ydp", length <= 222 && "max-w-prose")}
+          className={cn("b", isYDP && "ydp", length <= 222 && "x")}
         >
-          {speaker ? <div className="nw">{speaker}</div> : <></>}
-          <div className="space-y-3">{children}</div>
+          {speaker ? <div className="m">{speaker}</div> : <></>}
+          {children}
 
           <ShareButton date={date} hansard_id={hansard_id} index={`${index}`} />
           <span className="t">{timeString}</span>

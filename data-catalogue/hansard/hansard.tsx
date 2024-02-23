@@ -1,12 +1,6 @@
-import {
-  At,
-  DateCard,
-  HansardSidebar,
-  Hero,
-  Markdown,
-} from "@components/index";
-import { SidebarOpen } from "@components/Sidebar/hansard";
-import MobileButton from "@components/Sidebar/mobile-button";
+import { DateCard, Hero, Markdown } from "@components/index";
+import { SidebarOpen } from "@data-catalogue/hansard/sidebar";
+import MobileButton from "@data-catalogue/hansard/mobile-button";
 import { ChevronRightIcon, ShareIcon } from "@heroicons/react/20/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useTranslation } from "@hooks/useTranslation";
@@ -15,17 +9,17 @@ import { COLOR } from "@lib/constants";
 import { cn, numFormat } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { NestedSpeech, Speech, Speeches } from "@lib/types";
-import { DateTime } from "luxon";
 import Link from "next/link";
 import { ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import rehypeRaw from "rehype-raw";
 
 import SpeechBubble from "./bubble";
-import { SearchContext, SearchEventContext } from "./hansard/search/context";
-import { highlightKeyword } from "./hansard/search/highlight";
-import { getMatchText } from "./hansard/search/match-text";
+import { SearchContext, SearchEventContext } from "./search/context";
+import { highlightKeyword } from "./search/highlight";
+import { getMatchText } from "./search/match-text";
 import ShareButton from "./share";
 import HansardSearch from "./search-bar";
+import Sidebar from "./sidebar";
 
 /**
  * Hansard
@@ -63,42 +57,44 @@ const Hansard = ({
   const { counts, download } = useAnalytics(hansard_id);
   const { downloads, shares, views } = counts;
 
-  let curr = DateTime.fromISO("00:00");
+  let curr = "0000";
 
   const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
     let { searchValue } = useContext(SearchContext);
     const { onUpdateMatchList } = useContext(SearchEventContext);
-    const isFirstLevel = !prev_id;
 
     return speeches.map((s, i) => {
+      const isFirstLevel = !prev_id;
       const sidebar_id = isFirstLevel ? `${i}` : `${prev_id}_${i}`;
 
-      // if annotation, speech, timestamp
+      // Annotation, Speech, Timestamp
       if (isSpeech(s)) {
         const { author, is_annotation, index, speech, timestamp } = s;
         const speech_id = `${sidebar_id}-${index}`;
 
         // Timestamp
-        const hr = String(timestamp).slice(0, 2);
-        const mn = String(timestamp).slice(2, 4);
-        const _timestamp = DateTime.fromISO(`${hr}:${mn}`);
+        const ts = String(timestamp);
+        const hr = ts.slice(0, 2);
+        const mn = ts.slice(2);
+
+        function formatAMPM(hrs: number, min: string) {
+          const ampm = hrs >= 12 ? " PM" : " AM";
+          const hours = hrs % 12 ? hrs % 12 : 12; // hour '0' should be '12'
+          return hours + ":" + min + ampm;
+        }
+        const timeString = formatAMPM(Number(hr), mn);
+
         const prev = curr; // temp store
-        const timestampChangedFrom = (datetime: DateTime) =>
-          !_timestamp.hasSame(datetime, "hour") ||
-          !_timestamp.hasSame(datetime, "minute");
+        if (curr !== ts) curr = ts;
 
-        if (timestampChangedFrom(curr)) curr = _timestamp;
-        const timeString = _timestamp.toLocaleString(DateTime.TIME_SIMPLE, {
-          locale: "en-US",
-        });
-
-        const time = timestampChangedFrom(prev) ? (
-          <p className="t">
-            {highlightKeyword(timeString, `${speech_id}_time`)}
-          </p>
-        ) : (
-          <></>
-        );
+        const time =
+          prev !== ts ? (
+            <p className="t">
+              {highlightKeyword(timeString, `${speech_id}_time`)}
+            </p>
+          ) : (
+            <></>
+          );
 
         // Search
         const names = author !== "ANNOTATION" ? author.split("[") : ["", ""];
@@ -146,12 +142,12 @@ const Hansard = ({
 
         const matchData = useMemo(
           () =>
-            getMatchText(
-              searchValue,
-              searchValue
-                ? speech.replaceAll("*", "").replaceAll("**", "")
-                : speech
-            ),
+            searchValue && searchValue.length > 1
+              ? getMatchText(
+                  searchValue,
+                  speech.replaceAll("*", "").replaceAll("**", "")
+                )
+              : speech,
           [searchValue, speech]
         );
 
@@ -167,6 +163,7 @@ const Hansard = ({
 
         const parseMarkdown = (children: string) => (
           <Markdown
+            className={cn("c", is_annotation && "d")}
             rehypePlugins={[rehypeRaw]}
             disallowedElements={["code"]}
             components={{
@@ -212,7 +209,9 @@ const Hansard = ({
           <>
             {time}
             {author === "ANNOTATION" ? (
-              <div className="a">{_speech}</div>
+              <div className="a" id={`${index}`}>
+                {_speech}
+              </div>
             ) : (
               <SpeechBubble
                 speaker={speaker}
@@ -240,7 +239,7 @@ const Hansard = ({
           >
             <p
               className={cn(
-                "text-foreground text-center py-3 lg:sticky top-28 bg-background z-10 [text-wrap:balance]",
+                "text-foreground text-center py-3 lg:sticky top-28 bg-background z-10 text-balance",
                 isFirstLevel ? "font-bold" : "font-medium"
               )}
             >
@@ -278,7 +277,7 @@ const Hansard = ({
   }/${filename}`;
 
   return (
-    <HansardSidebar
+    <Sidebar
       ref={sidebarRef}
       speeches={speeches}
       onClick={(selected) => {
@@ -355,24 +354,24 @@ const Hansard = ({
                   <CiteIcon className="h-5 w-5" />
                   {t("cite")}
                 </span>
-                <At
-                  external
+                <a
+                  target="_blank"
                   href={`${hansard_url}.pdf`}
                   onClick={() => download("pdf")}
                   className={styles.link_blue}
                 >
                   <DownloadIcon className="h-5 w-5" />
                   {t("download", { context: "pdf" })}
-                </At>
-                <At
-                  external
+                </a>
+                <a
+                  target="_blank"
                   href={`${hansard_url}.csv`}
                   onClick={() => download("csv")}
                   className={styles.link_blue}
                 >
                   <DownloadIcon className="h-5 w-5" />
                   {t("download", { context: "csv" })}
-                </At>
+                </a>
                 <ShareButton
                   date={date}
                   hansard_id={hansard_id}
@@ -399,16 +398,17 @@ const Hansard = ({
           </div>
         </div>
       )}
-    </HansardSidebar>
+    </Sidebar>
   );
 };
 
 export default Hansard;
 
 export function isSpeech(_speech: Speech | NestedSpeech): _speech is Speech {
+  const keys = Object.keys(_speech);
   return (
-    Object.keys(_speech).includes("speech") &&
-    Object.keys(_speech).includes("author") &&
-    Object.keys(_speech).includes("timestamp")
+    keys.includes("speech") &&
+    keys.includes("author") &&
+    keys.includes("timestamp")
   );
 }

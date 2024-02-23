@@ -1,20 +1,22 @@
 import Button from "@components/Button";
-import { Sheet, SheetContent, SheetHeader } from "@components/Sheet";
-import { isSpeech } from "@data-catalogue/hansard";
+import { Sheet, SheetContent, SheetHeading } from "@components/Sheet";
+import { isSpeech } from "@data-catalogue/hansard/hansard";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
 import { cn } from "@lib/helpers";
-import { Speeches } from "@lib/types";
+import { Sidebar, Speeches } from "@lib/types";
 import {
   ForwardedRef,
   forwardRef,
   ReactNode,
+  useCallback,
   useImperativeHandle,
+  useMemo,
   useState,
 } from "react";
-import { Details } from "./details";
-import { Collapse } from "./collapse";
+import { Details } from "@components/Sidebar/details";
+import { Collapse } from "@components/Sidebar/collapse";
 
 interface HansardSidebarProps {
   children: (open: boolean) => ReactNode;
@@ -54,92 +56,98 @@ const HansardSidebar = forwardRef(
     };
 
     const Sidebar = () => {
-      const recurTitle = (
-        speeches: Speeches,
-        first: boolean = true,
-        prev_id?: string
-      ): ReactNode => {
-        return speeches.map((s, i) => {
-          if (isSpeech(s)) {
-            return;
-          } else {
-            const keys = Object.keys(s);
-            const key = keys[0];
-            const id = prev_id ? `${prev_id}_${i}` : `${i}`;
-            const open = TreeState[id] === undefined ? false : TreeState[id];
-
-            return (
-              <li
-                key={id}
-                className={cn(
-                  "text-sm relative mr-px",
-                  prev_id && "ml-2.5",
-                  !first &&
-                    "border-l border-slate-400 last-of-type:border-transparent",
-                  selected && selected.startsWith(id)
-                    ? styles.active
-                    : styles.inactive
-                )}
-              >
-                {s[key].every((s) => isSpeech(s)) ? (
-                  <button
-                    title={key}
-                    onClick={() => {
-                      setSelected(id);
-                      onClick(id);
-                      setMobileSidebar(false);
-                    }}
-                    className={cn(
-                      "relative hover:bg-bg-hover box-border px-5 py-1.5 w-full text-start",
-                      selected === id ? styles.active : styles.inactive
-                    )}
-                  >
-                    <p className="font-medium cursor-pointer">{key}</p>
-                    {!first && (
-                      <>
-                        <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
-                        {i <= speeches.length - 1 && (
-                          <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
+      const headers = useMemo(() => {
+        const recur = (
+          speeches: Speeches,
+          first: boolean = true,
+          prev_id?: string
+        ) => {
+          return (
+            speeches
+              // .filter((s) => !isSpeech(s))
+              .map((s, i) => {
+                const id = prev_id ? `${prev_id}_${i}` : `${i}`;
+                const open =
+                  TreeState[id] === undefined ? false : TreeState[id];
+                const key = Object.keys(s)[0];
+                if (isSpeech(s)) return;
+                else {
+                  if (s[key].some((s) => !isSpeech(s))) {
+                    return (
+                      <li
+                        key={id}
+                        className={cn(
+                          "text-sm relative mr-px",
+                          prev_id && "ml-2.5",
+                          !first &&
+                            "border-l border-slate-400 last-of-type:border-transparent",
+                          selected && selected.startsWith(id)
+                            ? styles.active
+                            : styles.inactive
                         )}
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <Details
-                    className="relative"
-                    key={id}
-                    open={open || selected?.startsWith(id)}
-                    onOpen={() => (TreeState[id] = !open)}
-                    summary={
-                      <>
-                        <span title={key} className="font-medium">
-                          {key}
-                        </span>
+                      >
+                        <Details
+                          className="relative"
+                          key={id}
+                          open={open || selected?.startsWith(id)}
+                          onOpen={() => (TreeState[id] = !open)}
+                          summary={
+                            <>
+                              <span title={key}>{key}</span>
+                              {!first && (
+                                <>
+                                  <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
+                                  {i <= speeches.length - 1 && (
+                                    <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
+                                  )}
+                                </>
+                              )}
+                            </>
+                          }
+                        >
+                          {recur(s[key], false, id)}
+                        </Details>
+                      </li>
+                    );
+                  } else
+                    return (
+                      <button
+                        title={key}
+                        onClick={() => {
+                          setSelected(id);
+                          onClick(id);
+                          setMobileSidebar(false);
+                        }}
+                        className={cn(
+                          "relative hover:bg-bg-hover box-border px-5 py-1.5 w-full text-start",
+                          !first &&
+                            "border-l border-slate-400 last-of-type:border-transparent",
+                          selected === id ? styles.active : styles.inactive
+                        )}
+                      >
+                        <p className="font-medium">{key}</p>
                         {!first && (
                           <>
                             <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
                             {i <= speeches.length - 1 && (
-                              <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] border-l border-slate-400" />
+                              <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
                             )}
                           </>
                         )}
-                      </>
-                    }
-                  >
-                    {recurTitle(s[key], false, id)}
-                  </Details>
-                )}
-              </li>
-            );
-          }
-        });
-      };
+                      </button>
+                    );
+                }
+              })
+          );
+        };
+        return recur(speeches);
+      }, []);
 
       return (
         <div className="sticky top-0 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
           <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-112px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-3">
-            {speeches ? (
-              recurTitle(speeches)
+            {headers ? (
+              headers
             ) : (
               <li className="px-5 py-1.5 text-zinc-500 text-sm italic">
                 {t("no_entries", { ns: "common" })}
@@ -163,7 +171,7 @@ const HansardSidebar = forwardRef(
           {/* Desktop */}
           <div
             className={cn(
-              "border-r border-r-border shrink-0 w-14 hidden lg:block md:ml-4.5 lg:ml-6 sticky top-14 h-[calc(100dvh-56px)]",
+              "border-r border-r-border shrink-0 w-14 hidden lg:block md:ml-3 sticky top-14 h-[calc(100dvh-56px)]",
               "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
               showSidebar
                 ? "w-[250px] duration-300"
@@ -213,9 +221,9 @@ const HansardSidebar = forwardRef(
           {/* Mobile */}
           <Sheet open={mobileSidebar} onOpenChange={setMobileSidebar}>
             <SheetContent className="pl-3 pr-0">
-              <SheetHeader>
+              <SheetHeading>
                 <h3 className="title px-5 mb-1">{t("toc")}</h3>
-              </SheetHeader>
+              </SheetHeading>
               <Sidebar />
             </SheetContent>
           </Sheet>

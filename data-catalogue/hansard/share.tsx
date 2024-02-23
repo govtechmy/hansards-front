@@ -1,4 +1,3 @@
-import At from "@components/At";
 import Button from "@components/Button";
 import {
   Dialog,
@@ -7,12 +6,12 @@ import {
   DialogTrigger,
 } from "@components/Dialog";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerClose,
-  DrawerHeader,
-  DrawerTrigger,
-} from "@components/Drawer";
+  Sheet,
+  SheetContent,
+  SheetClose,
+  SheetHeading,
+  SheetTrigger,
+} from "@components/Sheet";
 import DateCard from "@components/Card/date-card";
 import {
   DocumentDuplicateIcon,
@@ -127,9 +126,9 @@ export default function ShareDialogDrawer({
               {link === "copy" ? (
                 name
               ) : (
-                <At href={link} external>
+                <a target="_blank" href={link}>
                   {name}
-                </At>
+                </a>
               )}
             </Button>
           );
@@ -163,8 +162,8 @@ export default function ShareDialogDrawer({
     );
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild onClick={(e) => e.preventDefault()}>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild onClick={(e) => e.preventDefault()}>
         {trigger ? (
           trigger(handleClick)
         ) : (
@@ -173,18 +172,15 @@ export default function ShareDialogDrawer({
             {t("share")}
           </Button>
         )}
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="p-4 flex justify-between border-b border-slate-200 dark:border-zinc-700">
+      </SheetTrigger>
+      <SheetContent side="bottom" className="p-0 rounded-t-xl">
+        <SheetHeading className="p-4 flex justify-between border-b border-slate-200 dark:border-zinc-700">
           <span className="font-medium text-foreground">
             {t("share_hansard")}
           </span>
-          <DrawerClose>
-            <XMarkIcon className="text-zinc-500 h-6 w-6" />
-          </DrawerClose>
-        </DrawerHeader>
+        </SheetHeading>
         <ShareButton />
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 }

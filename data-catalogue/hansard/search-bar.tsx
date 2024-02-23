@@ -5,7 +5,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { useContext, useState } from "react";
-import { SearchContext, SearchEventContext } from "./hansard/search/context";
+import { SearchContext, SearchEventContext } from "./search/context";
 
 /**
  * Hansard Search Bar
