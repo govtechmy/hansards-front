@@ -80,7 +80,7 @@ const MP = ({
   const diff = start && end ? differenceInCalendarDays(start, end) : 0;
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [ind_or_grp, setIndOrGrp] = useState<string>(mp ? "individu" : "group");
+  const [ind_or_grp, setIndOrGrp] = useState<string>(!hasQuery || mp ? "individu" : "group");
   const IS_INDIVIDU = ind_or_grp === "individu";
 
   const [range, setRange] = useState<number[]>([0, timeseries.date.length - 1]);
