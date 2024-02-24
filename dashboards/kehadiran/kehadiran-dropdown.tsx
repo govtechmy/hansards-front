@@ -160,8 +160,8 @@ const KehadiranDropdown = ({
                             setData("mesyuarat", "all");
                           } else {
                             setData("parlimen", selected.value);
-                            setData("penggal", null);
-                            setData("mesyuarat", null);
+                            setData("penggal", "");
+                            setData("mesyuarat", "");
                           }
                         }}
                       />
@@ -182,7 +182,7 @@ const KehadiranDropdown = ({
                             setData("mesyuarat", "all");
                           } else {
                             setData("penggal", selected.value);
-                            setData("mesyuarat", null);
+                            setData("mesyuarat", "");
                           }
                         }}
                         disabled={!data.parlimen || data.parlimen === "all"}
@@ -262,8 +262,8 @@ const KehadiranDropdown = ({
               setFilter("mesyuarat", null);
             } else {
               setData("parlimen", selected.value);
-              setData("penggal", null);
-              setData("mesyuarat", null);
+              setData("penggal", "");
+              setData("mesyuarat", "");
             }
           }}
         />
@@ -281,7 +281,7 @@ const KehadiranDropdown = ({
               setFilter("mesyuarat", null);
             } else {
               setData("penggal", selected.value);
-              setData("mesyuarat", null);
+              setData("mesyuarat", "");
             }
           }}
           disabled={!data.parlimen || data.parlimen === "all"}

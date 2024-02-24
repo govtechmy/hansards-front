@@ -173,11 +173,12 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
               placeholder={t("cari_kawasan")}
               options={KAWASAN_OPTIONS}
               selected={
-                data.kawasan_option
-                  ? KAWASAN_OPTIONS.find(
-                      (e) => e.value === data.kawasan_option.value
-                    )
-                  : null
+                KAWASAN_OPTIONS.find(
+                  (e) =>
+                    data.kawasan_option
+                      ? e.value === data.kawasan_option.value
+                      : undefined
+                )
               }
               onChange={(selected) => {
                 setData("kawasan_option", selected);

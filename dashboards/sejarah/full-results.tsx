@@ -6,11 +6,11 @@ import type {
   Parti,
   PartiResult,
   Kawasan,
+  ElectionResult,
 } from "./types";
 import {
   Dialog,
   DialogContent,
-  DialogClose,
   DialogHeader,
   DialogTrigger,
 } from "@components/Dialog";
@@ -33,7 +33,7 @@ import Button from "@components/Button";
 import { useData } from "@hooks/useData";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn, numFormat, slugify, toDate } from "@lib/helpers";
+import { cn, numFormat, toDate } from "@lib/helpers";
 import { useState } from "react";
 
 export type Result<T> = {
@@ -43,7 +43,7 @@ export type Result<T> = {
     abs: number;
     perc: number;
   }>;
-} | void;
+};
 
 interface FullResultsProps<T extends Individu | Parti | Kawasan> {
   onChange: (option: T) => Promise<Result<BaseResult[] | PartiResult>>;
@@ -60,21 +60,21 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
   highlighted,
   currentIndex,
 }: FullResultsProps<T>) => {
+  if (!options) return <></>;
+
   const [open, setOpen] = useState<boolean>(false);
   const { data, setData } = useData({
     index: currentIndex,
     area: "",
-    badge: "",
+    badge: "" as ElectionResult,
     date: "",
     election_name: "",
     state: "",
-    results: [],
+    results: {} as Result<BaseResult[] | PartiResult>,
     loading: true,
   });
   const { t, i18n } = useTranslation("sejarah");
   const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  if (!options) return <></>;
 
   const selected = options[currentIndex];
   const isIndividu = typeof selected === "object" && "result" in selected;
@@ -103,23 +103,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
           data={data.results.data}
           columns={columns}
           isLoading={data.loading}
-          highlightedRows={
-            data.results.data && highlighted
-              ? "name" in data.results.data[0]
-                ? [
-                    data.results.data.findIndex(
-                      (e: BaseResult) => slugify(e.name) === highlighted
-                    ),
-                  ]
-                : "party" in data.results.data[0]
-                ? [
-                    data.results.data.findIndex(
-                      (e: BaseResult) => e.party === highlighted
-                    ),
-                  ]
-                : [-1]
-              : [0]
-          }
+          highlighted={highlighted}
           result={isIndividu ? selected.result : undefined}
         />
       </div>
@@ -137,13 +121,11 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
                   <p className="w-28 md:w-fit">{t(item.x)}:</p>
                   <div className="flex flex-wrap items-center gap-3">
                     <BarPerc hidden value={item.perc} size="h-[5px] w-[50px]" />
-                    <p>{`${
-                      item.abs !== null ? numFormat(item.abs, "standard") : "—"
-                    } ${
-                      item.perc !== null
+                    <p>{`${item.abs !== null ? numFormat(item.abs, "standard") : "—"
+                      } ${item.perc !== null
                         ? `(${numFormat(item.perc, "compact", 1)}%)`
                         : "(—)"
-                    }`}</p>
+                      }`}</p>
                   </div>
                 </div>
               )

@@ -169,11 +169,11 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
               placeholder={t("cari_parti")}
               options={PARTI_OPTIONS}
               selected={
-                data.parti_option
-                  ? PARTI_OPTIONS.find(
-                      (e) => e.value === data.parti_option.value
-                    )
-                  : null
+                PARTI_OPTIONS.find(
+                  (e) => data.parti_option
+                    ? e.value === data.parti_option.value
+                    : undefined
+                )
               }
               icon={(value) => (
                 <div className="flex h-auto max-h-8 w-8 justify-center self-center">

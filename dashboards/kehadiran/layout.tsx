@@ -1,7 +1,6 @@
 import At from "@components/At";
 import Hero from "@components/Hero";
 import { BuildingLibraryIcon } from "@heroicons/react/24/solid";
-import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
 import { routes } from "@lib/routes";

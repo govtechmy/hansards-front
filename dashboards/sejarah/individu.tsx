@@ -68,6 +68,7 @@ const SejarahIndividu = ({
     individu_option: INDIVIDU_OPTION,
     parlimen: parlimen,
     loading: false,
+    tab_idx: 0,
   });
 
   const { setFilter } = useFilter({
@@ -192,11 +193,11 @@ const SejarahIndividu = ({
                 placeholder={t("cari_individu")}
                 options={INDIVIDU_OPTIONS}
                 selected={
-                  data.individu_option
-                    ? INDIVIDU_OPTIONS.find(
-                        (e) => e.value === data.individu_option.value
-                      )
-                    : null
+                  INDIVIDU_OPTIONS.find(
+                    (e) => data.individu_option
+                      ? e.value === data.individu_option.value
+                      : undefined
+                  )
                 }
                 onChange={(selected) => {
                   setData("individu_option", selected);
