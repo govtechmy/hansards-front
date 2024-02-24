@@ -32,7 +32,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
     },
     {
       icon: <UsersIcon className="h-4.5 w-4.5" />,
-      label: t("search_mp_party"),
+      label: t("search_mp"),
       value: routes.CARI_MP,
     },
   ];
