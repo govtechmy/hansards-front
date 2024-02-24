@@ -8,7 +8,10 @@ export function highlightKeyword(text: string, id: string) {
   const { onUpdateMatchList } = useContext(SearchEventContext);
 
   const matchData = useMemo(
-    () => getMatchText(searchValue, text),
+    () =>
+      searchValue && searchValue.length > 1
+        ? getMatchText(searchValue, text)
+        : text,
     [searchValue, text]
   );
 
