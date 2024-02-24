@@ -1,9 +1,11 @@
 import { useTranslation } from "next-i18next";
 import Excerpts, { ExcerptsProps } from "./excerpts";
 import Keyword, { KeywordProps } from "./keyword";
-import { Container, Skeleton } from "@components/index";
+import Container from "@components/Container";
+import Skeleton from "@components/Skeleton";
 import dynamic from "next/dynamic";
 import { capitalize } from "@lib/utils";
+import { UID_TO_NAME_DR } from "@lib/uid";
 
 /**
  * Search Keyword Dashboard
@@ -20,8 +22,8 @@ const BubbleCloud = dynamic(() => import("@charts/bubble-cloud"), {
 });
 
 interface SearchKeywordProps extends ExcerptsProps, KeywordProps {
-  top_word_freq?: Record<string, number>;
   top_speakers?: Array<Record<string, number>>;
+  top_word_freq?: Record<string, number>;
 }
 
 const SearchKeyword = ({
@@ -29,8 +31,8 @@ const SearchKeyword = ({
   excerpts,
   query,
   timeseries,
-  top_word_freq,
   top_speakers,
+  top_word_freq,
 }: SearchKeywordProps) => {
   const { t } = useTranslation("home");
 
@@ -69,7 +71,7 @@ const SearchKeyword = ({
                 className="max-w-screen-sm mx-auto"
                 layout="horizontal"
                 data={top_speakers.map((s) => ({
-                  x: Object.keys(s)[0],
+                  x: UID_TO_NAME_DR[Object.keys(s)[0]] ?? Object.keys(s)[0],
                   y: Object.values(s)[0],
                 }))}
                 relative
