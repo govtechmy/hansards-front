@@ -1,5 +1,5 @@
 import Metadata from "@components/Metadata";
-import Hansard from "@data-catalogue/hansard";
+import Hansard from "@data-catalogue/hansard/hansard";
 import { SearchProvider } from "@data-catalogue/hansard/search/context";
 import { useTranslation } from "@hooks/useTranslation";
 import { get } from "@lib/api";
