@@ -69,27 +69,31 @@ const ComboBox = <T extends unknown>({
     getLabelProps,
     getMenuProps,
     highlightedIndex,
-    selectedItem,
     isOpen,
     openMenu,
-    closeMenu,
+    reset,
+    selectItem,
+    selectedItem,
   } = useCombobox({
     items,
     itemToString: (item) => (item ? item.label : ""),
     inputValue,
-    onInputValueChange: ({ inputValue: newValue }) => setInputValue(newValue!),
-    scrollIntoView: () => {},
+    onInputValueChange: ({ inputValue: newValue }) => setInputValue(newValue ? newValue : ""),
+    scrollIntoView: () => { },
     onHighlightedIndexChange: ({ highlightedIndex, type }) => {
       if (type !== useCombobox.stateChangeTypes.MenuMouseLeave) {
         rowVirtualizer.scrollToIndex(highlightedIndex!);
       }
     },
+    onSelectedItemChange: ({ selectedItem }) => {
+      if (selectedItem) onChange(selectedItem);
+    }
   });
 
   return (
     <div className="relative">
       <div>
-        <label {...getLabelProps()}>{}</label>
+        <label {...getLabelProps()}>{ }</label>
         <div
           className={cn(
             "h-[50px] bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 relative flex w-full select-none overflow-visible rounded-full border focus:outline-none focus-visible:ring-0",
@@ -129,8 +133,8 @@ const ComboBox = <T extends unknown>({
             <Button
               className="hover:bg-slate-100 dark:hover:bg-zinc-800 group absolute right-2 top-2 flex h-8 w-8 items-center rounded-full"
               onClick={() => {
+                reset();
                 setInputValue("");
-                onChange(undefined);
                 openMenu();
                 if (inputRef.current) inputRef.current.focus();
               }}
@@ -169,17 +173,14 @@ const ComboBox = <T extends unknown>({
                     total={options.length}
                     format={format}
                     icon={icon}
-                    isSelected={selected === items[virtualRow.index]}
+                    isSelected={selectedItem === items[virtualRow.index]}
                     active={highlightedIndex === virtualRow.index}
                     index={virtualRow.index}
                     {...getItemProps({
                       index: virtualRow.index,
                       item: items[virtualRow.index],
-                      onClick: () => {
-                        onChange(items[virtualRow.index]);
-                        setInputValue(items[virtualRow.index].label);
-                        closeMenu();
-                      },
+                      onClick: () => selectItem(items[virtualRow.index])
+                      ,
                     })}
                     style={{
                       position: "absolute",
@@ -199,18 +200,14 @@ const ComboBox = <T extends unknown>({
                   total={options.length}
                   format={format}
                   icon={icon}
-                  isSelected={selected === items[i]}
+                  isSelected={selectedItem === items[i]}
                   active={highlightedIndex === i}
+                  index={i}
                   {...getItemProps({
                     index: i,
                     item: item,
-                    onClick: () => {
-                      onChange(items[i]);
-                      setInputValue(items[i].label);
-                      closeMenu();
-                    },
+                    onClick: () => selectItem(items[i]),
                   })}
-                  index={i}
                 />
               ))
             ))}
