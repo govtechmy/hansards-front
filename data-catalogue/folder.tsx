@@ -113,6 +113,11 @@ const CatalogueFolder = forwardRef(
           const itemsInLastRow =
             size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
 
+          const className = {
+            dropdown:
+              "link p-0 border-none shadow-none text-blue-600 dark:text-primary-dark font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600 overflow-x-hidden",
+          };
+
           return (
             <div
               key={i}
@@ -135,12 +140,12 @@ const CatalogueFolder = forwardRef(
                 </Link>
                 <div>
                   <div className="text-blue-600 dark:text-primary-dark flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap">
-                    <span className="link dark:hover:text-blue-600">
+                    {/* <span className="link dark:hover:text-blue-600">
                       {t("cite")}
                     </span>
-                    •
+                    • */}
                     <Dropdown
-                      className="link p-0 border-none shadow-none text-blue-600 dark:text-primary-dark font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
+                      className={className.dropdown}
                       width="w-fit"
                       placeholder={t("download")}
                       selected={undefined}
@@ -167,7 +172,7 @@ const CatalogueFolder = forwardRef(
                     />
                     •
                     <Dropdown
-                      className="link p-0 border-none shadow-none text-blue-600 dark:text-primary-dark font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
+                      className={className.dropdown}
                       width="w-fit"
                       placeholder={t("share")}
                       selected={undefined}
@@ -181,7 +186,7 @@ const CatalogueFolder = forwardRef(
                           value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
                         },
                         {
-                          label: t("email", {ns: "hansard"}),
+                          label: t("email", { ns: "hansard" }),
                           value: `mailto:?subject=${title}&body=${URL}`,
                         },
                         {
@@ -240,21 +245,12 @@ const CatalogueFolder = forwardRef(
             open ? "visible pl-2 pt-2" : "p-2 border-transparent"
           )}
         >
-          {open ? (
-            <Image
-              src="/static/images/icons/open-folder.png"
-              width={84}
-              height={64}
-              alt="Open Folder"
-            />
-          ) : (
-            <Image
-              src="/static/images/icons/closed-folder.png"
-              width={84}
-              height={64}
-              alt="Closed Folder"
-            />
-          )}
+          <Image
+            src="/static/images/icons/closed-folder.png"
+            width={84}
+            height={64}
+            alt="Closed Folder"
+          />
           <span className="absolute bottom-3 right-3 bg-slate-400 rounded-md flex gap-0.5 items-center py-0.5 px-1.5 text-white">
             <BookmarkIcon className="h-3.5 w-3.5" />
             {sitting_list.length}
