@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn, numFormat, toDate } from "@lib/helpers";
+import { cn, numFormat, slugify, toDate } from "@lib/helpers";
 import { FunctionComponent, ReactNode } from "react";
 import ResultBadge from "./result-badge";
 import { ElectionResult } from "./types";
@@ -19,7 +19,7 @@ export interface TableProps {
   empty?: string | ReactNode;
   data?: any;
   columns: Array<ColumnDef<any, any>>;
-  highlightedRows?: Array<number>;
+  highlighted?: string;
   result?: ElectionResult;
   isLoading: boolean;
 }
@@ -42,7 +42,7 @@ const Table: FunctionComponent<TableProps> = ({
   empty,
   data = dummyData,
   columns,
-  highlightedRows = [-1],
+  highlighted,
   isLoading = false,
 }) => {
   const { t, i18n } = useTranslation(["common", "election", "party"]);
@@ -57,17 +57,17 @@ const Table: FunctionComponent<TableProps> = ({
    * Special cells
    * keys: party | election | seats | result | votes | majority
    */
-  const lookupDesktop = (id: TableIds, cell: any) => {
+  const lookupDesktop = (id: TableIds, cell: any, highlight: boolean) => {
     const value = cell.getValue();
     switch (id) {
       case "index":
-        return highlightedRows.includes(value - 1) ? (
+        return highlighted ? (
           <p className="text-primary dark:text-primary-dark">{value}</p>
         ) : (
           value
         );
       case "name":
-        return highlightedRows.includes(+cell.row.id) ? (
+        return highlighted ? (
           <>
             <span className="pr-1">{value}</span>
             <span className="inline-flex translate-y-0.5">
@@ -96,10 +96,10 @@ const Table: FunctionComponent<TableProps> = ({
                   {value === "By-Election"
                     ? t(value, { ns: "election" })
                     : value.slice(0, -5) +
-                      t(value.slice(-5, value.indexOf("-")), {
-                        ns: "election",
-                      }) +
-                      value.slice(value.indexOf("-"))}
+                    t(value.slice(-5, value.indexOf("-")), {
+                      ns: "election",
+                    }) +
+                    value.slice(value.indexOf("-"))}
                 </div>
               )}
             </Tooltip>
@@ -113,11 +113,10 @@ const Table: FunctionComponent<TableProps> = ({
             <div>
               <BarPerc hidden value={value.perc} />
             </div>
-            <p className="whitespace-nowrap">{`${value.won} / ${value.total} ${
-              value.perc !== null
-                ? ` (${numFormat(value.perc, "compact", [1, 1])}%)`
-                : " (—)"
-            }`}</p>
+            <p className="whitespace-nowrap">{`${value.won} / ${value.total} ${value.perc !== null
+              ? ` (${numFormat(value.perc, "compact", [1, 1])}%)`
+              : " (—)"
+              }`}</p>
           </div>
         );
       case "result":
@@ -148,12 +147,12 @@ const Table: FunctionComponent<TableProps> = ({
         return flexRender(cell.column.columnDef.cell, cell.getContext());
     }
   };
-  const lookupMobile = (id: TableIds, cell: any) => {
+  const lookupMobile = (id: TableIds, cell: any, highlight: boolean) => {
     if (!cell) return <></>;
     const value = cell.getValue();
     switch (id) {
       case "index":
-        return highlightedRows.includes(value - 1) ? (
+        return highlight ? (
           <p className="text-primary dark:text-primary-dark font-bold">
             #{value}
           </p>
@@ -171,7 +170,7 @@ const Table: FunctionComponent<TableProps> = ({
                   </span>
                   <span className="inline-flex pr-1">{` (${party})`}</span>
                   <span className="inline-flex translate-y-0.5">
-                    {highlightedRows.includes(+cell.row.id) && (
+                    {highlight && (
                       <ResultBadge hidden value={cell.row.original.result} />
                     )}
                   </span>
@@ -189,8 +188,8 @@ const Table: FunctionComponent<TableProps> = ({
               {value === "By-Election"
                 ? t(value, { ns: "election" })
                 : value.slice(0, -5) +
-                  t(value.slice(-5, value.indexOf("-")), { ns: "election" }) +
-                  value.slice(value.indexOf("-"))}
+                t(value.slice(-5, value.indexOf("-")), { ns: "election" }) +
+                value.slice(value.indexOf("-"))}
             </p>
             {cell.row.original.date && (
               <p className="text-zinc-500">
@@ -209,11 +208,10 @@ const Table: FunctionComponent<TableProps> = ({
               <BarPerc hidden value={value?.perc} />
               <p>
                 {`${value?.won} / ${value?.total}
-                 (${
-                   value?.perc !== null
-                     ? `${numFormat(value?.perc, "compact", [1, 1])}%`
-                     : "(—)"
-                 })`}
+                 (${value?.perc !== null
+                    ? `${numFormat(value?.perc, "compact", [1, 1])}%`
+                    : "(—)"
+                  })`}
               </p>
             </div>
           </div>
@@ -229,13 +227,11 @@ const Table: FunctionComponent<TableProps> = ({
             ) : (
               <div className="flex flex-wrap items-center gap-2">
                 <BarPerc hidden value={value.perc} />
-                <p>{`${
-                  value.abs !== null ? numFormat(value.abs, "standard") : "—"
-                } (${
-                  value.perc !== null
+                <p>{`${value.abs !== null ? numFormat(value.abs, "standard") : "—"
+                  } (${value.perc !== null
                     ? `${numFormat(value.perc, "compact", 1)}%`
                     : "—"
-                })`}</p>
+                  })`}</p>
               </div>
             )}
           </div>
@@ -251,13 +247,11 @@ const Table: FunctionComponent<TableProps> = ({
             ) : (
               <div className="flex items-center gap-2">
                 <BarPerc hidden value={value.perc} />
-                <p>{`${
-                  value.abs !== null ? numFormat(value.abs, "standard") : "—"
-                } (${
-                  value.perc !== null
+                <p>{`${value.abs !== null ? numFormat(value.abs, "standard") : "—"
+                  } (${value.perc !== null
                     ? `${numFormat(value.perc, "compact", 1)}%`
                     : "—"
-                })`}</p>
+                  })`}</p>
               </div>
             )}
           </div>
@@ -275,6 +269,16 @@ const Table: FunctionComponent<TableProps> = ({
         return flexRender(cell.column.columnDef.cell, cell.getContext());
     }
   };
+
+  const isHighlighted = (row: any) => {
+    if (typeof highlighted === "string") {
+      if ("name" in row.original)
+        return slugify(row.original.name) === highlighted
+      else if ("party" in row.original)
+        return row.original.party
+      else return false;
+    }
+  }
 
   return (
     <>
@@ -302,9 +306,9 @@ const Table: FunctionComponent<TableProps> = ({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </th>
                 ))}
               </tr>
@@ -314,31 +318,35 @@ const Table: FunctionComponent<TableProps> = ({
             <></>
           ) : (
             <tbody>
-              {table.getRowModel().rows.map((row: any, rowIndex: number) => (
-                <tr
-                  key={row.id}
-                  className={cn(
-                    highlightedRows.includes(rowIndex)
-                      ? "bg-slate-50 dark:bg-zinc-950"
-                      : "bg-inherit",
-                    "border-slate-200 dark:border-zinc-800 border-b"
-                  )}
-                >
-                  {row.getVisibleCells().map((cell: any, colIndex: number) => (
-                    <td
-                      key={cell.id}
-                      className={cn(
-                        highlightedRows.includes(rowIndex) && colIndex === 0
-                          ? "font-medium"
-                          : "font-normal",
-                        "px-2 py-[10px]"
-                      )}
-                    >
-                      {lookupDesktop(cell.column.columnDef.id, cell)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {table.getRowModel().rows.map((row: any) => {
+                const highlight = isHighlighted(row);
+
+                return (
+                  <tr
+                    key={row.id}
+                    className={cn(
+                      highlight
+                        ? "bg-slate-50 dark:bg-zinc-950"
+                        : "bg-inherit",
+                      "border-slate-200 dark:border-zinc-800 border-b"
+                    )}
+                  >
+                    {row.getVisibleCells().map((cell: any, colIndex: number) => (
+                      <td
+                        key={cell.id}
+                        className={cn(
+                          highlight && colIndex === 0
+                            ? "font-medium"
+                            : "font-normal",
+                          "px-2 py-[10px]"
+                        )}
+                      >
+                        {lookupDesktop(cell.column.columnDef.id, cell, highlight)}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
             </tbody>
           )}
         </table>
@@ -346,11 +354,14 @@ const Table: FunctionComponent<TableProps> = ({
         {/* Mobile */}
         {table.getRowModel().rows.map((row: any, index: number) => {
           const ids = table.getAllColumns().map((col) => col.id);
+          const highlight = isHighlighted(row);
+
           let _row: Record<string, ReactNode> = {};
           row.getVisibleCells().forEach((cell: any) => {
             _row[cell.column.columnDef.id] = lookupMobile(
               cell.column.columnDef.id,
-              cell
+              cell,
+              highlight
             );
           });
           return isLoading ? (
@@ -360,7 +371,7 @@ const Table: FunctionComponent<TableProps> = ({
               className={cn(
                 "border-slate-200 dark:border-zinc-800 flex flex-col space-y-2 border-b p-3 text-sm first:border-t-2 md:hidden",
                 index === 0 && "border-t-2",
-                highlightedRows.includes(index)
+                highlight
                   ? "bg-slate-50 dark:bg-[#121212]"
                   : "bg-inherit"
               )}
