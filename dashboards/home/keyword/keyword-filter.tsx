@@ -19,7 +19,6 @@ import {
   MagnifyingGlassIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
 import { OptionType } from "@lib/types";
@@ -28,13 +27,19 @@ import { ParsedUrlQuery } from "querystring";
 import { useRef, useState } from "react";
 import { DateRange } from "react-day-picker";
 import {
+  AGES,
   ALL_AGES,
   ALL_ETHNICITIES,
   ALL_PARTIES,
   BOTH_SEXES,
+  DEWANS,
   DEWAN_ENUM,
-  DEWAN_INDEX_ENUM,
+  DEWAN_IDX_ENUM,
+  ETHNICITIES,
+  PARTIES,
+  SEXES,
 } from "../filter-options";
+import { useData } from "@hooks/useData";
 
 /**
  * Keyword - Filter
@@ -51,55 +56,50 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { q, dewan, start_date, end_date } = query;
+  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
+    query;
 
   const { data, setData } = useData({
     query: q ?? "",
-    dewan_idx: dewan ? DEWAN_INDEX_ENUM[dewan.toString()] : 0,
+    dewan_idx: dewan ? DEWAN_IDX_ENUM[dewan.toString()] : 0,
     dewan: dewan ?? "dewan-rakyat",
-    age: ALL_AGES,
-    etnik: ALL_ETHNICITIES,
-    party: ALL_PARTIES,
-    sex: BOTH_SEXES,
+    age: umur ? String(umur) : ALL_AGES,
+    etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
+    party: parti ? String(parti) : ALL_PARTIES,
+    sex: jantina ? String(jantina) : BOTH_SEXES,
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<
     DateRange | undefined
   >(
-    start_date || end_date
+    tarikh_mula || tarikh_akhir
       ? {
-          from: start_date ? new Date(start_date.toString()) : undefined,
-          to: end_date ? new Date(end_date.toString()) : undefined,
-        }
+        from: tarikh_mula ? new Date(tarikh_mula.toString()) : undefined,
+        to: tarikh_akhir ? new Date(tarikh_akhir.toString()) : undefined,
+      }
       : undefined
   );
 
   const { setFilter } = useFilter({
     q: q,
     dewan: dewan,
-    start_date: start_date ?? "",
-    end_date: end_date ?? "",
+    tarikh_mula: tarikh_mula ?? "",
+    tarikh_akhir: tarikh_akhir ?? "",
+    umur: data.age === ALL_AGES ? "" : data.age,
+    etnik: data.etnik === ALL_ETHNICITIES ? "" : data.etnik,
+    parti: data.party === ALL_PARTIES ? "" : data.party,
+    jantina: data.sex === BOTH_SEXES ? "" : data.sex,
   });
 
-  const DEWAN_OPTIONS: OptionType[] = [
-    {
-      label: t("dewan_rakyat", { ns: "common" }),
-      value: "dewan-rakyat",
-    },
-    {
-      label: t("dewan_negara", { ns: "common" }),
-      value: "dewan-negara",
-    },
-    {
-      label: t("kamar_khas", { ns: "common" }),
-      value: "kamar-khas",
-    },
-  ];
+  const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
+    label: t(key.replace("-", "_"), { ns: "common" }),
+    value: key,
+  }));
 
   const PARTY_OPTIONS: OptionType[] = [
     { label: t(ALL_PARTIES), value: ALL_PARTIES },
   ].concat(
-    ["BEBAS", "BN", "DAP", "PAS", "PH", "PN", "WARISAN"].map((key: string) => ({
+    PARTIES.map((key: string) => ({
       label: t(key, { ns: "party" }),
       value: key,
     }))
@@ -108,57 +108,48 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const AGE_OPTIONS: OptionType[] = [
     { label: t(ALL_AGES, { ns: "demografi" }), value: ALL_AGES },
   ].concat(
-    ["18-29", "30-39", "40-49", "50-59", "60-69", "70+"].map((key: string) => ({
-      label: key,
+    AGES.map((key: string) => ({
+      label: key + (key === "70" ? "+" : ""),
       value: key,
     }))
   );
 
-  const SEX_OPTIONS: OptionType[] = [
-    { label: t(BOTH_SEXES, { ns: "demografi" }), value: BOTH_SEXES },
-  ].concat(
-    ["m", "f"].map((key: string) => ({
-      label: t(key, { ns: "demografi" }),
-      value: key,
-    }))
-  );
+  const SEX_OPTIONS: OptionType[] = SEXES.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
-  const ETNIK_OPTIONS: OptionType[] = [
-    { label: t(ALL_ETHNICITIES, { ns: "demografi" }), value: ALL_ETHNICITIES },
-  ].concat(
-    ["malay", "chinese", "indian", "bumi_sbh", "bumi_swk", "other"].map(
-      (key: string) => ({
-        label: t(key, { ns: "demografi" }),
-        value: key,
-      })
-    )
-  );
+  const ETNIK_OPTIONS: OptionType[] = ETHNICITIES.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
   const handleSearch = () => {
     onLoad();
     setFilter("q", data.query);
     setFilter("dewan", data.dewan);
+    setFilter("umur", data.age === ALL_AGES ? "" : data.age);
+    setFilter("etnik", data.etnik === ALL_ETHNICITIES ? "" : data.etnik);
+    setFilter("parti", data.party === ALL_PARTIES ? "" : data.party);
+    setFilter("jantina", data.sex === BOTH_SEXES ? "" : data.sex);
     setFilter(
-      "start_date",
+      "tarikh_mula",
       selectedDateRange?.from
         ? format(selectedDateRange.from, "yyyy-MM-dd")
         : ""
     );
     setFilter(
-      "end_date",
+      "tarikh_akhir",
       selectedDateRange?.to
         ? format(selectedDateRange.to, "yyyy-MM-dd")
         : selectedDateRange?.from
-        ? format(selectedDateRange.from, "yyyy-MM-dd")
-        : ""
+          ? format(selectedDateRange.from, "yyyy-MM-dd")
+          : ""
     );
   };
 
   const handleClear = () => {
-    setData("query", "");
     setSelectedDateRange(undefined);
-    setData("start_date", "");
-    setData("end_date", "");
     setData("party", ALL_PARTIES);
     setData("age", ALL_AGES);
     setData("etnik", ALL_ETHNICITIES);
@@ -193,7 +184,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               if (e.key === "Enter") handleSearch();
             }}
             placeholder={t("search_keyword")}
-            className="grow truncate border-none bg-white focus:outline-none focus:ring-0 dark:bg-zinc-900"
+            className="grow truncate border-none bg-background focus:outline-none focus:ring-0"
             ref={inputRef}
           />
           {data.query && (
@@ -205,7 +196,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                 inputRef.current && inputRef.current.focus();
               }}
             >
-              <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
+              <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-foreground" />
             </Button>
           )}
           <Button
@@ -273,15 +264,15 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           data.sex !== BOTH_SEXES ||
           data.age !== ALL_AGES ||
           data.etnik !== ALL_ETHNICITIES) && (
-          <Button
-            variant="ghost"
-            className="w-fit justify-center"
-            onClick={handleClear}
-          >
-            <XMarkIcon className="h-4.5 w-4.5" />
-            {t("clear", { ns: "common" })}
-          </Button>
-        )}
+            <Button
+              variant="ghost"
+              className="w-fit justify-center"
+              onClick={handleClear}
+            >
+              <XMarkIcon className="h-4.5 w-4.5" />
+              {t("clear", { ns: "common" })}
+            </Button>
+          )}
       </div>
 
       {/* Mobile Drawer */}

@@ -25,18 +25,22 @@ import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
 import { OptionType } from "@lib/types";
 import { format } from "date-fns";
-import { ParsedUrlQuery } from "querystring";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import {
+  AGES,
   ALL_AGES,
   ALL_ETHNICITIES,
   ALL_PARTIES,
   BOTH_SEXES,
+  DEWANS,
   DEWAN_ENUM,
-  DEWAN_INDEX_ENUM,
+  DEWAN_IDX_ENUM,
+  ETHNICITIES,
+  PARTIES,
+  SEXES,
 } from "../filter-options";
-import { slugify } from "@lib/helpers";
+import { NAME_TO_UID_DR } from "@lib/uid";
 
 /**
  * MP - Filter
@@ -44,38 +48,68 @@ import { slugify } from "@lib/helpers";
  */
 
 export interface MPFilterProps {
-  individu_list: string[];
+  ind_or_grp: string;
+  onFilter: (e: string) => void;
   onLoad: () => void;
-  query: ParsedUrlQuery;
+  uid: string;
+  dewan?: string;
+  party: string;
+  sex: string;
+  age: string;
+  ethnic: string;
+  start?: Date;
+  end?: Date;
 }
 
-const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
+const MPFilter = ({
+  ind_or_grp,
+  onFilter,
+  onLoad,
+  uid,
+  dewan,
+  party,
+  age,
+  sex,
+  ethnic,
+  start,
+  end,
+}: MPFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
 
-  const { q, dewan, start_date, end_date } = query;
+  const INDIVIDU_OPTIONS: OptionType[] = Object.keys(NAME_TO_UID_DR).map(
+    (key: string) => {
+      return { label: key, value: String(NAME_TO_UID_DR[key]) };
+    }
+  );
 
   const { data, setData } = useData({
-    query: q ?? "",
-    individu_option: "",
-    ind_or_grp: "individu",
-    dewan_idx: dewan ? DEWAN_INDEX_ENUM[dewan.toString()] : 0,
+    uid: uid,
+    individu_option: uid
+      ? INDIVIDU_OPTIONS.find((option) => option.value === String(uid))
+      : undefined,
+    dewan_idx: dewan ? DEWAN_IDX_ENUM[dewan] : 0,
     dewan: dewan ?? "dewan-rakyat",
-    age: ALL_AGES,
-    etnik: ALL_ETHNICITIES,
-    party: ALL_PARTIES,
-    sex: BOTH_SEXES,
+    age: age,
+    ethnic: ethnic,
+    party: party,
+    sex: sex,
   });
 
-  const [selectedDateRange, setSelectedDateRange] = useState<
-    DateRange | undefined
-  >(undefined);
+  const [selectedDateRange, setSelectedDateRange] =
+    useState<DateRange | undefined>(
+      start || end ? { from: start, to: end } : undefined
+    );
 
   const { setFilter } = useFilter({
-    q: q,
+    uid: uid,
     dewan: dewan,
-    start_date: start_date ?? "",
-    end_date: end_date ?? "",
+    tarikh_mula: start ?? "",
+    tarikh_akhir: end ?? "",
+    umur: data.age === ALL_AGES ? "" : data.age,
+    etnik: data.ethnic === ALL_ETHNICITIES ? "" : data.ethnic,
+    parti: data.party === ALL_PARTIES ? "" : data.party,
+    jantina: data.sex === BOTH_SEXES ? "" : data.sex,
   });
 
   const INDIVIDU_OR_GROUP: OptionType[] = [
@@ -89,29 +123,15 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
     },
   ];
 
-  const DEWAN_OPTIONS: OptionType[] = [
-    {
-      label: t("dewan_rakyat", { ns: "common" }),
-      value: "dewan-rakyat",
-    },
-    {
-      label: t("dewan_negara", { ns: "common" }),
-      value: "dewan-negara",
-    },
-    {
-      label: t("kamar_khas", { ns: "common" }),
-      value: "kamar-khas",
-    },
-  ];
-
-  const INDIVIDU_OPTIONS: OptionType[] = individu_list.map((key: string) => {
-    return { label: key, value: slugify(key) };
-  });
+  const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
+    label: t(key.replace("-", "_"), { ns: "common" }),
+    value: key,
+  }));
 
   const PARTY_OPTIONS: OptionType[] = [
     { label: t(ALL_PARTIES), value: ALL_PARTIES },
   ].concat(
-    ["BEBAS", "BN", "DAP", "PAS", "PH", "PN", "WARISAN"].map((key: string) => ({
+    PARTIES.map((key: string) => ({
       label: t(key, { ns: "party" }),
       value: key,
     }))
@@ -120,68 +140,73 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
   const AGE_OPTIONS: OptionType[] = [
     { label: t(ALL_AGES, { ns: "demografi" }), value: ALL_AGES },
   ].concat(
-    ["18-29", "30-39", "40-49", "50-59", "60-69", "70+"].map((key: string) => ({
-      label: key,
+    AGES.map((key: string) => ({
+      label: key + (key === "70" ? "+" : ""),
       value: key,
     }))
   );
 
-  const SEX_OPTIONS: OptionType[] = [
-    { label: t(BOTH_SEXES, { ns: "demografi" }), value: BOTH_SEXES },
-  ].concat(
-    ["m", "f"].map((key: string) => ({
-      label: t(key, { ns: "demografi" }),
-      value: key,
-    }))
-  );
+  const SEX_OPTIONS: OptionType[] = SEXES.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
-  const ETNIK_OPTIONS: OptionType[] = [
-    { label: t(ALL_ETHNICITIES, { ns: "demografi" }), value: ALL_ETHNICITIES },
-  ].concat(
-    ["malay", "chinese", "indian", "bumi_sbh", "bumi_swk", "other"].map(
-      (key: string) => ({
-        label: t(key, { ns: "demografi" }),
-        value: key,
-      })
-    )
-  );
+  const ETNIK_OPTIONS: OptionType[] = ETHNICITIES.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
-  const handleSearch = () => {
+  const handleIndividuSearch = (uid: string, dewan: string) => {
+    onLoad()
+    setFilter("uid", uid);
+    setFilter("dewan", dewan);
+    setFilter("umur", "");
+    setFilter("etnik", "");
+    setFilter("parti", "");
+    setFilter("jantina", "");
+  }
+
+  const handleGroupSearch = (dewan: string) => {
     onLoad();
-    setFilter("q", data.query);
-    setFilter("dewan", data.dewan);
+    setFilter("uid", "");
+    setFilter("dewan", dewan);
+    setFilter("umur", data.age === ALL_AGES ? "" : data.age);
+    setFilter("etnik", data.ethnic === ALL_ETHNICITIES ? "" : data.ethnic);
+    setFilter("parti", data.party === ALL_PARTIES ? "" : data.party);
+    setFilter("jantina", data.sex === BOTH_SEXES ? "" : data.sex);
     setFilter(
-      "start_date",
+      "tarikh_mula",
       selectedDateRange?.from
         ? format(selectedDateRange.from, "yyyy-MM-dd")
         : ""
     );
     setFilter(
-      "end_date",
+      "tarikh_akhir",
       selectedDateRange?.to
         ? format(selectedDateRange.to, "yyyy-MM-dd")
         : selectedDateRange?.from
-        ? format(selectedDateRange.from, "yyyy-MM-dd")
-        : ""
+          ? format(selectedDateRange.from, "yyyy-MM-dd")
+          : ""
     );
   };
 
   const handleClear = () => {
-    setData("query", "");
-    setSelectedDateRange(undefined);
-    setData("start_date", "");
-    setData("end_date", "");
     setData("party", ALL_PARTIES);
     setData("age", ALL_AGES);
-    setData("etnik", ALL_ETHNICITIES);
+    setData("ethnic", ALL_ETHNICITIES);
     setData("sex", BOTH_SEXES);
+  };
+
+  const className = {
+    dropdown_ind_grp: "link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit",
+    dropdown_demo: "text-blue-600 dark:text-primary-dark rounded-full",
   };
 
   return (
     <>
       <div className="sm:pt-6 pb-3 space-y-6">
         {/* Dewan Selector */}
-        <div className="mx-auto sm:block hidden w-fit rounded-full p-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+        <div className="mx-auto sm:block hidden w-fit rounded-full p-1 bg-background border border-border">
           <List
             className="flex-nowrap"
             options={DEWAN_OPTIONS.map((item) => item.label)}
@@ -189,58 +214,70 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
             onChange={(i) => {
               setData("dewan", DEWAN_ENUM[i]);
               setData("dewan_idx", i);
+              if (ind_or_grp === "individu") {
+                if (uid) handleIndividuSearch(data.uid, DEWAN_ENUM[i])
+              }
+              else if (ind_or_grp === "group") handleGroupSearch(DEWAN_ENUM[i])
             }}
           />
         </div>
 
         {/* Search Bar */}
-        {data.ind_or_grp === "individu" ? (
+        {ind_or_grp === "individu" ? (
           <div className="w-full sm:w-[500px] mx-auto">
             <ComboBox
               placeholder={t("search_individual")}
               options={INDIVIDU_OPTIONS}
               selected={
-                data.individu_option
-                  ? INDIVIDU_OPTIONS.find(
-                      (e) => e.value === data.individu_option.value
-                    )
-                  : null
+                INDIVIDU_OPTIONS.find(
+                  (e) => data.individu_option
+                    ? e.value === data.individu_option.value
+                    : undefined
+                )
               }
               dropdown={
                 <div className="flex self-center pl-4.5">
                   <Dropdown
-                    className="link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit"
+                    className={className.dropdown_ind_grp}
                     width="w-fit"
                     options={INDIVIDU_OR_GROUP}
                     selected={INDIVIDU_OR_GROUP.find(
-                      (e) => e.value === data.ind_or_grp
+                      (e) => e.value === ind_or_grp
                     )}
-                    onChange={(e) => setData("ind_or_grp", e.value)}
+                    onChange={(e: { value: string }) => {
+                      onFilter(e.value)
+                      if (e.value === "individu") handleClear()
+                      else if (e.value === "group") {
+                        setData("uid", "");
+                        setData("individu_option", undefined);
+                      }
+                    }}
                   />
                 </div>
               }
               onChange={(selected) => {
                 setData("individu_option", selected);
+                if (selected) handleIndividuSearch(selected.value, data.dewan)
               }}
             />
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="pl-4.5 pr-1.5 py-2 flex mx-auto w-full sm:w-fit rounded-full border border-slate-200 dark:border-zinc-800 justify-between">
+            <div className="pl-4.5 pr-1.5 py-2 flex mx-auto w-full sm:w-fit rounded-full border border-border justify-between">
               <div className="flex self-center">
                 <Dropdown
-                  className="link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit"
+                  className={className.dropdown_ind_grp}
                   width="w-fit"
                   options={INDIVIDU_OR_GROUP}
                   selected={INDIVIDU_OR_GROUP.find(
-                    (e) => e.value === data.ind_or_grp
+                    (e) => e.value === ind_or_grp
                   )}
-                  onChange={(e) => setData("ind_or_grp", e.value)}
+                  onChange={(e: { value: string }) => onFilter(e.value)}
                 />
               </div>
               <div className="hidden md:flex gap-x-1 px-2.5">
                 <Dropdown
-                  className="text-blue-600 rounded-full"
+                  className={className.dropdown_demo}
                   width="w-fit"
                   enableFlag
                   flag={(party) => {
@@ -253,46 +290,44 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
                   onChange={(e) => setData("party", e.value)}
                 />
                 <Dropdown
-                  className="text-blue-600 rounded-full"
+                  className={className.dropdown_demo}
                   width="w-fit"
                   options={SEX_OPTIONS}
                   selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
                   onChange={(e) => setData("sex", e.value)}
                 />
                 <Dropdown
-                  className="text-blue-600 rounded-full"
+                  className={className.dropdown_demo}
                   width="w-fit"
                   options={AGE_OPTIONS}
                   selected={AGE_OPTIONS.find((e) => e.value === data.age)}
                   onChange={(e) => setData("age", e.value)}
                 />
                 <Dropdown
-                  className="text-blue-600 rounded-full"
+                  className={className.dropdown_demo}
                   width="w-fit"
                   options={ETNIK_OPTIONS}
-                  selected={ETNIK_OPTIONS.find((e) => e.value === data.etnik)}
-                  onChange={(e) => setData("etnik", e.value)}
+                  selected={ETNIK_OPTIONS.find((e) => e.value === data.ethnic)}
+                  onChange={(e) => setData("ethnic", e.value)}
                 />
                 {(data.party !== ALL_PARTIES ||
                   data.sex !== BOTH_SEXES ||
                   data.age !== ALL_AGES ||
-                  data.etnik !== ALL_ETHNICITIES) && (
-                  <Button
-                    variant="ghost"
-                    className="group flex sm:-mr-1.5 sm:h-8 sm:w-8 p-0 justify-center rounded-full"
-                    onClick={() => {
-                      setData("query", "");
-                    }}
-                  >
-                    <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
-                  </Button>
-                )}
+                  data.ethnic !== ALL_ETHNICITIES) && (
+                    <Button
+                      variant="ghost"
+                      className="group flex sm:-mr-1.5 sm:h-8 sm:w-8 p-0 justify-center rounded-full"
+                      onClick={handleClear}
+                    >
+                      <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-foreground" />
+                    </Button>
+                  )}
               </div>
               <div className="self-center">
                 <Button
                   variant="primary"
                   className="rounded-full h-9"
-                  onClick={() => handleSearch()}
+                  onClick={() => handleGroupSearch(data.dewan)}
                 >
                   <MagnifyingGlassIcon className="h-5 w-5 text-white" />
                   {t("placeholder.search", { ns: "common" })}
@@ -302,7 +337,7 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
 
             <div className="justify-center hidden md:flex flex-wrap gap-2">
               <Daterange
-                className="text-blue-600"
+                className="text-blue-600 dark:text-primary-dark"
                 placeholder={t("current_parlimen")}
                 label={t("date", { ns: "home" })}
                 selected={selectedDateRange}
@@ -313,7 +348,7 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
                 <Button
                   variant="ghost"
                   className="w-fit justify-center"
-                  onClick={handleClear}
+                  onClick={() => setSelectedDateRange(undefined)}
                 >
                   <XMarkIcon className="h-4.5 w-4.5" />
                   {t("clear", { ns: "common" })}
@@ -412,9 +447,9 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
                       anchor="left bottom-10"
                       options={ETNIK_OPTIONS}
                       selected={ETNIK_OPTIONS.find(
-                        (e) => e.value === data.etnik
+                        (e) => e.value === data.ethnic
                       )}
-                      onChange={(e) => setData("etnik", e.value)}
+                      onChange={(e) => setData("ethnic", e.value)}
                     />
                   </div>
                 </div>
@@ -425,8 +460,7 @@ const MPFilter = ({ individu_list, onLoad, query }: MPFilterProps) => {
                     className="w-full justify-center"
                     onClick={() => {
                       setOpen(false);
-                      onLoad();
-                      handleSearch();
+                      handleGroupSearch(data.dewan);
                     }}
                   >
                     {t("filter", { ns: "common" })}

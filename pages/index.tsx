@@ -1,7 +1,6 @@
 import Metadata from "@components/Metadata";
 import HomeLayout from "@dashboards/home/layout";
-import SearchKeyword from "@dashboards/home/search-keyword";
-import SearchMP from "@dashboards/home/search-mp";
+import SearchKeyword from "@dashboards/home/keyword";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
@@ -23,9 +22,7 @@ const Home: Page = ({
   return (
     <>
       <Metadata
-        keywords={
-          "hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
-        }
+        keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
       />
       <HomeLayout>
         <SearchKeyword

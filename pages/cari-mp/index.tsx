@@ -1,6 +1,6 @@
 import Metadata from "@components/Metadata";
 import HomeLayout from "@dashboards/home/layout";
-import SearchMP from "@dashboards/home/search-mp";
+import SearchMP from "@dashboards/home/mp";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
@@ -22,9 +22,7 @@ const CariMP: Page = ({
   return (
     <>
       <Metadata
-        keywords={
-          "hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
-        }
+        keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
       />
       <HomeLayout>
         <SearchMP
