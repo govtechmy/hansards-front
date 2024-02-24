@@ -1,11 +1,11 @@
 import { Dewan } from "@lib/types";
 
+export const DEWANS = ["dewan-rakyat", "dewan-negara", "kamar-khas"]
 export const DEWAN_IDX_ENUM: { [key: string]: number } = {
   "dewan-rakyat": 0,
   "dewan-negara": 1,
   "kamar-khas": 2,
 };
-
 export const DEWAN_ENUM: { [key: number]: Dewan } = {
   0: "dewan-rakyat",
   1: "dewan-negara",
