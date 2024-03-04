@@ -5,7 +5,6 @@ import {
   Panel,
   PartyFlag,
   Skeleton,
-  StateDropdown,
   Tabs,
 } from "@components/index";
 import { useData } from "@hooks/useData";
@@ -17,6 +16,7 @@ import { Archive, OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { Individu, Parti } from "./types";
+import { statesOptions } from "@lib/options";
 
 /**
  * Sejarah Parlimen Dashboard
@@ -88,8 +88,7 @@ const SejarahParlimen = ({
           <h2 className="header text-center pb-6">{t("parlimen.header")}</h2>
 
           <div className="pb-6 lg:pb-8 items-center gap-2 flex flex-col sm:flex-row mx-auto w-fit">
-            <StateDropdown
-              currentState={data.state}
+            <Dropdown
               onChange={(selected) => {
                 setData("loading", true);
                 setData("state", selected.value);
@@ -98,6 +97,9 @@ const SejarahParlimen = ({
                   setFilter("negeri", selected.value);
                 }
               }}
+              selected={statesOptions.find(state => state.value === data.state)}
+              options={statesOptions}
+              enableFlag
               anchor="left"
               width="w-full"
             />

@@ -1,22 +1,23 @@
 import {
   Container,
-  StateDropdown,
+  Dropdown,
   ImageWithFallback,
   Skeleton,
   toast,
 } from "@components/index";
+import { useCache } from "@hooks/useCache";
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
+import { get } from "@lib/api";
+import { PARTIES, statesOptions } from "@lib/options";
 import { generateSchema } from "@lib/schema/election";
 import { OptionType } from "@lib/types";
 import { Trans } from "next-i18next";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { Parti, PartiResult } from "./types";
-import { useCache } from "@hooks/useCache";
 import FullResults, { Result } from "./full-results";
-import { get } from "@lib/api";
+import { Parti, PartiResult } from "./types";
 
 /**
  * Sejarah Parti Dashboard
@@ -37,11 +38,11 @@ interface SejarahPartiProps {
   params: { name: string; state: string };
 }
 
-const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
+const SejarahParti = ({ parti, params }: SejarahPartiProps) => {
   const { t } = useTranslation(["sejarah", "party"]);
   const { cache } = useCache();
 
-  const PARTI_OPTIONS: Array<OptionType> = dropdown.map((key) => ({
+  const PARTI_OPTIONS: Array<OptionType> = PARTIES.map((key) => ({
     label: t(key, { ns: "party" }),
     value: key,
   }));
@@ -216,8 +217,7 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
               {t(params.name ?? DEFAULT_PARTI, { ns: "party" })}
             </span>
             <Trans>{t("parti.title")}</Trans>
-            <StateDropdown
-              currentState={params.state ?? "mys"}
+            <Dropdown
               onChange={(selected) => {
                 setData("loading", true);
                 setData("state", selected.value);
@@ -226,8 +226,11 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
                   setFilter("negeri", selected.value);
                 }
               }}
-              width="inline-flex ml-0.5"
+              selected={statesOptions.find(state => state.value === (params.state ?? "mys"))}
+              options={statesOptions}
+              enableFlag
               anchor="left"
+              width="inline-flex ml-0.5"
             />
           </div>
 
