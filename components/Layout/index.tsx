@@ -14,7 +14,7 @@ const Layout: FunctionComponent<LayoutProps> = ({
   stateSelector,
 }) => {
   return (
-    <div className={className}>
+    <div vaul-drawer-wrapper="" className={className}>
       <Header stateSelector={stateSelector} />
       <div className="flex min-h-screen flex-col bg-background">
         <div className="flex flex-grow flex-col pt-14">{children}</div>
