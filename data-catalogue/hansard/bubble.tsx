@@ -9,37 +9,41 @@ import ImageWithFallback from "@components/ImageWithFallback";
  */
 
 export type SpeechBubbleProps = {
-  speaker: ReactNode;
   children: ReactNode;
   date: string;
   hansard_id: string;
   index: number;
   isYDP: boolean;
   length: number;
+  side: boolean;
+  speaker: ReactNode;
   speech_id: string;
   timeString: string;
+  uid: number;
 };
 
 const SpeechBubble = ({
-  speaker,
   children,
   date,
   hansard_id,
   index,
   isYDP,
   length,
+  side,
+  speaker,
   speech_id,
   timeString,
+  uid,
 }: SpeechBubbleProps) => {
   return (
     <>
-      <div id={`${index}`} key={speech_id} className={cn("s", isYDP && "ydp")}>
+      <div id={`${index}`} key={speech_id} className={cn("s", side && "r")}>
         {/* Avatar */}
-        <div className={cn("w", isYDP && "ydp")}>
+        <div className={cn("w", side && "r")}>
           <div className="a">
-            <ImageWithFallback
+            {/* <ImageWithFallback
               fallback={
-                <div className="border border-border w-9 h-9 rounded-full" />
+                <div className="border border-border size-9 rounded-full" />
               }
               src={`/static/`}
               width={36}
@@ -47,7 +51,8 @@ const SpeechBubble = ({
               alt={``}
               className="p"
               priority={index <= 5}
-            />
+            /> */}
+            <img alt={`${uid}`} className="p" src={`/mp/${uid}.jpg`} width={36} height={36}/>
           </div>
         </div>
         {/* Bubble */}

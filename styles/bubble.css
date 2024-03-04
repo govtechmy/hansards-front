@@ -13,7 +13,7 @@ div.s {
   @apply relative flex flex-row gap-3 px-11 sm:px-12 scroll-mt-40 lg:scroll-mt-60 max-w-[1000px];
 
   /* bubble */
-  .b {
+  div.b {
     @apply relative flex flex-col px-3 sm:px-4.5 pt-3 pb-6 bg-slate-50 dark:bg-zinc-800
     hover:bg-background hover:shadow-floating dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)]
     border border-transparent rounded-xl hover:border-border
@@ -41,7 +41,7 @@ div.s {
     @apply absolute inset-0 flex flex-col-reverse;
   }
 
-  .w.ydp {
+  .w.r {
     @apply items-end;
   }
 
@@ -58,20 +58,40 @@ div.s {
     @apply bg-[#FAF8F0] hover:bg-[#FAF8F0] dark:bg-[#3E3713] hover:dark:bg-[#3E3713];
   }
 
-  .n.bn {
-    @apply text-[#000080] dark:text-[#006AFF];
+  p.n.ydp {
+    @apply text-[#B49B1A];
+  }
+  
+  p.n.r {
+    @apply text-red-600 dark:text-red-500;
   }
 
-  .n.gps {
-    @apply text-[#FF9B0E];
+  p.n.o {
+    @apply text-orange-600 dark:text-orange-500;
   }
 
-  .n.ph {
-    @apply text-[#D7282F] dark:text-[#DF3134];
+  p.n.g {
+    @apply text-green-600 dark:text-green-500;
   }
 
-  .n.pn {
-    @apply text-[#003152] dark:text-[#0080AF];
+  p.n.c {
+    @apply text-cyan-600 dark:text-cyan-500;
+  }
+
+  p.n.b {
+    @apply text-blue-600 dark:text-blue-500;
+  }
+
+  p.n.v {
+    @apply text-violet-600 dark:text-violet-500;
+  }
+
+  p.n.p {
+    @apply text-pink-600 dark:text-pink-400;
+  }
+
+  p.n.z {
+    @apply text-zinc-500;
   }
 
   /* Minister or MP */
@@ -80,8 +100,8 @@ div.s {
   }
   
   /* name */
-  .n {
-    @apply font-bold text-balance;
+  p.n {
+    @apply font-bold text-pretty;
   }
 
   /* other name */
@@ -90,7 +110,7 @@ div.s {
   }
 
   /* timestamp */
-  .t {
+  span.t {
     @apply absolute bottom-1.5 right-4.5 text-xs text-zinc-500;
   }
 
@@ -112,11 +132,24 @@ div.s {
   }
 
   table tr {
-    @apply border-inherit border-b;
+    @apply border-slate-200 dark:border-zinc-700 border-b;
+  }
+
+  ul {
+    @apply list-inside list-disc;
+  }
+  
+  ol {
+    @apply list-inside list-decimal;
+  }
+  
+  li > p {
+    @apply inline;
   }
 }
 
-.s.ydp {
+/* right side */
+.s.r {
   @apply flex-row-reverse;
 }
 
