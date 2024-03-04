@@ -19,8 +19,10 @@ import {
   MagnifyingGlassIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
+import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
+import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { format } from "date-fns";
 import { ParsedUrlQuery } from "querystring";
@@ -36,10 +38,8 @@ import {
   DEWAN_ENUM,
   DEWAN_IDX_ENUM,
   ETHNICITIES,
-  PARTIES,
   SEXES,
 } from "../filter-options";
-import { useData } from "@hooks/useData";
 
 /**
  * Keyword - Filter
@@ -60,9 +60,9 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
     query;
 
   const { data, setData } = useData({
-    query: q ?? "",
+    query: q ? String(q) : "",
     dewan_idx: dewan ? DEWAN_IDX_ENUM[dewan.toString()] : 0,
-    dewan: dewan ?? "dewan-rakyat",
+    dewan: dewan ? String(dewan) : "dewan-rakyat",
     age: umur ? String(umur) : ALL_AGES,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
     party: parti ? String(parti) : ALL_PARTIES,
@@ -81,14 +81,14 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   );
 
   const { setFilter } = useFilter({
-    q: q,
     dewan: dewan,
+    q: q,
     tarikh_mula: tarikh_mula ?? "",
     tarikh_akhir: tarikh_akhir ?? "",
-    umur: data.age === ALL_AGES ? "" : data.age,
-    etnik: data.etnik === ALL_ETHNICITIES ? "" : data.etnik,
     parti: data.party === ALL_PARTIES ? "" : data.party,
     jantina: data.sex === BOTH_SEXES ? "" : data.sex,
+    umur: data.age === ALL_AGES ? "" : data.age,
+    etnik: data.etnik === ALL_ETHNICITIES ? "" : data.etnik,
   });
 
   const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
@@ -124,28 +124,28 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
     value: key,
   }));
 
-  const handleSearch = () => {
+  const handleSearch = (dewan: string, party: string, sex: string, age: string, etnik: string, daterange?: DateRange) => {
     onLoad();
+    setFilter("dewan", dewan);
     setFilter("q", data.query);
-    setFilter("dewan", data.dewan);
-    setFilter("umur", data.age === ALL_AGES ? "" : data.age);
-    setFilter("etnik", data.etnik === ALL_ETHNICITIES ? "" : data.etnik);
-    setFilter("parti", data.party === ALL_PARTIES ? "" : data.party);
-    setFilter("jantina", data.sex === BOTH_SEXES ? "" : data.sex);
     setFilter(
       "tarikh_mula",
-      selectedDateRange?.from
-        ? format(selectedDateRange.from, "yyyy-MM-dd")
+      daterange?.from
+        ? format(daterange.from, "yyyy-MM-dd")
         : ""
     );
     setFilter(
       "tarikh_akhir",
-      selectedDateRange?.to
-        ? format(selectedDateRange.to, "yyyy-MM-dd")
-        : selectedDateRange?.from
-          ? format(selectedDateRange.from, "yyyy-MM-dd")
+      daterange?.to
+        ? format(daterange.to, "yyyy-MM-dd")
+        : daterange?.from
+          ? format(daterange.from, "yyyy-MM-dd")
           : ""
     );
+    setFilter("parti", party === ALL_PARTIES ? "" : party);
+    setFilter("jantina", sex === BOTH_SEXES ? "" : sex);
+    setFilter("umur", age === ALL_AGES ? "" : age);
+    setFilter("etnik", etnik === ALL_ETHNICITIES ? "" : etnik);
   };
 
   const handleClear = () => {
@@ -168,6 +168,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             onChange={(i) => {
               setData("dewan", DEWAN_ENUM[i]);
               setData("dewan_idx", i);
+              if (data.query) handleSearch(DEWAN_ENUM[i], data.party, data.sex, data.age, data.etnik, selectedDateRange)
             }}
           />
         </div>
@@ -181,7 +182,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             value={data.query}
             onChange={(e) => setData("query", e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearch();
+              if (e.key === "Enter") handleSearch(data.dewan, data.party, data.sex, data.age, data.etnik, selectedDateRange);
             }}
             placeholder={t("search_keyword")}
             className="grow truncate border-none bg-background focus:outline-none focus:ring-0"
@@ -203,7 +204,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             variant="primary"
             className="rounded-full h-9"
             disabled={!data.query}
-            onClick={() => handleSearch()}
+            onClick={() => handleSearch(data.dewan, data.party, data.sex, data.age, data.etnik, selectedDateRange)}
           >
             <MagnifyingGlassIcon className="h-5 w-5 text-white" />
             {t("placeholder.search", { ns: "common" })}
@@ -218,7 +219,11 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           placeholder={t("current_parlimen")}
           label={t("date", { ns: "home" })}
           selected={selectedDateRange}
-          setSelected={setSelectedDateRange}
+          onChange={(dateRange) => {
+            setSelectedDateRange(dateRange);
+            if (data.query && dateRange && dateRange?.from && dateRange?.to)
+              handleSearch(data.dewan, data.party, data.sex, data.age, data.etnik, dateRange);
+          }}
         />
 
         <Dropdown
@@ -232,7 +237,10 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           }}
           options={PARTY_OPTIONS}
           selected={PARTY_OPTIONS.find((e) => e.value === data.party)}
-          onChange={(e) => setData("party", e.value)}
+          onChange={(e) => {
+            setData("party", e.value);
+            if (data.query) handleSearch(data.dewan, e.value, data.sex, data.age, data.etnik, selectedDateRange);
+          }}
         />
         <Dropdown
           sublabel={t("sex", { ns: "demografi" })}
@@ -240,7 +248,10 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           width="w-fit"
           options={SEX_OPTIONS}
           selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
-          onChange={(e) => setData("sex", e.value)}
+          onChange={(e) => {
+            setData("sex", e.value);
+            if (data.query) handleSearch(data.dewan, data.party, e.value, data.age, data.etnik, selectedDateRange);
+          }}
         />
         <Dropdown
           sublabel={t("age_group", { ns: "demografi" })}
@@ -248,7 +259,10 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           width="w-fit"
           options={AGE_OPTIONS}
           selected={AGE_OPTIONS.find((e) => e.value === data.age)}
-          onChange={(e) => setData("age", e.value)}
+          onChange={(e) => {
+            setData("age", e.value);
+            if (data.query) handleSearch(data.dewan, data.party, data.sex, e.value, data.etnik, selectedDateRange);
+          }}
         />
         <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
@@ -256,7 +270,10 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           width="w-fit"
           options={ETNIK_OPTIONS}
           selected={ETNIK_OPTIONS.find((e) => e.value === data.etnik)}
-          onChange={(e) => setData("etnik", e.value)}
+          onChange={(e) => {
+            setData("etnik", e.value);
+            if (data.query) handleSearch(data.dewan, data.party, data.sex, data.age, e.value, selectedDateRange);
+          }}
         />
 
         {(selectedDateRange ||
@@ -317,7 +334,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                 numberOfMonths={1}
                 placeholder={t("current_parlimen")}
                 selected={selectedDateRange}
-                setSelected={setSelectedDateRange}
+                onChange={setSelectedDateRange}
               />
             </div>
 
@@ -377,7 +394,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               onClick={() => {
                 setOpen(false);
                 onLoad();
-                handleSearch();
+                handleSearch(data.dewan, data.party, data.sex, data.age, data.etnik, selectedDateRange);
               }}
             >
               {t("filter", { ns: "common" })}
