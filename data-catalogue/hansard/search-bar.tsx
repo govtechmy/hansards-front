@@ -17,7 +17,7 @@ export default function HansardSearchBar() {
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
 
   return (
-    <div className="border-b-border sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-3 w-full border-b bg-background py-1.5 lg:px-8">
+    <div className="border-b-border sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-3 w-full border-b bg-background py-1.5 pr-3 lg:px-8">
       <div className="flex gap-3 items-center w-full">
         <Search
           className="border-none py-[3.5px] w-full"
@@ -28,7 +28,7 @@ export default function HansardSearchBar() {
           }}
         />
 
-        {searchValue && searchValue.length > 0 && (
+        {searchValue && searchValue.length > 1 && (
           <Button
             variant="reset"
             className="h-fit hover:bg-bg-hover text-dim group rounded-full p-1 hover:text-foreground"
@@ -37,11 +37,11 @@ export default function HansardSearchBar() {
               onSearchChange("");
             }}
           >
-            <XMarkIcon className="text-dim h-5 w-5 group-hover:text-foreground" />
+            <XMarkIcon className="text-dim size-5 group-hover:text-foreground" />
           </Button>
         )}
       </div>
-      {searchValue && searchValue.length > 0 && (
+      {searchValue && searchValue.length > 1 && (
         <div className="flex gap-3 items-center">
           <p className="text-zinc-500 max-sm:text-sm whitespace-nowrap">{`${activeCount} of ${totalCount} found`}</p>
           <Button
@@ -49,14 +49,14 @@ export default function HansardSearchBar() {
             className="h-fit hover:bg-bg-hover text-zinc-500 group rounded-full p-1 hover:text-foreground"
             onClick={onPrev}
           >
-            <ChevronUpIcon className="w-5 h-5" />
+            <ChevronUpIcon className="size-5" />
           </Button>
           <Button
             variant="reset"
             className="h-fit hover:bg-bg-hover text-zinc-500 group rounded-full p-1 hover:text-foreground"
             onClick={onNext}
           >
-            <ChevronDownIcon className="w-5 h-5" />
+            <ChevronDownIcon className="size-5" />
           </Button>
         </div>
       )}
