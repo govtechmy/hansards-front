@@ -127,7 +127,7 @@ const MP = ({
 
         <div className="w-full relative mt-6" ref={ref}>
           {/* Search */}
-          <h3 className="title leading-7 h-7 block mb-3">
+          <h3 className="title leading-7 block mb-3">
             {hasQuery &&
               house !== undefined &&
               ((mp && IS_INDIVIDU) || (!mp && !IS_INDIVIDU))
@@ -143,7 +143,7 @@ const MP = ({
           </h3>
           <SliderProvider>
             {(play) => (
-              <>
+              <div className="relative">
                 <Timeseries
                   className={cn(
                     !loading && chartEmpty && "opacity-10",
@@ -178,26 +178,26 @@ const MP = ({
                   data={timeseries.date}
                   onChange={(e) => setRange(e)}
                 />
-              </>
-            )}
-          </SliderProvider>
-          {!loading && chartEmpty && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-border flex items-center gap-2 rounded-md px-3 py-1.5">
-                {!hasQuery || (mp && !IS_INDIVIDU) || (!mp && IS_INDIVIDU) ? (
-                  <>
-                    <MagnifyingGlassIcon className="h-6 w-6" />
-                    {t("start_search")}
-                  </>
-                ) : (
-                  <>
-                    <FaceFrownIcon className="h-6 w-6" />
-                    {t("placeholder.no_results", { ns: "common" })}
-                  </>
+                {!loading && chartEmpty && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-border flex items-center gap-2 rounded-md px-3 py-1.5">
+                      {!hasQuery || (mp && !IS_INDIVIDU) || (!mp && IS_INDIVIDU) ? (
+                        <>
+                          <MagnifyingGlassIcon className="size-6" />
+                          {t("start_search")}
+                        </>
+                      ) : (
+                        <>
+                          <FaceFrownIcon className="size-6" />
+                          {t("placeholder.no_results", { ns: "common" })}
+                        </>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </SliderProvider>
         </div>
       </Section>
 
@@ -232,7 +232,7 @@ const MP = ({
                 className="max-w-screen-sm mx-auto"
                 layout="horizontal"
                 data={top_speakers.map((s) => ({
-                  x: Object.keys(s)[0],
+                  x: UID_TO_NAME_DR[Object.keys(s)[0]] ?? Object.keys(s)[0],
                   y: Object.values(s)[0],
                 }))}
                 relative

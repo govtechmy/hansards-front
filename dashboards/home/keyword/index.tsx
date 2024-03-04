@@ -98,7 +98,7 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
           </h3>
           <SliderProvider>
             {(play) => (
-              <>
+              <div className="relative">
                 <Timeseries
                   className={cn(
                     !loading && chartEmpty && "opacity-10",
@@ -133,26 +133,26 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
                   data={timeseries.date}
                   onChange={(e) => setRange(e)}
                 />
-              </>
-            )}
-          </SliderProvider>
-          {!loading && chartEmpty && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-border flex items-center gap-2 rounded-md px-3 py-1.5">
-                {keyword ? (
-                  <>
-                    <FaceFrownIcon className="h-6 w-6" />
-                    {t("placeholder.no_results", { ns: "common" })}
-                  </>
-                ) : (
-                  <>
-                    <MagnifyingGlassIcon className="h-6 w-6" />
-                    {t("start_search")}
-                  </>
+                {!loading && chartEmpty && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-border flex items-center gap-2 rounded-md px-3 py-1.5">
+                      {keyword ? (
+                        <>
+                          <FaceFrownIcon className="size-6" />
+                          {t("placeholder.no_results", { ns: "common" })}
+                        </>
+                      ) : (
+                        <>
+                          <MagnifyingGlassIcon className="size-6" />
+                          {t("start_search")}
+                        </>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </SliderProvider>
         </div>
       </Section>
 
