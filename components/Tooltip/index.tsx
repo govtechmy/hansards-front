@@ -2,7 +2,6 @@ import { Transition, Dialog } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { cn } from "@lib/helpers";
 import { Fragment, FunctionComponent, ReactNode, useState } from "react";
-import { body } from "@lib/configs/font";
 
 type TooltipProps = {
   children?: (open: () => void) => ReactNode;
@@ -48,7 +47,7 @@ const Tooltip: FunctionComponent<TooltipProps> = ({ children, className, positio
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog
           as="div"
-          className={cn(body.variable, "relative z-10 font-sans")}
+          className="relative z-10"
           onClose={setIsOpen}
         >
           <Transition.Child

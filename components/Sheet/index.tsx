@@ -12,7 +12,6 @@ import {
   useId,
 } from "@floating-ui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { body, header } from "@lib/configs/font";
 import { cn } from "@lib/helpers";
 import {
   ButtonHTMLAttributes,
@@ -30,7 +29,7 @@ import {
   useState,
 } from "react";
 
-interface DialogOptions {
+interface SheetOptions {
   initialOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -40,7 +39,7 @@ export function useDialog({
   initialOpen = false,
   open: controlledOpen,
   onOpenChange: setControlledOpen,
-}: DialogOptions = {}) {
+}: SheetOptions = {}) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
   const [labelId, setLabelId] = useState<string | undefined>();
   const [descriptionId, setDescriptionId] = useState<string | undefined>();
@@ -102,7 +101,7 @@ export function Sheet({
   ...options
 }: {
   children: ReactNode;
-} & DialogOptions) {
+} & SheetOptions) {
   const dialog = useDialog(options);
   return (
     <DialogContext.Provider value={dialog}>{children}</DialogContext.Provider>
@@ -174,7 +173,6 @@ export const SheetContent = forwardRef<
                 "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm":
                   side === "right",
               },
-              header.variable, body.variable, "font-body",
               className
             )}
             data-state={context.open ? 'open' : 'closed'}
