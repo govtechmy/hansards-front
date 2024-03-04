@@ -50,7 +50,7 @@ const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
     <Link
       href={`hansard/${dewan}/${sitting.date}#${index}`}
       prefetch={false}
-      className="shadow-button p-6 max-w-3xl group rounded-xl border border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:bg-slate-50 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/50"
+      className="shadow-button p-6 max-w-3xl group rounded-xl border border-border hover:border-border-hover hover:bg-slate-50 dark:hover:bg-zinc-800/50"
     >
       <div className="flex flex-col gap-3 relative h-full">
         <div className="flex w-auto gap-4.5">
