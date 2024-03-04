@@ -10,7 +10,6 @@ import {
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { cn } from "@lib/helpers";
-import { body, header } from "@lib/configs/font";
 import Button from "@components/Button";
 
 export interface ModalInterface {
@@ -63,9 +62,7 @@ const Modal: ForwardRefExoticComponent<ModalProps> = forwardRef(
               >
                 <Dialog.Panel
                   className={cn(
-                    header.variable,
-                    body.variable,
-                    "flex h-full w-full max-w-5xl flex-col overflow-auto rounded-t-xl font-sans lg:h-fit lg:justify-center lg:rounded-xl",
+                    "flex h-full w-full max-w-5xl flex-col overflow-auto rounded-t-xl font-inter lg:h-fit lg:justify-center lg:rounded-xl",
                     className
                   )}
                 >

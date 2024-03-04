@@ -20,8 +20,8 @@ const ErrorStatus: FunctionComponent<ErrorStatusProps> = ({ title, description, 
       <div className="flex flex-col space-y-10">
         <div className="flex flex-col-reverse items-end justify-between gap-6 lg:flex-row font-header">
           <div className="space-y-2">
-            <h1 className="text-xl lg:text-3xl text-zinc-900 dark:text-white">{title}</h1>
-            {description && <p className="text-zinc-500 font-body">{description}</p>}
+            <h1 className="text-xl lg:text-3xl text-foreground">{title}</h1>
+            {description && <p className="text-zinc-500 font-inter">{description}</p>}
           </div>
           <h2 className="text-zinc-500 text-7xl">{code}</h2>
         </div>
@@ -30,7 +30,7 @@ const ErrorStatus: FunctionComponent<ErrorStatusProps> = ({ title, description, 
             {t("output")}
           </p>
           <div className="bg-slate-100 dark:bg-[#121212] rounded-xl">
-            <div className="p-4.5 font-mono text-sm text-zinc-900 dark:text-white">
+            <div className="p-4.5 font-mono text-sm text-foreground">
               <span className="font-bold text-green-600">{APP_NAME}:~/ $</span> cat {code}
               -error.log
               <br />

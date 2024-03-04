@@ -1,4 +1,3 @@
-import { body, header } from "@lib/configs/font"
 import { cn } from "@lib/helpers"
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
@@ -41,14 +40,12 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        header.variable,
-        body.variable,
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-xl border dark:border-zinc-700 bg-background font-body",
+        "fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-xl border border-border bg-background font-inter max-h-[96dvh]",
         className
       )}
       {...props}
     >
-      <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-border-hover" />
+      <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-border" />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
