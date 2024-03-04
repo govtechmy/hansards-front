@@ -25,7 +25,6 @@ export { default as Progress } from "./Progress";
 export { default as Radio } from "./Radio";
 export { default as Search } from "./Search";
 export { default as Section } from "./Section";
-export { default as Select } from "./Dropdown/Select";
 export { default as Sidebar } from "./Sidebar";
 export { default as Skeleton } from "./Skeleton";
 export { default as Slider } from "./Slider";
@@ -38,6 +37,5 @@ export { default as Tooltip } from "./Tooltip";
 export { default as ThemeToggle } from "./Nav/theme";
 
 /** Derivatives */
-export { default as StateDropdown } from "./Dropdown/StateDropdown";
 export { default as StateModal } from "./Modal/StateModal";
 export type { ModalInterface } from "./Modal";
