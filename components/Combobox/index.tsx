@@ -87,16 +87,17 @@ const ComboBox = <T extends unknown>({
     },
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) onChange(selectedItem);
-    }
+    },
+    defaultSelectedItem: selected,
   });
 
   return (
     <div className="relative">
       <div>
-        <label {...getLabelProps()}>{ }</label>
+        <label {...getLabelProps()}/>
         <div
           className={cn(
-            "h-[50px] bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 relative flex w-full select-none overflow-visible rounded-full border focus:outline-none focus-visible:ring-0",
+            "h-[50px] bg-background border-border hover:border-border-hover relative flex w-full select-none overflow-visible rounded-full border focus:outline-none focus-visible:ring-0",
             className
           )}
         >
@@ -104,8 +105,8 @@ const ComboBox = <T extends unknown>({
             dropdown
           ) : (
             <span className="ml-4 flex h-auto max-h-8 w-8 shrink-0 justify-center self-center z-10">
-              {icon && selected ? (
-                icon(selected.value)
+              {icon && selectedItem ? (
+                icon(selectedItem.value)
               ) : (
                 <MagnifyingGlassIcon className="dark:text-zinc-500 h-5 w-5 text-zinc-900" />
               )}
@@ -123,7 +124,7 @@ const ComboBox = <T extends unknown>({
               },
             })}
             className={cn(
-              "w-full h-12 truncate border-none pr-9 py-3 focus:outline-none focus:ring-0 bg-white dark:bg-zinc-900",
+              "w-full h-12 truncate border-none pr-9 py-3 focus:outline-none focus:ring-0 bg-background",
               dropdown
                 ? "pl-2.5 rounded-r-full"
                 : "absolute top-0 left-0 pl-14 rounded-full"
@@ -131,15 +132,16 @@ const ComboBox = <T extends unknown>({
           />
           {inputValue && (
             <Button
-              className="hover:bg-slate-100 dark:hover:bg-zinc-800 group absolute right-2 top-2 flex h-8 w-8 items-center rounded-full"
+              className="hover:bg-bg-hover group absolute right-2 top-2 flex size-8 items-center rounded-full"
               onClick={() => {
                 reset();
+                selectItem(null);
                 setInputValue("");
                 openMenu();
                 if (inputRef.current) inputRef.current.focus();
               }}
             >
-              <XMarkIcon className="text-zinc-500 absolute right-1.5 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
+              <XMarkIcon className="text-zinc-500 absolute right-1.5 size-5 group-hover:text-foreground" />
             </Button>
           )}
         </div>
@@ -148,7 +150,7 @@ const ComboBox = <T extends unknown>({
         <ul
           {...getMenuProps({ ref: listRef })}
           className={cn(
-            "text-sm shadow-floating relative max-h-60 max-w-full overflow-y-auto bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md",
+            "text-sm shadow-floating relative max-h-60 max-w-full overflow-y-auto bg-background border border-border rounded-md",
             !(isOpen && items.length) && "hidden"
           )}
         >
