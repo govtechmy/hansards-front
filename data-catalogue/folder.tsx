@@ -274,7 +274,7 @@ const CatalogueFolder = forwardRef(
         <DrawerTrigger className="flex flex-col gap-y-1.5 items-center group font-medium">
           <Folder />
         </DrawerTrigger>
-        <DrawerContent className="max-h-[96%]">
+        <DrawerContent>
           <DrawerHeader className="gap-x-3 flex justify-between border-b border-border">
             <FolderTab />
             <DrawerClose>

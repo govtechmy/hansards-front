@@ -79,8 +79,8 @@ const HansardSidebar = forwardRef(
                         className={cn(
                           "text-sm relative mr-px",
                           !first &&
-                          "border-l border-slate-400 last:border-transparent",
-                          selected && selected === id
+                          "border-l border-slate-400 last:border-background",
+                          selected && selected.startsWith(id)
                             ? styles.active
                             : styles.inactive
                         )}
@@ -90,12 +90,7 @@ const HansardSidebar = forwardRef(
                           childClassName="pl-2.5"
                           key={id}
                           open={open || selected?.startsWith(id)}
-                          onOpen={() => {
-                            TreeState[id] = !open;
-                            setSelected(id);
-                            onClick(id);
-                            setMobileSidebar(false);
-                          }}
+                          onOpen={() => TreeState[id] = !open}
                           summary={
                             <>
                               <span title={key}>{key}</span>
@@ -103,7 +98,7 @@ const HansardSidebar = forwardRef(
                                 <>
                                   <SidebarL className="absolute left-[-1.5px] bottom-1/2" />
                                   {i <= speeches.length - 1 && (
-                                    <div className="absolute -left-px top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
+                                    <div className="absolute left-[-1.25px] top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
                                   )}
                                 </>
                               )}
@@ -127,7 +122,7 @@ const HansardSidebar = forwardRef(
                         className={cn(
                           "relative hover:bg-bg-hover box-border px-5 py-1.5 w-full text-start font-medium text-sm",
                           !first &&
-                          "border-l border-slate-400 last:border-transparent",
+                          "border-l-[1.25px] border-slate-400 last:border-transparent",
                           selected === id ? styles.active : styles.inactive
                         )}
                       >

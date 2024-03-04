@@ -3,7 +3,7 @@ import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
 
 const Drawer = ({
-  shouldScaleBackground = true,
+  shouldScaleBackground = false,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
   <DrawerPrimitive.Root
@@ -40,12 +40,12 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-xl border border-border bg-background font-inter max-h-[96dvh]",
+        "fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-xl border border-border bg-background font-inter max-h-[85dvh]",
         className
       )}
       {...props}
     >
-      <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-border" />
+      <div className="mx-auto mt-2 h-4 w-10 rounded-full bg-border" />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
