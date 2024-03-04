@@ -1,6 +1,5 @@
 import Container from "@components/Container";
 import { EyeIcon } from "@heroicons/react/20/solid";
-import { ParlimenIcon } from "@icons/index";
 import { AnalyticsContext } from "@lib/contexts/analytics";
 import { cn, numFormat, toDate } from "@lib/helpers";
 import Image from "next/image";
@@ -154,6 +153,7 @@ const Hero: FunctionComponent<HeroProps> = ({
             height={214}
             alt="Parlimen"
             loading="eager"
+            priority
           />
         </div>
       </>
