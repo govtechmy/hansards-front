@@ -1,12 +1,10 @@
 import { useLanguage } from "@hooks/useLanguage";
 import { cn } from "@lib/helpers";
-import { languages } from "@lib/options";
 import At from "../At";
 import Dropdown from "../Dropdown";
 import ThemeToggle from "./theme";
 import { useRouter } from "next/router";
-import { FunctionComponent, ReactNode, useState } from "react";
-import { MenuIcon } from "@icons/index";
+import { ComponentProps, FunctionComponent, ReactNode, useState } from "react";
 import { Button } from "..";
 
 type NavRootProps = {
@@ -59,6 +57,10 @@ const Item: FunctionComponent<NavItemProps> = ({
 const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
   const [showMobile, setShowMobile] = useState<boolean>(false);
   const { language, onLanguageChange } = useLanguage();
+  const languages = [
+    { label: "Malay", value: "ms-MY" },
+    { label: "English", value: "en-GB" },
+  ];
 
   const close = () => setShowMobile(false);
   const open = () => setShowMobile(true);
@@ -117,3 +119,39 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
 Nav.Item = Item;
 
 export default Nav;
+
+const MenuIcon = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      fill="none"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      {...props}
+    >
+      <g>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M4 6h16"
+        />
+      </g>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M4 12h16"
+      />
+      <g>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M4 18h16"
+        />
+      </g>
+    </svg>
+  );
+};
