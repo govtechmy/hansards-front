@@ -18,8 +18,6 @@ import { BookmarkIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
-import { BREAKPOINTS } from "@lib/constants";
-import { WindowContext } from "@lib/contexts/window";
 import { cn, copyClipboard } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { Mesyuarat } from "@lib/types";
@@ -28,7 +26,6 @@ import Link from "next/link";
 import {
   ForwardedRef,
   forwardRef,
-  useContext,
   useImperativeHandle,
   useMemo,
   useState,
@@ -55,11 +52,11 @@ const CatalogueFolder = forwardRef(
   ) => {
     const { t, i18n } = useTranslation(["catalogue", "enum", "hansard"]);
     const isDesktop = useMediaQuery("(min-width: 768px)");
+    const minWidth1280px = useMediaQuery("(min-width: 1280px)");
 
     const [open, setOpen] = useState<boolean>(false);
     const [copyText, setCopyText] = useState<string>("copy");
     const title = `Hansard Parlimen`;
-    const { size } = useContext(WindowContext);
 
     const { start_date, end_date, sitting_list } = meeting;
 
@@ -88,30 +85,21 @@ const CatalogueFolder = forwardRef(
     );
 
     const MesyuaratDates = () => (
-      <div
-        className={cn(
-          "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[80dvh] max-md:p-4",
-          sitting_list.length < 4
-            ? "overflow-visible"
-            : "overflow-y-auto scroll"
-        )}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto w-full mx-auto max-md:p-4 max-md:max-w-md md:max-h-[80dvh]">
         {sitting_list.map((sitting, i) => {
           const { filename, date } = sitting;
-          const hansard_id = `${
-            filename.startsWith("kk")
-              ? routes.HANSARD_KK
-              : filename.startsWith("dr")
+          const hansard_id = `${filename.startsWith("kk")
+            ? routes.HANSARD_KK
+            : filename.startsWith("dr")
               ? routes.HANSARD_DR
               : routes.HANSARD_DN
-          }/${date}`;
+            }/${date}`;
           const { download, share } = useAnalytics(hansard_id);
           const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
 
-          const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
+          const cols = minWidth1280px ? 3 : 2;
           const modulo = sitting_list.length % cols;
-          const itemsInLastRow =
-            size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
+          const itemsInLastRow = !isDesktop ? 1 : modulo === 0 ? cols : modulo;
 
           const className = {
             dropdown:
@@ -160,10 +148,9 @@ const CatalogueFolder = forwardRef(
                       }
                       onChange={({ value: filetype }) => {
                         window.open(
-                          `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                            filename.startsWith("dr")
-                              ? "dewanrakyat"
-                              : "dewannegara"
+                          `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${filename.startsWith("dr")
+                            ? "dewanrakyat"
+                            : "dewannegara"
                           }/${filename}.${filetype}`,
                           "_blank"
                         );
@@ -263,6 +250,7 @@ const CatalogueFolder = forwardRef(
         <span className="text-zinc-500 text-sm font-normal">{dateRange}</span>
       </>
     );
+    
     if (isDesktop)
       return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -286,8 +274,8 @@ const CatalogueFolder = forwardRef(
         <DrawerTrigger className="flex flex-col gap-y-1.5 items-center group font-medium">
           <Folder />
         </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader className="gap-x-3 flex justify-between">
+        <DrawerContent className="max-h-[96%]">
+          <DrawerHeader className="gap-x-3 flex justify-between border-b border-border">
             <FolderTab />
             <DrawerClose>
               <XMarkIcon className="h-5 w-5" />
