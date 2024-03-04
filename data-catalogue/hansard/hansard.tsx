@@ -4,19 +4,18 @@ import MobileButton from "@data-catalogue/hansard/mobile-button";
 import { ChevronRightIcon, ShareIcon } from "@heroicons/react/20/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useTranslation } from "@hooks/useTranslation";
-import { CiteIcon, DownloadIcon } from "@icons/index";
 import { COLOR } from "@lib/constants";
 import { cn, numFormat } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { NestedSpeech, Speech, Speeches } from "@lib/types";
 import Link from "next/link";
-import { ReactNode, useContext, useEffect, useMemo, useRef } from "react";
+import { ComponentProps, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import rehypeRaw from "rehype-raw";
-
 import SpeechBubble from "./bubble";
 import { SearchContext, SearchEventContext } from "./search/context";
 import { highlightKeyword } from "./search/highlight";
 import { getMatchText } from "./search/match-text";
+import CiteButton from "./cite";
 import ShareButton from "./share";
 import HansardSearch from "./search-bar";
 import Sidebar from "./sidebar";
@@ -48,7 +47,6 @@ const Hansard = ({
 }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
-
   const sidebarRef = useRef<SidebarOpen>(null);
   function handleClick() {
     if (sidebarRef.current) sidebarRef.current.open();
@@ -57,7 +55,9 @@ const Hansard = ({
   const { counts, download } = useAnalytics(hansard_id);
   const { downloads, shares, views } = counts;
 
-  let curr = "0000";
+  let curr = "";
+  let curr_author = "";
+  let curr_dir = false;
 
   const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
     let { searchValue } = useContext(SearchContext);
@@ -74,30 +74,22 @@ const Hansard = ({
 
         // Timestamp
         const ts = String(timestamp);
-        const hr = ts.slice(0, 2);
-        const mn = ts.slice(2);
+        const prev = curr; // temp store
+        if (curr !== ts) curr = ts;
 
         function formatAMPM(hrs: number, min: string) {
           const ampm = hrs >= 12 ? " PM" : " AM";
           const hours = hrs % 12 ? hrs % 12 : 12; // hour '0' should be '12'
           return hours + ":" + min + ampm;
         }
-        const timeString = formatAMPM(Number(hr), mn);
+        const timeString = formatAMPM(Number(ts.slice(0, 2)), ts.slice(2));
 
-        const prev = curr; // temp store
-        if (curr !== ts) curr = ts;
-
-        const time =
-          prev !== ts ? (
-            <p className="t">
-              {highlightKeyword(timeString, `${speech_id}_time`)}
-            </p>
-          ) : (
-            <></>
-          );
+        const time = highlightKeyword(timeString, `${speech_id}_time`);
 
         // Search
-        const names = author !== "ANNOTATION" ? author.split("[") : ["", ""];
+        if (author !== curr_author) curr_dir = !curr_dir
+        curr_author = author;
+        const names = author.includes(" [") ? author.split(" [") : [author];
 
         const IS_YDP = [
           "Tuan Yang di-Pertua",
@@ -105,23 +97,35 @@ const Hansard = ({
           "Tuan Pengerusi",
         ].some((ydp) => author.includes(ydp));
 
-        const party: string = IS_YDP ? "ydp" : "";
+        const mod = author !== "ANNOTATION" && IS_YDP
+          ? "ydp"
+          : author
+            ? ["Beberapa Ahli", "Seorang Ahli"].includes(author)
+              ? ""
+              : (names[0].length) % 7
+            : "";
+
         const colour = useMemo<string>(() => {
-          switch (party) {
-            case "bn":
-              return "bn";
-            case "gps":
-              return "gps";
-            case "ph":
-              return "ph";
-            case "pn":
-              return "pn";
-            case "ydp":
-              return "text-secondary";
+          if (mod === "ydp") return "ydp";
+          switch (mod) {
+            case 0:
+              return "r"; // red
+            case 1:
+              return "o"; // orange
+            case 2:
+              return "g"; // green
+            case 3:
+              return "c"; // cyan
+            case 4:
+              return "b"; // blue
+            case 5:
+              return "v"; // violet
+            case 6:
+              return "p"; // pink
             default:
-              return "text-zinc-500";
+              return "z"; // zinc
           }
-        }, [party]);
+        }, [mod]);
 
         const speaker =
           author !== "ANNOTATION" ? (
@@ -130,7 +134,7 @@ const Hansard = ({
               {names[1] ? (
                 <span className="o">
                   {highlightKeyword(
-                    `- ${names[1].slice(0, -1)}`,
+                    ` - ${names[1].slice(0, -1)}`,
                     `${speech_id}_subtitle`
                   )}
                 </span>
@@ -144,9 +148,9 @@ const Hansard = ({
           () =>
             searchValue && searchValue.length > 1
               ? getMatchText(
-                  searchValue,
-                  speech.replaceAll("*", "").replaceAll("**", "")
-                )
+                searchValue,
+                speech.replaceAll("*", "").replaceAll("**", "")
+              )
               : speech,
           [searchValue, speech]
         );
@@ -207,7 +211,11 @@ const Hansard = ({
 
         return (
           <>
-            {time}
+            {index === 0 || prev !== ts ?
+              <p className="t">
+                {time}
+              </p>
+              : <></>}
             {author === "ANNOTATION" ? (
               <div className="a" id={`${index}`}>
                 {_speech}
@@ -222,6 +230,8 @@ const Hansard = ({
                 date={date}
                 length={speech.length}
                 isYDP={IS_YDP}
+                side={curr_dir}
+                uid={IS_YDP ? 3304 : 3477}
               >
                 {_speech}
               </SpeechBubble>
@@ -235,11 +245,11 @@ const Hansard = ({
           <div
             key={heading}
             ref={(ref) => (scrollRef.current[sidebar_id] = ref)}
-            className="flex flex-col bg-background gap-y-3 lg:gap-y-6 scroll-mt-40 lg:scroll-mt-28 max-w-[1000px]"
-          >
+            className="flex flex-col gap-3 lg:gap-6 scroll-mt-40 lg:scroll-mt-28">
             <p
               className={cn(
                 "text-foreground text-center py-3 lg:sticky top-28 bg-background z-10 text-balance",
+                // !s[heading].some((e) => !isSpeech(e)) && "lg:sticky",
                 isFirstLevel ? "font-bold" : "font-medium"
               )}
             >
@@ -261,20 +271,15 @@ const Hansard = ({
   const dewan_route = IS_KK
     ? routes.KATALOG_KK
     : IS_DR
-    ? routes.KATALOG_DR
-    : routes.KATALOG_DN;
+      ? routes.KATALOG_DR
+      : routes.KATALOG_DN;
 
   const parlimen_link = `${dewan_route}/parlimen-${cycle.term}`;
   const penggal_link = `${parlimen_link}/penggal-${cycle.session}`;
   const mesyuarat_link = `${penggal_link}/mesyuarat-${cycle.meeting}`;
 
-  const hansard_url = `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-    filename.startsWith("kk")
-      ? "kamarkhas"
-      : filename.startsWith("dr")
-      ? "dewanrakyat"
-      : "dewannegara"
-  }/${filename}`;
+  const hansard_url =
+    `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${IS_KK ? "kamarkhas" : IS_DR ? "dewanrakyat" : "dewannegara"}/${filename}`;
 
   return (
     <Sidebar
@@ -350,17 +355,24 @@ const Hansard = ({
               </div>
 
               <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
-                <span className={styles.link_blue}>
-                  <CiteIcon className="h-5 w-5" />
-                  {t("cite")}
-                </span>
+                <CiteButton
+                  date={date}
+                  hansard_id={hansard_id}
+                  dewan={IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
+                  trigger={(onClick) =>
+                    <button className={styles.link_blue} onClick={onClick} >
+                      <CiteIcon className="size-5" />
+                      {t("cite")}
+                    </button>
+                  }
+                />
                 <a
                   target="_blank"
                   href={`${hansard_url}.pdf`}
                   onClick={() => download("pdf")}
                   className={styles.link_blue}
                 >
-                  <DownloadIcon className="h-5 w-5" />
+                  <DownloadIcon className="size-5" />
                   {t("download", { context: "pdf" })}
                 </a>
                 <a
@@ -369,7 +381,7 @@ const Hansard = ({
                   onClick={() => download("csv")}
                   className={styles.link_blue}
                 >
-                  <DownloadIcon className="h-5 w-5" />
+                  <DownloadIcon className="size-5" />
                   {t("download", { context: "csv" })}
                 </a>
                 <ShareButton
@@ -377,7 +389,7 @@ const Hansard = ({
                   hansard_id={hansard_id}
                   trigger={(onClick) => (
                     <button className={styles.link_blue} onClick={onClick}>
-                      <ShareIcon className="h-5 w-5" />
+                      <ShareIcon className="size-5" />
                       {t("share")}
                     </button>
                   )}
@@ -389,7 +401,7 @@ const Hansard = ({
           <HansardSearch />
           <div
             className={cn(
-              "h-full max-w-screen-2xl px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-background gap-y-6 flex flex-col relative",
+              "h-full lg:max-w-[1048px] px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-background gap-y-6 flex flex-col relative",
               open && "mx-auto"
             )}
           >
@@ -412,3 +424,43 @@ export function isSpeech(_speech: Speech | NestedSpeech): _speech is Speech {
     keys.includes("timestamp")
   );
 }
+
+const CiteIcon = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M5.83333 2.5C3.99238 2.5 2.5 3.99238 2.5 5.83333V14.1667C2.5 16.0076 3.99238 17.5 5.83333 17.5H14.1667C16.0076 17.5 17.5 16.0076 17.5 14.1667V5.83333C17.5 3.99238 16.0076 2.5 14.1667 2.5H5.83333ZM5.83333 12.5774L5.83333 14.1667C6.61725 13.8181 7.25801 13.3581 7.75562 12.7865C8.24642 12.2219 8.61111 11.6015 8.84969 10.9253C9.08828 10.2492 9.20757 9.26635 9.20757 7.97679L9.20757 5.83333H5.83333L5.83333 9.28377H7.43865C7.43865 9.76474 7.38412 10.1969 7.27505 10.5803C7.15917 10.9707 6.99216 11.3436 6.77403 11.6991C6.5559 12.0546 6.24233 12.3473 5.83333 12.5774ZM10.7924 12.5774V14.1667C11.5695 13.8181 12.2069 13.3581 12.7045 12.7865C13.2021 12.2219 13.5702 11.6015 13.8088 10.9253C14.0474 10.2492 14.1667 9.26635 14.1667 7.97679V5.83333H10.7924V9.28377H12.3977C12.3977 9.76474 12.3432 10.1969 12.2342 10.5803C12.1183 10.9707 11.9513 11.3436 11.7331 11.6991C11.515 12.0546 11.2014 12.3473 10.7924 12.5774Z"
+        fill="#2563EB"
+      />
+    </svg>
+  );
+};
+
+const DownloadIcon = (props: ComponentProps<"svg">) => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6 2C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V16C4 16.5304 4.21071 17.0391 4.58579 17.4142C4.96086 17.7893 5.46957 18 6 18H14C14.5304 18 15.0391 17.7893 15.4142 17.4142C15.7893 17.0391 16 16.5304 16 16V7.414C15.9999 6.88361 15.7891 6.37499 15.414 6L12 2.586C11.625 2.2109 11.1164 2.00011 10.586 2H6ZM11 8C11 7.73478 10.8946 7.48043 10.7071 7.29289C10.5196 7.10536 10.2652 7 10 7C9.73478 7 9.48043 7.10536 9.29289 7.29289C9.10536 7.48043 9 7.73478 9 8V11.586L7.707 10.293C7.61475 10.1975 7.50441 10.1213 7.3824 10.0689C7.2604 10.0165 7.12918 9.9889 6.9964 9.98775C6.86362 9.9866 6.73194 10.0119 6.60905 10.0622C6.48615 10.1125 6.3745 10.1867 6.2806 10.2806C6.18671 10.3745 6.11246 10.4861 6.06218 10.609C6.0119 10.7319 5.9866 10.8636 5.98775 10.9964C5.9889 11.1292 6.01649 11.2604 6.0689 11.3824C6.12131 11.5044 6.19749 11.6148 6.293 11.707L9.293 14.707C9.48053 14.8945 9.73484 14.9998 10 14.9998C10.2652 14.9998 10.5195 14.8945 10.707 14.707L13.707 11.707C13.8892 11.5184 13.99 11.2658 13.9877 11.0036C13.9854 10.7414 13.8802 10.4906 13.6948 10.3052C13.5094 10.1198 13.2586 10.0146 12.9964 10.0123C12.7342 10.01 12.4816 10.1108 12.293 10.293L11 11.586V8Z"
+        fill="#2563EB"
+      />
+    </svg>
+  );
+};
