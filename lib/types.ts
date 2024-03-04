@@ -1,4 +1,3 @@
-import type { Color } from "@hooks/useColor";
 import type { ChartOptions, ChartTypeRegistry } from "chart.js";
 import type { AnnotationPluginOptions } from "chartjs-plugin-annotation";
 import type { NextPage } from "next";
@@ -42,34 +41,6 @@ export type ChartCrosshairOption<T extends keyof ChartTypeRegistry> = ChartOptio
   };
 };
 
-export type TimeseriesOption = {
-  period: "auto" | "month" | "year";
-  periodly: "daily_7d" | "daily" | "monthly" | "yearly";
-};
-
-export type DashboardPeriod = "daily_7d" | "daily" | "monthly" | "yearly";
-
-export type DownloadOption = {
-  id: string;
-  image: string | null | false | undefined;
-  title: ReactNode;
-  description: ReactNode;
-  icon: JSX.Element;
-  href: () => void;
-};
-
-export type DownloadOptions = {
-  chart: DownloadOption[];
-  data: DownloadOption[];
-};
-
-export interface AnalyticsEvent {
-  action: string;
-  category: string;
-  label: string;
-  value: string;
-}
-
 export type OptionType = {
   label: string;
   value: string;
@@ -77,58 +48,9 @@ export type OptionType = {
 
 export type Geotype = "state" | "parlimen" | "dun" | "district";
 
-/************************ DATA CATALOGUE ************************** */
-export type DCChartKeys =
-  | "TABLE"
-  | "TIMESERIES"
-  | "CHOROPLETH"
-  | "GEOCHOROPLETH"
-  | "GEOPOINT"
-  | "GEOJSON"
-  | "BAR"
-  | "HBAR"
-  | "LINE"
-  | "PYRAMID"
-  | "HEATTABLE"
-  | "SCATTER"
-  | "STACKED_AREA"
-  | "STACKED_BAR"
-  | "INTRADAY";
-export type DCPeriod = "YEARLY" | "QUARTERLY" | "MONTHLY" | "WEEKLY" | "DAILY";
-
-type BaseFilter = {
-  key: string;
-  default: string;
-  options: string[];
-};
-export type FilterDefault = BaseFilter & {
-  interval: never;
-};
-
-export type FilterDate = BaseFilter & {
-  interval: DCPeriod;
-};
-
-export type DCFilter = FilterDefault | FilterDate;
-
 export type Precision = {
   default: number;
   columns?: Record<string, number>;
-};
-
-// Usage
-export type DCConfig = {
-  context: {
-    [key: string]: OptionType;
-  };
-  dates: FilterDate | null;
-  options: FilterDefault[] | null;
-  precision: number | Precision;
-  freeze?: string[];
-  color?: Color;
-  geojson?: Geotype | null;
-  line_variables?: Record<string, any>;
-  exclude_openapi: boolean;
 };
 
 /**************************MISCELLANEOUS ******************************/
@@ -179,9 +101,6 @@ export type Speech = {
   is_annotation: boolean;
   index: number;
 };
-
-export type NestedSidebar = { [key: string]: Array<string | NestedSidebar> };
-export type Sidebar = Array<string | NestedSidebar>;
 
 export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
 export type Speeches = Array<Speech | NestedSpeech>;
