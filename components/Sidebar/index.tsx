@@ -10,7 +10,6 @@ import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
 import { cn } from "@lib/helpers";
-import { Mesyuarat } from "@lib/types";
 import { ReactNode, useState } from "react";
 import { Details } from "./details";
 import { Collapse } from "./collapse";
@@ -23,9 +22,6 @@ interface SidebarProps {
     penggal: Array<{
       id: string;
       yearRange: string;
-      mesyuarat: {
-        [key: string]: Mesyuarat;
-      };
     }>;
   }>;
   onClick: (index: string) => void;
@@ -81,8 +77,8 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                     </span>
                   }
                 >
-                  {penggal.map(({ id, yearRange }) => {
-                    const parlimen_penggal = `${parlimen_id}penggal-${id}`;
+                  {penggal.map(({ id, yearRange }, i) => {
+                    const parlimen_penggal = parlimen_id + `penggal-${id}`;
                     const penggal_full = t("penggal_full", {
                       ns: "enum",
                       n: id,
@@ -90,7 +86,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                     return (
                       <li
                         key={parlimen_penggal}
-                        title={`${penggal_full}${yearRange}`}
+                        title={penggal_full + yearRange}
                         onClick={() => {
                           setSelected(parlimen_penggal);
                           onClick(parlimen_penggal);
@@ -112,8 +108,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                     );
                   })}
                   <div
-                    className="absolute left-2.5 top-0 w-px border-l border-slate-400 z-10"
-                    style={{ height: (penggal.length - 1) * 47 + 10.5 }}
+                    className="absolute left-2.5 top-0 w-px border-l border-slate-400 z-10 h-[calc(100%-43px)]"
                   />
                 </Details>
               </li>
@@ -168,7 +163,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
             >
               <ChevronRightIcon
                 className={cn(
-                  "h-4.5 w-4.5 transition-transform ease-in-out motion-reduce:transform-none",
+                  "size-4.5 transition-transform ease-in-out motion-reduce:transform-none",
                   showSidebar
                     ? "-rotate-180 duration-500"
                     : "rotate-0 duration-300"
@@ -198,9 +193,10 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                 <Button
                   variant="outline"
                   className="p-1.5 shadow-button"
-                  title={showSidebar ? t("hide_sidebar") : t("show_sidebar")}
+                  title={mobileSidebar ? t("hide_sidebar") : t("show_sidebar")}
+                  onClick={() => setMobileSidebar(!mobileSidebar)}
                 >
-                  <ChevronRightIcon className="h-4.5 w-4.5" />
+                  <ChevronRightIcon className="size-4.5" />
                 </Button>
               </SheetTrigger>
               <SheetContent className="pl-3 pr-0">
