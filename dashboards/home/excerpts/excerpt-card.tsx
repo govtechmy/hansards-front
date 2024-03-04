@@ -64,7 +64,7 @@ const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
               {title ? title.slice(0, -1) : ""}
             </p> */}
           </div>
-          <ArrowUpRightIcon className="hidden sm:block shrink-0 h-5 w-5 text-zinc-500 opacity-0 transition-[opacity_transform] duration-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 group-hover:duration-300" />
+          <ArrowUpRightIcon className="hidden sm:block shrink-0 size-5 text-zinc-500 opacity-0 transition-[opacity_transform] duration-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 group-hover:duration-300 motion-reduce:transition-none" />
         </div>
         <div className="flex-grow">
           <Markdown
