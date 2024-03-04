@@ -22,8 +22,7 @@ const config: Config = {
         4.5: "18px",
       },
       fontFamily: {
-        sans: ["var(--font-body)", ...fontFamily.sans],
-        body: ["var(--font-body)", ...fontFamily.sans],
+        inter: ["var(--font-inter)", ...fontFamily.sans],
         header: ["var(--font-header)"],
       },
       colors: {

@@ -7,7 +7,7 @@ import Document, {
   Main,
   NextScript,
 } from "next/document";
-import Script from "next/script";
+// import Script from "next/script";
 
 class HTMLDocument extends Document {
   static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
@@ -20,20 +20,14 @@ class HTMLDocument extends Document {
     return (
       <Html lang={this.currentLocale}>
         <Head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-            rel="stylesheet"
-          />
-          <link
+          {/* <link
             rel="stylesheet"
             href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css"
             integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
             crossOrigin=""
-          />
+          /> */}
           {/* Google Analytics */}
-          <Script
+          {/* <Script
             strategy="afterInteractive"
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TAG}`}
           />
@@ -52,7 +46,7 @@ class HTMLDocument extends Document {
               });
           `,
             }}
-          />
+          /> */}
 
           {/* PWA setting */}
           <meta name="application-name" content="hansard.parlimen.gov.my" />
@@ -83,7 +77,7 @@ class HTMLDocument extends Document {
             href="/static/images/icons/touch-icon-ipad-retina.png"
           />
 
-          <link
+          {/* <link
             rel="icon"
             type="image/png"
             sizes="32x32"
@@ -94,10 +88,10 @@ class HTMLDocument extends Document {
             type="image/png"
             sizes="16x16"
             href="/static/images/icons/favicon-16x16.png"
-          />
+          /> */}
           <link rel="manifest" href="/manifest.json" />
           {/* <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5" /> */}
-          <link rel="shortcut icon" href="/favicon.ico" />
+          <link rel="shortcut icon" href="/static/images/favicon.ico" />
 
           {/* Apple Splash Screen */}
           <link
