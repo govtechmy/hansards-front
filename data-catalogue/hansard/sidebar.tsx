@@ -1,22 +1,21 @@
 import Button from "@components/Button";
 import { Sheet, SheetContent, SheetHeading } from "@components/Sheet";
+import { Details } from "@components/Sidebar/details";
+import { Collapse } from "@components/Sidebar/collapse";
 import { isSpeech } from "@data-catalogue/hansard/hansard";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
 import { cn } from "@lib/helpers";
-import { Sidebar, Speeches } from "@lib/types";
+import { Speeches } from "@lib/types";
 import {
   ForwardedRef,
   forwardRef,
   ReactNode,
-  useCallback,
   useImperativeHandle,
   useMemo,
   useState,
 } from "react";
-import { Details } from "@components/Sidebar/details";
-import { Collapse } from "@components/Sidebar/collapse";
 
 interface HansardSidebarProps {
   children: (open: boolean) => ReactNode;
@@ -72,33 +71,39 @@ const HansardSidebar = forwardRef(
                 const key = Object.keys(s)[0];
                 if (isSpeech(s)) return;
                 else {
+                  // has 1 more level
                   if (s[key].some((s) => !isSpeech(s))) {
                     return (
                       <li
                         key={id}
                         className={cn(
                           "text-sm relative mr-px",
-                          prev_id && "ml-2.5",
                           !first &&
-                            "border-l border-slate-400 last-of-type:border-transparent",
-                          selected && selected.startsWith(id)
+                          "border-l border-slate-400 last:border-transparent",
+                          selected && selected === id
                             ? styles.active
                             : styles.inactive
                         )}
                       >
                         <Details
                           className="relative"
+                          childClassName="pl-2.5"
                           key={id}
                           open={open || selected?.startsWith(id)}
-                          onOpen={() => (TreeState[id] = !open)}
+                          onOpen={() => {
+                            TreeState[id] = !open;
+                            setSelected(id);
+                            onClick(id);
+                            setMobileSidebar(false);
+                          }}
                           summary={
                             <>
                               <span title={key}>{key}</span>
                               {!first && (
                                 <>
-                                  <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
+                                  <SidebarL className="absolute left-[-1.5px] bottom-1/2" />
                                   {i <= speeches.length - 1 && (
-                                    <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
+                                    <div className="absolute -left-px top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
                                   )}
                                 </>
                               )}
@@ -112,6 +117,7 @@ const HansardSidebar = forwardRef(
                   } else
                     return (
                       <button
+                        key={key}
                         title={key}
                         onClick={() => {
                           setSelected(id);
@@ -119,18 +125,18 @@ const HansardSidebar = forwardRef(
                           setMobileSidebar(false);
                         }}
                         className={cn(
-                          "relative hover:bg-bg-hover box-border px-5 py-1.5 w-full text-start",
+                          "relative hover:bg-bg-hover box-border px-5 py-1.5 w-full text-start font-medium text-sm",
                           !first &&
-                            "border-l border-slate-400 last-of-type:border-transparent",
+                          "border-l border-slate-400 last:border-transparent",
                           selected === id ? styles.active : styles.inactive
                         )}
                       >
-                        <p className="font-medium">{key}</p>
+                        <p>{key}</p>
                         {!first && (
                           <>
-                            <SidebarL className="absolute -left-[1.5px] bottom-1/2" />
+                            <SidebarL className="absolute left-[-1.5px] bottom-1/2" />
                             {i <= speeches.length - 1 && (
-                              <div className="absolute -left-[1px] top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
+                              <div className="absolute -left-px top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
                             )}
                           </>
                         )}
@@ -141,11 +147,11 @@ const HansardSidebar = forwardRef(
           );
         };
         return recur(speeches);
-      }, []);
+      }, [TreeState]);
 
       return (
         <div className="sticky top-0 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
-          <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-112px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-3">
+          <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-112px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-3 will-change-scroll">
             {headers ? (
               headers
             ) : (
@@ -188,11 +194,10 @@ const HansardSidebar = forwardRef(
                 className={cn(
                   "title",
                   !showSidebar &&
-                    `absolute -rotate-90 origin-top-left text-zinc-500 ${
-                      i18n.language === "en-GB"
-                        ? "translate-y-28"
-                        : "translate-y-36"
-                    }`
+                  `absolute -rotate-90 origin-top-left text-zinc-500 ${i18n.language === "en-GB"
+                    ? "translate-y-28"
+                    : "translate-y-36"
+                  }`
                 )}
               >
                 {t("toc")}
