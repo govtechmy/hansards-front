@@ -61,13 +61,13 @@ const Table: FunctionComponent<TableProps> = ({
     const value = cell.getValue();
     switch (id) {
       case "index":
-        return highlighted ? (
+        return highlight ? (
           <p className="text-primary dark:text-primary-dark">{value}</p>
         ) : (
           value
         );
       case "name":
-        return highlighted ? (
+        return highlight ? (
           <>
             <span className="pr-1">{value}</span>
             <span className="inline-flex translate-y-0.5">
