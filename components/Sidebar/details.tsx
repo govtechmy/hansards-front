@@ -9,8 +9,9 @@ export const Details = ({
   open,
   onOpen,
   summary,
+  childClassName,
   ...props
-}: ComponentProps<"details"> & { summary: ReactElement; onOpen: () => void }): ReactElement => {
+}: ComponentProps<"details"> & { summary: ReactElement; onOpen: () => void; childClassName?: string }): ReactElement => {
   const [openState, setOpen] = useState(!!open);
 
   // To animate the close animation we have to delay the DOM node state here.
@@ -45,12 +46,12 @@ export const Details = ({
         {summary}
         <ChevronRightIcon
           className={cn(
-            "h-4.5 w-4.5 -mx-1 shrink-0 transition-transform",
+            "size-4.5 -mx-1 shrink-0 transition-transform motion-reduce:transition-none",
             openState && "rotate-90"
           )}
         />
       </summary>
-      <Collapse isOpen={openState}>{children}</Collapse>
+      <Collapse className={childClassName} isOpen={openState}>{children}</Collapse>
     </details>
   );
 };
