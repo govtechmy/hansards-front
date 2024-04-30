@@ -40,7 +40,7 @@ const Item: FunctionComponent<NavItemProps> = ({
       scroll={false}
       onClick={onClick}
       className={cn(
-        "hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center gap-2 rounded-none px-3 py-2 text-sm font-medium transition hover:cursor-pointer md:rounded-md md:py-[6px]",
+        "flex items-center gap-2 rounded-none px-3 py-2 text-sm font-medium transition hover:cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800 md:rounded-md md:py-[6px]",
         pathname.startsWith(link) && link !== "/"
           ? "bg-slate-100 dark:bg-zinc-800"
           : "",
@@ -68,14 +68,14 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
   return (
     <div className="flex w-screen items-center justify-end lg:justify-between">
       {/* Desktop */}
-      <div className="hidden w-fit lg:flex">{children(close)}</div>
+      <div className="hidden w-fit gap-1 lg:flex">{children(close)}</div>
       <div className="hidden w-fit gap-4 lg:flex">
         {stateSelector}
         <ThemeToggle />
         <Dropdown
           width="w-fit"
           anchor="right"
-          selected={languages.find((lang) => lang.value === language)}
+          selected={languages.find(lang => lang.value === language)}
           onChange={onLanguageChange}
           options={languages}
         />
@@ -97,16 +97,16 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
       {/* Mobile - Menu */}
       <div
         className={cn(
-          "dark:divide-slate-800 shadow-floating fixed left-0 top-[56px] flex w-screen flex-col gap-0 divide-y bg-white px-4 py-2 backdrop-blur-md dark:bg-zinc-900 lg:hidden",
+          "fixed left-0 top-14 flex w-screen flex-col gap-0 divide-y bg-white px-4 py-2 shadow-floating backdrop-blur-md dark:divide-zinc-800 dark:bg-zinc-900 lg:hidden",
           showMobile ? "flex" : "hidden"
         )}
       >
         {children(close)}
-        <div className="flex justify-between py-2 gap-x-3">
+        <div className="flex justify-between gap-x-3 py-2">
           <ThemeToggle />
           <Dropdown
             width="w-fit"
-            selected={languages.find((lang) => lang.value === language)}
+            selected={languages.find(lang => lang.value === language)}
             onChange={onLanguageChange}
             options={languages}
           />
