@@ -3,10 +3,9 @@ import { CountryAndStates } from "@lib/constants";
 import DomToImage from "dom-to-image";
 import canvasToSvg from "canvas2svg";
 import { twMerge } from "tailwind-merge";
-import clsx, { ClassValue } from 'clsx'
+import clsx, { ClassValue } from "clsx";
 import { format, parseISO } from "date-fns";
-import ms from "date-fns/locale/ms";
-import { enGB } from "date-fns/locale";
+import { enGB, ms } from "date-fns/locale";
 
 /**
  * Conditional class joiner.
@@ -55,7 +54,9 @@ export const limitMax = (e: number, max: number = 100) => {
  * @param value number[]
  * @returns [min, max]
  */
-export const minMax = (values: Array<number | null>): [min: number, max: number] => {
+export const minMax = (
+  values: Array<number | null>
+): [min: number, max: number] => {
   let min: number = 0;
   let max: number = 0;
   for (let num of values) {
@@ -80,13 +81,20 @@ export const minMax = (values: Array<number | null>): [min: number, max: number]
  */
 export const numFormat = (
   value: number,
-  type: "compact" | "standard" | "scientific" | "engineering" | undefined = "compact",
+  type:
+    | "compact"
+    | "standard"
+    | "scientific"
+    | "engineering"
+    | undefined = "compact",
   precision: number | [max: number, min: number] = 0,
   compactDisplay: "short" | "long" = "short",
   locale: string = "en",
   smart: boolean = false
 ): string => {
-  const [max, min] = Array.isArray(precision) ? precision : [precision, precision];
+  const [max, min] = Array.isArray(precision)
+    ? precision
+    : [precision, precision];
 
   if (smart === true) {
     let formatter: Intl.NumberFormat;
@@ -139,7 +147,9 @@ export const toDate = (
   const formatted_date =
     typeof date === "number"
       ? format(date, formatStr)
-      : format(parseISO(date), formatStr,{ locale: locale === "ms-MY" ? ms : enGB });
+      : format(parseISO(date), formatStr, {
+          locale: locale === "ms-MY" ? ms : enGB,
+        });
 
   return formatted_date !== "Invalid Date" ? formatted_date : "N/A";
 };
@@ -156,7 +166,9 @@ export const sortMsiaFirst = (array: Array<any>, key?: string): Array<any> => {
       if (a[key] === "mys") {
         return -1;
       }
-      return (CountryAndStates[a[key]] as string).localeCompare(CountryAndStates[b[key]]);
+      return (CountryAndStates[a[key]] as string).localeCompare(
+        CountryAndStates[b[key]]
+      );
     }
     if (a === "mys") {
       return -1;
@@ -171,7 +183,10 @@ export const sortMsiaFirst = (array: Array<any>, key?: string): Array<any> => {
  * @param key Comparator key
  * @returns Sorted array of objects
  */
-export const sortAlpha = (array: Array<Record<string, any>>, key: string): Array<any> => {
+export const sortAlpha = (
+  array: Array<Record<string, any>>,
+  key: string
+): Array<any> => {
   return array.sort((a: any, b: any) => a[key].localeCompare(b[key]));
 };
 
@@ -185,7 +200,10 @@ export const sortMulti = <T extends number>(
   );
 
   return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => [key, indexed.map(i => value[i])])
+    Object.entries(object).map(([key, value]) => [
+      key,
+      indexed.map(i => value[i]),
+    ])
   );
 };
 
@@ -283,7 +301,8 @@ export const interpolate = (raw_text: string): string | ReactElement[] => {
 
   return matches.map(item => {
     const match = item.split("](");
-    if (match.length <= 1) return createElement("span", { className: "text-inherit" }, item);
+    if (match.length <= 1)
+      return createElement("span", { className: "text-inherit" }, item);
     const [text, url] = match;
     return createElement(
       "a",
@@ -328,7 +347,8 @@ export const snakeCase = <T extends string>(str: T) => {
 };
 
 // MATH helpers
-export const average = (values: number[]): number => values.reduce((a, b) => a + b) / values.length;
+export const average = (values: number[]): number =>
+  values.reduce((a, b) => a + b) / values.length;
 
 export const standardDeviation = (values: number[]): number => {
   const mean = average(values);
