@@ -1,16 +1,4 @@
-import { Dewan } from "@lib/types";
-
-export const DEWANS = ["dewan-rakyat", "dewan-negara", "kamar-khas"]
-export const DEWAN_IDX_ENUM: { [key: string]: number } = {
-  "dewan-rakyat": 0,
-  "dewan-negara": 1,
-  "kamar-khas": 2,
-};
-export const DEWAN_ENUM: { [key: number]: Dewan } = {
-  0: "dewan-rakyat",
-  1: "dewan-negara",
-  2: "kamar-khas",
-};
+export const DEWANS = ["dewan-rakyat", "dewan-negara", "kamar-khas"];
 
 export const ALL_PARTIES = "all_parties";
 
@@ -21,4 +9,10 @@ export const BOTH_SEXES = "both_sexes";
 export const SEXES = [BOTH_SEXES, "m", "f"];
 
 export const ALL_ETHNICITIES = "all_ethnicities";
-export const ETHNICITIES = [ALL_ETHNICITIES, "bumiputera", "chinese", "indian", "other"];
+export const ETHNICITIES = [
+  ALL_ETHNICITIES,
+  "bumiputera",
+  "chinese",
+  "indian",
+  "other",
+];
