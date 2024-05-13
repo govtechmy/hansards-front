@@ -9,7 +9,7 @@ import { interpolate } from "@lib/helpers";
 export const useTranslation = (namespace?: string[] | string) => {
   const { t, i18n } = _useTranslation(namespace ?? "common");
   const _t = (key: string, params?: any): string | any => {
-    return interpolate(t<string, any>(key, params));
+    return interpolate(t(key, params).toString());
   };
 
   return {
