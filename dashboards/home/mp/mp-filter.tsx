@@ -12,9 +12,9 @@ import {
   Daterange,
   Dropdown,
   Label,
-  List,
   PartyFlag,
 } from "@components/index";
+import { Tabs, TabsList, TabsTrigger } from "@components/Tabs";
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
@@ -36,8 +36,6 @@ import {
   ALL_PARTIES,
   BOTH_SEXES,
   DEWANS,
-  DEWAN_ENUM,
-  DEWAN_IDX_ENUM,
   ETHNICITIES,
   SEXES,
 } from "../filter-options";
@@ -86,9 +84,8 @@ const MPFilter = ({
   const { data, setData } = useData({
     uid: uid,
     individu_option: uid
-      ? INDIVIDU_OPTIONS.find((option) => option.value === String(uid))
+      ? INDIVIDU_OPTIONS.find(option => option.value === String(uid))
       : undefined,
-    dewan_idx: dewan ? DEWAN_IDX_ENUM[dewan] : 0,
     dewan: dewan ?? "dewan-rakyat",
     age: age,
     ethnic: ethnic,
@@ -96,10 +93,9 @@ const MPFilter = ({
     sex: sex,
   });
 
-  const [selectedDateRange, setSelectedDateRange] =
-    useState<DateRange | undefined>(
-      start || end ? { from: start, to: end } : undefined
-    );
+  const [selectedDateRange, setSelectedDateRange] = useState<
+    DateRange | undefined
+  >(start || end ? { from: start, to: end } : undefined);
 
   const { setFilter } = useFilter({
     dewan: dewan,
@@ -156,8 +152,12 @@ const MPFilter = ({
     value: key,
   }));
 
-  const handleIndividuSearch = (dewan: string, uid: string, dateRange?: DateRange) => {
-    onLoad()
+  const handleIndividuSearch = (
+    dewan: string,
+    uid: string,
+    dateRange?: DateRange
+  ) => {
+    onLoad();
     setFilter("dewan", dewan);
     setFilter("uid", uid);
     setFilter("umur", "");
@@ -178,7 +178,7 @@ const MPFilter = ({
     //       ? format(dateRange.from, "yyyy-MM-dd")
     //       : ""
     // );
-  }
+  };
 
   const handleGroupSearch = (dewan: string) => {
     onLoad();
@@ -199,8 +199,8 @@ const MPFilter = ({
       selectedDateRange?.to
         ? format(selectedDateRange.to, "yyyy-MM-dd")
         : selectedDateRange?.from
-          ? format(selectedDateRange.from, "yyyy-MM-dd")
-          : ""
+        ? format(selectedDateRange.from, "yyyy-MM-dd")
+        : ""
     );
   };
 
@@ -212,44 +212,49 @@ const MPFilter = ({
   };
 
   const className = {
-    dropdown_ind_grp: "link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit",
+    dropdown_ind_grp:
+      "link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit",
     dropdown_demo: "text-blue-600 dark:text-primary-dark rounded-full",
   };
 
   return (
     <>
-      <div className="sm:pt-6 pb-3 space-y-6">
+      <div className="space-y-6 pb-3 sm:pt-6">
         {/* Dewan Selector */}
-        <div className="mx-auto sm:block hidden w-fit rounded-full p-1 bg-background border border-border">
-          <List
-            className="flex-nowrap"
-            options={DEWAN_OPTIONS.map((item) => item.label)}
-            current={data.dewan_idx}
-            onChange={(i) => {
-              setData("dewan", DEWAN_ENUM[i]);
-              setData("dewan_idx", i);
+        <div className="mx-auto hidden w-fit rounded-full border border-border bg-background p-1 sm:block">
+          <Tabs
+            value={data.dewan}
+            onValueChange={dewan => {
+              setData("dewan", dewan);
               if (ind_or_grp === "individu") {
-                if (uid) handleIndividuSearch(DEWAN_ENUM[i], data.uid, selectedDateRange)
-              }
-              else if (ind_or_grp === "group") handleGroupSearch(DEWAN_ENUM[i])
+                if (uid)
+                  handleIndividuSearch(dewan, data.uid, selectedDateRange);
+              } else if (ind_or_grp === "group") handleGroupSearch(dewan);
             }}
-          />
+            defaultValue="dewan-rakyat"
+          >
+            <TabsList className="flex-nowrap">
+              {DEWAN_OPTIONS.map(dewan => (
+                <TabsTrigger key={dewan.value} value={dewan.value}>
+                  {dewan.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Search Bar */}
         {ind_or_grp === "individu" ? (
           <>
-            <div className="w-full sm:w-[500px] mx-auto">
+            <div className="mx-auto w-full sm:w-[500px]">
               <ComboBox
                 placeholder={t("search_individual")}
                 options={INDIVIDU_OPTIONS}
-                selected={
-                  INDIVIDU_OPTIONS.find(
-                    (e) => data.individu_option
-                      ? e.value === data.individu_option.value
-                      : undefined
-                  )
-                }
+                selected={INDIVIDU_OPTIONS.find(e =>
+                  data.individu_option
+                    ? e.value === data.individu_option.value
+                    : undefined
+                )}
                 dropdown={
                   <div className="flex self-center pl-4.5">
                     <Dropdown
@@ -257,11 +262,11 @@ const MPFilter = ({
                       width="w-fit"
                       options={INDIVIDU_OR_GROUP}
                       selected={INDIVIDU_OR_GROUP.find(
-                        (e) => e.value === ind_or_grp
+                        e => e.value === ind_or_grp
                       )}
                       onChange={(e: { value: string }) => {
-                        onFilter(e.value)
-                        if (e.value === "individu") handleClear()
+                        onFilter(e.value);
+                        if (e.value === "individu") handleClear();
                         else if (e.value === "group") {
                           setData("uid", "");
                           setData("individu_option", undefined);
@@ -270,22 +275,26 @@ const MPFilter = ({
                     />
                   </div>
                 }
-                onChange={(selected) => {
+                onChange={selected => {
                   setData("individu_option", selected);
                   if (selected) {
                     setData("uid", selected.value);
-                    handleIndividuSearch(data.dewan, selected.value, selectedDateRange)
+                    handleIndividuSearch(
+                      data.dewan,
+                      selected.value,
+                      selectedDateRange
+                    );
                   }
                 }}
               />
             </div>
-            <div className="justify-center hidden sm:flex gap-2">
+            <div className="hidden justify-center gap-2 sm:flex">
               <Daterange
                 className="text-blue-600 dark:text-primary-dark"
                 placeholder={t("current_parlimen")}
                 label={t("date", { ns: "home" })}
                 selected={selectedDateRange}
-                onChange={(dateRange) => {
+                onChange={dateRange => {
                   setSelectedDateRange(dateRange);
                   if (data.uid && dateRange && dateRange?.from && dateRange?.to)
                     handleIndividuSearch(data.dewan, data.uid, dateRange);
@@ -305,70 +314,68 @@ const MPFilter = ({
           </>
         ) : (
           <div className="space-y-3">
-            <div className="pl-4.5 pr-1.5 py-2 flex mx-auto w-full sm:w-fit rounded-full border border-border justify-between">
+            <div className="mx-auto flex w-full justify-between rounded-full border border-border py-2 pl-4.5 pr-1.5 sm:w-fit">
               <div className="flex self-center">
                 <Dropdown
                   className={className.dropdown_ind_grp}
                   width="w-fit"
                   options={INDIVIDU_OR_GROUP}
-                  selected={INDIVIDU_OR_GROUP.find(
-                    (e) => e.value === ind_or_grp
-                  )}
+                  selected={INDIVIDU_OR_GROUP.find(e => e.value === ind_or_grp)}
                   onChange={(e: { value: string }) => onFilter(e.value)}
                 />
               </div>
-              <div className="hidden md:flex gap-x-1 px-2.5">
+              <div className="hidden gap-x-1 px-2.5 md:flex">
                 <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
                   enableFlag
-                  flag={(party) => {
+                  flag={party => {
                     if (party === ALL_PARTIES) return <></>;
                     else
                       return <PartyFlag party={party} children={() => true} />;
                   }}
                   options={PARTY_OPTIONS}
-                  selected={PARTY_OPTIONS.find((e) => e.value === data.party)}
-                  onChange={(e) => setData("party", e.value)}
+                  selected={PARTY_OPTIONS.find(e => e.value === data.party)}
+                  onChange={e => setData("party", e.value)}
                 />
                 <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
                   options={SEX_OPTIONS}
-                  selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
-                  onChange={(e) => setData("sex", e.value)}
+                  selected={SEX_OPTIONS.find(e => e.value === data.sex)}
+                  onChange={e => setData("sex", e.value)}
                 />
                 <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
                   options={AGE_OPTIONS}
-                  selected={AGE_OPTIONS.find((e) => e.value === data.age)}
-                  onChange={(e) => setData("age", e.value)}
+                  selected={AGE_OPTIONS.find(e => e.value === data.age)}
+                  onChange={e => setData("age", e.value)}
                 />
                 <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
                   options={ETNIK_OPTIONS}
-                  selected={ETNIK_OPTIONS.find((e) => e.value === data.ethnic)}
-                  onChange={(e) => setData("ethnic", e.value)}
+                  selected={ETNIK_OPTIONS.find(e => e.value === data.ethnic)}
+                  onChange={e => setData("ethnic", e.value)}
                 />
                 {(data.party !== ALL_PARTIES ||
                   data.sex !== BOTH_SEXES ||
                   data.age !== ALL_AGES ||
                   data.ethnic !== ALL_ETHNICITIES) && (
-                    <Button
-                      variant="ghost"
-                      className="group flex sm:-mr-1.5 sm:h-8 sm:w-8 p-0 justify-center rounded-full"
-                      onClick={handleClear}
-                    >
-                      <XMarkIcon className="text-zinc-500 size-5 group-hover:text-foreground" />
-                    </Button>
-                  )}
+                  <Button
+                    variant="ghost"
+                    className="group flex justify-center rounded-full p-0 sm:-mr-1.5 sm:h-8 sm:w-8"
+                    onClick={handleClear}
+                  >
+                    <XMarkIcon className="size-5 text-zinc-500 group-hover:text-foreground" />
+                  </Button>
+                )}
               </div>
               <div className="self-center">
                 <Button
                   variant="primary"
-                  className="rounded-full h-9"
+                  className="h-9 rounded-full"
                   onClick={() => handleGroupSearch(data.dewan)}
                 >
                   <MagnifyingGlassIcon className="size-5 text-white" />
@@ -377,7 +384,7 @@ const MPFilter = ({
               </div>
             </div>
 
-            <div className="justify-center hidden md:flex flex-wrap gap-2">
+            <div className="hidden flex-wrap justify-center gap-2 md:flex">
               <Daterange
                 className="text-blue-600 dark:text-primary-dark"
                 placeholder={t("current_parlimen")}
@@ -403,11 +410,11 @@ const MPFilter = ({
               <DrawerTrigger asChild>
                 <Button
                   variant="outline"
-                  className="shadow-button ml-auto md:hidden"
+                  className="ml-auto shadow-button md:hidden"
                   onClick={() => setOpen(true)}
                 >
                   <span>{t("filters", { ns: "common" })}</span>
-                  <span className="bg-blue-600 dark:bg-primary-dark w-4.5 leading-5 rounded-md text-center text-white">
+                  <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
                     6
                   </span>
                   <ChevronDownIcon className="-mx-[5px] size-5" />
@@ -420,19 +427,17 @@ const MPFilter = ({
                   </span>
                   <DrawerClose />
                 </DrawerHeader>
-                <div className="flex flex-col bg-background dark:divide-zinc-800 divide-y px-4">
-                  <div className="py-3 space-y-1">
+                <div className="flex flex-col divide-y bg-background px-4 dark:divide-zinc-800">
+                  <div className="space-y-1 py-3">
                     <Label label={t("dewan", { ns: "home" }) + ":"} />
                     <Dropdown
                       options={DEWAN_OPTIONS}
-                      selected={DEWAN_OPTIONS.find(
-                        (e) => e.value === data.dewan
-                      )}
-                      onChange={(e) => setData("dewan", e.value)}
+                      selected={DEWAN_OPTIONS.find(e => e.value === data.dewan)}
+                      onChange={e => setData("dewan", e.value)}
                     />
                   </div>
 
-                  <div className="py-3 space-y-1">
+                  <div className="space-y-1 py-3">
                     <Label label={t("date") + ":"} />
                     <Daterange
                       className="w-full"
@@ -443,11 +448,11 @@ const MPFilter = ({
                     />
                   </div>
 
-                  <div className="py-3 space-y-1 w-full">
+                  <div className="w-full space-y-1 py-3">
                     <Label label={t("party", { ns: "common" }) + ":"} />
                     <Dropdown
                       enableFlag
-                      flag={(party) => {
+                      flag={party => {
                         if (party === ALL_PARTIES) return <></>;
                         else
                           return (
@@ -456,42 +461,40 @@ const MPFilter = ({
                       }}
                       anchor="left"
                       options={PARTY_OPTIONS}
-                      selected={PARTY_OPTIONS.find(
-                        (e) => e.value === data.party
-                      )}
-                      onChange={(e) => setData("party", e.value)}
+                      selected={PARTY_OPTIONS.find(e => e.value === data.party)}
+                      onChange={e => setData("party", e.value)}
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2 py-3">
-                    <div className="space-y-1 w-full">
+                    <div className="w-full space-y-1">
                       <Label label={t("age", { ns: "demografi" }) + ":"} />
                       <Dropdown
                         anchor="left bottom-10"
                         options={AGE_OPTIONS}
-                        selected={AGE_OPTIONS.find((e) => e.value === data.age)}
-                        onChange={(e) => setData("age", e.value)}
+                        selected={AGE_OPTIONS.find(e => e.value === data.age)}
+                        onChange={e => setData("age", e.value)}
                       />
                     </div>
 
-                    <div className="space-y-1 w-full">
+                    <div className="w-full space-y-1">
                       <Label label={t("sex", { ns: "demografi" }) + ":"} />
                       <Dropdown
                         options={SEX_OPTIONS}
-                        selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
-                        onChange={(e) => setData("sex", e.value)}
+                        selected={SEX_OPTIONS.find(e => e.value === data.sex)}
+                        onChange={e => setData("sex", e.value)}
                       />
                     </div>
                   </div>
 
-                  <div className="py-3 space-y-1 w-full">
+                  <div className="w-full space-y-1 py-3">
                     <Label label={t("ethnicity", { ns: "demografi" }) + ":"} />
                     <Dropdown
                       anchor="left bottom-10"
                       options={ETNIK_OPTIONS}
                       selected={ETNIK_OPTIONS.find(
-                        (e) => e.value === data.ethnic
+                        e => e.value === data.ethnic
                       )}
-                      onChange={(e) => setData("ethnic", e.value)}
+                      onChange={e => setData("ethnic", e.value)}
                     />
                   </div>
                 </div>
