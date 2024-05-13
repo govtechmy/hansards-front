@@ -34,7 +34,7 @@ import { useData } from "@hooks/useData";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn, numFormat, toDate } from "@lib/helpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type Result<T> = {
   data: T;
@@ -62,6 +62,8 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
 }: FullResultsProps<T>) => {
   if (!options) return <></>;
 
+  const { t, i18n } = useTranslation("sejarah");
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const [open, setOpen] = useState<boolean>(false);
   const { data, setData } = useData({
     index: currentIndex,
@@ -73,8 +75,8 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
     results: {} as Result<BaseResult[] | PartiResult>,
     loading: true,
   });
-  const { t, i18n } = useTranslation("sejarah");
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  useEffect(() => setData("index", currentIndex), [open]);
 
   const selected = options[currentIndex];
   const isIndividu = typeof selected === "object" && "result" in selected;
@@ -95,11 +97,11 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
   };
 
   const ElectionResults = () => (
-    <div className="max-md:px-4 max-md:pb-4 space-y-6 text-base h-[calc(100%-80px)] max-md:overflow-y-scroll">
+    <div className="h-[calc(100%-80px)] space-y-6 text-base max-md:overflow-y-scroll max-md:px-4 max-md:pb-4">
       <div className="space-y-3">
         <div className="font-bold">{t("election_result")}</div>
         <Table
-          className="md:max-h-96 w-full md:overflow-y-auto"
+          className="w-full md:max-h-96 md:overflow-y-auto"
           data={data.results.data}
           columns={columns}
           isLoading={data.loading}
@@ -121,11 +123,13 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
                   <p className="w-28 md:w-fit">{t(item.x)}:</p>
                   <div className="flex flex-wrap items-center gap-3">
                     <BarPerc hidden value={item.perc} size="h-[5px] w-[50px]" />
-                    <p>{`${item.abs !== null ? numFormat(item.abs, "standard") : "—"
-                      } ${item.perc !== null
+                    <p>{`${
+                      item.abs !== null ? numFormat(item.abs, "standard") : "—"
+                    } ${
+                      item.perc !== null
                         ? `(${numFormat(item.perc, "compact", 1)}%)`
                         : "(—)"
-                      }`}</p>
+                    }`}</p>
                   </div>
                 </div>
               )
@@ -147,7 +151,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
                   key={index}
                   onClick={() => {
                     setData("loading", true);
-                    onChange(option).then((results) => {
+                    onChange(option).then(results => {
                       if (!results) return;
                       setData("index", index);
                       setData("results", results);
@@ -160,7 +164,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
                     "h-1 w-5 rounded-md",
                     index === data.index
                       ? "bg-foreground"
-                      : "bg-slate-200 dark:bg-zinc-700 hover:bg-bg-hover"
+                      : "bg-slate-200 hover:bg-bg-hover dark:bg-zinc-700"
                   )}
                 />
               ))}
@@ -173,7 +177,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
               className="btn-disabled"
               onClick={() => {
                 setData("loading", true);
-                onChange(options[data.index - 1]).then((results) => {
+                onChange(options[data.index - 1]).then(results => {
                   if (!results) return;
                   setData("index", data.index - 1);
                   getData(options[data.index - 1]);
@@ -196,7 +200,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
               className="btn-disabled"
               onClick={() => {
                 setData("loading", true);
-                onChange(options[data.index + 1]).then((results) => {
+                onChange(options[data.index + 1]).then(results => {
                   if (!results) return;
                   setData("index", data.index + 1);
                   setData("results", results);
@@ -223,7 +227,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
         setData("loading", true);
         setOpen(true);
         getData(options[data.index]);
-        onChange(selected).then((results) => {
+        onChange(selected).then(results => {
           if (!results) return;
           setData("results", results);
           setData("loading", false);
@@ -243,7 +247,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
         </DialogTrigger>
         <DialogContent className="max-w-4xl">
           <DialogHeader className="pr-8 uppercase">
-            <div className="flex w-full justify-between items-start">
+            <div className="flex w-full items-start justify-between">
               <div className="flex flex-wrap gap-x-2 text-lg">
                 <h3 className="title">
                   {isParti
@@ -277,7 +281,7 @@ const FullResults = <T extends Individu | Parti | Kawasan>({
         <FullResultsButton />
       </DrawerTrigger>
       <DrawerContent className="max-h-[calc(100%-96px)] pt-0">
-        <DrawerHeader className="flex flex-col w-full items-start px-4 py-3 uppercase">
+        <DrawerHeader className="flex w-full flex-col items-start px-4 py-3 uppercase">
           <div className="flex w-full justify-between">
             <div className="flex flex-wrap gap-x-2 text-lg">
               <h3 className="title">
