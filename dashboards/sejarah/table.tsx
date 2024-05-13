@@ -87,7 +87,7 @@ const Table: FunctionComponent<TableProps> = ({
               }
               className="max-xl:-left-3"
             >
-              {(open) => (
+              {open => (
                 <div
                   className="cursor-help whitespace-nowrap underline decoration-dashed [text-underline-position:from-font]"
                   tabIndex={0}
@@ -96,10 +96,10 @@ const Table: FunctionComponent<TableProps> = ({
                   {value === "By-Election"
                     ? t(value, { ns: "election" })
                     : value.slice(0, -5) +
-                    t(value.slice(-5, value.indexOf("-")), {
-                      ns: "election",
-                    }) +
-                    value.slice(value.indexOf("-"))}
+                      t(value.slice(-5, value.indexOf("-")), {
+                        ns: "election",
+                      }) +
+                      value.slice(value.indexOf("-"))}
                 </div>
               )}
             </Tooltip>
@@ -113,10 +113,11 @@ const Table: FunctionComponent<TableProps> = ({
             <div>
               <BarPerc hidden value={value.perc} />
             </div>
-            <p className="whitespace-nowrap">{`${value.won} / ${value.total} ${value.perc !== null
-              ? ` (${numFormat(value.perc, "compact", [1, 1])}%)`
-              : " (—)"
-              }`}</p>
+            <p className="whitespace-nowrap">{`${value.won} / ${value.total} ${
+              value.perc !== null
+                ? ` (${numFormat(value.perc, "compact", [1, 1])}%)`
+                : " (—)"
+            }`}</p>
           </div>
         );
       case "result":
@@ -153,7 +154,7 @@ const Table: FunctionComponent<TableProps> = ({
     switch (id) {
       case "index":
         return highlight ? (
-          <p className="text-primary dark:text-primary-dark font-bold">
+          <p className="font-bold text-primary dark:text-primary-dark">
             #{value}
           </p>
         ) : (
@@ -162,7 +163,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "party":
         return (
           <PartyFlag party={value}>
-            {(party) =>
+            {party =>
               cell.row.original.name ? (
                 <span>
                   <span className="pr-1 font-medium">
@@ -188,8 +189,8 @@ const Table: FunctionComponent<TableProps> = ({
               {value === "By-Election"
                 ? t(value, { ns: "election" })
                 : value.slice(0, -5) +
-                t(value.slice(-5, value.indexOf("-")), { ns: "election" }) +
-                value.slice(value.indexOf("-"))}
+                  t(value.slice(-5, value.indexOf("-")), { ns: "election" }) +
+                  value.slice(value.indexOf("-"))}
             </p>
             {cell.row.original.date && (
               <p className="text-zinc-500">
@@ -201,17 +202,18 @@ const Table: FunctionComponent<TableProps> = ({
       case "seats":
         return (
           <div className="flex flex-col space-y-1">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             <div className="flex items-center gap-2">
               <BarPerc hidden value={value?.perc} />
               <p>
                 {`${value?.won} / ${value?.total}
-                 (${value?.perc !== null
-                    ? `${numFormat(value?.perc, "compact", [1, 1])}%`
-                    : "(—)"
-                  })`}
+                 (${
+                   value?.perc !== null
+                     ? `${numFormat(value?.perc, "compact", [1, 1])}%`
+                     : "(—)"
+                 })`}
               </p>
             </div>
           </div>
@@ -219,7 +221,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "votes":
         return (
           <div className="flex flex-col space-y-1">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             {typeof value === "undefined" ? (
@@ -227,11 +229,13 @@ const Table: FunctionComponent<TableProps> = ({
             ) : (
               <div className="flex flex-wrap items-center gap-2">
                 <BarPerc hidden value={value.perc} />
-                <p>{`${value.abs !== null ? numFormat(value.abs, "standard") : "—"
-                  } (${value.perc !== null
+                <p>{`${
+                  value.abs !== null ? numFormat(value.abs, "standard") : "—"
+                } (${
+                  value.perc !== null
                     ? `${numFormat(value.perc, "compact", 1)}%`
                     : "—"
-                  })`}</p>
+                })`}</p>
               </div>
             )}
           </div>
@@ -239,7 +243,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "majority":
         return (
           <div className="flex flex-row gap-2">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             {typeof value === "number" ? (
@@ -247,11 +251,13 @@ const Table: FunctionComponent<TableProps> = ({
             ) : (
               <div className="flex items-center gap-2">
                 <BarPerc hidden value={value.perc} />
-                <p>{`${value.abs !== null ? numFormat(value.abs, "standard") : "—"
-                  } (${value.perc !== null
+                <p>{`${
+                  value.abs !== null ? numFormat(value.abs, "standard") : "—"
+                } (${
+                  value.perc !== null
                     ? `${numFormat(value.perc, "compact", 1)}%`
                     : "—"
-                  })`}</p>
+                })`}</p>
               </div>
             )}
           </div>
@@ -259,7 +265,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "result":
         return (
           <div className="flex flex-col space-y-1">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             <ResultBadge value={value} />
@@ -271,14 +277,11 @@ const Table: FunctionComponent<TableProps> = ({
   };
 
   const isHighlighted = (row: any) => {
-    if (typeof highlighted === "string") {
-      if ("name" in row.original)
-        return slugify(row.original.name) === highlighted
-      else if ("party" in row.original)
-        return row.original.party
-      else return false;
-    }
-  }
+    if ("name" in row.original)
+      return slugify(row.original.name) === highlighted;
+    else if ("party" in row.original) return row.original.party === highlighted;
+    else return false;
+  };
 
   return (
     <>
@@ -301,14 +304,14 @@ const Table: FunctionComponent<TableProps> = ({
                   <th
                     key={header.id}
                     colSpan={header.colSpan}
-                    className="border-slate-200 dark:border-zinc-800 whitespace-nowrap border-b-2 px-2 py-[10px] font-medium"
+                    className="whitespace-nowrap border-b-2 border-slate-200 px-2 py-[10px] font-medium dark:border-zinc-800"
                   >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </th>
                 ))}
               </tr>
@@ -325,27 +328,31 @@ const Table: FunctionComponent<TableProps> = ({
                   <tr
                     key={row.id}
                     className={cn(
-                      highlight
-                        ? "bg-slate-50 dark:bg-zinc-950"
-                        : "bg-inherit",
-                      "border-slate-200 dark:border-zinc-800 border-b"
+                      highlight ? "bg-slate-50 dark:bg-zinc-950" : "bg-inherit",
+                      "border-b border-slate-200 dark:border-zinc-800"
                     )}
                   >
-                    {row.getVisibleCells().map((cell: any, colIndex: number) => (
-                      <td
-                        key={cell.id}
-                        className={cn(
-                          highlight && colIndex === 0
-                            ? "font-medium"
-                            : "font-normal",
-                          "px-2 py-[10px]"
-                        )}
-                      >
-                        {lookupDesktop(cell.column.columnDef.id, cell, highlight)}
-                      </td>
-                    ))}
+                    {row
+                      .getVisibleCells()
+                      .map((cell: any, colIndex: number) => (
+                        <td
+                          key={cell.id}
+                          className={cn(
+                            highlight && colIndex === 0
+                              ? "font-medium"
+                              : "font-normal",
+                            "px-2 py-[10px]"
+                          )}
+                        >
+                          {lookupDesktop(
+                            cell.column.columnDef.id,
+                            cell,
+                            highlight
+                          )}
+                        </td>
+                      ))}
                   </tr>
-                )
+                );
               })}
             </tbody>
           )}
@@ -353,7 +360,7 @@ const Table: FunctionComponent<TableProps> = ({
 
         {/* Mobile */}
         {table.getRowModel().rows.map((row: any, index: number) => {
-          const ids = table.getAllColumns().map((col) => col.id);
+          const ids = table.getAllColumns().map(col => col.id);
           const highlight = isHighlighted(row);
 
           let _row: Record<string, ReactNode> = {};
@@ -369,16 +376,14 @@ const Table: FunctionComponent<TableProps> = ({
           ) : (
             <div
               className={cn(
-                "border-slate-200 dark:border-zinc-800 flex flex-col space-y-2 border-b p-3 text-sm first:border-t-2 md:hidden",
+                "flex flex-col space-y-2 border-b border-slate-200 p-3 text-sm first:border-t-2 dark:border-zinc-800 md:hidden",
                 index === 0 && "border-t-2",
-                highlight
-                  ? "bg-slate-50 dark:bg-[#121212]"
-                  : "bg-inherit"
+                highlight ? "bg-slate-50 dark:bg-[#121212]" : "bg-inherit"
               )}
               key={index}
             >
               {/* Row 1 - Election Name / Date / Full result */}
-              {["election_name"].some((id) => ids.includes(id)) && (
+              {["election_name"].some(id => ids.includes(id)) && (
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex gap-x-2">
                     {_row.index}
@@ -424,8 +429,8 @@ const Table: FunctionComponent<TableProps> = ({
           </div>
         )}
         {!data.length && !isLoading && (
-          <div className="flex items-center justify-center h-[200px]">
-            <div className="bg-slate-200 dark:bg-zinc-800 flex h-auto w-[300px] rounded-md px-3 pb-2 pt-1 lg:w-fit">
+          <div className="flex h-[200px] items-center justify-center">
+            <div className="flex h-auto w-[300px] rounded-md bg-slate-200 px-3 pb-2 pt-1 dark:bg-zinc-800 lg:w-fit">
               <p className="text-sm">
                 <span className="inline-flex pr-1">
                   <FaceFrownIcon className="h-5 w-5 translate-y-1" />
