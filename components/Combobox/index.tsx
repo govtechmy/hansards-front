@@ -5,14 +5,7 @@ import { cn } from "@lib/helpers";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { useCombobox } from "downshift";
 import { matchSorter, MatchSorterOptions } from "match-sorter";
-import {
-  ChangeEvent,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
 import { useVirtual } from "react-virtual";
 
 type ComboBoxProps<T> = Pick<ComboOptionProps<T>, "format" | "icon"> & {
@@ -114,10 +107,11 @@ const ComboBox = <T extends unknown>({
                 ? "rounded-r-full pl-2.5"
                 : "absolute left-0 top-0 rounded-full pl-14"
             )}
-            onChange={event => {
-              if (onSearch) onSearch(event.target.value);
-            }}
-            {...getInputProps()}
+            {...getInputProps({
+              onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                if (onSearch) onSearch(event.target.value);
+              },
+            })}
           />
           {inputValue && (
             <Button
@@ -143,62 +137,61 @@ const ComboBox = <T extends unknown>({
             !(isOpen && items.length) && "hidden"
           )}
         >
-          {isOpen &&
-            (loading ? (
-              <li className="flex cursor-default select-none items-center gap-2 px-4 py-2 text-zinc-500">
-                <Spinner loading={loading} /> {t("placeholder.loading")}
-              </li>
-            ) : items.length === 0 && inputValue !== "" ? (
-              <li className="cursor-default select-none px-4 py-2 text-zinc-500">
-                {t("placeholder.no_results")}
-              </li>
-            ) : items.length > 100 ? (
-              <>
-                <li
-                  key="total-size"
-                  style={{ height: rowVirtualizer.totalSize }}
-                />
-                {rowVirtualizer.virtualItems.map(virtualRow => (
-                  <ComboOption<T>
-                    option={items[virtualRow.index]}
-                    total={options.length}
-                    format={format}
-                    icon={icon}
-                    isSelected={selectedItem === items[virtualRow.index]}
-                    active={highlightedIndex === virtualRow.index}
-                    index={virtualRow.index}
-                    {...getItemProps({
-                      index: virtualRow.index,
-                      item: items[virtualRow.index],
-                    })}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: virtualRow.size,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                  />
-                ))}
-              </>
-            ) : (
-              items.map((item, i) => (
+          {loading ? (
+            <li className="flex cursor-default select-none items-center gap-2 px-4 py-2 text-zinc-500">
+              <Spinner loading={loading} /> {t("placeholder.loading")}
+            </li>
+          ) : items.length === 0 && inputValue !== "" ? (
+            <li className="cursor-default select-none px-4 py-2 text-zinc-500">
+              {t("placeholder.no_results")}
+            </li>
+          ) : items.length > 100 ? (
+            <>
+              <li
+                key="total-size"
+                style={{ height: rowVirtualizer.totalSize }}
+              />
+              {rowVirtualizer.virtualItems.map(virtualRow => (
                 <ComboOption<T>
-                  option={item}
+                  option={items[virtualRow.index]}
                   total={options.length}
                   format={format}
                   icon={icon}
-                  isSelected={selectedItem === items[i]}
-                  active={highlightedIndex === i}
-                  index={i}
+                  isSelected={selectedItem === items[virtualRow.index]}
+                  active={highlightedIndex === virtualRow.index}
+                  index={virtualRow.index}
                   {...getItemProps({
-                    index: i,
-                    item: item,
+                    index: virtualRow.index,
+                    item: items[virtualRow.index],
                   })}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: virtualRow.size,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
                 />
-              ))
-            ))}
+              ))}
+            </>
+          ) : (
+            items.map((item, i) => (
+              <ComboOption<T>
+                option={item}
+                total={options.length}
+                format={format}
+                icon={icon}
+                isSelected={selectedItem === items[i]}
+                active={highlightedIndex === i}
+                index={i}
+                {...getItemProps({
+                  index: i,
+                  item: item,
+                })}
+              />
+            ))
+          )}
         </ul>
       </div>
     </div>
