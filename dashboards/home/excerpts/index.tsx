@@ -23,7 +23,17 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
   const [_excerpts, setExcerpts] = useState<Excerpt[]>(excerpts);
   const [nextPage, setNextPage] = useState<number>(2);
 
-  const { q, uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } = query;
+  const {
+    q,
+    uid,
+    dewan,
+    tarikh_mula,
+    tarikh_akhir,
+    umur,
+    etnik,
+    parti,
+    jantina,
+  } = query;
 
   const HAS_REMAINDER = count > _excerpts.length;
 
@@ -35,7 +45,7 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
       q: q,
       uid: uid,
       house: dewan,
-      window_size: ("q" in query) ? 40 : 150,
+      window_size: "q" in query ? 40 : 150,
       page: nextPage,
       start_date: tarikh_mula,
       end_date: tarikh_akhir,
@@ -45,18 +55,17 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
       sex: jantina,
     })
       .then(({ data }) => {
-        setExcerpts((prev_data) => prev_data.concat(data.results));
-        setNextPage((page) => page + 1);
-        setLoading(false);
+        setExcerpts(prev_data => prev_data.concat(data.results));
+        setNextPage(page => page + 1);
       })
-      .catch((e) => {
+      .catch(e => {
         toast.error(
           t("toast.request_failure", { ns: "common" }),
           t("toast.try_again", { ns: "common" })
         );
         console.error(e);
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -76,7 +85,7 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
 
         {HAS_REMAINDER && (
           <div className="flex flex-col items-center gap-6">
-            <p className="text-zinc-500 text-sm font-medium">
+            <p className="text-sm font-medium text-zinc-500">
               {t("see_all", { total: count, count: _excerpts.length })}
             </p>
             {loading ? (
