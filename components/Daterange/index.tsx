@@ -12,7 +12,7 @@ import {
 } from "date-fns";
 import { enGB, ms } from "date-fns/locale";
 import { useTranslation } from "next-i18next";
-import { ChangeEventHandler, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEventHandler, useState } from "react";
 import {
   type DayPickerRangeProps,
   type DateRange,
@@ -25,7 +25,7 @@ interface DateRangeProps extends Omit<DayPickerRangeProps, "mode"> {
   placeholder?: string;
   label?: string;
   numberOfMonths?: number;
-  setSelected: Dispatch<SetStateAction<DateRange | undefined>>;
+  onChange: (dateRange?: DateRange) => void;
 }
 
 const Daterange = ({
@@ -36,7 +36,7 @@ const Daterange = ({
   label,
   numberOfMonths = 2,
   selected,
-  setSelected,
+  onChange,
 }: DateRangeProps) => {
   const { t, i18n } = useTranslation("home");
 
@@ -47,10 +47,10 @@ const Daterange = ({
   DEFAULT.setMonth(TODAY.getMonth() - (numberOfMonths === 2 ? 1 : 0));
 
   const [fromValue, setFromValue] = useState<string>(
-    selected?.from ? selected.from.toISOString().split("T")[0] : ""
+    selected?.from ? selected.from.toISOString().slice(0, 10) : ""
   );
   const [toValue, setToValue] = useState<string>(
-    selected?.to ? selected.to.toISOString().split("T")[0] : ""
+    selected?.to ? selected.to.toISOString().slice(0, 10) : ""
   );
   const [invalidFromValue, setInvalidFromValue] = useState<string>("");
   const [invalidToValue, setInvalidToValue] = useState<string>("");
@@ -66,10 +66,10 @@ const Daterange = ({
       isAfter(date, subSeconds(PARLIMEN_START_DATE, 1)) &&
       isBefore(date, TODAY)
     ) {
-      setSelected({ from: date, to: selected?.to });
+      onChange({ from: date, to: selected?.to });
       setInvalidFromValue("");
     } else {
-      setSelected({ from: undefined, to: undefined });
+      onChange({ from: undefined, to: undefined });
       setInvalidFromValue(() => {
         if (isBefore(date, PARLIMEN_START_DATE)) return t("choose_later_date");
         else if (isAfter(date, TODAY)) return t("today_or_earlier");
@@ -93,10 +93,10 @@ const Daterange = ({
       isAfter(date, fromDate) &&
       isBefore(date, TODAY)
     ) {
-      setSelected({ from: selected?.from, to: date });
+      onChange({ from: selected?.from, to: date });
       setInvalidToValue("");
     } else {
-      setSelected({ from: selected?.from, to: undefined });
+      onChange({ from: selected?.from, to: undefined });
       setInvalidToValue(() => {
         if (isBefore(date, fromDate)) return t("choose_later_date");
         else if (isAfter(date, TODAY)) return t("today_or_earlier");
@@ -108,7 +108,7 @@ const Daterange = ({
   const handleRangeSelect: SelectRangeEventHandler = (
     range: DateRange | undefined
   ) => {
-    setSelected(range);
+    onChange(range);
     if (range?.from) {
       const from_date = format(range.from, "yyyy-MM-dd");
       setFromValue(from_date);
@@ -175,7 +175,7 @@ const Daterange = ({
               : anchor
           )}
         >
-          <form className="pt-3 px-3 flex flex-col">
+          <form className="max-sm:hidden pt-3 px-3 flex flex-col">
             <div className="flex items-center gap-x-3">
               <input
                 type="date"

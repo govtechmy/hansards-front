@@ -1,6 +1,6 @@
+import { useMediaQuery } from "@hooks/useMediaQuery";
 import { default as ChartHeader, ChartHeaderProps } from "./chart-header";
-import { COLOR, BREAKPOINTS } from "@lib/constants";
-import { WindowContext } from "@lib/contexts/window";
+import { COLOR } from "@lib/constants";
 import { numFormat } from "@lib/helpers";
 import { ChartCrosshairOption } from "@lib/types";
 import {
@@ -14,7 +14,7 @@ import {
   Legend,
 } from "chart.js";
 import { useTheme } from "next-themes";
-import { FunctionComponent, useContext, useMemo, useRef } from "react";
+import { FunctionComponent, useMemo, useRef } from "react";
 import { Bar as BarCanvas, getElementAtEvent } from "react-chartjs-2";
 import { ChartJSOrUndefined, ForwardedRef } from "react-chartjs-2/dist/types";
 
@@ -73,7 +73,7 @@ const Bar: FunctionComponent<BarProps> = ({
 }) => {
   const ref = useRef<ChartJSOrUndefined<"bar", any[], string | number>>();
   const isVertical = useMemo(() => layout === "vertical", [layout]);
-  const { size } = useContext(WindowContext);
+  const isMobile = useMediaQuery("min-width: 640px")
   ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, ChartTooltip, Legend);
   const { theme = "light" } = useTheme();
 
@@ -87,7 +87,7 @@ const Bar: FunctionComponent<BarProps> = ({
 
   const displayLabel = (value: string) => {
     const label = formatX ? formatX(value) : value;
-    if (label.length > 25 && size.width < BREAKPOINTS.SM) return label.slice(0, 25).concat("..");
+    if (label.length > 25 && !isMobile) return label.slice(0, 25).concat("..");
     return label;
   };
 
@@ -115,9 +115,6 @@ const Bar: FunctionComponent<BarProps> = ({
       },
       tooltip: {
         enabled: tooltipEnabled,
-        bodyFont: {
-          family: "Inter",
-        },
         callbacks: {
           label: function (item) {
             const tip: Record<typeof layout, string> = {
@@ -153,9 +150,6 @@ const Bar: FunctionComponent<BarProps> = ({
           drawBorder: true,
         },
         ticks: {
-          font: {
-            family: "Inter",
-          },
           padding: 6,
           major: {
             enabled: true,
@@ -199,9 +193,6 @@ const Bar: FunctionComponent<BarProps> = ({
           },
         },
         ticks: {
-          font: {
-            family: "Inter",
-          },
           precision: Array.isArray(precision) ? precision[1] : precision,
           callback: function (value: string | number) {
             return displayLabel(
@@ -211,7 +202,6 @@ const Bar: FunctionComponent<BarProps> = ({
             );
           },
         },
-
         min: minY,
         max: maxY,
         stacked: enableStack,

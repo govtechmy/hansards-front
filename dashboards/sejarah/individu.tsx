@@ -2,7 +2,7 @@ import Container from "@components/Container";
 import PartyFlag from "@components/PartyFlag";
 import Section from "@components/Section";
 import Skeleton from "@components/Skeleton";
-import Tabs, { Panel } from "@components/Tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/Tabs";
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
@@ -11,11 +11,7 @@ import { generateSchema } from "@lib/schema/election";
 import { OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo } from "react";
-import {
-  BaseResult,
-  Individu,
-  IndividuResult,
-} from "./types";
+import { BaseResult, Individu, IndividuResult } from "./types";
 import FullResults, { Result } from "./full-results";
 import { useCache } from "@hooks/useCache";
 import { Toast, toast } from "@components/index";
@@ -60,7 +56,7 @@ const SejarahIndividu = ({
   const DEFAULT_INDIVIDU = "tunku-abdul-rahman-putra-alhaj";
   const INDIVIDU_OPTION = useMemo(() => {
     return INDIVIDU_OPTIONS.find(
-      (e) => e.value === (params.name ?? DEFAULT_INDIVIDU)
+      e => e.value === (params.name ?? DEFAULT_INDIVIDU)
     );
   }, [params]);
 
@@ -68,6 +64,7 @@ const SejarahIndividu = ({
     individu_option: INDIVIDU_OPTION,
     parlimen: parlimen,
     loading: false,
+    tab: "dewan_rakyat",
   });
 
   const { setFilter } = useFilter({
@@ -90,7 +87,7 @@ const SejarahIndividu = ({
     { key: "votes", id: "votes", header: t("votes_won") },
     { key: "result", id: "result", header: t("result") },
     {
-      key: (item) => item,
+      key: item => item,
       id: "full_result",
       header: "",
       cell: ({ row }) => (
@@ -128,7 +125,7 @@ const SejarahIndividu = ({
     seat: string
   ): Promise<Result<BaseResult[]>> => {
     const identifier = `${election}_${seat}`;
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (cache.has(identifier)) return resolve(cache.get(identifier));
       get(
         "/explorer",
@@ -166,7 +163,7 @@ const SejarahIndividu = ({
           cache.set(identifier, result);
           resolve(result);
         })
-        .catch((e) => {
+        .catch(e => {
           toast.error(
             t("toast.request_failure", { ns: "common" }),
             t("toast.try_again", { ns: "common" })
@@ -191,14 +188,12 @@ const SejarahIndividu = ({
               <ComboBox
                 placeholder={t("cari_individu")}
                 options={INDIVIDU_OPTIONS}
-                selected={
+                selected={INDIVIDU_OPTIONS.find(e =>
                   data.individu_option
-                    ? INDIVIDU_OPTIONS.find(
-                        (e) => e.value === data.individu_option.value
-                      )
-                    : null
-                }
-                onChange={(selected) => {
+                    ? e.value === data.individu_option.value
+                    : undefined
+                )}
+                onChange={selected => {
                   setData("individu_option", selected);
                   if (selected) {
                     setData("loading", true);
@@ -208,35 +203,40 @@ const SejarahIndividu = ({
               />
             </div>
 
+            <h3 className="title pt-6">
+              {t("individu.title")}
+              <span className="text-primary">{INDIVIDU_OPTION?.label}</span>
+            </h3>
             <Tabs
-              title={
-                <h3 className="title py-6">
-                  {t("individu.title")}
-                  <span className="text-primary">{INDIVIDU_OPTION?.label}</span>
-                </h3>
-              }
-              current={data.tab_idx}
-              onChange={(index) => setData("tab_idx", index)}
-              className="pb-6"
+              value={data.tab}
+              onValueChange={value => setData("tab", value)}
+              defaultValue="dewan_rakyat"
             >
-              <Panel name={t("dewan_rakyat", { ns: "common" })}>
+              <TabsList className="flex justify-end">
+                {["dewan_rakyat", "dewan_negara"].map(dewan => (
+                  <TabsTrigger key={dewan} value={dewan}>
+                    {t(`common:${dewan}`)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <TabsContent value="dewan_rakyat">
                 {data.loading ? (
                   <Skeleton height="h-[550px]" width="w-auto" />
                 ) : (
                   <IndividuTable
-                    className="lg:w-full mx-auto"
+                    className="mx-auto lg:w-full"
                     data={parlimen.dewan_rakyat}
                     columns={individu_schema}
                     isLoading={data.loading}
                   />
                 )}
-              </Panel>
-              <Panel name={t("dewan_negara", { ns: "common" })}>
+              </TabsContent>
+              <TabsContent value="dewan_negara">
                 {data.loading ? (
                   <Skeleton height="h-[300px]" width="w-auto" />
                 ) : (
                   <Table
-                    className="text-sm lg:w-full mx-auto"
+                    className="mx-auto text-sm lg:w-full"
                     config={[
                       {
                         accessorKey: "start_date",
@@ -275,7 +275,7 @@ const SejarahIndividu = ({
                     ]}
                   />
                 )}
-              </Panel>
+              </TabsContent>
             </Tabs>
           </div>
         </div>

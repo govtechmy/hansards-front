@@ -1,42 +1,39 @@
 import Button from "@components/Button";
-import { Transition } from "@headlessui/react";
 import MoonIcon from "@heroicons/react/20/solid/MoonIcon";
 import SunIcon from "@heroicons/react/20/solid/SunIcon";
+import { useTranslation } from "next-i18next";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
+
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
 
   return (
-    <>
-      <Button
-        className="btn hover:bg-slate-100 dark:hover:bg-zinc-800 group relative p-2"
-        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      >
-        <Transition
-          show={theme === "light"}
-          enter="delay-200 transition ease-out duration-150"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
-          leave="duration-150"
-          leaveFrom="absolute opacity-100 translate-y-0"
-          leaveTo="absolute opacity-0 translate-y-1"
-        >
-          <MoonIcon className="text-zinc-500 h-4 w-4 group-hover:text-zinc-900" />
-        </Transition>
-        <Transition
-          show={theme !== "light"}
-          enter="delay-200 transition ease-out duration-150"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
-          leave="duration-150"
-          leaveFrom="absolute opacity-100 translate-y-0"
-          leaveTo="absolute opacity-0 translate-y-1"
-        >
-          <SunIcon className="text-zinc-500 -m-0.5 h-5 w-5 dark:group-hover:text-white" />
-        </Transition>
-      </Button>
-    </>
+    <Button
+      title={t("nav.toggle_theme")}
+      variant="ghost"
+      className="group p-2"
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+    >
+      <MoonIcon
+        data-state={resolvedTheme === "light" ? "dark" : "light"}
+        className="size-4 text-dim animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 group-hover:text-black data-[state=dark]:flex data-[state=light]:hidden"
+      />
+      <SunIcon
+        data-state={resolvedTheme === "light" ? "dark" : "light"}
+        className="-m-0.5 size-5 text-dim animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 group-hover:text-white data-[state=light]:flex data-[state=dark]:hidden"
+      />
+      <div className="sr-only">
+        {theme === "light" ? t("nav.toggle_dark") : t("nav.toggle_light")}
+      </div>
+    </Button>
   );
 };
 

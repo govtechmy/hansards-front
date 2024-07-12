@@ -30,7 +30,6 @@ import { useTranslation } from "@hooks/useTranslation";
 import { default as debounce } from "lodash/debounce";
 import { DebouncedFunc } from "lodash";
 import { cn, numFormat } from "@lib/helpers";
-import { UpDownIcon } from "@icons/index";
 import Button from "@components/Button";
 import { Precision } from "@lib/types";
 
@@ -244,8 +243,8 @@ const Table: FunctionComponent<TableProps> = ({
                       colSpan={header.colSpan}
                       className={cn(
                         freeze?.includes(header.id) &&
-                          "sticky z-10 bg-inherit max-lg:border-r-2",
-                        "border-slate-200 dark:border-zinc-800 border-b-2 py-[10px] font-medium"
+                        "sticky z-10 bg-inherit max-lg:border-r-2",
+                        "border-border border-b-2 py-[10px] font-medium"
                       )}
                       style={{
                         left: freeze?.includes(header.id)
@@ -259,8 +258,8 @@ const Table: FunctionComponent<TableProps> = ({
                             header.subHeaders.length < 1
                               ? "flex select-none items-center justify-between gap-1 text-left text-sm"
                               : !header.column.columnDef.header
-                              ? "hidden"
-                              : "pr-2 text-end",
+                                ? "hidden"
+                                : "pr-2 text-end",
                             header.column.getCanSort() ? "cursor-pointer" : ""
                           )}
                           onClick={
@@ -351,7 +350,7 @@ const Table: FunctionComponent<TableProps> = ({
                         "border-slate-200 dark:border-zinc-800 border-b px-2 py-2.5 max-sm:max-w-[150px] truncate",
                         typeof value === "number" && "tabular-nums text-right",
                         freeze?.includes(cell.column.id) &&
-                          "sticky z-10 bg-inherit max-lg:border-r-2",
+                        "sticky z-10 bg-inherit max-lg:border-r-2",
                         cell.column.columnDef.className
                           ? cell.column.columnDef.className
                           : cellClass
@@ -539,3 +538,37 @@ const dummy = Array(Object.keys(CountryAndStates).length)
   });
 
 export default Table;
+
+interface IconProps {
+  className?: string;
+  transform?: string;
+}
+
+const UpDownIcon: FunctionComponent<IconProps> = ({
+  className,
+  transform,
+}) => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <g id="UpDownIcon">
+        <path
+          id="Up"
+          d="M6.48939 11.0468C6.39703 11.081 6.31232 11.1331 6.24009 11.2001C6.16786 11.2671 6.10952 11.3476 6.06842 11.4371C6.02732 11.5266 6.00425 11.6234 6.00053 11.7218C5.99682 11.8202 6.01253 11.9184 6.04677 12.0108C6.08101 12.1032 6.13311 12.1879 6.20009 12.2601L9.45009 15.7601C9.5203 15.8358 9.60539 15.8962 9.70003 15.9376C9.79467 15.9789 9.89683 16.0002 10.0001 16.0002C10.1034 16.0002 10.2055 15.9789 10.3002 15.9376C10.3948 15.8962 10.4799 15.8358 10.5501 15.7601L13.8001 12.2601C13.9354 12.1142 14.0071 11.9206 13.9996 11.7218C13.9921 11.523 13.906 11.3354 13.7601 11.2001C13.6142 11.0648 13.4206 10.9931 13.2218 11.0006L6.77838 11.0005C6.77838 11.0005 6.58175 11.0125 6.48939 11.0468Z"
+          fill={transform === "up" ? "currentColor" : "#94A3B8"}
+        />
+        <path
+          id="Down"
+          d="M10.3001 4.0626C10.2055 4.0213 10.1033 3.99999 10.0001 4C9.89681 3.99999 9.79466 4.0213 9.70002 4.0626C9.60538 4.10389 9.52028 4.16429 9.45007 4.24L6.20007 7.74C6.06481 7.88587 5.99303 8.0795 6.00053 8.27828C6.00804 8.47707 6.0942 8.66474 6.24007 8.8C6.38594 8.93526 6.57956 9.00703 6.77835 8.99953H13.2218C13.3202 9.00325 13.4184 8.98754 13.5108 8.9533C13.6031 8.91907 13.6878 8.86697 13.7601 8.8C13.8323 8.73303 13.8906 8.65248 13.9317 8.56297C13.9728 8.47345 13.9959 8.37671 13.9996 8.27828C14.0033 8.17985 13.9876 8.08166 13.9534 7.9893C13.9191 7.89694 13.867 7.81223 13.8001 7.74L10.5501 4.24C10.4799 4.16429 10.3948 4.10389 10.3001 4.0626Z"
+          fill={transform === "down" ? "currentColor" : "#94A3B8"}
+        />
+      </g>
+    </svg>
+  );
+};

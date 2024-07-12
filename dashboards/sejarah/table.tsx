@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn, numFormat, toDate } from "@lib/helpers";
+import { cn, numFormat, slugify, toDate } from "@lib/helpers";
 import { FunctionComponent, ReactNode } from "react";
 import ResultBadge from "./result-badge";
 import { ElectionResult } from "./types";
@@ -19,7 +19,7 @@ export interface TableProps {
   empty?: string | ReactNode;
   data?: any;
   columns: Array<ColumnDef<any, any>>;
-  highlightedRows?: Array<number>;
+  highlighted?: string;
   result?: ElectionResult;
   isLoading: boolean;
 }
@@ -42,7 +42,7 @@ const Table: FunctionComponent<TableProps> = ({
   empty,
   data = dummyData,
   columns,
-  highlightedRows = [-1],
+  highlighted,
   isLoading = false,
 }) => {
   const { t, i18n } = useTranslation(["common", "election", "party"]);
@@ -57,17 +57,17 @@ const Table: FunctionComponent<TableProps> = ({
    * Special cells
    * keys: party | election | seats | result | votes | majority
    */
-  const lookupDesktop = (id: TableIds, cell: any) => {
+  const lookupDesktop = (id: TableIds, cell: any, highlight: boolean) => {
     const value = cell.getValue();
     switch (id) {
       case "index":
-        return highlightedRows.includes(value - 1) ? (
+        return highlight ? (
           <p className="text-primary dark:text-primary-dark">{value}</p>
         ) : (
           value
         );
       case "name":
-        return highlightedRows.includes(+cell.row.id) ? (
+        return highlight ? (
           <>
             <span className="pr-1">{value}</span>
             <span className="inline-flex translate-y-0.5">
@@ -87,7 +87,7 @@ const Table: FunctionComponent<TableProps> = ({
               }
               className="max-xl:-left-3"
             >
-              {(open) => (
+              {open => (
                 <div
                   className="cursor-help whitespace-nowrap underline decoration-dashed [text-underline-position:from-font]"
                   tabIndex={0}
@@ -148,13 +148,13 @@ const Table: FunctionComponent<TableProps> = ({
         return flexRender(cell.column.columnDef.cell, cell.getContext());
     }
   };
-  const lookupMobile = (id: TableIds, cell: any) => {
+  const lookupMobile = (id: TableIds, cell: any, highlight: boolean) => {
     if (!cell) return <></>;
     const value = cell.getValue();
     switch (id) {
       case "index":
-        return highlightedRows.includes(value - 1) ? (
-          <p className="text-primary dark:text-primary-dark font-bold">
+        return highlight ? (
+          <p className="font-bold text-primary dark:text-primary-dark">
             #{value}
           </p>
         ) : (
@@ -163,7 +163,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "party":
         return (
           <PartyFlag party={value}>
-            {(party) =>
+            {party =>
               cell.row.original.name ? (
                 <span>
                   <span className="pr-1 font-medium">
@@ -171,7 +171,7 @@ const Table: FunctionComponent<TableProps> = ({
                   </span>
                   <span className="inline-flex pr-1">{` (${party})`}</span>
                   <span className="inline-flex translate-y-0.5">
-                    {highlightedRows.includes(+cell.row.id) && (
+                    {highlight && (
                       <ResultBadge hidden value={cell.row.original.result} />
                     )}
                   </span>
@@ -202,7 +202,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "seats":
         return (
           <div className="flex flex-col space-y-1">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             <div className="flex items-center gap-2">
@@ -221,7 +221,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "votes":
         return (
           <div className="flex flex-col space-y-1">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             {typeof value === "undefined" ? (
@@ -243,7 +243,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "majority":
         return (
           <div className="flex flex-row gap-2">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             {typeof value === "number" ? (
@@ -265,7 +265,7 @@ const Table: FunctionComponent<TableProps> = ({
       case "result":
         return (
           <div className="flex flex-col space-y-1">
-            <p className="text-zinc-500 font-medium">
+            <p className="font-medium text-zinc-500">
               {flexRender(cell.column.columnDef.header, cell.getContext())}
             </p>
             <ResultBadge value={value} />
@@ -274,6 +274,13 @@ const Table: FunctionComponent<TableProps> = ({
       default:
         return flexRender(cell.column.columnDef.cell, cell.getContext());
     }
+  };
+
+  const isHighlighted = (row: any) => {
+    if ("name" in row.original)
+      return slugify(row.original.name) === highlighted;
+    else if ("party" in row.original) return row.original.party === highlighted;
+    else return false;
   };
 
   return (
@@ -297,7 +304,7 @@ const Table: FunctionComponent<TableProps> = ({
                   <th
                     key={header.id}
                     colSpan={header.colSpan}
-                    className="border-slate-200 dark:border-zinc-800 whitespace-nowrap border-b-2 px-2 py-[10px] font-medium"
+                    className="whitespace-nowrap border-b-2 border-slate-200 px-2 py-[10px] font-medium dark:border-zinc-800"
                   >
                     {header.isPlaceholder
                       ? null
@@ -314,43 +321,54 @@ const Table: FunctionComponent<TableProps> = ({
             <></>
           ) : (
             <tbody>
-              {table.getRowModel().rows.map((row: any, rowIndex: number) => (
-                <tr
-                  key={row.id}
-                  className={cn(
-                    highlightedRows.includes(rowIndex)
-                      ? "bg-slate-50 dark:bg-zinc-950"
-                      : "bg-inherit",
-                    "border-slate-200 dark:border-zinc-800 border-b"
-                  )}
-                >
-                  {row.getVisibleCells().map((cell: any, colIndex: number) => (
-                    <td
-                      key={cell.id}
-                      className={cn(
-                        highlightedRows.includes(rowIndex) && colIndex === 0
-                          ? "font-medium"
-                          : "font-normal",
-                        "px-2 py-[10px]"
-                      )}
-                    >
-                      {lookupDesktop(cell.column.columnDef.id, cell)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {table.getRowModel().rows.map((row: any) => {
+                const highlight = isHighlighted(row);
+
+                return (
+                  <tr
+                    key={row.id}
+                    className={cn(
+                      highlight ? "bg-slate-50 dark:bg-zinc-950" : "bg-inherit",
+                      "border-b border-slate-200 dark:border-zinc-800"
+                    )}
+                  >
+                    {row
+                      .getVisibleCells()
+                      .map((cell: any, colIndex: number) => (
+                        <td
+                          key={cell.id}
+                          className={cn(
+                            highlight && colIndex === 0
+                              ? "font-medium"
+                              : "font-normal",
+                            "px-2 py-[10px]"
+                          )}
+                        >
+                          {lookupDesktop(
+                            cell.column.columnDef.id,
+                            cell,
+                            highlight
+                          )}
+                        </td>
+                      ))}
+                  </tr>
+                );
+              })}
             </tbody>
           )}
         </table>
 
         {/* Mobile */}
         {table.getRowModel().rows.map((row: any, index: number) => {
-          const ids = table.getAllColumns().map((col) => col.id);
+          const ids = table.getAllColumns().map(col => col.id);
+          const highlight = isHighlighted(row);
+
           let _row: Record<string, ReactNode> = {};
           row.getVisibleCells().forEach((cell: any) => {
             _row[cell.column.columnDef.id] = lookupMobile(
               cell.column.columnDef.id,
-              cell
+              cell,
+              highlight
             );
           });
           return isLoading ? (
@@ -358,16 +376,14 @@ const Table: FunctionComponent<TableProps> = ({
           ) : (
             <div
               className={cn(
-                "border-slate-200 dark:border-zinc-800 flex flex-col space-y-2 border-b p-3 text-sm first:border-t-2 md:hidden",
+                "flex flex-col space-y-2 border-b border-slate-200 p-3 text-sm first:border-t-2 dark:border-zinc-800 md:hidden",
                 index === 0 && "border-t-2",
-                highlightedRows.includes(index)
-                  ? "bg-slate-50 dark:bg-[#121212]"
-                  : "bg-inherit"
+                highlight ? "bg-slate-50 dark:bg-[#121212]" : "bg-inherit"
               )}
               key={index}
             >
               {/* Row 1 - Election Name / Date / Full result */}
-              {["election_name"].some((id) => ids.includes(id)) && (
+              {["election_name"].some(id => ids.includes(id)) && (
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex gap-x-2">
                     {_row.index}
@@ -413,8 +429,8 @@ const Table: FunctionComponent<TableProps> = ({
           </div>
         )}
         {!data.length && !isLoading && (
-          <div className="flex items-center justify-center h-[200px]">
-            <div className="bg-slate-200 dark:bg-zinc-800 flex h-auto w-[300px] rounded-md px-3 pb-2 pt-1 lg:w-fit">
+          <div className="flex h-[200px] items-center justify-center">
+            <div className="flex h-auto w-[300px] rounded-md bg-slate-200 px-3 pb-2 pt-1 dark:bg-zinc-800 lg:w-fit">
               <p className="text-sm">
                 <span className="inline-flex pr-1">
                   <FaceFrownIcon className="h-5 w-5 translate-y-1" />

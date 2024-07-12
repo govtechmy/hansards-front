@@ -21,7 +21,7 @@ const SejarahParlimen: Page = ({
   const { t } = useTranslation("sejarah");
 
   return (
-    <AnalyticsProvider>
+    <AnalyticsProvider id={meta.id}>
       <Metadata
         title={t("sejarah_parlimen")}
         description={t("parlimen.header")}

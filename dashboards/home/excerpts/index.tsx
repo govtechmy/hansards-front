@@ -23,7 +23,7 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
   const [_excerpts, setExcerpts] = useState<Excerpt[]>(excerpts);
   const [nextPage, setNextPage] = useState<number>(2);
 
-  const { q, dewan, ...dates } = query;
+  const { q, uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } = query;
 
   const HAS_REMAINDER = count > _excerpts.length;
 
@@ -33,14 +33,21 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
     setLoading(true);
     get("api/search/", {
       q: q,
-      house: dewan ?? "dewan-rakyat",
-      window_size: 30,
+      uid: uid,
+      house: dewan,
+      window_size: ("q" in query) ? 40 : 150,
       page: nextPage,
-      ...dates,
+      start_date: tarikh_mula,
+      end_date: tarikh_akhir,
+      age_group: umur,
+      ethnicity: etnik,
+      party: parti,
+      sex: jantina,
     })
       .then(({ data }) => {
         setExcerpts((prev_data) => prev_data.concat(data.results));
         setNextPage((page) => page + 1);
+        setLoading(false);
       })
       .catch((e) => {
         toast.error(
@@ -48,8 +55,8 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
           t("toast.try_again", { ns: "common" })
         );
         console.error(e);
+        setLoading(false);
       });
-    setLoading(false);
   };
 
   return (

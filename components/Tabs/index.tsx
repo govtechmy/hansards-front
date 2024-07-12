@@ -1,130 +1,55 @@
-import { FunctionComponent, ReactElement, ReactNode, useMemo } from "react";
-import { Tab } from "@headlessui/react";
+import {
+  ComponentPropsWithoutRef,
+  ElementRef,
+  ReactNode,
+  forwardRef,
+} from "react";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+
 import { cn } from "@lib/helpers";
 
-interface TabsProps {
-  children: ReactNode;
-  hidden?: boolean;
-  className?: string;
-  current?: number;
-  state?: ReactNode;
-  title?: ReactNode;
-  menu?: ReactNode;
-  controls?: ReactNode;
-  onChange?: (index: number) => void;
-}
+const Tabs = TabsPrimitive.Root;
 
-interface PanelProps {
-  name: string | ReactElement;
-  icon?: ReactNode;
-  className?: string;
-  children?: ReactNode;
-}
+const TabsList = forwardRef<
+  ElementRef<typeof TabsPrimitive.List>,
+  ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className={cn("inline-flex items-center justify-end gap-1", className)}
+    {...props}
+  />
+));
+TabsList.displayName = TabsPrimitive.List.displayName;
 
-interface ListProps {
-  options: string[];
-  icons?: Array<ReactNode>;
-  className?: string;
-  current: number;
-  onChange: (index: number) => void;
-}
+const TabsTrigger = forwardRef<
+  ElementRef<typeof TabsPrimitive.Trigger>,
+  ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> & { icon?: ReactNode }
+>(({ children, className, icon, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "inline-flex items-center justify-center whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-border data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+      className
+    )}
+    {...props}
+  >
+    {icon}
+    {children}
+  </TabsPrimitive.Trigger>
+));
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-const Panel: FunctionComponent<PanelProps> = ({ children, className, name }) => {
-  return <div className={className}>{children}</div>;
-};
+const TabsContent = forwardRef<
+  ElementRef<typeof TabsPrimitive.Content>,
+  ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn("mt-2", className)}
+    {...props}
+  />
+));
+TabsContent.displayName = TabsPrimitive.Content.displayName;
 
-const List: FunctionComponent<ListProps> = ({ options, current, onChange, icons, className }) => {
-  return (
-    <ul className={cn("flex flex-wrap", className)}>
-      {options.map((option, index) => (
-        <li
-          key={option}
-          className={cn(
-            "flex cursor-pointer select-none self-center whitespace-nowrap rounded-full px-2.5 py-1 text-sm transition-colors",
-            current === index
-              ? "bg-slate-200 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-white"
-              : "text-zinc-500 bg-transparent hover:text-zinc-900 dark:hover:text-white"
-          )}
-          onClick={() => onChange(index)}
-        >
-          {icons && icons[index]}
-          {option}
-        </li>
-      ))}
-    </ul>
-  );
-};
-
-const Tabs: FunctionComponent<TabsProps> & { Panel: typeof Panel; List: typeof List } = ({
-  className = "",
-  hidden,
-  children,
-  title,
-  controls,
-  current,
-  menu,
-  onChange = () => {},
-}) => {
-  const _children = useMemo(() => {
-    return Array.isArray(children) ? children : [children];
-  }, [children]);
-  return (
-    <>
-      <Tab.Group selectedIndex={current} onChange={onChange}>
-        <div className={cn("flex flex-wrap items-end justify-between gap-3", className)}>
-          <div>
-            {title && typeof title === "string" ? (
-              <span className="text-base font-bold">{title}</span>
-            ) : (
-              title
-            )}
-          </div>
-
-          <Tab.List
-            className={cn(
-              "flex flex-wrap items-center justify-between gap-2.5",
-              hidden && "hidden"
-            )}
-          >
-            {controls}
-            <div className="flex flex-wrap">
-              {_children.map(({ props: { name, icon } }, index) => (
-                <Tab
-                  key={index}
-                  className={({ selected }) =>
-                    cn(
-                      "group flex flex-row rounded-full px-[10px] py-1 text-sm transition-colors",
-                      selected
-                        ? "bg-slate-200 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-white"
-                        : "text-zinc-500 bg-transparent hover:text-zinc-900 dark:hover:text-white"
-                    )
-                  }
-                >
-                  {icon}
-                  {name}
-                </Tab>
-              ))}
-            </div>
-
-            {menu && <div>{menu}</div>}
-          </Tab.List>
-        </div>
-
-        <Tab.Panels className="w-full">
-          {_children.map(({ props: { children } }, index) => (
-            <Tab.Panel className="overflow-visible" key={index}>
-              {children}
-            </Tab.Panel>
-          ))}
-        </Tab.Panels>
-      </Tab.Group>
-    </>
-  );
-};
-
-Tabs.Panel = Panel;
-Tabs.List = List;
-
-export { List };
-export { Panel };
-export default Tabs;
+export { Tabs, TabsList, TabsTrigger, TabsContent };

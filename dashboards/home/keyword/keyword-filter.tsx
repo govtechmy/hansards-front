@@ -11,9 +11,9 @@ import {
   Daterange,
   Dropdown,
   Label,
-  List,
   PartyFlag,
 } from "@components/index";
+import { Tabs, TabsList, TabsTrigger } from "@components/Tabs";
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
@@ -22,18 +22,21 @@ import {
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
+import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { format } from "date-fns";
 import { ParsedUrlQuery } from "querystring";
 import { useRef, useState } from "react";
 import { DateRange } from "react-day-picker";
 import {
+  AGES,
   ALL_AGES,
   ALL_ETHNICITIES,
   ALL_PARTIES,
   BOTH_SEXES,
-  DEWAN_ENUM,
-  DEWAN_INDEX_ENUM,
+  DEWANS,
+  ETHNICITIES,
+  SEXES,
 } from "../filter-options";
 
 /**
@@ -51,55 +54,49 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { q, dewan, start_date, end_date } = query;
+  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
+    query;
 
   const { data, setData } = useData({
-    query: q ?? "",
-    dewan_idx: dewan ? DEWAN_INDEX_ENUM[dewan.toString()] : 0,
-    dewan: dewan ?? "dewan-rakyat",
-    age: ALL_AGES,
-    etnik: ALL_ETHNICITIES,
-    party: ALL_PARTIES,
-    sex: BOTH_SEXES,
+    query: q ? String(q) : "",
+    dewan: dewan ? String(dewan) : "dewan-rakyat",
+    age: umur ? String(umur) : ALL_AGES,
+    etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
+    party: parti ? String(parti) : ALL_PARTIES,
+    sex: jantina ? String(jantina) : BOTH_SEXES,
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<
     DateRange | undefined
   >(
-    start_date || end_date
+    tarikh_mula || tarikh_akhir
       ? {
-          from: start_date ? new Date(start_date.toString()) : undefined,
-          to: end_date ? new Date(end_date.toString()) : undefined,
+          from: tarikh_mula ? new Date(tarikh_mula.toString()) : undefined,
+          to: tarikh_akhir ? new Date(tarikh_akhir.toString()) : undefined,
         }
       : undefined
   );
 
   const { setFilter } = useFilter({
-    q: q,
     dewan: dewan,
-    start_date: start_date ?? "",
-    end_date: end_date ?? "",
+    q: q,
+    tarikh_mula: tarikh_mula ?? "",
+    tarikh_akhir: tarikh_akhir ?? "",
+    parti: data.party === ALL_PARTIES ? "" : data.party,
+    jantina: data.sex === BOTH_SEXES ? "" : data.sex,
+    umur: data.age === ALL_AGES ? "" : data.age,
+    etnik: data.etnik === ALL_ETHNICITIES ? "" : data.etnik,
   });
 
-  const DEWAN_OPTIONS: OptionType[] = [
-    {
-      label: t("dewan_rakyat", { ns: "common" }),
-      value: "dewan-rakyat",
-    },
-    {
-      label: t("dewan_negara", { ns: "common" }),
-      value: "dewan-negara",
-    },
-    {
-      label: t("kamar_khas", { ns: "common" }),
-      value: "kamar-khas",
-    },
-  ];
+  const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
+    label: t(key.replace("-", "_"), { ns: "common" }),
+    value: key,
+  }));
 
   const PARTY_OPTIONS: OptionType[] = [
     { label: t(ALL_PARTIES), value: ALL_PARTIES },
   ].concat(
-    ["BEBAS", "BN", "DAP", "PAS", "PH", "PN", "WARISAN"].map((key: string) => ({
+    PARTIES.map((key: string) => ({
       label: t(key, { ns: "party" }),
       value: key,
     }))
@@ -108,57 +105,53 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const AGE_OPTIONS: OptionType[] = [
     { label: t(ALL_AGES, { ns: "demografi" }), value: ALL_AGES },
   ].concat(
-    ["18-29", "30-39", "40-49", "50-59", "60-69", "70+"].map((key: string) => ({
-      label: key,
+    AGES.map((key: string) => ({
+      label: key + (key === "70" ? "+" : ""),
       value: key,
     }))
   );
 
-  const SEX_OPTIONS: OptionType[] = [
-    { label: t(BOTH_SEXES, { ns: "demografi" }), value: BOTH_SEXES },
-  ].concat(
-    ["m", "f"].map((key: string) => ({
-      label: t(key, { ns: "demografi" }),
-      value: key,
-    }))
-  );
+  const SEX_OPTIONS: OptionType[] = SEXES.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
-  const ETNIK_OPTIONS: OptionType[] = [
-    { label: t(ALL_ETHNICITIES, { ns: "demografi" }), value: ALL_ETHNICITIES },
-  ].concat(
-    ["malay", "chinese", "indian", "bumi_sbh", "bumi_swk", "other"].map(
-      (key: string) => ({
-        label: t(key, { ns: "demografi" }),
-        value: key,
-      })
-    )
-  );
+  const ETNIK_OPTIONS: OptionType[] = ETHNICITIES.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
-  const handleSearch = () => {
+  const handleSearch = (
+    dewan: string,
+    party: string,
+    sex: string,
+    age: string,
+    etnik: string,
+    daterange?: DateRange
+  ) => {
     onLoad();
+    setFilter("dewan", dewan);
     setFilter("q", data.query);
-    setFilter("dewan", data.dewan);
     setFilter(
-      "start_date",
-      selectedDateRange?.from
-        ? format(selectedDateRange.from, "yyyy-MM-dd")
-        : ""
+      "tarikh_mula",
+      daterange?.from ? format(daterange.from, "yyyy-MM-dd") : ""
     );
     setFilter(
-      "end_date",
-      selectedDateRange?.to
-        ? format(selectedDateRange.to, "yyyy-MM-dd")
-        : selectedDateRange?.from
-        ? format(selectedDateRange.from, "yyyy-MM-dd")
+      "tarikh_akhir",
+      daterange?.to
+        ? format(daterange.to, "yyyy-MM-dd")
+        : daterange?.from
+        ? format(daterange.from, "yyyy-MM-dd")
         : ""
     );
+    setFilter("parti", party === ALL_PARTIES ? "" : party);
+    setFilter("jantina", sex === BOTH_SEXES ? "" : sex);
+    setFilter("umur", age === ALL_AGES ? "" : age);
+    setFilter("etnik", etnik === ALL_ETHNICITIES ? "" : etnik);
   };
 
   const handleClear = () => {
-    setData("query", "");
     setSelectedDateRange(undefined);
-    setData("start_date", "");
-    setData("end_date", "");
     setData("party", ALL_PARTIES);
     setData("age", ALL_AGES);
     setData("etnik", ALL_ETHNICITIES);
@@ -167,52 +160,84 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
   return (
     <>
-      <div className="sm:pt-6 pb-3 space-y-6">
+      <div className="space-y-6 pb-3 sm:pt-6">
         {/* Dewan Selector */}
-        <div className="mx-auto sm:block hidden w-fit rounded-full p-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
-          <List
-            className="flex-nowrap"
-            options={DEWAN_OPTIONS.map((item) => item.label)}
-            current={data.dewan_idx}
-            onChange={(i) => {
-              setData("dewan", DEWAN_ENUM[i]);
-              setData("dewan_idx", i);
+        <div className="mx-auto hidden w-fit rounded-full border border-slate-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-900 sm:block">
+          <Tabs
+            value={data.dewan}
+            onValueChange={dewan => {
+              setData("dewan", dewan);
+              if (data.query)
+                handleSearch(
+                  dewan,
+                  data.party,
+                  data.sex,
+                  data.age,
+                  data.etnik,
+                  selectedDateRange
+                );
             }}
-          />
+            defaultValue="dewan-rakyat"
+          >
+            <TabsList className="flex-nowrap">
+              {DEWAN_OPTIONS.map(dewan => (
+                <TabsTrigger key={dewan.value} value={dewan.value}>
+                  {dewan.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Search Bar */}
-        <div className="h-[50px] flex mx-auto pl-4.5 pr-1.5 py-3 gap-2.5 items-center w-full sm:w-[500px] bg-background select-none rounded-full border border-border hover:border-border-hover">
+        <div className="mx-auto flex h-[50px] w-full select-none items-center gap-2.5 rounded-full border border-border bg-background py-3 pl-4.5 pr-1.5 hover:border-border-hover sm:w-[500px]">
           <input
             required
             spellCheck="false"
             type="text"
             value={data.query}
-            onChange={(e) => setData("query", e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearch();
+            onChange={e => setData("query", e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter")
+                handleSearch(
+                  data.dewan,
+                  data.party,
+                  data.sex,
+                  data.age,
+                  data.etnik,
+                  selectedDateRange
+                );
             }}
             placeholder={t("search_keyword")}
-            className="grow truncate border-none bg-white focus:outline-none focus:ring-0 dark:bg-zinc-900"
+            className="grow truncate border-none bg-background focus:outline-none focus:ring-0"
             ref={inputRef}
           />
           {data.query && (
             <Button
               variant="ghost"
-              className="group flex sm:-mx-1.5 sm:h-8 sm:w-8 p-0 justify-center rounded-full"
+              className="group flex justify-center rounded-full p-0 sm:-mx-1.5 sm:h-8 sm:w-8"
               onClick={() => {
                 setData("query", "");
                 inputRef.current && inputRef.current.focus();
               }}
             >
-              <XMarkIcon className="text-zinc-500 h-5 w-5 group-hover:text-zinc-900 dark:group-hover:text-white" />
+              <XMarkIcon className="h-5 w-5 text-zinc-500 group-hover:text-foreground" />
             </Button>
           )}
           <Button
             variant="primary"
-            className="rounded-full h-9"
+            className="h-9 rounded-full"
             disabled={!data.query}
-            onClick={() => handleSearch()}
+            onClick={() =>
+              handleSearch(
+                data.dewan,
+                data.party,
+                data.sex,
+                data.age,
+                data.etnik,
+                selectedDateRange
+              )
+            }
           >
             <MagnifyingGlassIcon className="h-5 w-5 text-white" />
             {t("placeholder.search", { ns: "common" })}
@@ -221,13 +246,24 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
       </div>
 
       {/* Desktop Bar */}
-      <div className="justify-center hidden sm:flex flex-wrap gap-2">
+      <div className="hidden flex-wrap justify-center gap-2 sm:flex">
         <Daterange
           className="text-blue-600"
           placeholder={t("current_parlimen")}
           label={t("date", { ns: "home" })}
           selected={selectedDateRange}
-          setSelected={setSelectedDateRange}
+          onChange={dateRange => {
+            setSelectedDateRange(dateRange);
+            if (data.query && dateRange && dateRange?.from && dateRange?.to)
+              handleSearch(
+                data.dewan,
+                data.party,
+                data.sex,
+                data.age,
+                data.etnik,
+                dateRange
+              );
+          }}
         />
 
         <Dropdown
@@ -235,37 +271,81 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
           enableFlag
-          flag={(party) => {
+          flag={party => {
             if (party === ALL_PARTIES) return <></>;
             else return <PartyFlag party={party} children={() => true} />;
           }}
           options={PARTY_OPTIONS}
-          selected={PARTY_OPTIONS.find((e) => e.value === data.party)}
-          onChange={(e) => setData("party", e.value)}
+          selected={PARTY_OPTIONS.find(e => e.value === data.party)}
+          onChange={e => {
+            setData("party", e.value);
+            if (data.query)
+              handleSearch(
+                data.dewan,
+                e.value,
+                data.sex,
+                data.age,
+                data.etnik,
+                selectedDateRange
+              );
+          }}
         />
         <Dropdown
           sublabel={t("sex", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
           options={SEX_OPTIONS}
-          selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
-          onChange={(e) => setData("sex", e.value)}
+          selected={SEX_OPTIONS.find(e => e.value === data.sex)}
+          onChange={e => {
+            setData("sex", e.value);
+            if (data.query)
+              handleSearch(
+                data.dewan,
+                data.party,
+                e.value,
+                data.age,
+                data.etnik,
+                selectedDateRange
+              );
+          }}
         />
         <Dropdown
           sublabel={t("age_group", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
           options={AGE_OPTIONS}
-          selected={AGE_OPTIONS.find((e) => e.value === data.age)}
-          onChange={(e) => setData("age", e.value)}
+          selected={AGE_OPTIONS.find(e => e.value === data.age)}
+          onChange={e => {
+            setData("age", e.value);
+            if (data.query)
+              handleSearch(
+                data.dewan,
+                data.party,
+                data.sex,
+                e.value,
+                data.etnik,
+                selectedDateRange
+              );
+          }}
         />
         <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
           options={ETNIK_OPTIONS}
-          selected={ETNIK_OPTIONS.find((e) => e.value === data.etnik)}
-          onChange={(e) => setData("etnik", e.value)}
+          selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
+          onChange={e => {
+            setData("etnik", e.value);
+            if (data.query)
+              handleSearch(
+                data.dewan,
+                data.party,
+                data.sex,
+                data.age,
+                e.value,
+                selectedDateRange
+              );
+          }}
         />
 
         {(selectedDateRange ||
@@ -289,11 +369,11 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
         <DrawerTrigger asChild>
           <Button
             variant="outline"
-            className="shadow-button ml-auto sm:hidden"
+            className="ml-auto shadow-button sm:hidden"
             onClick={() => setOpen(true)}
           >
             <span>{t("filters", { ns: "common" })}</span>
-            <span className="bg-blue-600 dark:bg-primary-dark w-4.5 leading-5 rounded-md text-center text-white">
+            <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
               6
             </span>
             <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
@@ -305,43 +385,43 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               {t("filters", { ns: "common" }) + ":"}
             </span>
             <DrawerClose>
-              <XMarkIcon className="text-zinc-500 h-6 w-6" />
+              <XMarkIcon className="h-6 w-6 text-zinc-500" />
             </DrawerClose>
           </DrawerHeader>
-          <div className="flex flex-col bg-background divide-border divide-y px-4">
-            <div className="py-3 space-y-1">
+          <div className="flex flex-col divide-y divide-border bg-background px-4">
+            <div className="space-y-1 py-3">
               <Label label={t("dewan", { ns: "home" }) + ":"} />
               <Dropdown
                 width="w-full"
                 options={DEWAN_OPTIONS}
-                selected={DEWAN_OPTIONS.find((e) => e.value === data.dewan)}
-                onChange={(e) => setData("dewan", e.value)}
+                selected={DEWAN_OPTIONS.find(e => e.value === data.dewan)}
+                onChange={e => setData("dewan", e.value)}
               />
             </div>
 
-            <div className="py-3 space-y-1">
+            <div className="space-y-1 py-3">
               <Label label={t("date") + ":"} />
               <Daterange
                 className="w-full"
                 numberOfMonths={1}
                 placeholder={t("current_parlimen")}
                 selected={selectedDateRange}
-                setSelected={setSelectedDateRange}
+                onChange={setSelectedDateRange}
               />
             </div>
 
-            <div className="py-3 space-y-1">
+            <div className="space-y-1 py-3">
               <Label label={t("party", { ns: "common" }) + ":"} />
               <Dropdown
                 width="w-full"
                 enableFlag
-                flag={(party) => {
+                flag={party => {
                   if (party === ALL_PARTIES) return <></>;
                   else return <PartyFlag party={party} children={() => true} />;
                 }}
                 options={PARTY_OPTIONS}
-                selected={PARTY_OPTIONS.find((e) => e.value === data.party)}
-                onChange={(e) => setData("party", e.value)}
+                selected={PARTY_OPTIONS.find(e => e.value === data.party)}
+                onChange={e => setData("party", e.value)}
               />
             </div>
             <div className="grid grid-cols-2 gap-x-3 py-3">
@@ -351,8 +431,8 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                   width="w-full"
                   anchor="left bottom-10"
                   options={AGE_OPTIONS}
-                  selected={AGE_OPTIONS.find((e) => e.value === data.age)}
-                  onChange={(e) => setData("age", e.value)}
+                  selected={AGE_OPTIONS.find(e => e.value === data.age)}
+                  onChange={e => setData("age", e.value)}
                 />
               </div>
 
@@ -361,20 +441,20 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                 <Dropdown
                   width="w-full"
                   options={SEX_OPTIONS}
-                  selected={SEX_OPTIONS.find((e) => e.value === data.sex)}
-                  onChange={(e) => setData("sex", e.value)}
+                  selected={SEX_OPTIONS.find(e => e.value === data.sex)}
+                  onChange={e => setData("sex", e.value)}
                 />
               </div>
             </div>
 
-            <div className="py-3 space-y-1">
+            <div className="space-y-1 py-3">
               <Label label={t("ethnicity", { ns: "demografi" }) + ":"} />
               <Dropdown
                 width="w-full"
                 anchor="bottom-10"
                 options={ETNIK_OPTIONS}
-                selected={ETNIK_OPTIONS.find((e) => e.value === data.etnik)}
-                onChange={(e) => setData("etnik", e.value)}
+                selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
+                onChange={e => setData("etnik", e.value)}
               />
             </div>
           </div>
@@ -382,11 +462,18 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           <DrawerFooter>
             <Button
               variant="primary"
-              className="shadow-button w-full justify-center"
+              className="w-full justify-center shadow-button"
               onClick={() => {
                 setOpen(false);
                 onLoad();
-                handleSearch();
+                handleSearch(
+                  data.dewan,
+                  data.party,
+                  data.sex,
+                  data.age,
+                  data.etnik,
+                  selectedDateRange
+                );
               }}
             >
               {t("filter", { ns: "common" })}

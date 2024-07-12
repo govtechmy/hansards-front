@@ -23,7 +23,7 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
       <div className={cn(className)}>
         <ResponsiveCirclePacking
           data={_data}
-          colors={(data) => {
+          colors={data => {
             if (data.radius > 100) return "#DDD6B0";
             if (data.radius > 60) return "#E4DFC3";
             if (data.radius > 40) return "#EBE8D6";
@@ -47,9 +47,23 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                 }}
                 fill="#000"
                 stroke="#fff"
-                strokeWidth={theme === "dark" ? "0.5px" : 0}
+                strokeWidth={
+                  theme === "dark"
+                    ? node.radius > 100
+                      ? "1px"
+                      : node.radius > 60
+                      ? "0.6px"
+                      : node.radius > 40
+                      ? "0.4px"
+                      : node.radius > 30
+                      ? "0.3px"
+                      : node.radius > 25
+                      ? "0.25px"
+                      : "0.2px"
+                    : 0
+                }
                 className={cn(
-                  "font-header",
+                  "font-poppins",
                   node.radius > 100
                     ? "text-[32px]"
                     : node.radius > 60
@@ -107,9 +121,9 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
             </>
           )}
           tooltip={({ color, data, value }) => (
-            <div className="flex min-w-max items-center justify-center rounded bg-zinc-900 py-[5px] px-[9px] text-sm text-white animate-appear">
+            <div className="flex min-w-max animate-appear items-center justify-center rounded bg-zinc-900 px-[9px] py-[5px] text-sm text-white">
               <span
-                className="w-4 h-4 mr-1.5 rounded-full"
+                className="mr-1.5 h-4 w-4 rounded-full"
                 style={{ backgroundColor: color }}
               />
               {`${data.id}: ${value}`}

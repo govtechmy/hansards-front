@@ -2,38 +2,39 @@ import Nexti18NextConfig from "../next-i18next.config";
 import "../styles/globals.css";
 import Layout from "@components/Layout";
 import Progress from "@components/Progress";
-import { header, body } from "@lib/configs/font";
 import { cn } from "@lib/helpers";
 import { AppPropsLayout } from "@lib/types";
 import { appWithTranslation } from "next-i18next";
 import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
+import { Inter, Poppins } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+  variable: "--font-poppins",
+});
 
 // App instance
 function App({ Component, pageProps }: AppPropsLayout) {
   const layout =
-    Component.layout ||
-    ((page: ReactNode) => (
-      <Layout className={cn(body.variable, "font-sans")}>{page}</Layout>
-    ));
+    Component.layout || ((page: ReactNode) => <Layout>{page}</Layout>);
 
   return (
-    <div
+    <main
       className={cn(
-        body.variable,
-        header.variable,
-        "font-sans dark:bg-zinc-900"
+        inter.className,
+        poppins.variable,
+        "bg-background text-foreground"
       )}
     >
-      <ThemeProvider
-        attribute="class"
-        enableSystem={false}
-        forcedTheme={Component.theme}
-      >
+      <ThemeProvider attribute="class" disableTransitionOnChange>
         {layout(<Component {...pageProps} />, pageProps)}
         <Progress />
       </ThemeProvider>
-    </div>
+    </main>
   );
 }
 

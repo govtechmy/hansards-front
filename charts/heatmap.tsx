@@ -16,7 +16,7 @@ import { default as ChartHeader, ChartHeaderProps } from "./chart-header";
 import { ChartCrosshairOption } from "@lib/types";
 import { Color, useColor } from "@hooks/useColor";
 import { DeepPartial } from "chart.js/types/utils";
-import "chartjs-adapter-luxon";
+import "chartjs-adapter-date-fns";
 import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
 import { cn, minMax, normalize, numFormat } from "@lib/helpers";
 
@@ -200,9 +200,6 @@ const Heatmap: FunctionComponent<HeatmapProps> = ({
         },
       },
       tooltip: {
-        bodyFont: {
-          family: "Inter",
-        },
         callbacks: {
           title() {
             return "";

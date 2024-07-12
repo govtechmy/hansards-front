@@ -19,9 +19,7 @@ import {
   useMemo,
   useState,
   useRef,
-  CSSProperties,
 } from "react";
-import { FixedSizeList } from "react-window";
 
 type CommonProps = {
   className?: string;
@@ -129,7 +127,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         cn(
           "relative flex w-full cursor-default select-none items-center gap-2 py-2 pr-4",
           multiple ? "pl-10" : "pl-4",
-          active && "bg-slate-100 dark:bg-zinc-800"
+          active && "bg-bg-hover"
         )
       }
       onClick={() => (multiple ? handleChange(option) : null)}
@@ -166,10 +164,10 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
             checked={
               selected &&
               (selected as OptionType[]).some(
-                (item) => item.value === option.value
+                item => item.value === option.value
               )
             }
-            className="border-slate-200 text-primary dark:border-zinc-700 dark:bg-zinc-800 dark:checked:border-primary dark:checked:bg-secondary h-4 w-4 rounded focus:ring-0"
+            className="h-4 w-4 rounded border-slate-200 text-primary focus:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:checked:border-primary dark:checked:bg-primary-dark"
           />
         </span>
       )}
@@ -178,7 +176,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       {!multiple &&
         selected &&
         (selected as OptionType).value === option.value && (
-          <CheckCircleIcon className="text-primary dark:text-secondary h-4 w-4 disabled:" />
+          <CheckCircleIcon className="disabled: h-4 w-4 text-primary dark:text-primary-dark" />
         )}
     </Listbox.Option>
   );
@@ -197,12 +195,12 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         <div className="relative text-sm">
           <Listbox.Button
             className={cn(
-              "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 min-w-full",
-              "text-start text-sm font-medium text-zinc-900 dark:text-white",
-              "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-white dark:bg-zinc-900",
-              "border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:dark:border-zinc-700 border outline-none",
+              "flex min-w-full items-center gap-1.5 rounded-md px-3 py-1.5 shadow-button",
+              "text-start text-sm font-medium text-foreground",
+              "select-none bg-background active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800",
+              "border border-border hover:border-border-hover",
               disabled &&
-                "disabled:bg-slate-200 dark:disabled:bg-zinc-800 disabled:border-slate-200 dark:disabled:border-zinc-800 disabled:text-slate-400 dark:disabled:text-zinc-700 disabled:pointer-events-none disabled:cursor-not-allowed",
+                "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-200 disabled:text-slate-400 dark:disabled:border-zinc-800 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-700",
               width,
               className
             )}
@@ -213,7 +211,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
 
               {/* Sublabel */}
               {sublabel && (
-                <span className="text-zinc-900 dark:text-white block w-fit min-w-min truncate">
+                <span className="block w-fit min-w-min truncate text-foreground">
                   {sublabel}
                   {!multiple && selected && ":"}
                 </span>
@@ -245,7 +243,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               </span>
               {/* Label (multiple) */}
               {multiple && (selected as OptionType[])?.length > 0 && (
-                <span className="dark:bg-secondary bg-primary w-4.5 h-5 rounded-md text-center text-white">
+                <span className="h-5 w-4.5 rounded-md bg-primary text-center text-white dark:bg-primary-dark">
                   {selected && (selected as OptionType[]).length}
                 </span>
               )}
@@ -254,8 +252,8 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               <ChevronDownIcon
                 className={cn(
                   "-mx-[5px] h-5 w-5 shrink-0",
-                  sublabel ? "text-zinc-900 dark:text-white" : "text-inherit",
-                  disabled && "text-slate-400"
+                  sublabel ? "text-foreground" : "text-inherit",
+                  disabled && "text-slate-400 dark:text-zinc-700"
                 )}
               />
             </>
@@ -269,8 +267,8 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
             <Listbox.Options
               ref={optionsRef}
               className={cn(
-                "dark:ring-slate-800  shadow-floating absolute z-20 mt-1 min-w-full rounded-md bg-white text-zinc-900 ring-1 ring-zinc-900 ring-opacity-5 focus:outline-none dark:bg-zinc-900 dark:text-white",
-                availableOptions.length <= 100 && "max-h-60 overflow-auto",
+                "absolute z-20 mt-1 min-w-full rounded-md bg-background text-foreground shadow-floating",
+                "max-h-60 overflow-auto",
                 anchor === "right"
                   ? "right-0"
                   : anchor === "left"
@@ -280,61 +278,33 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
             >
               {/* Description - optional*/}
               {description && (
-                <p className="text-zinc-500 px-3 pb-1 pt-2 text-xs">
+                <p className="px-3 pb-1 pt-2 text-xs text-zinc-500">
                   {description}
                 </p>
               )}
 
               {/* Search - optional*/}
               {enableSearch && (
-                <div className="dark:border-zinc-700 border-b pt-1">
+                <div className="border-b pt-1 dark:border-zinc-700">
                   <Input
                     type="search"
                     icon={<MagnifyingGlassIcon className="h-4 w-4" />}
                     value={search}
                     className="border-none focus:ring-transparent"
                     placeholder={t("placeholder.search") + "..."}
-                    onChange={(value) => setSearch(value)}
+                    onChange={value => setSearch(value)}
                   />
                 </div>
               )}
-              {/* Options */}
-              {availableOptions.length > 100 ? (
-                <FixedSizeList
-                  height={240}
-                  width={"100%"}
-                  itemCount={availableOptions.length}
-                  itemSize={36}
-                >
-                  {({
-                    index,
-                    style,
-                  }: {
-                    index: number;
-                    style: CSSProperties;
-                  }) => {
-                    const option = availableOptions[index];
-                    return (
-                      <ListboxOption
-                        option={option}
-                        index={index}
-                        style={style}
-                      />
-                    );
-                  }}
-                </FixedSizeList>
-              ) : (
-                <>
-                  {availableOptions.map((option, index) => (
-                    <ListboxOption
-                      key={index}
-                      option={option}
-                      index={index}
-                      style={null}
-                    />
-                  ))}
-                </>
-              )}
+
+              {availableOptions.map((option, index) => (
+                <ListboxOption
+                  key={index}
+                  option={option}
+                  index={index}
+                  style={null}
+                />
+              ))}
 
               {/* Clear / Reset */}
               {enableClear && (
@@ -342,7 +312,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
                   onClick={() =>
                     multiple ? onChange([]) : onChange(undefined)
                   }
-                  className="text-zinc-500 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:border-zinc-800 group relative flex w-full cursor-default select-none items-center gap-2 border-t py-3 pl-10 pr-4 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="group relative flex w-full cursor-default select-none items-center gap-2 border-t border-border py-3 pl-10 pr-4 text-zinc-500 hover:bg-bg-hover disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={Array.isArray(selected) && selected.length === 0}
                 >
                   <p>{t("clear")}</p>

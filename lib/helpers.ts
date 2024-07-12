@@ -1,10 +1,11 @@
-import { DateTime } from "luxon";
 import { createElement, ReactElement } from "react";
 import { CountryAndStates } from "@lib/constants";
 import DomToImage from "dom-to-image";
 import canvasToSvg from "canvas2svg";
 import { twMerge } from "tailwind-merge";
-import clsx, { ClassValue } from 'clsx'
+import clsx, { ClassValue } from "clsx";
+import { format, parseISO } from "date-fns";
+import { enGB, ms } from "date-fns/locale";
 
 /**
  * Conditional class joiner.
@@ -53,7 +54,9 @@ export const limitMax = (e: number, max: number = 100) => {
  * @param value number[]
  * @returns [min, max]
  */
-export const minMax = (values: Array<number | null>): [min: number, max: number] => {
+export const minMax = (
+  values: Array<number | null>
+): [min: number, max: number] => {
   let min: number = 0;
   let max: number = 0;
   for (let num of values) {
@@ -78,13 +81,20 @@ export const minMax = (values: Array<number | null>): [min: number, max: number]
  */
 export const numFormat = (
   value: number,
-  type: "compact" | "standard" | "scientific" | "engineering" | undefined = "compact",
+  type:
+    | "compact"
+    | "standard"
+    | "scientific"
+    | "engineering"
+    | undefined = "compact",
   precision: number | [max: number, min: number] = 0,
   compactDisplay: "short" | "long" = "short",
   locale: string = "en",
   smart: boolean = false
 ): string => {
-  const [max, min] = Array.isArray(precision) ? precision : [precision, precision];
+  const [max, min] = Array.isArray(precision)
+    ? precision
+    : [precision, precision];
 
   if (smart === true) {
     let formatter: Intl.NumberFormat;
@@ -123,39 +133,25 @@ export const numFormat = (
 };
 
 /**
- * @todo Refactor this later. To be deprecated.
- * */
-export function smartNumFormat({
-  value,
-  type = "compact",
-  precision = 1,
-  locale,
-}: {
-  value: number;
-  type?: "compact" | "standard" | "scientific" | "engineering" | undefined;
-  precision?: number | [min: number, max: number];
-  locale: string;
-}): string {
-  return numFormat(value, type, precision, "long", locale, true);
-}
-
-/**
  * Returns a formatted date string from epoch millis or SQL date (YYYY-MM-DD)
- * @param {number | string} timestamp epoch millis | sql date
+ * @param {number | string} date epoch millis | sql date
+ * @param {string} formatStr dd MMM yyyy
  * @param {string} locale en-GB | ms-MY
- * @param {string} format dd MMM yyyy
  * @returns {string} Formatted date
  */
 export const toDate = (
-  timestamp: number | string,
-  format: string = "dd MMM yyyy",
+  date: number | string,
+  formatStr: string = "dd MMM yyyy",
   locale: string = "ms-MY"
 ): string => {
-  const date =
-    typeof timestamp === "number" ? DateTime.fromMillis(timestamp) : DateTime.fromSQL(timestamp);
-  const formatted_date = date.setLocale(locale).toFormat(format);
+  const formatted_date =
+    typeof date === "number"
+      ? format(date, formatStr)
+      : format(parseISO(date), formatStr, {
+          locale: locale === "ms-MY" ? ms : enGB,
+        });
 
-  return formatted_date !== "Invalid DateTime" ? formatted_date : "N/A";
+  return formatted_date !== "Invalid Date" ? formatted_date : "N/A";
 };
 
 /**
@@ -170,7 +166,9 @@ export const sortMsiaFirst = (array: Array<any>, key?: string): Array<any> => {
       if (a[key] === "mys") {
         return -1;
       }
-      return (CountryAndStates[a[key]] as string).localeCompare(CountryAndStates[b[key]]);
+      return (CountryAndStates[a[key]] as string).localeCompare(
+        CountryAndStates[b[key]]
+      );
     }
     if (a === "mys") {
       return -1;
@@ -185,7 +183,10 @@ export const sortMsiaFirst = (array: Array<any>, key?: string): Array<any> => {
  * @param key Comparator key
  * @returns Sorted array of objects
  */
-export const sortAlpha = (array: Array<Record<string, any>>, key: string): Array<any> => {
+export const sortAlpha = (
+  array: Array<Record<string, any>>,
+  key: string
+): Array<any> => {
   return array.sort((a: any, b: any) => a[key].localeCompare(b[key]));
 };
 
@@ -199,7 +200,10 @@ export const sortMulti = <T extends number>(
   );
 
   return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => [key, indexed.map(i => value[i])])
+    Object.entries(object).map(([key, value]) => [
+      key,
+      indexed.map(i => value[i]),
+    ])
   );
 };
 
@@ -213,23 +217,6 @@ export const copyClipboard = async (text: string): Promise<void> => {
   } catch (err) {
     console.error("Failed to copy: ", err);
   }
-};
-
-/**
- * Returns indices of top n largest/smallest item from an array
- */
-export const getTopIndices = (arr: number[], n: number, reverse = false): number[] => {
-  // create an array of [value, index] pairs
-  const pairs = arr.map((value, index) => [value, index]);
-
-  // sort the pairs by value (in descending or ascending order depending on the "reverse" flag)
-  pairs.sort((a, b) => (reverse ? b[0] - a[0] : a[0] - b[0]));
-
-  // extract the first n indices from the sorted pairs
-  const topPairs = pairs.slice(0, n);
-
-  // extract the indices from the top pairs and return them
-  return topPairs.map(pair => pair[1]);
 };
 
 /**
@@ -314,7 +301,8 @@ export const interpolate = (raw_text: string): string | ReactElement[] => {
 
   return matches.map(item => {
     const match = item.split("](");
-    if (match.length <= 1) return createElement("span", { className: "text-inherit" }, item);
+    if (match.length <= 1)
+      return createElement("span", { className: "text-inherit" }, item);
     const [text, url] = match;
     return createElement(
       "a",
@@ -359,7 +347,8 @@ export const snakeCase = <T extends string>(str: T) => {
 };
 
 // MATH helpers
-export const average = (values: number[]): number => values.reduce((a, b) => a + b) / values.length;
+export const average = (values: number[]): number =>
+  values.reduce((a, b) => a + b) / values.length;
 
 export const standardDeviation = (values: number[]): number => {
   const mean = average(values);

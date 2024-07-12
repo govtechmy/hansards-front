@@ -34,7 +34,7 @@ import { CrosshairPlugin } from "chartjs-plugin-crosshair";
 import AnnotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
 import { Chart } from "react-chartjs-2";
 import { cn, numFormat } from "@lib/helpers";
-import "chartjs-adapter-luxon";
+import "chartjs-adapter-date-fns";
 import { ChartCrosshairOption } from "@lib/types";
 import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
 import { useTheme } from "next-themes";
@@ -208,9 +208,6 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
         tooltip: {
           enabled: enableTooltip,
           itemSort: tooltipItemSort,
-          bodyFont: {
-            family: "Inter",
-          },
           animation: {
             duration: enableAnimation ? 1000 : 0,
           },
@@ -266,13 +263,6 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
                     if (text.length > 25) text = text.slice(0, 25).concat("..");
                     // if (text.length > 25) return chunkSplit(text, 25);
                     return text;
-                  },
-                  font: {
-                    family: "Inter",
-                    style: "normal",
-                    lineHeight: 1,
-                    weight: "400",
-                    size: 12,
                   },
                   color: set.borderColor as string,
                   position: {
@@ -360,9 +350,6 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
             },
             minRotation: 0,
             maxRotation: 0,
-            font: {
-              family: "Inter",
-            },
           },
           stacked: mode === "stacked",
         },
@@ -391,9 +378,6 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
             callback: (value: string | number) => {
               return value && display(value as number, "compact", precision);
             },
-            font: {
-              family: "Inter",
-            },
           },
           min: minY,
           max: maxY,
@@ -414,9 +398,6 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
                   padding: 6,
                   callback: (value: string | number) => {
                     return numFormat(value as number).concat("%");
-                  },
-                  font: {
-                    family: "Inter",
                   },
                 },
                 stacked: mode === "stacked",

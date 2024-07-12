@@ -1,6 +1,5 @@
 import Container from "@components/Container";
 import { EyeIcon } from "@heroicons/react/20/solid";
-import { ParlimenIcon } from "@icons/index";
 import { AnalyticsContext } from "@lib/contexts/analytics";
 import { cn, numFormat, toDate } from "@lib/helpers";
 import Image from "next/image";
@@ -45,7 +44,6 @@ const Hero: FunctionComponent<HeroProps> = ({
   const { t, i18n } = useTranslation();
 
   const { counts } = useContext(AnalyticsContext);
-  const { views } = counts;
 
   const background_style = useMemo<string>(() => {
     switch (background) {
@@ -80,12 +78,12 @@ const Hero: FunctionComponent<HeroProps> = ({
                 </div>
               )}
 
-              {(header || description || views) && (
+              {(header || description || counts.views) && (
                 <div className="space-y-3">
                   {header && (
                     <h1
                       className={cn(
-                        "font-header text-3xl font-bold leading-[38px] text-foreground",
+                        "font-poppins text-3xl font-bold leading-[38px] text-foreground",
                         header[1]
                       )}
                       data-testid="hero-header"
@@ -108,16 +106,18 @@ const Hero: FunctionComponent<HeroProps> = ({
                     description
                   )}
 
-                  {views && (
+                  {counts.views >= 0 ? (
                     <p
-                      className="text-zinc-500 flex gap-2 text-sm"
+                      className="flex gap-2 text-sm text-zinc-500"
                       data-testid="hero-views"
                     >
-                      <EyeIcon className="w-4.5 h-4.5 self-center" />
-                      {`${numFormat(views, "standard")} ${t("views", {
-                        count: views,
+                      <EyeIcon className="h-4.5 w-4.5 self-center" />
+                      {`${numFormat(counts.views, "standard")} ${t("views", {
+                        count: counts.views,
                       })}`}
                     </p>
+                  ) : (
+                    <></>
                   )}
                 </div>
               )}
@@ -127,7 +127,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                   {action}
                   {last_updated && (
                     <time
-                      className="text-zinc-500 text-sm"
+                      className="text-sm text-zinc-500"
                       data-testid="hero-last-updated"
                     >
                       {t("last_updated", {
@@ -146,13 +146,14 @@ const Hero: FunctionComponent<HeroProps> = ({
         )}
 
         {/* Parlimen Icon */}
-        <div className="absolute -right-14 -bottom-8 sm:right-0 sm:bottom-0 opacity-20 pointer-events-none">
+        <div className="pointer-events-none absolute -bottom-8 -right-14 opacity-20 sm:bottom-0 sm:right-0">
           <Image
             src="/static/images/icons/parlimen.png"
             width={300}
             height={214}
             alt="Parlimen"
             loading="eager"
+            priority
           />
         </div>
       </>

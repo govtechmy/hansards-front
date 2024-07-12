@@ -1,7 +1,6 @@
 import Metadata from "@components/Metadata";
 import HomeLayout from "@dashboards/home/layout";
-import SearchKeyword from "@dashboards/home/search-keyword";
-import SearchMP from "@dashboards/home/search-mp";
+import SearchKeyword from "@dashboards/home/keyword";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
@@ -23,9 +22,7 @@ const Home: Page = ({
   return (
     <>
       <Metadata
-        keywords={
-          "hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
-        }
+        keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
       />
       <HomeLayout>
         <SearchKeyword
@@ -45,9 +42,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
   async ({ query }) => {
     try {
-      const { q, dewan, ...dates } = query;
-
-      if (!query)
+      if (Object.keys(query).length === 0)
         return {
           props: {
             meta: {
@@ -55,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             },
             count: 0,
             excerpts: null,
-            query: null,
+            query,
             timeseries: {
               date: Array.from({ length: 365 }, (_, i) => i * 86400000),
               freq: [],
@@ -65,18 +60,30 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
         };
 
+      const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } = query;
+
       const results = await Promise.allSettled([
         get("api/search/", {
           q: q,
           house: dewan,
-          window_size: 30,
+          window_size: 40,
           page: 1,
-          ...dates,
+          start_date: tarikh_mula,
+          end_date: tarikh_akhir,
+          age_group: umur,
+          ethnicity: etnik,
+          party: parti,
+          sex: jantina,
         }),
         get("api/search-plot/", {
           q: q,
           house: dewan,
-          ...dates,
+          start_date: tarikh_mula,
+          end_date: tarikh_akhir,
+          age_group: umur,
+          ethnicity: etnik,
+          party: parti,
+          sex: jantina,
         }),
       ]);
 

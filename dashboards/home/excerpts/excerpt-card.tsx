@@ -28,7 +28,7 @@ interface ExcerptCardProps {
 const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
   const { t } = useTranslation("enum");
   const { index, sitting, speaker, trimmed_speech } = excerpt;
-  const [name, title] = speaker.split("[");
+  // const [name, title] = speaker.split("[");
 
   const speech = useMemo<string>(() => {
     const quotes = trimmed_speech.replaceAll("\n\n", " ").replaceAll("== ==", " ").split("==");
@@ -50,25 +50,24 @@ const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
     <Link
       href={`hansard/${dewan}/${sitting.date}#${index}`}
       prefetch={false}
-      className="shadow-button p-6 max-w-3xl group rounded-xl border border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:bg-slate-50 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/50"
+      className="shadow-button p-6 max-w-3xl group rounded-xl border border-border hover:border-border-hover hover:bg-slate-50 dark:hover:bg-zinc-800/50"
     >
       <div className="flex flex-col gap-3 relative h-full">
         <div className="flex w-auto gap-4.5">
           <DateCard date={sitting.date} size="sm" />
 
           <div className="flex flex-col w-[calc(100%-164px)] grow justify-evenly">
-            <p className="text-zinc-900 dark:text-white font-bold truncate">
-              {name}
+            <p className="text-foreground font-bold truncate">
+              {speaker}
             </p>
-            <p className="text-zinc-500 font-medium truncate">
+            {/* <p className="text-zinc-500 font-medium truncate">
               {title ? title.slice(0, -1) : ""}
-            </p>
+            </p> */}
           </div>
-          <ArrowUpRightIcon className="hidden sm:block shrink-0 h-5 w-5 text-zinc-500 opacity-0 transition-[opacity_transform] duration-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 group-hover:duration-300" />
+          <ArrowUpRightIcon className="hidden sm:block shrink-0 size-5 text-zinc-500 opacity-0 transition-[opacity_transform] duration-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 group-hover:duration-300 motion-reduce:transition-none" />
         </div>
         <div className="flex-grow">
           <Markdown
-            className=""
             rehypePlugins={[rehypeRaw]}
             components={{
               mark(props) {

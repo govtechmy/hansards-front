@@ -18,8 +18,6 @@ import { BookmarkIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
-import { BREAKPOINTS } from "@lib/constants";
-import { WindowContext } from "@lib/contexts/window";
 import { cn, copyClipboard } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { Mesyuarat } from "@lib/types";
@@ -28,7 +26,6 @@ import Link from "next/link";
 import {
   ForwardedRef,
   forwardRef,
-  useContext,
   useImperativeHandle,
   useMemo,
   useState,
@@ -53,13 +50,13 @@ const CatalogueFolder = forwardRef(
     { meeting, meeting_id }: CatalogueFolderProps,
     ref: ForwardedRef<FolderOpen>
   ) => {
-    const { t, i18n } = useTranslation(["catalogue", "enum"]);
+    const { t, i18n } = useTranslation(["catalogue", "enum", "hansard"]);
     const isDesktop = useMediaQuery("(min-width: 768px)");
+    const minWidth1280px = useMediaQuery("(min-width: 1280px)");
 
     const [open, setOpen] = useState<boolean>(false);
     const [copyText, setCopyText] = useState<string>("copy");
     const title = `Hansard Parlimen`;
-    const { size } = useContext(WindowContext);
 
     const { start_date, end_date, sitting_list } = meeting;
 
@@ -88,30 +85,26 @@ const CatalogueFolder = forwardRef(
     );
 
     const MesyuaratDates = () => (
-      <div
-        className={cn(
-          "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[80vh] max-md:p-4",
-          sitting_list.length < 4
-            ? "overflow-visible"
-            : "overflow-y-auto scroll"
-        )}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto w-full mx-auto max-md:p-4 max-md:max-w-md md:max-h-[80dvh]">
         {sitting_list.map((sitting, i) => {
           const { filename, date } = sitting;
-          const hansard_id = `${
-            filename.startsWith("kk")
-              ? routes.HANSARD_KK
-              : filename.startsWith("dr")
+          const hansard_id = `${filename.startsWith("kk")
+            ? routes.HANSARD_KK
+            : filename.startsWith("dr")
               ? routes.HANSARD_DR
               : routes.HANSARD_DN
-          }/${date}`;
+            }/${date}`;
           const { download, share } = useAnalytics(hansard_id);
-          const URL = `https://hansard.parlimen.gov.my/${hansard_id}`;
+          const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
 
-          const cols = size.width < BREAKPOINTS.XL ? 2 : 3;
+          const cols = minWidth1280px ? 3 : 2;
           const modulo = sitting_list.length % cols;
-          const itemsInLastRow =
-            size.width < BREAKPOINTS.MD ? 1 : modulo === 0 ? cols : modulo;
+          const itemsInLastRow = !isDesktop ? 1 : modulo === 0 ? cols : modulo;
+
+          const className = {
+            dropdown:
+              "link p-0 border-none shadow-none text-blue-600 dark:text-primary-dark font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600 overflow-x-hidden",
+          };
 
           return (
             <div
@@ -135,12 +128,12 @@ const CatalogueFolder = forwardRef(
                 </Link>
                 <div>
                   <div className="text-blue-600 dark:text-primary-dark flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap">
-                    <span className="link dark:hover:text-blue-600">
+                    {/* <span className="link dark:hover:text-blue-600">
                       {t("cite")}
                     </span>
-                    •
+                    • */}
                     <Dropdown
-                      className="link p-0 border-none shadow-none text-blue-600 dark:text-primary-dark font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
+                      className={className.dropdown}
                       width="w-fit"
                       placeholder={t("download")}
                       selected={undefined}
@@ -155,10 +148,9 @@ const CatalogueFolder = forwardRef(
                       }
                       onChange={({ value: filetype }) => {
                         window.open(
-                          `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                            filename.startsWith("dr")
-                              ? "dewanrakyat"
-                              : "dewannegara"
+                          `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${filename.startsWith("dr")
+                            ? "dewanrakyat"
+                            : "dewannegara"
                           }/${filename}.${filetype}`,
                           "_blank"
                         );
@@ -167,7 +159,7 @@ const CatalogueFolder = forwardRef(
                     />
                     •
                     <Dropdown
-                      className="link p-0 border-none shadow-none text-blue-600 dark:text-primary-dark font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600"
+                      className={className.dropdown}
                       width="w-fit"
                       placeholder={t("share")}
                       selected={undefined}
@@ -181,7 +173,7 @@ const CatalogueFolder = forwardRef(
                           value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
                         },
                         {
-                          label: "E-mail",
+                          label: t("email", { ns: "hansard" }),
                           value: `mailto:?subject=${title}&body=${URL}`,
                         },
                         {
@@ -236,26 +228,17 @@ const CatalogueFolder = forwardRef(
       <>
         <div
           className={cn(
-            "border group-hover:border-slate-200 dark:group-hover:border-zinc-800 rounded-md w-[100px] h-20 relative mb-1.5",
+            "border group-hover:border-border rounded-md w-[100px] h-20 relative mb-1.5",
             open ? "visible pl-2 pt-2" : "p-2 border-transparent"
           )}
         >
-          {open ? (
-            <Image
-              src="/static/images/icons/open-folder.png"
-              width={84}
-              height={64}
-              alt="Open Folder"
-            />
-          ) : (
-            <Image
-              src="/static/images/icons/closed-folder.png"
-              width={84}
-              height={64}
-              alt="Closed Folder"
-            />
-          )}
-          <span className="absolute bottom-3 right-3 bg-slate-400 rounded-md flex gap-0.5 items-center py-0.5 px-1.5 text-white ">
+          <Image
+            src="/static/images/icons/closed-folder.png"
+            width={84}
+            height={64}
+            alt="Closed Folder"
+          />
+          <span className="absolute bottom-3 right-3 bg-slate-400 rounded-md flex gap-0.5 items-center py-0.5 px-1.5 text-white">
             <BookmarkIcon className="h-3.5 w-3.5" />
             {sitting_list.length}
           </span>
@@ -267,6 +250,7 @@ const CatalogueFolder = forwardRef(
         <span className="text-zinc-500 text-sm font-normal">{dateRange}</span>
       </>
     );
+    
     if (isDesktop)
       return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -291,7 +275,7 @@ const CatalogueFolder = forwardRef(
           <Folder />
         </DrawerTrigger>
         <DrawerContent>
-          <DrawerHeader className="gap-x-3 flex justify-between">
+          <DrawerHeader className="gap-x-3 flex justify-between border-b border-border">
             <FolderTab />
             <DrawerClose>
               <XMarkIcon className="h-5 w-5" />

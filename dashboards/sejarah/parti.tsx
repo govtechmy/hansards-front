@@ -1,22 +1,23 @@
 import {
   Container,
-  StateDropdown,
+  Dropdown,
   ImageWithFallback,
   Skeleton,
   toast,
 } from "@components/index";
+import { useCache } from "@hooks/useCache";
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
+import { get } from "@lib/api";
+import { PARTIES, statesOptions } from "@lib/options";
 import { generateSchema } from "@lib/schema/election";
 import { OptionType } from "@lib/types";
 import { Trans } from "next-i18next";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { Parti, PartiResult } from "./types";
-import { useCache } from "@hooks/useCache";
 import FullResults, { Result } from "./full-results";
-import { get } from "@lib/api";
+import { Parti, PartiResult } from "./types";
 
 /**
  * Sejarah Parti Dashboard
@@ -37,18 +38,18 @@ interface SejarahPartiProps {
   params: { name: string; state: string };
 }
 
-const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
+const SejarahParti = ({ parti, params }: SejarahPartiProps) => {
   const { t } = useTranslation(["sejarah", "party"]);
   const { cache } = useCache();
 
-  const PARTI_OPTIONS: Array<OptionType> = dropdown.map((key) => ({
+  const PARTI_OPTIONS: Array<OptionType> = PARTIES.map(key => ({
     label: t(key, { ns: "party" }),
     value: key,
   }));
 
   const DEFAULT_PARTI = "PERIKATAN";
   const PARTI_OPTION = PARTI_OPTIONS.find(
-    (e) => e.value === (params.name ?? DEFAULT_PARTI)
+    e => e.value === (params.name ?? DEFAULT_PARTI)
   );
 
   const { data, setData } = useData({
@@ -79,7 +80,7 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
       header: t("votes_won"),
     },
     {
-      key: (item) => item,
+      key: item => item,
       id: "full_result",
       header: "",
       cell: ({ row }) => (
@@ -106,7 +107,9 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
               header: t("votes_won"),
             },
           ])}
-          highlighted={data.parti_option ? data.parti_option.value : ""}
+          highlighted={
+            data.parti_option ? data.parti_option.value : "PERIKATAN"
+          }
         />
       ),
     },
@@ -117,7 +120,7 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
     state: string
   ): Promise<Result<PartiResult>> => {
     const identifier = `${election}_${state}`;
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (cache.has(identifier)) return resolve(cache.get(identifier));
       get(
         "/explorer",
@@ -145,7 +148,7 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
           cache.set(identifier, result);
           resolve(result);
         })
-        .catch((e) => {
+        .catch(e => {
           toast.error(
             t("toast.request_failure", { ns: "common" }),
             t("toast.try_again", { ns: "common" })
@@ -161,24 +164,22 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
 
   return (
     <>
-      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+      <Container className="py-8 lg:py-12 xl:grid xl:grid-cols-12 xl:px-0">
         <div className="xl:col-span-10 xl:col-start-2">
           <h2 className="header text-center">{t("parti.header")}</h2>
           <div className="mx-auto w-full py-6 sm:w-[500px]">
             <ComboBox
               placeholder={t("cari_parti")}
               options={PARTI_OPTIONS}
-              selected={
+              selected={PARTI_OPTIONS.find(e =>
                 data.parti_option
-                  ? PARTI_OPTIONS.find(
-                      (e) => e.value === data.parti_option.value
-                    )
-                  : null
-              }
-              icon={(value) => (
+                  ? e.value === data.parti_option.value
+                  : undefined
+              )}
+              icon={value => (
                 <div className="flex h-auto max-h-8 w-8 justify-center self-center">
                   <ImageWithFallback
-                    className="border-slate-200 dark:border-zinc-700 rounded border"
+                    className="rounded border border-slate-200 dark:border-zinc-700"
                     src={`/static/images/parties/${value}.png`}
                     width={28}
                     height={18}
@@ -192,7 +193,7 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
                   />
                 </div>
               )}
-              onChange={(selected) => {
+              onChange={selected => {
                 setData("parti_option", selected);
                 if (selected && data.state) {
                   setData("loading", true);
@@ -203,9 +204,9 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
             />
           </div>
 
-          <div className="text-lg leading-9 py-6">
+          <div className="py-6 text-lg leading-9">
             <ImageWithFallback
-              className="border-slate-200 dark:border-zinc-800 mr-2 inline-block rounded border"
+              className="mr-2 inline-block rounded border border-slate-200 dark:border-zinc-800"
               src={`/static/images/parties/${params.name ?? DEFAULT_PARTI}.png`}
               width={32}
               height={18}
@@ -216,9 +217,8 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
               {t(params.name ?? DEFAULT_PARTI, { ns: "party" })}
             </span>
             <Trans>{t("parti.title")}</Trans>
-            <StateDropdown
-              currentState={params.state ?? "mys"}
-              onChange={(selected) => {
+            <Dropdown
+              onChange={selected => {
                 setData("loading", true);
                 setData("state", selected.value);
                 if (data.parti_option) {
@@ -226,8 +226,13 @@ const SejarahParti = ({ dropdown, parti, params }: SejarahPartiProps) => {
                   setFilter("negeri", selected.value);
                 }
               }}
-              width="inline-flex ml-0.5"
+              selected={statesOptions.find(
+                state => state.value === (params.state ?? "mys")
+              )}
+              options={statesOptions}
+              enableFlag
               anchor="left"
+              width="inline-flex ml-0.5"
             />
           </div>
 

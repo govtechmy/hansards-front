@@ -20,7 +20,7 @@ const Kehadiran: Page = ({
   const { t } = useTranslation("kehadiran");
 
   return (
-    <AnalyticsProvider>
+    <AnalyticsProvider id={meta.id}>
       <Metadata
         title={t("hero.header")}
         description={t("hero.description")}

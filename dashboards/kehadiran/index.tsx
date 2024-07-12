@@ -39,17 +39,18 @@ const KehadiranDashboard = ({
 
   return (
     <>
-      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+      <Container className="py-8 lg:py-12 xl:grid xl:grid-cols-12 xl:px-0">
         <div className="xl:col-span-10 xl:col-start-2">
           <section>
-            <h2 className="header text-center">{t("header")}</h2>
+            <div className="space-y-6">
+              <h2 className="header text-center">{t("header")}</h2>
 
-            <KehadiranDropdown
-              dropdown={dropdown}
-              onLoad={() => setLoading(true)}
-              params={params}
-            />
-
+              <KehadiranDropdown
+                dropdown={dropdown}
+                onLoad={() => setLoading(true)}
+                params={params}
+              />
+            </div>
             {/* Individual/Party Attendance */}
             <KehadiranTable
               individual={individual}

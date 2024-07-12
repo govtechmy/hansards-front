@@ -6,19 +6,22 @@ interface FallbackProps {
   children?: ReactNode;
   inline?: boolean;
 }
-const Fallback: FunctionComponent<FallbackProps> = ({ children, inline = false }) => {
-  return (
+const Fallback: FunctionComponent<FallbackProps> = ({
+  children,
+  inline = false,
+}) => {
+  return children ? (
+    children
+  ) : (
     <div
       className={cn(
         "border-slate-200 dark:border-zinc-700 h-5 w-8 rounded border bg-white",
         inline && "mr-2 inline-block"
       )}
     >
-      {children ?? (
-        <div className="flex h-full items-center justify-center text-sm font-zinc-900 text-zinc-900">
-          ?
-        </div>
-      )}
+      <div className="flex h-full items-center justify-center text-sm font-zinc-900 text-zinc-900">
+        ?
+      </div>
     </div>
   );
 };
@@ -34,7 +37,11 @@ const ImageWithFallback: FunctionComponent<ImageWithFallbackProps> = ({
   inline,
   ...props
 }) => {
-  const [error, setError] = useState<React.SyntheticEvent<HTMLImageElement, Event> | null>(null);
+  const [error, setError] = useState<React.SyntheticEvent<
+    HTMLImageElement,
+    Event
+  > | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setError(null);
@@ -43,7 +50,16 @@ const ImageWithFallback: FunctionComponent<ImageWithFallbackProps> = ({
   return error ? (
     <Fallback inline={inline}>{fallback}</Fallback>
   ) : (
-    <Image alt={alt} onError={setError} src={src} {...props} />
+    <Image
+      {...props}
+      src={src}
+      alt={alt}
+      className={cn(props.className, loading && "blur-[2px]")}
+      onLoadingComplete={async () => {
+        setLoading(false);
+      }}
+      onError={setError}
+    />
   );
 };
 export default ImageWithFallback;

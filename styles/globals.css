@@ -15,8 +15,14 @@
   html {
     box-sizing: border-box;
   }
-  *, *:before, *:after {
+  *,
+  *:before,
+  *:after {
     box-sizing: inherit;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
   }
 
   input[type="search"]::-webkit-search-decoration,
@@ -64,15 +70,15 @@
 
 @layer components {
   .header {
-    @apply font-header text-xl font-bold text-foreground [text-wrap:balance];
+    @apply font-poppins text-xl font-bold;
   }
 
   .title {
-    @apply text-lg font-bold text-foreground;
+    @apply text-lg font-bold;
   }
 
   .link {
-    @apply hover:underline [text-underline-position:from-font];
+    @apply [text-underline-position:from-font] hover:underline;
   }
 
   .btn {
@@ -80,7 +86,7 @@
   }
 
   .btn-primary {
-    @apply btn from-primary to-secondary shadow-button bg-gradient-to-t px-3 py-1.5 text-white hover:to-[#5B8EFF];
+    @apply btn bg-gradient-to-t from-primary to-secondary px-3 py-1.5 text-white shadow-button hover:to-[#5B8EFF];
   }
 
   .btn-primary svg {
@@ -88,25 +94,23 @@
   }
 
   .btn-ghost {
-    @apply btn hover:bg-slate-100 dark:hover:bg-zinc-800 px-3 py-1.5;
+    @apply btn px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800;
   }
 
   .btn-default {
-    @apply btn btn-border active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 bg-background px-3 py-1.5 text-foreground;
+    @apply btn btn-border bg-background px-3 py-1.5 text-foreground active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800;
   }
 
   .btn-border {
-    @apply border-slate-200 dark:border-zinc-800 hover:border-slate-400 hover:dark:border-zinc-700;
+    @apply border-slate-200 hover:border-slate-400 dark:border-zinc-800 hover:dark:border-zinc-700;
   }
 
   .btn-disabled {
-    @apply disabled:bg-slate-200 dark:disabled:bg-zinc-800 
-    disabled:border-slate-200 dark:disabled:border-zinc-800 
-    disabled:text-slate-400 dark:disabled:text-zinc-700 
-    disabled:pointer-events-none disabled:cursor-not-allowed;
+    @apply disabled:pointer-events-none disabled:cursor-not-allowed 
+    disabled:border-slate-200 disabled:bg-slate-200 
+    disabled:text-slate-400 dark:disabled:border-zinc-800 
+    dark:disabled:bg-zinc-800 dark:disabled:text-zinc-700;
   }
-
-  /* HERO MESH GRADIENTS */
 }
 
 /* HeadlessUI Dialog Bug. */

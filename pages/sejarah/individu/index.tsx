@@ -19,7 +19,7 @@ const SejarahIndividu: Page = ({
   const { t } = useTranslation("sejarah");
 
   return (
-    <AnalyticsProvider>
+    <AnalyticsProvider id={meta.id}>
       <Metadata
         title={t("sejarah_individu")}
         description={t("individu.header")}

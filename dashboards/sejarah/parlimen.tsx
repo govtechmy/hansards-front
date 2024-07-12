@@ -1,22 +1,16 @@
-import {
-  Container,
-  Dropdown,
-  List,
-  Panel,
-  PartyFlag,
-  Skeleton,
-  StateDropdown,
-  Tabs,
-} from "@components/index";
+import { Container, Dropdown, PartyFlag, Skeleton } from "@components/index";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/Tabs";
+import { Individu, Parti } from "@dashboards/sejarah/types";
 import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
 import { CountryAndStates } from "@lib/constants";
+import { cn } from "@lib/helpers";
+import { statesOptions } from "@lib/options";
 import { generateSchema } from "@lib/schema/election";
 import { Archive, OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { Individu, Parti } from "./types";
 
 /**
  * Sejarah Parlimen Dashboard
@@ -51,10 +45,11 @@ const SejarahParlimen = ({
   const { t } = useTranslation(["sejarah", "enum", "party"]);
 
   const { data, setData } = useData({
+    loading: false,
     parlimen: "",
     state: "",
-    tab_idx: 0,
-    loading: false,
+    tab: "dr_parti",
+    // tab_idx: 0,
   });
 
   const { setFilter } = useFilter({
@@ -64,7 +59,7 @@ const SejarahParlimen = ({
 
   const PARLIMEN_OPTIONS: Array<OptionType> = Object.keys(dropdown)
     .reverse()
-    .map((parlimen) => {
+    .map(parlimen => {
       const { start_date, end_date } = dropdown[parlimen];
       const start = start_date.substring(0, 4);
       const end = end_date.substring(0, 4);
@@ -83,14 +78,13 @@ const SejarahParlimen = ({
 
   return (
     <>
-      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+      <Container className="py-8 lg:py-12 xl:grid xl:grid-cols-12 xl:px-0">
         <div className="xl:col-span-10 xl:col-start-2">
-          <h2 className="header text-center pb-6">{t("parlimen.header")}</h2>
+          <h2 className="header pb-6 text-center">{t("parlimen.header")}</h2>
 
-          <div className="pb-6 lg:pb-8 items-center gap-2 flex flex-col sm:flex-row mx-auto w-fit">
-            <StateDropdown
-              currentState={data.state}
-              onChange={(selected) => {
+          <div className="mx-auto flex w-fit flex-col items-center gap-2 pb-6 sm:flex-row lg:pb-8">
+            <Dropdown
+              onChange={selected => {
                 setData("loading", true);
                 setData("state", selected.value);
                 if (data.parlimen) {
@@ -98,14 +92,17 @@ const SejarahParlimen = ({
                   setFilter("negeri", selected.value);
                 }
               }}
+              selected={statesOptions.find(state => state.value === data.state)}
+              options={statesOptions}
+              enableFlag
               anchor="left"
               width="w-full"
             />
             <Dropdown
               placeholder={t("pilih_parlimen")}
               options={PARLIMEN_OPTIONS}
-              selected={PARLIMEN_OPTIONS.find((e) => e.value === data.parlimen)}
-              onChange={(selected) => {
+              selected={PARLIMEN_OPTIONS.find(e => e.value === data.parlimen)}
+              onChange={selected => {
                 setData("loading", true);
                 setData("parlimen", selected.value);
                 if (data.state) {
@@ -116,42 +113,60 @@ const SejarahParlimen = ({
             />
           </div>
 
-          <div className="flex flex-col lg:flex-row justify-between">
-            <h3 className="title py-6">
-              {CountryAndStates[params.state ?? "mys"]}
-              {": "}
-              {
-                PARLIMEN_OPTIONS.find(
-                  (e) => e.value === (params.election ?? "15")
-                )?.label
-              }
-            </h3>
-
-            <List
-              options={[
-                t("dewan_rakyat", { ns: "common" }).concat(
-                  ` (${t("party", { ns: "common" })})`
-                ),
-                t("dewan_rakyat", { ns: "common" }).concat(
-                  ` (${t("individu", { ns: "common" })})`
-                ),
-                t("dewan_negara", { ns: "common" }),
-              ]}
-              current={data.tab_idx}
-              onChange={(index) => setData("tab_idx", index)}
-            />
-          </div>
-          <Tabs hidden current={data.tab_idx} >
-            <Panel
-              name={t("dewan_rakyat", { ns: "common" }).concat(
-                ` (${t("party", { ns: "common" })})`
-              )}
-            >
+          <Tabs
+            // defaultValue="dr_parti"
+            value={data.tab}
+            onValueChange={tab => setData("tab", tab)}
+          >
+            <TabsList className="flex flex-col justify-between lg:flex-row">
+              <h3 className="title py-6">
+                {CountryAndStates[params.state ?? "mys"]}
+                {": "}
+                {
+                  PARLIMEN_OPTIONS.find(
+                    e => e.value === (params.election ?? "15")
+                  )?.label
+                }
+              </h3>
+              <div>
+                <TabsTrigger
+                  value="dr_parti"
+                  className={cn(
+                    data.tab === "dr_parti"
+                      ? "text-foreground"
+                      : "text-zinc-500"
+                  )}
+                >
+                  {`${t("common:dewan_rakyat")} (${t("common:party")})`}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="dr_individu"
+                  className={cn(
+                    data.tab === "dr_individu"
+                      ? "text-foreground"
+                      : "text-zinc-500"
+                  )}
+                >
+                  {`${t("common:dewan_rakyat")} (${t("common:individu")})`}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="dewan_negara"
+                  className={cn(
+                    data.tab === "dewan_negara"
+                      ? "text-foreground"
+                      : "text-zinc-500"
+                  )}
+                >
+                  {t("common:dewan_negara")}
+                </TabsTrigger>
+              </div>
+            </TabsList>
+            <TabsContent value="dr_parti">
               {data.loading ? (
                 <Skeleton height="h-[400px]" width="w-auto" />
               ) : (
                 <ParlimenTable
-                  data={dr_party.filter((e) => e.seats.won > 0)}
+                  data={dr_party.filter(e => e.seats.won > 0)}
                   columns={generateSchema<Parti>([
                     {
                       key: "party",
@@ -172,12 +187,8 @@ const SejarahParlimen = ({
                   isLoading={data.loading}
                 />
               )}
-            </Panel>
-            <Panel
-              name={t("dewan_rakyat", { ns: "common" }).concat(
-                ` (${t("individu", { ns: "common" })})`
-              )}
-            >
+            </TabsContent>
+            <TabsContent value="dr_individu">
               {data.loading ? (
                 <Skeleton height="h-[550px]" width="w-auto" />
               ) : (
@@ -197,13 +208,13 @@ const SejarahParlimen = ({
                   enablePagination={10}
                 />
               )}
-            </Panel>
-            <Panel name={t("dewan_negara", { ns: "common" })}>
+            </TabsContent>
+            <TabsContent value="dewan_negara">
               {data.loading ? (
                 <Skeleton height="h-[300px]" width="w-auto" />
               ) : (
                 <Table
-                  className="text-sm w-full mx-auto"
+                  className="mx-auto w-full text-sm"
                   config={[
                     {
                       accessorKey: "start_date",
@@ -242,7 +253,7 @@ const SejarahParlimen = ({
                   ]}
                 />
               )}
-            </Panel>
+            </TabsContent>
           </Tabs>
         </div>
       </Container>
