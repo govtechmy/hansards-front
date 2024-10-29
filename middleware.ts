@@ -3,7 +3,12 @@ import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
 export const config = {
   matcher: [
-    '/', '/cari-mp', '/hansard/:path*', '/katalog/:path*', '/kehadiran/:path*', '/sejarah/:path*',
+    "/",
+    "/cari-mp",
+    "/hansard/:path*",
+    "/katalog/:path*",
+    "/kehadiran/:path*",
+    "/sejarah/:path*",
   ],
 };
 
@@ -12,14 +17,20 @@ export async function middleware(request: NextRequest, ev: NextFetchEvent) {
   // Fixed by removing the 'x-middleware-prefetch' header
   const headers = new Headers(request.headers);
   const purpose = headers.get("purpose");
-  if (purpose && purpose.match(/prefetch/i)) headers.delete("x-middleware-prefetch"); // empty json bugfix (in the browser headers still show, but here it is gone)
- 
+  if (purpose && purpose.match(/prefetch/i))
+    headers.delete("x-middleware-prefetch"); // empty json bugfix (in the browser headers still show, but here it is gone)
+
   // Development
   if (process.env.NEXT_PUBLIC_APP_ENV === "development") {
     return NextResponse.next({ request: { headers } });
-  } 
+  }
 
   ev.waitUntil(recordView(request)); // TODO Prod
+
+  // Production
+  if (process.env.NEXT_PUBLIC_APP_ENV === "production") {
+    return NextResponse.next({ request: { headers } });
+  }
 
   // Staging
   const basicAuth = request.headers.get("authorization");
