@@ -56,16 +56,17 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
           "sejarah"
         ),
-      ]).catch((e) => {
+      ]).catch(e => {
         throw new Error("Invalid candidate name. Message: " + e);
       });
 
-      const [dropdown, data] = results.map((e) => {
+      const [dropdown, data] = results.map(e => {
         if (e.status === "rejected") return {};
         else return e.value.data;
       });
 
       return {
+        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
         props: {
           meta: {
             id: routes.SEJARAH_INDIVIDU,

@@ -1,6 +1,7 @@
 import Metadata from "@components/Metadata";
-import HomeLayout from "@dashboards/home/layout";
+import ComingSoon from "@dashboards/home/coming-soon";
 import SearchKeyword from "@dashboards/home/keyword";
+import HomeLayout from "@dashboards/home/layout";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
@@ -21,19 +22,21 @@ const Home: Page = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
-      <Metadata
-        keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
-      />
-      <HomeLayout>
-        <SearchKeyword
-          count={count}
-          excerpts={excerpts}
-          query={query}
-          timeseries={timeseries}
-          top_word_freq={top_word_freq}
-          top_speakers={top_speakers}
-        />
-      </HomeLayout>
+      <Metadata keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament" />
+      {process.env.NEXT_PUBLIC_APP_ENV === "production" ? (
+        <ComingSoon />
+      ) : (
+        <HomeLayout>
+          <SearchKeyword
+            count={count}
+            excerpts={excerpts}
+            query={query}
+            timeseries={timeseries}
+            top_word_freq={top_word_freq}
+            top_speakers={top_speakers}
+          />
+        </HomeLayout>
+      )}
     </>
   );
 };
@@ -60,7 +63,16 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
         };
 
-      const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } = query;
+      const {
+        q,
+        dewan,
+        tarikh_mula,
+        tarikh_akhir,
+        umur,
+        etnik,
+        parti,
+        jantina,
+      } = query;
 
       const results = await Promise.allSettled([
         get("api/search/", {
@@ -87,7 +99,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         }),
       ]);
 
-      const [excerpt, data] = results.map((e) => {
+      const [excerpt, data] = results.map(e => {
         if (e.status === "rejected") return {};
         else return e.value.data;
       });

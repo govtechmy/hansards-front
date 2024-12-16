@@ -81,16 +81,17 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
           "sejarah"
         ),
-      ]).catch((e) => {
+      ]).catch(e => {
         throw new Error("Invalid parliament term/state. Message: " + e);
       });
 
-      const [dropdown, seats, table] = results.map((e) => {
+      const [dropdown, seats, table] = results.map(e => {
         if (e.status === "rejected") return {};
         else return e.value.data;
       });
 
       return {
+        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
         props: {
           meta: {
             id: routes.SEJARAH_PARLIMEN,

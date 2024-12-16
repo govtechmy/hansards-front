@@ -64,6 +64,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
     });
 
     return {
+      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
       props: {
         meta: {
           id: routes.KEHADIRAN_DN,

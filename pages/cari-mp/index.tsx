@@ -21,9 +21,7 @@ const CariMP: Page = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
-      <Metadata
-        keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament"
-      />
+      <Metadata keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament" />
       <HomeLayout>
         <SearchMP
           count={count}
@@ -44,6 +42,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
     try {
       if (Object.keys(query).length === 0)
         return {
+          notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
           props: {
             meta: {
               id: "home",
@@ -60,7 +59,16 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
         };
 
-      const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } = query;
+      const {
+        uid,
+        dewan,
+        tarikh_mula,
+        tarikh_akhir,
+        umur,
+        etnik,
+        parti,
+        jantina,
+      } = query;
 
       const results = await Promise.allSettled([
         get("api/search/", {
@@ -87,12 +95,13 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         }),
       ]);
 
-      const [excerpt, data] = results.map((e) => {
+      const [excerpt, data] = results.map(e => {
         if (e.status === "rejected") return {};
         else return e.value.data;
       });
 
       return {
+        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
         props: {
           meta: {
             id: "/cari-mp",
