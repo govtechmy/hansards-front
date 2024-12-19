@@ -37,7 +37,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
                     link="/"
                     onClick={close}
                   />
-                  <Nav.Item
+                  {/* <Nav.Item
                     key="/kehadiran"
                     title={t("nav.kehadiran")}
                     link="/kehadiran/dewan-rakyat"
@@ -48,7 +48,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
                     title={t("nav.sejarah")}
                     link="/sejarah/individu"
                     onClick={close}
-                  />
+                  /> */}
                   <Nav.Item
                     key="/katalog"
                     title={t("nav.katalog")}
