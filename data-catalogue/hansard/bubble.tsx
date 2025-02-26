@@ -4,7 +4,7 @@ import ShareButton from "./share";
 import ImageWithFallback from "@components/ImageWithFallback";
 import { useTranslation } from "react-i18next";
 import { useAnalytics } from "@hooks/useAnalytics";
-import { DownloadIcon } from "@govtechmy/myds-react/icon";
+import { DownloadIcon, UserIcon } from "@govtechmy/myds-react/icon";
 import {
   Dropdown,
   DropdownContent,
@@ -67,13 +67,16 @@ const SpeechBubble = ({
               className="p"
               priority={index <= 5}
             /> */}
-            <img
+            {/* <img
               alt={`${uid}`}
               className="p"
               src={`/mp/${uid}.jpg`}
               width={36}
               height={36}
-            />
+            /> */}
+            <div className="flex size-9 items-center justify-center rounded-full border border-border">
+              <UserIcon className="size-6 text-zinc-500" />
+            </div>
           </div>
         </div>
         {/* Bubble */}
