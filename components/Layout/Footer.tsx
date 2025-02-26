@@ -1,69 +1,110 @@
-import { At, Container } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import Image from "next/image";
+import {
+  Footer,
+  FooterTopSection,
+  FooterMainInfo,
+  ImageWithTitle,
+  Address,
+  SocialMedia,
+  SocialMediaItem,
+  FooterContent,
+  FooterContentColumn,
+  FooterBottomSection,
+  FooterCopyright,
+  FooterCopyrightDate,
+  FooterTimestamp,
+} from "@govtechmy/myds-react/footer";
+import { Link } from "@govtechmy/myds-react/link";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  XIcon,
+  YoutubeIcon,
+} from "@govtechmy/myds-react/icon";
 
-const Footer = () => {
+const FooterLayout = () => {
   const { t } = useTranslation();
-  const styles = {
-    link: "link text-zinc-500 cursor-pointer text-sm hover:text-foreground"
-  }
+
+  const social_media = [
+    {
+      icon: <FacebookIcon />,
+      name: "Facebook",
+      href: "https://www.facebook.com/ParlimenMY/",
+    },
+    { icon: <XIcon />, name: "X", href: "https://x.com/MYParlimen" },
+    {
+      icon: <InstagramIcon />,
+      name: "Instagram",
+      href: "https://www.instagram.com/parlimenmalaysia/",
+    },
+    {
+      icon: <YoutubeIcon />,
+      name: "Youtube",
+      href: "https://www.youtube.com/channel/UCu2I5HXcZudP59E5Ld10K_g",
+    },
+  ];
+
+  const open_source = [
+    {
+      name: "frontend",
+      href: "https://www.github.com/govtechmy/hansards-front",
+    },
+    { name: "backend", href: "https://www.github.com/govtechmy/hansards-back" },
+    {
+      name: "parser",
+      href: "https://www.github.com/govtechmy/hansards-dataproc",
+    },
+    {
+      name: "ui_ux",
+      href: "https://www.figma.com/design/YHg0aC8rHlEaX84ZQ5FwJt/Parliament-Hansards",
+    },
+  ];
 
   return (
-    <Container background="bg-slate-50 dark:bg-zinc-900 border-t border-slate-200 dark:border-zinc-800 max-sm:px-3 pt-12 pb-16 z-10">
-      <div className="flex w-full max-md:flex-col max-md:gap-8 md:justify-between">
-        <div className="flex gap-4">
-          {/* LOGO */}
-          <div className="mt-1 w-12">
-            <Image
-              src="/static/images/jata_logo.png"
-              width={48}
-              height={36}
-              alt="jata negara"
-            />
-          </div>
-          <div>
-            <div className="mb-2 font-bold uppercase">
-              {t("footer.parlimen")}
-            </div>
-            <p className="text-zinc-500 text-sm">
-              © {new Date().getFullYear()} {t("footer.parlimen")}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-x-6 lg:gap-x-8 text-sm">
-          {/* OPEN SOURCE CODE */}
-          <div className="flex w-full flex-col gap-y-3 md:w-[200px]">
-            <p className="font-bold">{t("footer.open_source")}</p>
-
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.frontend")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.backend")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.parser")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.ui_ux")}
-            </At>
-          </div>
-
-          {/* OPEN SOURCE DATA */}
-          <div className="flex w-full flex-col gap-y-3 md:w-[200px]">
-            <p className="font-bold">{t("footer.open_data")}</p>
-
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.guiding_principles")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.terms_of_use")}
-            </At>
-          </div>
-        </div>
-      </div>
-    </Container>
+    <Footer className="max-w-screen-2xl *:max-lg:mx-0">
+      <FooterTopSection>
+        <FooterMainInfo>
+          <ImageWithTitle
+            imgSrc="/static/images/jata_logo.png"
+            imgAlt="Jata Negara"
+          >
+            {t("footer.parlimen")}
+          </ImageWithTitle>
+          <Address>
+            Bangunan Parlimen,{"\n"}
+            Jalan Parlimen,{"\n"}
+            50680, Kuala Lumpur
+          </Address>
+          <SocialMedia title="Follow Us">
+            {social_media.map(({ icon, name, href }) => (
+              <SocialMediaItem key={name} icon={icon} href={href} name={name} />
+            ))}
+          </SocialMedia>
+        </FooterMainInfo>
+        <FooterContent>
+          <FooterContentColumn title={"Open Source"}>
+            {open_source.map(({ name, href }) => (
+              <Link
+                key={name}
+                newTab
+                href={href}
+                underline="hover"
+                className="hover:text-txt-black-900"
+              >
+                {t("footer." + name)}
+              </Link>
+            ))}
+          </FooterContentColumn>
+        </FooterContent>
+      </FooterTopSection>
+      <FooterBottomSection>
+        <FooterCopyright>
+          <FooterCopyrightDate>All Rights Reserved</FooterCopyrightDate>
+        </FooterCopyright>
+        {/* <FooterTimestamp time=""></FooterTimestamp> */}
+      </FooterBottomSection>
+    </Footer>
   );
 };
 
-export default Footer;
+export default FooterLayout;
