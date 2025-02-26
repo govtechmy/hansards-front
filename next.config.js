@@ -18,6 +18,7 @@ const pwa = require("next-pwa")({
  * */
 const nextConfig = {
   i18n,
+  output: process.env.NEXT_OUTPUT,
   reactStrictMode: true,
   swcMinify: true,
   publicRuntimeConfig: {
@@ -29,7 +30,7 @@ const nextConfig = {
     META_URL: process.env.NEXT_PUBLIC_APP_URL,
     META_IMAGE: `${process.env.NEXT_PUBLIC_APP_URL}/static/images/og_{{lang}}.png`,
   },
-  webpack: (config) => {
+  webpack: config => {
     config.module.rules.push({
       test: /components|hooks\/index.ts/i,
       sideEffects: false,
