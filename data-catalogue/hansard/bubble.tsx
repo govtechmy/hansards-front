@@ -1,7 +1,16 @@
 import { cn } from "@lib/helpers";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import ShareButton from "./share";
 import ImageWithFallback from "@components/ImageWithFallback";
+import { useTranslation } from "react-i18next";
+import { useAnalytics } from "@hooks/useAnalytics";
+import { DownloadIcon } from "@govtechmy/myds-react/icon";
+import {
+  Dropdown,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+} from "@govtechmy/myds-react/dropdown";
 
 /**
  * Speech Bubble
@@ -11,6 +20,7 @@ import ImageWithFallback from "@components/ImageWithFallback";
 export type SpeechBubbleProps = {
   children: ReactNode;
   date: string;
+  filename: string;
   hansard_id: string;
   index: number;
   isYDP: boolean;
@@ -25,6 +35,7 @@ export type SpeechBubbleProps = {
 const SpeechBubble = ({
   children,
   date,
+  filename,
   hansard_id,
   index,
   isYDP,
@@ -35,6 +46,10 @@ const SpeechBubble = ({
   timeString,
   uid,
 }: SpeechBubbleProps) => {
+  const { t } = useTranslation("catalogue");
+  const { download } = useAnalytics(hansard_id);
+  const [downloadOpen, setDownloadOpen] = useState<boolean>(false);
+
   return (
     <>
       <div id={`${index}`} key={speech_id} className={cn("s", side && "r")}>
@@ -52,17 +67,54 @@ const SpeechBubble = ({
               className="p"
               priority={index <= 5}
             /> */}
-            <img alt={`${uid}`} className="p" src={`/mp/${uid}.jpg`} width={36} height={36}/>
+            <img
+              alt={`${uid}`}
+              className="p"
+              src={`/mp/${uid}.jpg`}
+              width={36}
+              height={36}
+            />
           </div>
         </div>
         {/* Bubble */}
-        <div
-          className={cn("b", isYDP && "ydp", length <= 222 && "x")}
-        >
+        <div className={cn("b", isYDP && "ydp", length <= 222 && "x")}>
           {speaker ? <div className="m">{speaker}</div> : <></>}
           {children}
 
-          <ShareButton date={date} hansard_id={hansard_id} index={`${index}`} />
+          <div
+            className={cn(
+              "ft",
+              downloadOpen ? "visible translate-x-2" : "invisible"
+            )}
+          >
+            <Dropdown open={downloadOpen} onOpenChange={setDownloadOpen}>
+              <DropdownTrigger className="bt">
+                <DownloadIcon />
+                {t("download", { ns: "catalogue" })}
+              </DropdownTrigger>
+              <DropdownContent>
+                {[
+                  { name: "PDF", type: "pdf" },
+                  { name: t("csv"), type: "csv" },
+                ].map(file => (
+                  <DropdownItem
+                    key={file.type}
+                    onSelect={() => {
+                      window.open(`${filename}.${file.type}`, "_blank");
+                      download(file.type as "pdf" | "csv");
+                    }}
+                  >
+                    {file.name}
+                  </DropdownItem>
+                ))}
+              </DropdownContent>
+            </Dropdown>
+            <ShareButton
+              date={date}
+              hansard_id={hansard_id}
+              index={`${index}`}
+            />
+          </div>
           <span className="t">{timeString}</span>
         </div>
       </div>
