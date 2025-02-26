@@ -9,7 +9,14 @@ import { cn, numFormat } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { NestedSpeech, Speech, Speeches } from "@lib/types";
 import Link from "next/link";
-import { ComponentProps, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
+import {
+  ComponentProps,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import rehypeRaw from "rehype-raw";
 import SpeechBubble from "./bubble";
 import { SearchContext, SearchEventContext } from "./search/context";
@@ -87,7 +94,7 @@ const Hansard = ({
         const time = highlightKeyword(timeString, `${speech_id}_time`);
 
         // Search
-        if (author !== curr_author) curr_dir = !curr_dir
+        if (author !== curr_author) curr_dir = !curr_dir;
         curr_author = author;
         const names = author.includes(" [") ? author.split(" [") : [author];
 
@@ -95,14 +102,15 @@ const Hansard = ({
           "Tuan Yang di-Pertua",
           "Timbalan Yang di-Pertua",
           "Tuan Pengerusi",
-        ].some((ydp) => author.includes(ydp));
+        ].some(ydp => author.includes(ydp));
 
-        const mod = author !== "ANNOTATION" && IS_YDP
-          ? "ydp"
-          : author
+        const mod =
+          author !== "ANNOTATION" && IS_YDP
+            ? "ydp"
+            : author
             ? ["Beberapa Ahli", "Seorang Ahli"].includes(author)
               ? ""
-              : (names[0].length) % 7
+              : names[0].length % 7
             : "";
 
         const colour = useMemo<string>(() => {
@@ -148,9 +156,9 @@ const Hansard = ({
           () =>
             searchValue && searchValue.length > 1
               ? getMatchText(
-                searchValue,
-                speech.replaceAll("*", "").replaceAll("**", "")
-              )
+                  searchValue,
+                  speech.replaceAll("*", "").replaceAll("**", "")
+                )
               : speech,
           [searchValue, speech]
         );
@@ -211,11 +219,7 @@ const Hansard = ({
 
         return (
           <>
-            {index === 0 || prev !== ts ?
-              <p className="t">
-                {time}
-              </p>
-              : <></>}
+            {index === 0 || prev !== ts ? <p className="t">{time}</p> : <></>}
             {author === "ANNOTATION" ? (
               <div className="a" id={`${index}`}>
                 {_speech}
@@ -224,6 +228,7 @@ const Hansard = ({
               <SpeechBubble
                 speaker={speaker}
                 timeString={timeString}
+                filename={hansard_url}
                 index={index}
                 speech_id={speech_id}
                 hansard_id={hansard_id}
@@ -244,11 +249,12 @@ const Hansard = ({
         return (
           <div
             key={heading}
-            ref={(ref) => (scrollRef.current[sidebar_id] = ref)}
-            className="flex flex-col gap-3 lg:gap-6 scroll-mt-40 lg:scroll-mt-28">
+            ref={ref => (scrollRef.current[sidebar_id] = ref)}
+            className="flex scroll-mt-40 flex-col gap-3 lg:scroll-mt-28 lg:gap-6"
+          >
             <p
               className={cn(
-                "text-foreground text-center py-3 lg:sticky top-28 bg-background z-10 text-balance",
+                "top-28 z-10 text-balance bg-background py-3 text-center text-foreground lg:sticky",
                 // !s[heading].some((e) => !isSpeech(e)) && "lg:sticky",
                 isFirstLevel ? "font-bold" : "font-medium"
               )}
@@ -271,32 +277,33 @@ const Hansard = ({
   const dewan_route = IS_KK
     ? routes.KATALOG_KK
     : IS_DR
-      ? routes.KATALOG_DR
-      : routes.KATALOG_DN;
+    ? routes.KATALOG_DR
+    : routes.KATALOG_DN;
 
   const parlimen_link = `${dewan_route}/parlimen-${cycle.term}`;
   const penggal_link = `${parlimen_link}/penggal-${cycle.session}`;
   const mesyuarat_link = `${penggal_link}/mesyuarat-${cycle.meeting}`;
 
-  const hansard_url =
-    `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${IS_KK ? "kamarkhas" : IS_DR ? "dewanrakyat" : "dewannegara"}/${filename}`;
+  const hansard_url = `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+    IS_KK ? "kamarkhas" : IS_DR ? "dewanrakyat" : "dewannegara"
+  }/${filename}`;
 
   return (
     <Sidebar
       ref={sidebarRef}
       speeches={speeches}
-      onClick={(selected) => {
+      onClick={selected => {
         scrollRef.current[selected]?.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
       }}
     >
-      {(open) => (
-        <div className="flex flex-col w-full items-center border-r border-border relative">
+      {open => (
+        <div className="relative flex w-full flex-col items-center border-r border-border">
           <Hero>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
-              <div className="flex items-center font-medium text-sm text-zinc-500 whitespace-nowrap flex-wrap">
+              <div className="flex flex-wrap items-center whitespace-nowrap text-sm font-medium text-zinc-500">
                 <Link href={dewan_route} className="link" prefetch={false}>
                   {t("archive", {
                     context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
@@ -315,9 +322,9 @@ const Hansard = ({
                   {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
                 </Link>
               </div>
-              <div className="flex justify-between gap-3 lg:gap-6 items-center">
+              <div className="flex items-center justify-between gap-3 lg:gap-6">
                 <DateCard size="lg" date={date} />
-                <div className="w-[calc(100%-78px)] gap-y-3 justify-center flex flex-col">
+                <div className="flex w-[calc(100%-78px)] flex-col justify-center gap-y-3">
                   <h1
                     className="text-3xl font-bold leading-[38px] text-foreground"
                     data-testid="hero-header"
@@ -328,7 +335,7 @@ const Hansard = ({
                   </h1>
                   {views >= 0 || shares >= 0 || downloads >= 0 ? (
                     <p
-                      className="text-zinc-500 flex gap-1.5 text-sm items-center whitespace-nowrap flex-wrap"
+                      className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-zinc-500"
                       data-testid="hero-views"
                     >
                       <span>{`${numFormat(views, "compact")} ${t("views", {
@@ -354,17 +361,17 @@ const Hansard = ({
                 </div>
               </div>
 
-              <div className="flex gap-x-4.5 gap-y-3 whitespace-nowrap flex-wrap z-50">
+              <div className="z-50 flex flex-wrap gap-x-4.5 gap-y-3 whitespace-nowrap">
                 <CiteButton
                   date={date}
                   hansard_id={hansard_id}
                   dewan={IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
-                  trigger={(onClick) =>
-                    <button className={styles.link_blue} onClick={onClick} >
+                  trigger={onClick => (
+                    <button className={styles.link_blue} onClick={onClick}>
                       <CiteIcon className="size-5" />
                       {t("cite")}
                     </button>
-                  }
+                  )}
                 />
                 <a
                   target="_blank"
@@ -387,7 +394,7 @@ const Hansard = ({
                 <ShareButton
                   date={date}
                   hansard_id={hansard_id}
-                  trigger={(onClick) => (
+                  trigger={onClick => (
                     <button className={styles.link_blue} onClick={onClick}>
                       <ShareIcon className="size-5" />
                       {t("share")}
@@ -401,7 +408,7 @@ const Hansard = ({
           <HansardSearch />
           <div
             className={cn(
-              "h-full lg:max-w-[1048px] px-3 md:px-4.5 lg:px-6 pt-3 pb-8 lg:py-12 bg-background gap-y-6 flex flex-col relative",
+              "relative flex h-full flex-col gap-y-6 bg-background px-3 pb-8 pt-3 md:px-4.5 lg:max-w-[1048px] lg:px-6 lg:py-12",
               open && "mx-auto"
             )}
           >
