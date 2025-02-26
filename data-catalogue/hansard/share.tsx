@@ -12,10 +12,7 @@ import {
   SheetTrigger,
 } from "@components/Sheet";
 import DateCard from "@components/Card/date-card";
-import {
-  DocumentDuplicateIcon,
-  EnvelopeIcon,
-} from "@heroicons/react/24/solid";
+import { DocumentDuplicateIcon, EnvelopeIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
@@ -47,7 +44,9 @@ export default function ShareDialogDrawer({
   const [copyText, setCopyText] = useState<string>("copy_link");
   const { share } = useAnalytics(hansard_id);
   const title = `Hansard Parlimen`;
-  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}${index ? `#${index}` : ""}`;
+  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}${
+    index ? `#${index}` : ""
+  }`;
 
   const SHARE_OPTIONS = [
     {
@@ -73,22 +72,24 @@ export default function ShareDialogDrawer({
   ];
 
   const handleClick = () => {
-    if (navigator.share) {
-      setOpen(false);
-      share();
-      navigator
-        .share({
-          title: title,
-          text: title,
-          url: URL,
-        })
-        .catch((error) => console.error("Error sharing", error));
-    } else setOpen(true);
+    // invokes native sharing mechanism, not sure if good idea
+    // if (navigator.share) {
+    //   setOpen(false);
+    //   share();
+    //   navigator
+    //     .share({
+    //       title: title,
+    //       text: title,
+    //       url: URL,
+    //     })
+    //     .catch((error) => console.error("Error sharing", error));
+    // } else
+    setOpen(true);
   };
 
   const ShareButton = () => (
-    <div className="max-md:p-4 space-y-5">
-      <div className="bg-background border border-border rounded-2xl shadow-button p-3 flex gap-4.5 w-fit mx-auto items-center">
+    <div className="space-y-5 max-md:p-4">
+      <div className="mx-auto flex w-fit items-center gap-4.5 rounded-2xl border border-border bg-background p-3 shadow-button">
         <DateCard date={date} size="sm" />
         <p>
           {new Date(date).toLocaleDateString(i18n.language, {
@@ -99,13 +100,13 @@ export default function ShareDialogDrawer({
           })}
         </p>
       </div>
-      <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4">
         {SHARE_OPTIONS.map(({ name, icon, link }) => {
           return (
             <Button
               key={name}
               variant="outline"
-              className="whitespace-nowrap flex flex-col"
+              className="flex flex-col whitespace-nowrap"
               onClick={() => {
                 share();
                 if (link === "copy") {
@@ -135,7 +136,7 @@ export default function ShareDialogDrawer({
   if (isDesktop)
     return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild onClick={(e) => e.preventDefault()}>
+        <DialogTrigger asChild onClick={e => e.preventDefault()}>
           {trigger ? (
             trigger(handleClick)
           ) : (
@@ -147,7 +148,7 @@ export default function ShareDialogDrawer({
         </DialogTrigger>
         <DialogContent className="max-w-[536px]">
           <DialogHeader className="flex w-full justify-between">
-            <span className="text-center font-medium text-foreground w-full">
+            <span className="w-full text-center font-medium text-foreground">
               {t("share_hansard")}
             </span>
           </DialogHeader>
@@ -158,7 +159,7 @@ export default function ShareDialogDrawer({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild onClick={(e) => e.preventDefault()}>
+      <SheetTrigger asChild onClick={e => e.preventDefault()}>
         {trigger ? (
           trigger(handleClick)
         ) : (
@@ -168,8 +169,8 @@ export default function ShareDialogDrawer({
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent side="bottom" className="p-0 rounded-t-xl">
-        <SheetHeading className="p-4 flex justify-between border-b border-slate-200 dark:border-zinc-700">
+      <SheetContent side="bottom" className="rounded-t-xl p-0">
+        <SheetHeading className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
           <span className="font-medium text-foreground">
             {t("share_hansard")}
           </span>
