@@ -280,9 +280,9 @@ const Hansard = ({
     ? routes.KATALOG_DR
     : routes.KATALOG_DN;
 
-  const parlimen_link = `${dewan_route}/parlimen-${cycle.term}`;
-  const penggal_link = `${parlimen_link}/penggal-${cycle.session}`;
-  const mesyuarat_link = `${penggal_link}/mesyuarat-${cycle.meeting}`;
+  const parlimen_link = `${dewan_route}#parlimen-${cycle.term}`;
+  const penggal_link = `${parlimen_link}-penggal-${cycle.session}`;
+  const mesyuarat_link = `${penggal_link}-mesyuarat-${cycle.meeting}`;
 
   const hansard_url = `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
     IS_KK ? "kamarkhas" : IS_DR ? "dewanrakyat" : "dewannegara"
