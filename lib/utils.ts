@@ -1,4 +1,3 @@
-
 export const isValidUrl = (url: string) => {
   try {
     new URL(url);
@@ -24,4 +23,10 @@ export const getDomainWithoutWWW = (url: string) => {
 export function capitalize(str: string) {
   if (!str || typeof str !== "string") return str;
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function assertFulfilled<T>(
+  item: PromiseSettledResult<T>
+): item is PromiseFulfilledResult<T> {
+  return item.status === "fulfilled";
 }
