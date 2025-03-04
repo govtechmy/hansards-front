@@ -52,7 +52,7 @@ div.s {
   }
 
   img.p {
-    @apply h-full w-full rounded-full border border-border object-cover;
+    @apply h-full w-full rounded-full border border-otl-gray-200 object-cover;
   }
 
   .b.ydp {

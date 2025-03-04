@@ -9,7 +9,7 @@ import {
   DropdownItem,
   DropdownTrigger,
 } from "@govtechmy/myds-react/dropdown";
-import { ReactNode, useState } from "react";
+import { ComponentProps, FC, ReactNode, useEffect, useState } from "react";
 
 /**
  * Speech Bubble
@@ -57,20 +57,14 @@ const SpeechBubble = ({
         {/* Avatar */}
         <div className={cn("w", side && "r")}>
           <div className="a">
-            {uid === null ? (
-              <div className="flex size-9 items-center justify-center rounded-full border border-border">
-                <UserIcon className="size-6 text-zinc-500" />
-              </div>
-            ) : (
-              <img
-                alt={author}
-                className="p"
-                src={`${process.env.NEXT_PUBLIC_I18N_URL}/img/mp-240/${uid}.jpg`}
-                width={36}
-                height={1}
-                fetchPriority={index > 10 ? "high" : "auto"}
-              />
-            )}
+            <ImageWithFallback
+              src={`${process.env.NEXT_PUBLIC_I18N_URL}/img/mp-240/${uid}.jpg`}
+              width={36}
+              height={36}
+              alt={author}
+              className="p"
+              fetchPriority={index < 10 ? "high" : "auto"}
+            />
           </div>
         </div>
         {/* Bubble */}
@@ -116,6 +110,34 @@ const SpeechBubble = ({
         </div>
       </div>
     </>
+  );
+};
+
+const ImageWithFallback: FC<ComponentProps<"img">> = ({ src, ...props }) => {
+  const [error, setError] = useState<React.SyntheticEvent<
+    HTMLImageElement,
+    Event
+  > | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setError(null);
+  }, [src]);
+
+  return error ? (
+    <div className="flex size-9 items-center justify-center rounded-full border border-otl-gray-200">
+      <UserIcon className="size-6 text-txt-black-500" />
+    </div>
+  ) : (
+    <img
+      {...props}
+      src={src}
+      className={cn(props.className, loading && "blur-[2px]")}
+      onLoad={() => {
+        setLoading(false);
+      }}
+      onError={setError}
+    />
   );
 };
 
