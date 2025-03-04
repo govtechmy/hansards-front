@@ -76,7 +76,8 @@ const Hansard = ({
 
       // Annotation, Speech, Timestamp
       if (isSpeech(s)) {
-        const { author, is_annotation, index, speech, timestamp } = s;
+        const { author, author_id, is_annotation, index, speech, timestamp } =
+          s;
         const speech_id = `${sidebar_id}-${index}`;
 
         // Timestamp
@@ -109,35 +110,28 @@ const Hansard = ({
             ? "ydp"
             : author
             ? ["Beberapa Ahli", "Seorang Ahli"].includes(author)
-              ? ""
+              ? "z"
               : names[0].length % 7
-            : "";
-
-        const colour = useMemo<string>(() => {
-          if (mod === "ydp") return "ydp";
-          switch (mod) {
-            case 0:
-              return "r"; // red
-            case 1:
-              return "o"; // orange
-            case 2:
-              return "g"; // green
-            case 3:
-              return "c"; // cyan
-            case 4:
-              return "b"; // blue
-            case 5:
-              return "v"; // violet
-            case 6:
-              return "p"; // pink
-            default:
-              return "z"; // zinc
-          }
-        }, [mod]);
+            : "z";
 
         const speaker =
           author !== "ANNOTATION" ? (
-            <p className={cn("n", colour)}>
+            <p
+              className={cn(
+                "n",
+                {
+                  0: "r", // red
+                  1: "o", // orange
+                  2: "g", // green
+                  3: "c", // cyan
+                  4: "b", // blue
+                  5: "v", // violet
+                  6: "p", // pink
+                  ydp: "ydp", // yellow
+                  z: "z", // zinc
+                }[mod]
+              )}
+            >
               {highlightKeyword(names[0], `${speech_id}_title`)}
               {names[1] ? (
                 <span className="o">
@@ -236,7 +230,8 @@ const Hansard = ({
                 length={speech.length}
                 isYDP={IS_YDP}
                 side={curr_dir}
-                uid={IS_YDP ? 3304 : 3477}
+                uid={author_id}
+                author={author}
               >
                 {_speech}
               </SpeechBubble>

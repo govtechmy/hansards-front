@@ -16,9 +16,9 @@ div.s {
   div.b {
     @apply relative flex min-w-[250px] scroll-mt-40 flex-col rounded-xl border border-transparent bg-slate-50
     px-3 pb-6 pt-3 
-    text-[15px] hover:border-border
-    hover:bg-background hover:shadow-floating dark:bg-zinc-800 dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)]
-    sm:px-4.5 sm:text-base lg:scroll-mt-60;
+    text-[15px] hover:border-border hover:bg-background
+    hover:shadow-floating dark:bg-zinc-800
+    dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)] sm:px-4.5 sm:text-base lg:scroll-mt-60;
   }
 
   /* speech container */

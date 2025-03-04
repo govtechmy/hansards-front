@@ -1,7 +1,5 @@
 import { cn } from "@lib/helpers";
-import { ReactNode, useState } from "react";
 import ShareButton from "./share";
-import ImageWithFallback from "@components/ImageWithFallback";
 import { useTranslation } from "react-i18next";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { DownloadIcon, UserIcon } from "@govtechmy/myds-react/icon";
@@ -11,6 +9,7 @@ import {
   DropdownItem,
   DropdownTrigger,
 } from "@govtechmy/myds-react/dropdown";
+import { ReactNode, useState } from "react";
 
 /**
  * Speech Bubble
@@ -18,6 +17,7 @@ import {
  */
 
 export type SpeechBubbleProps = {
+  author: string;
   children: ReactNode;
   date: string;
   filename: string;
@@ -29,10 +29,11 @@ export type SpeechBubbleProps = {
   speaker: ReactNode;
   speech_id: string;
   timeString: string;
-  uid: number;
+  uid: string;
 };
 
 const SpeechBubble = ({
+  author,
   children,
   date,
   filename,
@@ -56,27 +57,20 @@ const SpeechBubble = ({
         {/* Avatar */}
         <div className={cn("w", side && "r")}>
           <div className="a">
-            {/* <ImageWithFallback
-              fallback={
-                <div className="border border-border size-9 rounded-full" />
-              }
-              src={`/static/`}
-              width={36}
-              height={1}
-              alt={``}
-              className="p"
-              priority={index <= 5}
-            /> */}
-            {/* <img
-              alt={`${uid}`}
-              className="p"
-              src={`/mp/${uid}.jpg`}
-              width={36}
-              height={36}
-            /> */}
-            <div className="flex size-9 items-center justify-center rounded-full border border-border">
-              <UserIcon className="size-6 text-zinc-500" />
-            </div>
+            {uid === null ? (
+              <div className="flex size-9 items-center justify-center rounded-full border border-border">
+                <UserIcon className="size-6 text-zinc-500" />
+              </div>
+            ) : (
+              <img
+                alt={author}
+                className="p"
+                src={`${process.env.NEXT_PUBLIC_I18N_URL}/img/mp-240/${uid}.jpg`}
+                width={36}
+                height={1}
+                fetchPriority={index > 10 ? "high" : "auto"}
+              />
+            )}
           </div>
         </div>
         {/* Bubble */}
