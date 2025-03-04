@@ -59,7 +59,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
   const { data, setData } = useData({
     query: q ? String(q) : "",
-    dewan: dewan ? String(dewan) : "dewan-rakyat",
+    dewan: dewan ? String(dewan) : "dewan-negara",
     age: umur ? String(umur) : ALL_AGES,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
     party: parti ? String(parti) : ALL_PARTIES,

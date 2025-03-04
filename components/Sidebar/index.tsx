@@ -45,22 +45,22 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
 
   const Sidebar = () => (
     <div className="sticky top-14 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
-      <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-168px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-1.5">
+      <ul className="max-lg:hide-scrollbar sidebar-scrollbar h-[calc(100dvh-56px)] overflow-y-auto overflow-x-hidden pt-1.5 lg:h-[calc(100dvh-168px)]">
         {data ? (
           data.map(({ id, penggal, yearRange }) => {
-            const parlimen_id = `parlimen-${id}/`;
+            const parlimen_id = `parlimen-${id}`;
             const parlimen = t("parlimen", {
               ns: "enum",
               count: id,
               ordinal: true,
             });
-            const open = TreeState === undefined ? false : TreeState[id]
+            const open = TreeState === undefined ? false : TreeState[id];
             return (
               <li
                 key={id}
                 title={`${parlimen}${yearRange}`}
                 className={cn(
-                  "text-sm relative",
+                  "relative text-sm",
                   selected && selected.startsWith(parlimen_id)
                     ? styles.active
                     : styles.inactive
@@ -69,7 +69,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                 <Details
                   key={parlimen_id}
                   open={open || selected?.startsWith(parlimen_id)}
-                  onOpen={() => TreeState[id] = !open}
+                  onOpen={() => (TreeState[id] = !open)}
                   summary={
                     <span className="flex flex-col">
                       {parlimen}
@@ -78,7 +78,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                   }
                 >
                   {penggal.map(({ id, yearRange }, i) => {
-                    const parlimen_penggal = parlimen_id + `penggal-${id}`;
+                    const parlimen_penggal = parlimen_id + `-penggal-${id}`;
                     const penggal_full = t("penggal_full", {
                       ns: "enum",
                       n: id,
@@ -93,29 +93,27 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
                           setMobileSidebar(false);
                         }}
                         className={cn(
-                          "hover:bg-bg-hover relative ml-2.5 px-5 py-0.5",
+                          "relative ml-2.5 px-5 py-0.5 hover:bg-bg-hover",
                           selected === parlimen_penggal
                             ? styles.active
                             : styles.inactive
                         )}
                       >
-                        <p className="font-medium whitespace-nowrap">
+                        <p className="whitespace-nowrap font-medium">
                           {penggal_full}
                         </p>
                         {yearRange}
-                        <SidebarL className="absolute left-[-0.5px] bottom-1/2" />
+                        <SidebarL className="absolute bottom-1/2 left-[-0.5px]" />
                       </li>
                     );
                   })}
-                  <div
-                    className="absolute left-2.5 top-0 w-px border-l border-slate-400 z-10 h-[calc(100%-43px)]"
-                  />
+                  <div className="absolute left-2.5 top-0 z-10 h-[calc(100%-43px)] w-px border-l border-slate-400" />
                 </Details>
               </li>
             );
           })
         ) : (
-          <li className="px-5 py-1.5 text-zinc-500 text-sm italic">
+          <li className="px-5 py-1.5 text-sm italic text-zinc-500">
             {t("no_entries")}
           </li>
         )}
@@ -135,14 +133,14 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
       <div className="flex w-full">
         <div
           className={cn(
-            "border-r border-r-border shrink-0 w-14 h-[calc(100dvh-112px)] sticky top-28",
-            "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
-            showSidebar ? "lg:w-60 duration-300" : "hide-scrollbar duration-500"
+            "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-border",
+            "transform-gpu ease-in-out [transition-property:width] motion-reduce:transition-none",
+            showSidebar ? "duration-300 lg:w-60" : "hide-scrollbar duration-500"
           )}
         >
           <div
             className={cn(
-              "sticky top-0 z-10 bg-background flex gap-3 p-3 pb-1.5 items-end justify-between whitespace-nowrap",
+              "sticky top-0 z-10 flex items-end justify-between gap-3 whitespace-nowrap bg-background p-3 pb-1.5",
               showSidebar && "lg:pl-5"
             )}
           >
@@ -150,7 +148,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
               className={cn(
                 "title",
                 !showSidebar &&
-                  "absolute -rotate-90 origin-top-left translate-y-[150px] text-zinc-500"
+                  "absolute origin-top-left translate-y-[150px] -rotate-90 text-zinc-500"
               )}
             >
               {t("full_archive")}
@@ -184,8 +182,8 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
     <>
       <div className="flex w-full">
         <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-border">
-          <div className="sticky top-28 bg-background flex gap-3 py-3 px-2">
-            <h4 className="title absolute -rotate-90 origin-top-left translate-y-[150px]">
+          <div className="sticky top-28 flex gap-3 bg-background px-2 py-3">
+            <h4 className="title absolute origin-top-left translate-y-[150px] -rotate-90">
               {t("full_archive")}
             </h4>
             <Sheet open={mobileSidebar} onOpenChange={setMobileSidebar}>
@@ -201,7 +199,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
               </SheetTrigger>
               <SheetContent className="pl-3 pr-0">
                 <SheetHeading>
-                  <h3 className="title px-5 mb-1">{t("full_archive")}</h3>
+                  <h3 className="title mb-1 px-5">{t("full_archive")}</h3>
                 </SheetHeading>
                 <Sidebar />
               </SheetContent>

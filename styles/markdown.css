@@ -8,11 +8,11 @@
 }
 
 .markdown code:not(pre code) {
-  @apply bg-slate-200 break-words rounded-md border border-zinc-900 border-opacity-[0.04] px-[.25em] py-0.5 text-[.9em] dark:bg-white/10 dark:text-white;
+  @apply break-words rounded-md border border-zinc-900 border-opacity-[0.04] bg-slate-200 px-[.25em] py-0.5 text-[.9em] dark:bg-white/10 dark:text-white;
 }
 
 .markdown pre {
-  @apply bg-slate-200 bg-primary/5 dark:bg-secondary/10 my-3 overflow-x-auto whitespace-pre-wrap break-words rounded-xl border border-zinc-900 border-opacity-[0.04] px-3 py-3 text-[.9em] font-medium subpixel-antialiased;
+  @apply my-3 overflow-x-auto whitespace-pre-wrap break-words rounded-xl border border-zinc-900 border-opacity-[0.04] bg-bg-primary-600/5 bg-slate-200 px-3 py-3 text-[.9em] font-medium subpixel-antialiased dark:bg-secondary/10;
 }
 
 .markdown ul {
@@ -20,7 +20,7 @@
 }
 
 .markdown ol {
-  @apply  list-inside list-decimal ;
+  @apply list-inside list-decimal;
 }
 
 .markdown li > p {
@@ -28,14 +28,14 @@
 }
 
 .markdown a {
-  @apply text-primary dark:text-secondary [text-underline-position:from-font] hover:underline;
+  @apply text-txt-primary hover:underline dark:text-secondary;
 }
 
 .markdown > table td,
 th {
-  @apply tabular-nums px-3 py-1.5 text-start font-normal;
+  @apply px-3 py-1.5 text-start font-normal tabular-nums;
 }
 
 .markdown > table tr {
-  @apply border-slate-200 dark:border-zinc-800 border-b;
+  @apply border-b border-slate-200 dark:border-zinc-800;
 }

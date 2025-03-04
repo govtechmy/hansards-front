@@ -3,6 +3,11 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* MYDS CSS */
+@import "@govtechmy/myds-style/color.css";
+@import "@govtechmy/myds-style/light.css";
+@import "@govtechmy/myds-style/dark.css";
+
 /* MODULE CSS */
 @import "./bubble.css";
 @import "./dashboards/table.css";
@@ -86,7 +91,7 @@
   }
 
   .btn-primary {
-    @apply btn bg-gradient-to-t from-primary to-secondary px-3 py-1.5 text-white shadow-button hover:to-[#5B8EFF];
+    @apply btn bg-gradient-to-t from-bg-primary-600 to-secondary px-3 py-1.5 text-white shadow-button hover:to-[#5B8EFF];
   }
 
   .btn-primary svg {
@@ -244,4 +249,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
   visibility: hidden;
+}
+
+@layer utilities {
+  .underline {
+    text-decoration: underline;
+    text-underline-position: from-font;
+  }
 }

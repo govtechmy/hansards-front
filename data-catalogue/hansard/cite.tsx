@@ -28,7 +28,6 @@ interface CiteDialogDrawerProps {
   trigger: (onClick: () => void) => ReactNode;
 }
 
-
 export default function CiteDialogDrawer({
   date,
   dewan,
@@ -41,18 +40,25 @@ export default function CiteDialogDrawer({
 
   const mys = "Malaysia";
   const parl_debates = "Parliamentary Debates";
-  const full_dewan = dewan === "DR" ? t("common:dewan_rakyat") : dewan === "DN" ? t("common:dewan_negara") : t("common:kamar_khas");
+  const full_dewan =
+    dewan === "DR"
+      ? t("common:dewan_rakyat")
+      : dewan === "DN"
+      ? t("common:dewan_negara")
+      : t("common:kamar_khas");
   const _date = new Date(date);
   const _options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
-  }
+  };
   const formattedDate = _date.toLocaleDateString("en-GB", _options);
   const today = new Date().toLocaleDateString("en-GB", _options);
   const title = `${date} ${t("header", { context: dewan.toLowerCase() })}`;
   const { locale } = useRouter();
-  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${locale === "en-GB" ? "/" + locale : ""}${hansard_id}`;
+  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${
+    locale === "en-GB" ? "/" + locale : ""
+  }${hansard_id}`;
 
   const bil = "{ volume }";
   const page = "{ pages }";
@@ -64,7 +70,7 @@ export default function CiteDialogDrawer({
     },
     {
       label: "MLA",
-      value: `${mys}, Parlimen, ${full_dewan}. \"${title}\" <i>"Parliament Hansards"</i> (${formattedDate}). ${URL.slice(8)}. Accessed ${today}.`,
+      value: `${mys}, Parlimen, ${full_dewan}. \"${title}\" <i>"Parliament Hansards"</i> (${formattedDate}). ${URL}. Accessed ${today}.`,
     },
     {
       label: "APA",
@@ -85,13 +91,15 @@ export default function CiteDialogDrawer({
   ];
 
   const CiteButton = () => (
-    <div className="max-md:p-4 space-y-5 max-h-[80dvh] overflow-auto">
+    <div className="max-h-[80dvh] space-y-5 overflow-auto max-md:p-4">
       <table className="table-auto text-sm">
         <tbody>
           {CITE_OPTIONS.map(({ label, value }) => (
             <tr>
-              <th className="px-2 py-2.5 select-none">{label}</th>
-              <td className="px-2 py-2.5 select-all"><Trans>{value}</Trans></td>
+              <th className="select-none px-2 py-2.5">{label}</th>
+              <td className="select-all px-2 py-2.5">
+                <Trans>{value}</Trans>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -102,12 +110,10 @@ export default function CiteDialogDrawer({
   if (isDesktop)
     return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          {trigger(() => setOpen(true))}
-        </DialogTrigger>
+        <DialogTrigger asChild>{trigger(() => setOpen(true))}</DialogTrigger>
         <DialogContent className="max-w-2xl">
           <DialogHeader className="flex w-full justify-between">
-            <span className="text-center font-medium text-foreground w-full">
+            <span className="w-full text-center font-medium text-foreground">
               {t("cite_hansard")}
             </span>
           </DialogHeader>
@@ -118,11 +124,9 @@ export default function CiteDialogDrawer({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        {trigger(() => setOpen(true))}
-      </SheetTrigger>
-      <SheetContent side="bottom" className="p-0 rounded-t-xl">
-        <SheetHeading className="p-4 flex justify-between border-b border-slate-200 dark:border-zinc-700">
+      <SheetTrigger asChild>{trigger(() => setOpen(true))}</SheetTrigger>
+      <SheetContent side="bottom" className="rounded-t-xl p-0">
+        <SheetHeading className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
           <span className="font-medium text-foreground">
             {t("cite_hansard")}
           </span>
