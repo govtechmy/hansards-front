@@ -57,14 +57,18 @@ const SpeechBubble = ({
         {/* Avatar */}
         <div className={cn("w", side && "r")}>
           <div className="a">
-            <ImageWithFallback
-              src={`${process.env.NEXT_PUBLIC_I18N_URL}/img/mp-240/${uid}.jpg`}
-              width={36}
-              height={36}
-              alt={author}
-              className="p"
-              fetchPriority={index < 10 ? "high" : "auto"}
-            />
+            {uid === null ? (
+              <EmptyMP />
+            ) : (
+              <ImageWithFallback
+                src={`${process.env.NEXT_PUBLIC_I18N_URL}/img/mp-240/${uid}.jpg`}
+                width={36}
+                height={36}
+                alt={author}
+                className="p"
+                fetchPriority={index < 10 ? "high" : "auto"}
+              />
+            )}
           </div>
         </div>
         {/* Bubble */}
@@ -125,9 +129,7 @@ const ImageWithFallback: FC<ComponentProps<"img">> = ({ src, ...props }) => {
   }, [src]);
 
   return error ? (
-    <div className="flex size-9 items-center justify-center rounded-full border border-otl-gray-200">
-      <UserIcon className="size-6 text-txt-black-500" />
-    </div>
+    <EmptyMP />
   ) : (
     <img
       {...props}
@@ -140,5 +142,11 @@ const ImageWithFallback: FC<ComponentProps<"img">> = ({ src, ...props }) => {
     />
   );
 };
+
+const EmptyMP = () => (
+  <div className="flex size-9 items-center justify-center rounded-full border border-otl-gray-200">
+    <UserIcon className="size-6 text-txt-black-500" />
+  </div>
+);
 
 export default SpeechBubble;
