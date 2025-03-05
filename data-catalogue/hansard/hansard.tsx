@@ -62,13 +62,13 @@ const Hansard = ({
   const { counts, download } = useAnalytics(hansard_id);
   const { downloads, shares, views } = counts;
 
-  let curr = "";
-  let curr_author = "";
-  let curr_dir = false;
-
   const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
     let { searchValue } = useContext(SearchContext);
     const { onUpdateMatchList } = useContext(SearchEventContext);
+
+    let curr = "";
+    let curr_author = "";
+    let curr_dir = false;
 
     return speeches.map((s, i) => {
       const isFirstLevel = !prev_id;
