@@ -1,4 +1,3 @@
-import { COLOR } from "@lib/constants";
 import { useContext, useEffect, useMemo } from "react";
 import { SearchContext, SearchEventContext } from "./context";
 import { getMatchText } from "./match-text";
@@ -32,22 +31,21 @@ export function highlightKeyword(text: string, id: string) {
         {matchData.slices.map((speech, i) => {
           const matchId = `${id}_${i}`;
           const isHighlighted = matchId === activeId;
-          const backgroundColor = isHighlighted ? COLOR.PRIMARY : "#DDD6B0";
-          const color = isHighlighted ? COLOR.WHITE : COLOR.BLACK;
 
           return i < matchData.slices.length ? (
             <>
               {speech}
-              <span
+              <mark
                 key={i}
                 id={matchId}
-                style={{
-                  backgroundColor,
-                  color,
-                }}
+                className={
+                  isHighlighted
+                    ? "bg-bg-primary-500 text-white"
+                    : "bg-[#DDD6B0] text-black"
+                }
               >
                 {matchData.matches[i]}
-              </span>
+              </mark>
             </>
           ) : (
             speech
