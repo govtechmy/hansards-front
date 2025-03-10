@@ -17,7 +17,7 @@ import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { copyClipboard } from "@lib/helpers";
-import { ComponentProps, ReactNode, useState } from "react";
+import { ComponentProps, memo, ReactNode, useState } from "react";
 
 /**
  * Share Dialog/Drawer
@@ -31,12 +31,12 @@ interface ShareDialogDrawerProps {
   trigger?: (onClick: () => void) => ReactNode;
 }
 
-export default function ShareDialogDrawer({
+export const ShareDialogDrawer = ({
   date,
   hansard_id,
   index,
   trigger,
-}: ShareDialogDrawerProps) {
+}: ShareDialogDrawerProps) => {
   const { t, i18n } = useTranslation(["hansard", "catalogue"]);
   const [open, setOpen] = useState<boolean>(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -179,7 +179,7 @@ export default function ShareDialogDrawer({
       </SheetContent>
     </Sheet>
   );
-}
+};
 
 const XShare = (props: ComponentProps<"svg">) => {
   return (
@@ -242,3 +242,5 @@ const FBShare = (props: ComponentProps<"svg">) => {
     </svg>
   );
 };
+
+export default memo(ShareDialogDrawer);
