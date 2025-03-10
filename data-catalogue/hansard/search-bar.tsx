@@ -1,4 +1,4 @@
-import { Button, Search } from "@components/index";
+import { Search } from "@components/index";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -6,6 +6,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { useContext, useState } from "react";
 import { SearchContext, SearchEventContext } from "./search/context";
+import { Button } from "@govtechmy/myds-react/button";
 
 /**
  * Hansard Search Bar
@@ -17,49 +18,41 @@ export default function HansardSearchBar() {
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
 
   return (
-    <div className="border-b-border sticky top-14 z-20 flex items-center justify-between gap-1 lg:gap-3 w-full border-b bg-background py-1.5 pr-3 lg:px-8">
-      <div className="flex gap-3 items-center w-full">
-        <Search
-          className="border-none py-[3.5px] w-full"
-          query={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            onSearchChange(e.target.value);
-          }}
-        />
+    <div className="flex w-full items-center gap-3 py-1.5">
+      <Search
+        className="w-full border-none py-[3.5px]"
+        query={query}
+        onChange={e => {
+          setQuery(e.target.value);
+          onSearchChange(e.target.value);
+        }}
+      />
 
-        {searchValue && searchValue.length > 1 && (
-          <Button
-            variant="reset"
-            className="h-fit hover:bg-bg-hover text-dim group rounded-full p-1 hover:text-foreground"
-            onClick={() => {
-              setQuery("");
-              onSearchChange("");
-            }}
-          >
-            <XMarkIcon className="text-dim size-5 group-hover:text-foreground" />
-          </Button>
-        )}
-      </div>
       {searchValue && searchValue.length > 1 && (
-        <div className="flex gap-3 items-center">
-          <p className="text-zinc-500 max-sm:text-sm whitespace-nowrap">{`${activeCount} of ${totalCount} found`}</p>
-          <Button
-            variant="reset"
-            className="h-fit hover:bg-bg-hover text-zinc-500 group rounded-full p-1 hover:text-foreground"
-            onClick={onPrev}
-          >
-            <ChevronUpIcon className="size-5" />
-          </Button>
-          <Button
-            variant="reset"
-            className="h-fit hover:bg-bg-hover text-zinc-500 group rounded-full p-1 hover:text-foreground"
-            onClick={onNext}
-          >
-            <ChevronDownIcon className="size-5" />
-          </Button>
-        </div>
+        <Button
+          variant="default-ghost"
+          onClick={() => {
+            setQuery("");
+            onSearchChange("");
+          }}
+          iconOnly
+        >
+          <XMarkIcon className="size-5 text-dim group-hover:text-foreground" />
+        </Button>
+      )}
+      {searchValue && searchValue.length > 1 && (
+        <>
+          <p className="whitespace-nowrap text-sm text-zinc-500">{`${activeCount} / ${totalCount}`}</p>
+          <div className="flex items-center">
+            <Button variant="default-ghost" onClick={onPrev} iconOnly>
+              <ChevronUpIcon className="size-5" />
+            </Button>
+            <Button variant="default-ghost" onClick={onNext} iconOnly>
+              <ChevronDownIcon className="size-5" />
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
-};
+}
