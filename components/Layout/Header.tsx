@@ -20,10 +20,12 @@ const Header = ({ stateSelector }: HeaderProps) => {
         <div className="flex w-full items-center gap-1 lg:gap-4">
           <Link href="/">
             <div className="flex items-center gap-2.5">
-              <div className="flex w-8 items-center justify-center">
+              <div className="flex size-8 items-center justify-center">
                 <ParlimenIcon />
               </div>
-              <div className="header whitespace-nowrap">Hansard Parlimen</div>
+              <div className="whitespace-nowrap font-poppins text-body-lg font-semibold">
+                Hansard Parlimen
+              </div>
             </div>
           </Link>
 
