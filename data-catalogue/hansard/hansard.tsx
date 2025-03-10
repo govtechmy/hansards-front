@@ -34,6 +34,8 @@ import {
   DropdownTrigger,
 } from "@govtechmy/myds-react/dropdown";
 import { Button } from "@govtechmy/myds-react/button";
+import { Remarkable } from "remarkable";
+import RemarkableReactRenderer from "remarkable-react";
 
 /**
  * Hansard
@@ -172,35 +174,62 @@ const Hansard = ({
           } else onUpdateMatchList([]);
         }, [matchData]);
 
-        const parseMarkdown = (children: string) => (
-          <Markdown
-            className={cn("c", is_annotation && "d")}
-            rehypePlugins={[rehypeRaw]}
-            disallowedElements={["code"]}
-            components={{
-              mark(props) {
-                const { node, id, ...rest } = props;
-                const matchId = `${speech_id}_${id}`;
-                const { activeId } = useContext(SearchContext);
-                const isHighlighted = matchId === activeId;
-                return (
-                  <mark
-                    key={index}
-                    id={matchId}
-                    className={
-                      isHighlighted
-                        ? "bg-bg-primary-500 text-white"
-                        : "bg-[#DDD6B0] text-black"
-                    }
-                    {...rest}
-                  />
-                );
-              },
-            }}
-          >
-            {children}
-          </Markdown>
-        );
+        const md = new Remarkable();
+        md.inline.ruler.enable(["mark"]);
+        md.renderer = new RemarkableReactRenderer({
+          components: {
+            mark: ({ children }: { children: string[] }) => {
+              let { activeId } = useContext(SearchContext);
+              const child = children[0];
+              const separator_idx = child.indexOf("-");
+              const matchId = child.slice(0, separator_idx);
+              const isHighlighted = matchId === activeId;
+              return (
+                <mark
+                  id={matchId}
+                  className={cn(
+                    isHighlighted
+                      ? "bg-bg-primary-500 text-white"
+                      : "bg-[#DDD6B0] text-black"
+                  )}
+                >
+                  {child.slice(separator_idx + 1)}
+                </mark>
+              );
+            },
+          },
+        });
+
+        const parseMarkdown = (children: string) => md.render(children);
+        // const parseMarkdown = (children: string) => (
+        //   <Markdown
+        //     className={cn("c", is_annotation && "d")}
+        //     rehypePlugins={[rehypeRaw]}
+        //     disallowedElements={["code"]}
+        //     components={{
+        //       mark(props) {
+        //         const { node, id, ...rest } = props;
+        //         const matchId = `${speech_id}_${id}`;
+        //         const { activeId } = useContext(SearchContext);
+        //         const isHighlighted = matchId === activeId;
+        //         return (
+        //           <mark
+        //             key={index}
+        //             id={matchId}
+        //             className={
+        //               isHighlighted
+        //                 ? "bg-bg-primary-500 text-white"
+        //                 : "bg-[#DDD6B0] text-black"
+        //             }
+        //             {...rest}
+        //           />
+        //         );
+        //       },
+        //     }}
+        //   >
+        //     {children}
+        //   </Markdown>
+        // );
 
         const _speech = useMemo<ReactNode>(() => {
           if (typeof matchData === "string") return parseMarkdown(matchData);
@@ -208,8 +237,9 @@ const Hansard = ({
             let str = "";
             for (let i = 0; i < matchData.slices.length; i++) {
               if (i === matchData.slices.length - 1) str += matchData.slices[i];
+              // str += `${matchData.slices[i]}<mark id='${i}'>${matchData.matches[i]}</mark>`;
               else
-                str += `${matchData.slices[i]}<mark id='${i}'>${matchData.matches[i]}</mark>`;
+                str += `${matchData.slices[i]}==${index}_${i}-${matchData.matches[i]}==`;
             }
             return parseMarkdown(str);
           }
