@@ -3,13 +3,14 @@ import ShareButton from "./share";
 import { useTranslation } from "react-i18next";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { DownloadIcon, UserIcon } from "@govtechmy/myds-react/icon";
-import {
-  Dropdown,
-  DropdownContent,
-  DropdownItem,
-  DropdownTrigger,
-} from "@govtechmy/myds-react/dropdown";
-import { ComponentProps, FC, ReactNode, useEffect, useState } from "react";
+// import {
+//   Dropdown,
+//   DropdownContent,
+//   DropdownItem,
+//   DropdownTrigger,
+// } from "@govtechmy/myds-react/dropdown";
+import { ComponentProps, memo, ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 /**
  * Speech Bubble
@@ -26,8 +27,7 @@ export type SpeechBubbleProps = {
   isYDP: boolean;
   length: number;
   side: boolean;
-  speaker: ReactNode;
-  speech_id: string;
+  speaker?: ReactNode;
   timeString: string;
   uid: string;
 };
@@ -36,24 +36,32 @@ const SpeechBubble = ({
   author,
   children,
   date,
-  filename,
+  // filename,
   hansard_id,
   index,
   isYDP,
   length,
   side,
   speaker,
-  speech_id,
   timeString,
   uid,
 }: SpeechBubbleProps) => {
   const { t } = useTranslation("catalogue");
-  const { download } = useAnalytics(hansard_id);
-  const [downloadOpen, setDownloadOpen] = useState<boolean>(false);
+  // const { download } = useAnalytics(hansard_id);
+  // const [downloadOpen, setDownloadOpen] = useState<boolean>(false);
+  const [highlight, setHighlight] = useState<boolean>(false);
+
+  const router = useRouter();
+  const asPath = router.asPath;
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    const sameId = Number(hash) === index;
+    if (hash && sameId) setHighlight(true);
+  }, [asPath]);
 
   return (
     <>
-      <div id={`${index}`} key={speech_id} className={cn("s", side && "r")}>
+      <div id={`${index}`} key={index} className={cn("s", side && "r")}>
         {/* Avatar */}
         <div className={cn("w", side && "r")}>
           <div className="a">
@@ -72,17 +80,24 @@ const SpeechBubble = ({
           </div>
         </div>
         {/* Bubble */}
-        <div className={cn("b", isYDP && "ydp", length <= 222 && "x")}>
+        <div
+          className={cn(
+            "b",
+            isYDP && "ydp",
+            length <= 222 && "x",
+            highlight && "h"
+          )}
+        >
           {speaker ? <div className="m">{speaker}</div> : <></>}
           {children}
 
           <div
             className={cn(
-              "ft",
-              downloadOpen ? "visible translate-x-2" : "invisible"
+              "ft invisible"
+              // downloadOpen ? "visible translate-x-2" : "invisible"
             )}
           >
-            <Dropdown open={downloadOpen} onOpenChange={setDownloadOpen}>
+            {/* <Dropdown open={downloadOpen} onOpenChange={setDownloadOpen}>
               <DropdownTrigger className="bt">
                 <DownloadIcon />
                 {t("download", { ns: "catalogue" })}
@@ -103,7 +118,7 @@ const SpeechBubble = ({
                   </DropdownItem>
                 ))}
               </DropdownContent>
-            </Dropdown>
+            </Dropdown> */}
             <ShareButton
               date={date}
               hansard_id={hansard_id}
@@ -117,7 +132,7 @@ const SpeechBubble = ({
   );
 };
 
-const ImageWithFallback: FC<ComponentProps<"img">> = ({ src, ...props }) => {
+const ImageWithFallback = ({ src, ...props }: ComponentProps<"img">) => {
   const [error, setError] = useState<React.SyntheticEvent<
     HTMLImageElement,
     Event
@@ -149,4 +164,4 @@ const EmptyMP = () => (
   </div>
 );
 
-export default SpeechBubble;
+export default memo(SpeechBubble);

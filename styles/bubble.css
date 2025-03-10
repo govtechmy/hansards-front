@@ -1,5 +1,5 @@
 /* time */
-p.t {
+time.t {
   @apply text-center italic text-zinc-500;
 }
 
@@ -15,10 +15,12 @@ div.s {
   /* bubble */
   div.b {
     @apply relative flex min-w-[250px] scroll-mt-40 flex-col rounded-xl border border-transparent bg-slate-50
-    px-3 pb-6 pt-3 
-    text-[15px] hover:border-border hover:bg-background
-    hover:shadow-floating dark:bg-zinc-800
+    px-3 pb-6 pt-3 text-[15px] hover:border-border hover:bg-background hover:shadow-floating dark:bg-zinc-800
     dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)] sm:px-4.5 sm:text-base lg:scroll-mt-60;
+  }
+
+  div.h {
+    @apply shadow-floating dark:shadow-[0_6px_24px_rgba(255,255,255,20%)];
   }
 
   /* speech container */
@@ -121,7 +123,7 @@ div.s {
   }
   /* footer */
   .ft {
-    @apply absolute bottom-4.5 right-6 flex items-center bg-inherit [mask-image:linear-gradient(279deg,#FFF_95%,rgba(0,0,0,0)_100%)];
+    @apply absolute bottom-4.5 right-6 flex items-center bg-inherit [mask-image:linear-gradient(279deg,#FFF_90%,rgba(0,0,0,0)_100%)];
   }
   /* share button */
   .bt {
