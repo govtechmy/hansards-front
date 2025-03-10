@@ -1,9 +1,20 @@
+import { Button } from "@govtechmy/myds-react/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
-} from "@components/Dialog";
+} from "@govtechmy/myds-react/dialog";
+import {
+  SummaryList,
+  SummaryListAction,
+  SummaryListBody,
+  SummaryListDetail,
+  SummaryListRow,
+  SummaryListTerm,
+} from "@govtechmy/myds-react/summary-list";
 import {
   Sheet,
   SheetContent,
@@ -12,8 +23,8 @@ import {
 } from "@components/Sheet";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { Trans, useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
 import { ReactNode, useState } from "react";
+import { CopyIcon } from "@govtechmy/myds-react/icon";
 
 /**
  * Cite Dialog/Drawer
@@ -29,81 +40,110 @@ interface CiteDialogDrawerProps {
 }
 
 export default function CiteDialogDrawer({
-  date,
+  date: _date,
   dewan,
   hansard_id,
   trigger,
 }: CiteDialogDrawerProps) {
   const { t } = useTranslation(["hansard", "catalogue", "common"]);
   const [open, setOpen] = useState<boolean>(false);
+
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const mys = "Malaysia";
-  const parl_debates = "Parliamentary Debates";
-  const full_dewan =
-    dewan === "DR"
-      ? t("common:dewan_rakyat")
-      : dewan === "DN"
-      ? t("common:dewan_negara")
-      : t("common:kamar_khas");
-  const _date = new Date(date);
-  const _options: Intl.DateTimeFormatOptions = {
+  const author = t("common:footer.parlimen");
+  const website_name = "Hansard Parlimen";
+
+  const date = new Date(_date);
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
   };
-  const formattedDate = _date.toLocaleDateString("en-GB", _options);
-  const today = new Date().toLocaleDateString("en-GB", _options);
-  const title = `${date} ${t("header", { context: dewan.toLowerCase() })}`;
-  const { locale } = useRouter();
-  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${
-    locale === "en-GB" ? "/" + locale : ""
-  }${hansard_id}`;
-
-  const bil = "{ volume }";
-  const page = "{ pages }";
+  const published_date_full = date.toLocaleDateString("en-GB", options);
+  const published_day = date.toLocaleDateString("en-GB", {
+    day: "numeric",
+  });
+  const published_month = date.toLocaleDateString("en-GB", {
+    month: "long",
+  });
+  const published_yr = date.getFullYear();
+  const today = new Date();
+  const today_full = today.toLocaleDateString("en-GB", options);
+  const this_month = today.toLocaleDateString("en-GB", {
+    month: "short",
+  });
+  const title = `${_date} ${t("header", { context: dewan.toLowerCase() })}`;
+  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
 
   const CITE_OPTIONS = [
     {
       label: "JournalMP",
-      value: `${dewan} Deb ${formattedDate}, Bil. ${bil}, ${page}. ${URL}.`,
-    },
-    {
-      label: "MLA",
-      value: `${mys}, Parlimen, ${full_dewan}. \"${title}\" <i>"Parliament Hansards"</i> (${formattedDate}). ${URL}. Accessed ${today}.`,
-    },
-    {
-      label: "APA",
-      value: `${mys}, ${parl_debates}, ${full_dewan} ${formattedDate}. ${URL}`,
-    },
-    {
-      label: "Chicago",
-      value: `${mys}, ${parl_debates}, ${full_dewan} ${formattedDate}. ${URL}`,
+      value: `${author}, '${title}' <${URL}> accessed ${today_full}`,
     },
     {
       label: "Harvard",
-      value: `${mys}n ${full_dewan} (${_date.getFullYear()}) <i>Debates</i>, ${bil}:${page}.`,
+      value: `${author}, ${published_yr}. <i>${title}</i>. ${website_name}. Available at: ${URL} (Accessed: ${today_full})`,
+    },
+    {
+      label: "Chicago",
+      value: `${author}. "${title}." ${website_name}. ${published_date_full}. ${URL}.`,
+    },
+    {
+      label: "MLA",
+      value: `${author}. "${title}" <i>${website_name}</i>, ${published_date_full}, ${URL}.`,
+    },
+    {
+      label: "APA",
+      value: `${author}. (${published_yr}, ${published_month} ${published_day}). <i>${title}.</i> ${website_name}. ${URL}`,
     },
     {
       label: "Vancouver",
-      value: `${mys}, ${parl_debates}, ${full_dewan} ${formattedDate}. ${URL}`,
+      value: `${author}. ${title} [Internet]. Year [cited ${new Date().getFullYear()} ${this_month} ${today.getDate()}]. Available from: ${URL}`,
     },
   ];
 
   const CiteButton = () => (
-    <div className="max-h-[80dvh] space-y-5 overflow-auto max-md:p-4">
-      <table className="table-auto text-sm">
-        <tbody>
+    <div className="max-h-[80dvh] space-y-5 overflow-auto">
+      <SummaryList className="table-auto text-sm">
+        <SummaryListBody>
           {CITE_OPTIONS.map(({ label, value }) => (
-            <tr>
-              <th className="select-none px-2 py-2.5">{label}</th>
-              <td className="select-all px-2 py-2.5">
-                <Trans>{value}</Trans>
-              </td>
-            </tr>
+            <SummaryListRow>
+              <SummaryListTerm className="min-w-[100px]">
+                {label}
+              </SummaryListTerm>
+              <SummaryListDetail
+                id={label}
+                className="select-all text-txt-black-700"
+              >
+                {label === "JournalMP" ? value : <Trans>{value}</Trans>}
+              </SummaryListDetail>
+              <SummaryListAction>
+                <Button
+                  variant="primary-ghost"
+                  onClick={async () => {
+                    const plain = "text/plain";
+                    const html = "text/html";
+                    const text =
+                      document.getElementById(label)?.innerText || "";
+                    const blobHtml = new Blob([value], { type: html });
+                    const blobText = new Blob([text], { type: plain });
+                    const data = [
+                      new ClipboardItem({
+                        [plain]: blobText,
+                        [html]: blobHtml,
+                      }),
+                    ];
+                    await navigator.clipboard.write(data);
+                  }}
+                  iconOnly
+                >
+                  <CopyIcon className="size-5" />
+                </Button>
+              </SummaryListAction>
+            </SummaryListRow>
           ))}
-        </tbody>
-      </table>
+        </SummaryListBody>
+      </SummaryList>
     </div>
   );
 
@@ -111,14 +151,14 @@ export default function CiteDialogDrawer({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>{trigger(() => setOpen(true))}</DialogTrigger>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader className="flex w-full justify-between">
-            <span className="w-full text-center font-medium text-foreground">
-              {t("cite_hansard")}
-            </span>
+        <DialogBody className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{t("cite_hansard")}</DialogTitle>
           </DialogHeader>
-          <CiteButton />
-        </DialogContent>
+          <DialogContent className="pt-0">
+            <CiteButton />
+          </DialogContent>
+        </DialogBody>
       </Dialog>
     );
 
