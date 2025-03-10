@@ -61,7 +61,7 @@ jobs:
               --header 'Content-Type: application/json' \
               --data '{
                 "secret": "${{ secrets.SPINNAKER_SECRET }}",
-                "environment": "${{ env.ENVIRONMENT }}"
+                "environment": "${{ env.ENVIRONMENT }}",
                 "artifacts": [
                   {
                     "type": "docker/image",
