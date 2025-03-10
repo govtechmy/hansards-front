@@ -105,7 +105,14 @@ export type Speech = {
   timestamp: number;
   is_annotation: boolean;
   index: number;
+  avatar: string;
 };
 
 export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
 export type Speeches = Array<Speech | NestedSpeech>;
+
+export type Heading = {
+  id: string;
+  level: number;
+  title: string;
+};

@@ -2,7 +2,6 @@ import Button from "@components/Button";
 import { Sheet, SheetContent, SheetHeading } from "@components/Sheet";
 import { Details } from "@components/Sidebar/details";
 import { Collapse } from "@components/Sidebar/collapse";
-import { isSpeech } from "@data-catalogue/hansard/hansard";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
@@ -16,6 +15,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { isSpeech } from "@lib/utils";
 
 interface HansardSidebarProps {
   children: (open: boolean) => ReactNode;
@@ -66,20 +66,19 @@ const HansardSidebar = forwardRef(
               // .filter((s) => !isSpeech(s))
               .map((s, i) => {
                 const id = prev_id ? `${prev_id}_${i}` : `${i}`;
-                const open =
-                  TreeState[id] === undefined ? false : TreeState[id];
+                const open = TreeState[id] === undefined ? true : TreeState[id];
                 const key = Object.keys(s)[0];
                 if (isSpeech(s)) return;
                 else {
                   // has 1 more level
-                  if (s[key].some((s) => !isSpeech(s))) {
+                  if (s[key].some(s => !isSpeech(s))) {
                     return (
                       <li
                         key={id}
                         className={cn(
-                          "text-sm relative mr-px",
+                          "relative mr-px text-sm",
                           !first &&
-                          "border-l border-slate-400 last:border-background",
+                            "border-l border-slate-400 last:border-background",
                           selected && selected.startsWith(id)
                             ? styles.active
                             : styles.inactive
@@ -90,13 +89,13 @@ const HansardSidebar = forwardRef(
                           childClassName="pl-2.5"
                           key={id}
                           open={open || selected?.startsWith(id)}
-                          onOpen={() => TreeState[id] = !open}
+                          onOpen={() => (TreeState[id] = !open)}
                           summary={
                             <>
                               <span title={key}>{key}</span>
                               {!first && (
                                 <>
-                                  <SidebarL className="absolute left-[-1.5px] bottom-1/2" />
+                                  <SidebarL className="absolute bottom-1/2 left-[-1.5px]" />
                                   {i <= speeches.length - 1 && (
                                     <div className="absolute left-[-1.25px] top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
                                   )}
@@ -120,16 +119,16 @@ const HansardSidebar = forwardRef(
                           setMobileSidebar(false);
                         }}
                         className={cn(
-                          "relative hover:bg-bg-hover box-border px-5 py-1.5 w-full text-start font-medium text-sm",
+                          "relative box-border w-full px-5 py-1.5 text-start text-sm font-medium hover:bg-bg-hover",
                           !first &&
-                          "border-l-[1.25px] border-slate-400 last:border-transparent",
+                            "border-l-[1.25px] border-slate-400 last:border-transparent",
                           selected === id ? styles.active : styles.inactive
                         )}
                       >
                         <p>{key}</p>
                         {!first && (
                           <>
-                            <SidebarL className="absolute left-[-1.5px] bottom-1/2" />
+                            <SidebarL className="absolute bottom-1/2 left-[-1.5px]" />
                             {i <= speeches.length - 1 && (
                               <div className="absolute -left-px top-0 h-[calc(50%-17px)] w-px bg-slate-400" />
                             )}
@@ -146,11 +145,11 @@ const HansardSidebar = forwardRef(
 
       return (
         <div className="sticky top-0 [mask-image:linear-gradient(to_bottom,transparent,#000_20px),linear-gradient(to_left,#000_10px,transparent_10px)]">
-          <ul className="h-[calc(100dvh-56px)] lg:h-[calc(100dvh-112px)] max-lg:hide-scrollbar overflow-y-auto overflow-x-hidden sidebar-scrollbar pt-3 will-change-scroll">
+          <ul className="max-lg:hide-scrollbar sidebar-scrollbar h-[calc(100dvh-56px)] overflow-y-auto overflow-x-hidden pt-3 will-change-scroll lg:h-[calc(100dvh-112px)]">
             {headers ? (
               headers
             ) : (
-              <li className="px-5 py-1.5 text-zinc-500 text-sm italic">
+              <li className="px-5 py-1.5 text-sm italic text-zinc-500">
                 {t("no_entries", { ns: "common" })}
               </li>
             )}
@@ -172,8 +171,8 @@ const HansardSidebar = forwardRef(
           {/* Desktop */}
           <div
             className={cn(
-              "border-r border-r-border shrink-0 w-14 hidden lg:block md:ml-3 sticky top-14 h-[calc(100dvh-56px)]",
-              "transform-gpu [transition-property:width] ease-in-out motion-reduce:transition-none",
+              "sticky top-14 hidden h-[calc(100dvh-56px)] w-14 shrink-0 border-r border-r-border md:ml-3 lg:block",
+              "transform-gpu ease-in-out [transition-property:width] motion-reduce:transition-none",
               showSidebar
                 ? "w-[250px] duration-300"
                 : "hide-scrollbar duration-500"
@@ -181,7 +180,7 @@ const HansardSidebar = forwardRef(
           >
             <div
               className={cn(
-                "sticky top-14 z-10 bg-background flex gap-3 p-3 pb-0 items-baseline justify-between whitespace-nowrap",
+                "sticky top-14 z-10 flex items-baseline justify-between gap-3 whitespace-nowrap bg-background p-3 pb-0",
                 showSidebar && "lg:pl-5"
               )}
             >
@@ -189,10 +188,11 @@ const HansardSidebar = forwardRef(
                 className={cn(
                   "title",
                   !showSidebar &&
-                  `absolute -rotate-90 origin-top-left text-zinc-500 ${i18n.language === "en-GB"
-                    ? "translate-y-28"
-                    : "translate-y-36"
-                  }`
+                    `absolute origin-top-left -rotate-90 text-zinc-500 ${
+                      i18n.language === "en-GB"
+                        ? "translate-y-28"
+                        : "translate-y-36"
+                    }`
                 )}
               >
                 {t("toc")}
@@ -222,7 +222,7 @@ const HansardSidebar = forwardRef(
           <Sheet open={mobileSidebar} onOpenChange={setMobileSidebar}>
             <SheetContent className="pl-3 pr-0">
               <SheetHeading>
-                <h3 className="title px-5 mb-1">{t("toc")}</h3>
+                <h3 className="title mb-1 px-5">{t("toc")}</h3>
               </SheetHeading>
               <Sidebar />
             </SheetContent>
