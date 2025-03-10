@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.9",
-    "@govtechmy/myds-react": "^0.0.10",
-    "@govtechmy/myds-style": "^0.0.3",
+    "@govtechmy/myds-react": "^0.0.14",
+    "@govtechmy/myds-style": "^0.0.5",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@nivo/circle-packing": "^0.80.0",
