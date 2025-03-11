@@ -29,7 +29,7 @@ export type SpeechBubbleProps = {
   side: boolean;
   speaker?: ReactNode;
   timeString: string;
-  uid: string;
+  uid: string | null;
 };
 
 const SpeechBubble = ({
@@ -89,7 +89,7 @@ const SpeechBubble = ({
           )}
         >
           {speaker ? <div className="m">{speaker}</div> : <></>}
-          {children}
+          <div className="c">{children}</div>
 
           <div
             className={cn(
@@ -150,9 +150,7 @@ const ImageWithFallback = ({ src, ...props }: ComponentProps<"img">) => {
       {...props}
       src={src}
       className={cn(props.className, loading && "blur-[2px]")}
-      onLoad={() => {
-        setLoading(false);
-      }}
+      onLoad={() => setLoading(false)}
       onError={setError}
     />
   );
@@ -164,4 +162,4 @@ const EmptyMP = () => (
   </div>
 );
 
-export default memo(SpeechBubble);
+export default SpeechBubble;
