@@ -34,9 +34,12 @@ export function assertFulfilled<T>(
 }
 
 export const isYDP = (author: string) =>
-  ["Tuan Yang di-Pertua", "Timbalan Yang di-Pertua", "Tuan Pengerusi"].some(
-    ydp => author.includes(ydp)
-  );
+  [
+    "Seri Paduka Baginda Yang di-Pertuan Agong",
+    "Tuan Yang di-Pertua",
+    "Timbalan Yang di-Pertua",
+    "Tuan Pengerusi",
+  ].some(ydp => author.includes(ydp));
 
 export function formatTimestamp(timestamp: number) {
   const timestring = String(timestamp);
