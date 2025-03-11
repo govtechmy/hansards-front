@@ -68,7 +68,7 @@ const SpeechBubble = ({
             {uid === null ? (
               <EmptyMP />
             ) : (
-              <ImageWithFallback
+              <img
                 src={`${process.env.NEXT_PUBLIC_I18N_URL}/img/mp-240/${uid}.jpg`}
                 width={36}
                 height={36}
