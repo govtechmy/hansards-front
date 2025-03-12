@@ -51,7 +51,7 @@ const HansardSidebar = forwardRef(
 
     const styles = {
       active: "bg-bg-hover font-medium text-foreground",
-      inactive: "text-zinc-500",
+      inactive: "text-txt-black-500",
     };
 
     const Sidebar = () => {
@@ -149,7 +149,7 @@ const HansardSidebar = forwardRef(
             {headers ? (
               headers
             ) : (
-              <li className="px-5 py-1.5 text-sm italic text-zinc-500">
+              <li className="px-5 py-1.5 text-sm italic text-txt-black-500">
                 {t("no_entries", { ns: "common" })}
               </li>
             )}
@@ -188,7 +188,7 @@ const HansardSidebar = forwardRef(
                 className={cn(
                   "title",
                   !showSidebar &&
-                    `absolute origin-top-left -rotate-90 text-zinc-500 ${
+                    `absolute origin-top-left -rotate-90 text-txt-black-500 ${
                       i18n.language === "en-GB"
                         ? "translate-y-28"
                         : "translate-y-36"

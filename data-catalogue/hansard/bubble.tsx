@@ -24,12 +24,13 @@ export type SpeechBubbleProps = {
   filename: string;
   hansard_id: string;
   index: number;
+  is_annotation: boolean;
   isYDP: boolean;
   length: number;
   side: boolean;
   speaker?: ReactNode;
   timeString: string;
-  uid: string;
+  uid: number | null;
 };
 
 const SpeechBubble = ({
@@ -39,6 +40,7 @@ const SpeechBubble = ({
   // filename,
   hansard_id,
   index,
+  is_annotation,
   isYDP,
   length,
   side,
@@ -68,7 +70,7 @@ const SpeechBubble = ({
             {uid === null ? (
               <EmptyMP />
             ) : (
-              <ImageWithFallback
+              <img
                 src={`${process.env.NEXT_PUBLIC_I18N_URL}/img/mp-240/${uid}.jpg`}
                 width={36}
                 height={36}
@@ -89,7 +91,7 @@ const SpeechBubble = ({
           )}
         >
           {speaker ? <div className="m">{speaker}</div> : <></>}
-          {children}
+          <div className={cn("c", is_annotation && "d")}>{children}</div>
 
           <div
             className={cn(
@@ -150,9 +152,7 @@ const ImageWithFallback = ({ src, ...props }: ComponentProps<"img">) => {
       {...props}
       src={src}
       className={cn(props.className, loading && "blur-[2px]")}
-      onLoad={() => {
-        setLoading(false);
-      }}
+      onLoad={() => setLoading(false)}
       onError={setError}
     />
   );
@@ -164,4 +164,4 @@ const EmptyMP = () => (
   </div>
 );
 
-export default memo(SpeechBubble);
+export default SpeechBubble;

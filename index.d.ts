@@ -43,5 +43,11 @@ declare module "canvas2svg" {
 }
 
 declare module "geojson-bbox" {
-  export default function (geojson: GeoJSONObject): [number, number, number, number] {}
+  export default function (
+    geojson: GeoJSONObject
+  ): [number, number, number, number] {}
+}
+
+declare module "remarkable-react" {
+  export default any;
 }

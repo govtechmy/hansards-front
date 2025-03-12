@@ -1,11 +1,10 @@
 import DateCard from "../../../components/Card/date-card";
-import Markdown from "@components/Markdown";
 import ArrowUpRightIcon from "@heroicons/react/24/solid/ArrowUpRightIcon";
 import { useTranslation } from "@hooks/useTranslation";
 import { Dewan } from "@lib/types";
 import Link from "next/link";
-import { useMemo } from "react";
-import rehypeRaw from "rehype-raw";
+import { Remarkable } from "remarkable";
+import RemarkableReactRenderer from "remarkable-react";
 
 export type Excerpt = {
   index: number;
@@ -30,58 +29,36 @@ const ExcerptCard = ({ dewan, excerpt, keyword }: ExcerptCardProps) => {
   const { index, sitting, speaker, trimmed_speech } = excerpt;
   // const [name, title] = speaker.split("[");
 
-  const speech = useMemo<string>(() => {
-    const quotes = trimmed_speech.replaceAll("\n\n", " ").replaceAll("== ==", " ").split("==");
-    if (quotes.length === 1) {
-      return quotes[0];
-    } else {
-      let str = "";
-      for (let i = 0; i < quotes.length; i++) {
-        if (!quotes[i]) continue;
-        if (keyword.toLowerCase().includes(quotes[i].toLowerCase()))
-          str += `<mark>${quotes[i]}</mark>`;
-        else str += quotes[i];
-      }
-      return str;
-    }
-  }, [excerpt]);
+  const md = new Remarkable();
+  md.inline.ruler.enable(["mark"]);
+  md.renderer = new RemarkableReactRenderer({
+    components: {
+      mark: ({ children }: { children: string[] }) => (
+        <mark className="bg-[#DDD6B0] text-black">{children[0]}</mark>
+      ),
+    },
+  });
 
   return (
     <Link
       href={`hansard/${dewan}/${sitting.date}#${index}`}
       prefetch={false}
-      className="shadow-button p-6 max-w-3xl group rounded-xl border border-border hover:border-border-hover hover:bg-slate-50 dark:hover:bg-zinc-800/50"
+      className="group max-w-3xl rounded-xl border border-border p-6 shadow-button hover:border-border-hover hover:bg-slate-50 dark:hover:bg-zinc-800/50"
     >
-      <div className="flex flex-col gap-3 relative h-full">
+      <div className="relative flex h-full flex-col gap-3">
         <div className="flex w-auto gap-4.5">
           <DateCard date={sitting.date} size="sm" />
 
-          <div className="flex flex-col w-[calc(100%-164px)] grow justify-evenly">
-            <p className="text-foreground font-bold truncate">
-              {speaker}
-            </p>
+          <div className="flex w-[calc(100%-164px)] grow flex-col justify-evenly">
+            <p className="truncate font-bold text-foreground">{speaker}</p>
             {/* <p className="text-zinc-500 font-medium truncate">
               {title ? title.slice(0, -1) : ""}
             </p> */}
           </div>
-          <ArrowUpRightIcon className="hidden sm:block shrink-0 size-5 text-zinc-500 opacity-0 transition-[opacity_transform] duration-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 group-hover:duration-300 motion-reduce:transition-none" />
+          <ArrowUpRightIcon className="hidden size-5 shrink-0 -translate-x-2 text-zinc-500 opacity-0 transition-[opacity_transform] duration-0 group-hover:translate-x-0 group-hover:opacity-100 group-hover:duration-300 motion-reduce:transition-none sm:block" />
         </div>
-        <div className="flex-grow">
-          <Markdown
-            rehypePlugins={[rehypeRaw]}
-            components={{
-              mark(props) {
-                const { node, ...rest } = props;
-                return (
-                  <span className="bg-[#DDD6B0] text-zinc-900" {...rest} />
-                );
-              },
-            }}
-          >
-            {speech}
-          </Markdown>
-        </div>
-        <span className="flex text-zinc-500 text-xs gap-1 pt-3 border-t dark:border-zinc-800">
+        <div className="flex-grow">{md.render(trimmed_speech)}</div>
+        <span className="flex gap-1 border-t pt-3 text-xs text-zinc-500 dark:border-zinc-800">
           {`${t("parlimen", {
             ordinal: true,
             count: sitting.term,
