@@ -70,8 +70,11 @@ export function highlightKeywordMarkdown(
   const matchData = useMemo(
     () =>
       searchValue && searchValue.length > 1
-        ? getMatchText(searchValue, text)
-        : text.replaceAll("*", "").replaceAll("**", ""),
+        ? getMatchText(
+            searchValue.trim(),
+            text.replaceAll("*", "").replaceAll("**", "") // omit asterisk to allow matching during search
+          )
+        : text,
     [searchValue, text]
   );
 
