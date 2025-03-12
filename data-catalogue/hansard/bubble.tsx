@@ -30,7 +30,7 @@ export type SpeechBubbleProps = {
   side: boolean;
   speaker?: ReactNode;
   timeString: string;
-  uid: string | null;
+  uid: number | null;
 };
 
 const SpeechBubble = ({

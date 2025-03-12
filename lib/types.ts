@@ -101,7 +101,7 @@ export type Archive = {
 export type Speech = {
   speech: string;
   author: string | null;
-  author_id: string | null;
+  author_id: number | null;
   timestamp: number;
   is_annotation: boolean;
   index: number;
