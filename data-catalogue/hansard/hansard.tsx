@@ -194,7 +194,7 @@ const Hansard = ({
               />
               {highlightKeyword(heading, `${i}`)}
             </div>
-            {recurSpeech(s[heading], `${i}`)}
+            {recurSpeech(s[heading], sidebar_id)}
           </div>
         );
       }
