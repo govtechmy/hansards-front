@@ -31,6 +31,12 @@ import {
   DropdownTrigger,
 } from "@govtechmy/myds-react/dropdown";
 import { Button } from "@govtechmy/myds-react/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from "@govtechmy/myds-react/breadcrumb";
 
 /**
  * Hansard
@@ -233,25 +239,42 @@ const Hansard = ({
         <div className="relative flex w-full flex-col items-center border-r border-border">
           <Hero>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
-              <div className="flex flex-wrap items-center whitespace-nowrap text-sm font-medium text-zinc-500">
-                <Link href={dewan_route} className="link" prefetch={false}>
-                  {t("archive", {
-                    context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
-                  })}
-                </Link>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <Link href={parlimen_link} className="link" prefetch={false}>
-                  {t("parlimen", { ns: "enum", count: cycle.term })}
-                </Link>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <Link href={penggal_link} className="link" prefetch={false}>
-                  {t("penggal_full", { ns: "enum", n: cycle.session })}
-                </Link>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-                <Link href={mesyuarat_link} className="link" prefetch={false}>
-                  {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
-                </Link>
-              </div>
+              <Breadcrumb className="text-txt-black-500">
+                <BreadcrumbItem className="max-w-[250px]">
+                  <BreadcrumbLink asChild>
+                    <Link href={dewan_route} prefetch={false}>
+                      {t("archive", {
+                        context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
+                      })}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href={parlimen_link} prefetch={false}>
+                      {t("parlimen", { ns: "enum", count: cycle.term })}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href={penggal_link} prefetch={false}>
+                      {t("penggal_full", { ns: "enum", n: cycle.session })}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href={mesyuarat_link} prefetch={false}>
+                      {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </Breadcrumb>
+
               <div className="flex items-center justify-between gap-3 lg:gap-6">
                 <DateCard size="lg" date={date} />
                 <div className="flex w-[calc(100%-78px)] flex-col justify-center gap-y-3">
