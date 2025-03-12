@@ -6,7 +6,6 @@ import {
   SheetTrigger,
 } from "@components/Sheet";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
 import { cn } from "@lib/helpers";
@@ -32,7 +31,6 @@ const TreeState: Record<string, boolean> = Object.create(null);
 export default function Sidebar({ children, data, onClick }: SidebarProps) {
   const { t } = useTranslation(["catalogue", "enum"]);
   const [selected, setSelected] = useState<string>();
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const [showSidebar, setSidebar] = useState<boolean>(true);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
@@ -128,9 +126,9 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
     </div>
   );
 
-  if (isDesktop)
-    return (
-      <div className="flex w-full">
+  return (
+    <>
+      <div className="hidden w-full lg:flex">
         <div
           className={cn(
             "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-border",
@@ -176,11 +174,8 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
 
         {children}
       </div>
-    );
 
-  return (
-    <>
-      <div className="flex w-full">
+      <div className="w-full max-lg:flex">
         <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-border">
           <div className="sticky top-28 flex gap-3 bg-background px-2 py-3">
             <h4 className="title absolute origin-top-left translate-y-[150px] -rotate-90">
