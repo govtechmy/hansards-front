@@ -38,7 +38,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
   const styles = {
     base: "px-5 py-1.5 w-full text-start leading-tight",
     active: "bg-bg-hover font-medium text-foreground",
-    inactive: "text-zinc-500",
+    inactive: "text-txt-black-500",
   };
 
   const Sidebar = () => (
@@ -111,7 +111,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
             );
           })
         ) : (
-          <li className="px-5 py-1.5 text-sm italic text-zinc-500">
+          <li className="px-5 py-1.5 text-sm italic text-txt-black-500">
             {t("no_entries")}
           </li>
         )}
@@ -131,14 +131,14 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
       <div className="hidden w-full lg:flex">
         <div
           className={cn(
-            "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-border",
+            "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-otl-gray-200",
             "transform-gpu ease-in-out [transition-property:width] motion-reduce:transition-none",
             showSidebar ? "duration-300 lg:w-60" : "hide-scrollbar duration-500"
           )}
         >
           <div
             className={cn(
-              "sticky top-0 z-10 flex items-end justify-between gap-3 whitespace-nowrap bg-background p-3 pb-1.5",
+              "sticky top-0 z-10 flex items-end justify-between gap-3 whitespace-nowrap bg-bg-white p-3 pb-1.5",
               showSidebar && "lg:pl-5"
             )}
           >
@@ -146,7 +146,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
               className={cn(
                 "title",
                 !showSidebar &&
-                  "absolute origin-top-left translate-y-[150px] -rotate-90 text-zinc-500"
+                  "absolute origin-top-left translate-y-[150px] -rotate-90 text-txt-black-500"
               )}
             >
               {t("full_archive")}
@@ -176,7 +176,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
       </div>
 
       <div className="w-full max-lg:flex">
-        <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-border">
+        <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-otl-gray-200">
           <div className="sticky top-28 flex gap-3 bg-background px-2 py-3">
             <h4 className="title absolute origin-top-left translate-y-[150px] -rotate-90">
               {t("full_archive")}

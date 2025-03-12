@@ -116,7 +116,7 @@ const Hansard = ({
           ? "ydp"
           : author === "ANNOTATION" || unspecified_author || !author
           ? "z"
-          : names[0].length % 7;
+          : (author_id ? author_id : names[0].length) % 10;
 
         const speaker =
           author !== "ANNOTATION" ? (
@@ -124,13 +124,16 @@ const Hansard = ({
               className={cn(
                 "n",
                 {
-                  0: "r", // red
-                  1: "o", // orange
+                  0: "o", // orange
+                  1: "l", // lime
                   2: "g", // green
-                  3: "c", // cyan
-                  4: "b", // blue
-                  5: "v", // violet
-                  6: "p", // pink
+                  3: "t", // emerald
+                  4: "c", // cyan
+                  5: "b", // blue
+                  6: "v", // violet
+                  7: "f", // fuchsia
+                  8: "p", // pink
+                  9: "r", // rose
                   ydp: "ydp", // yellow
                   z: "z", // zinc
                 }[mod]
@@ -236,7 +239,7 @@ const Hansard = ({
       }}
     >
       {open => (
-        <div className="relative flex w-full flex-col items-center border-r border-border">
+        <div className="relative flex w-full flex-col items-center">
           <Hero>
             <div className="space-y-6 py-8 lg:py-12 xl:w-full">
               <Breadcrumb className="text-txt-black-500">
@@ -279,7 +282,7 @@ const Hansard = ({
                 <DateCard size="lg" date={date} />
                 <div className="flex w-[calc(100%-78px)] flex-col justify-center gap-y-3">
                   <h1
-                    className="text-3xl font-bold leading-[38px] text-foreground"
+                    className="text-3xl font-bold leading-[38px] text-txt-black-900"
                     data-testid="hero-header"
                   >
                     {t("header", {
@@ -288,7 +291,7 @@ const Hansard = ({
                   </h1>
                   {views >= 0 || shares >= 0 || downloads >= 0 ? (
                     <p
-                      className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-zinc-500"
+                      className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-txt-black-500"
                       data-testid="hero-views"
                     >
                       <span>{`${numFormat(views, "compact")} ${t("views", {

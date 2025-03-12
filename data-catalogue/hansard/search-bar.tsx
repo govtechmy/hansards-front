@@ -37,12 +37,12 @@ export default function HansardSearchBar() {
           }}
           iconOnly
         >
-          <XMarkIcon className="size-5 text-dim group-hover:text-foreground" />
+          <XMarkIcon className="size-5 text-txt-black-500 group-hover:text-txt-black-900" />
         </Button>
       )}
       {searchValue && searchValue.length > 1 && (
         <>
-          <p className="whitespace-nowrap text-sm text-zinc-500">{`${activeCount} / ${totalCount}`}</p>
+          <p className="whitespace-nowrap text-sm text-txt-black-500">{`${activeCount} / ${totalCount}`}</p>
           <div className="flex items-center">
             <Button variant="default-ghost" onClick={onPrev} iconOnly>
               <ChevronUpIcon className="size-5" />
