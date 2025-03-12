@@ -3,8 +3,11 @@ env:
   IMAGE: hansards-front
   ENVIRONMENT: development
   NEXT_PUBLIC_APP_URL: https://hansards.govtechmy.dev
-  NEXT_PUBLIC_APP_ENV: development
-  # TODO: Add other env vars
+  NEXT_PUBLIC_APP_ENV: staging
+  NEXT_PUBLIC_AUTHORIZATION_TOKEN: ${{ secrets.DEVELOPMENT_AUTHORIZATION_TOKEN }}
+  NEXT_PUBLIC_API_URL: https://api.hansard-parlimen.dev
+  NEXT_PUBLIC_I18N_URL: https://d1vs1jbluuybk5.cloudfront.net
+  NEXT_PUBLIC_DOWNLOAD_URL: https://s3.ap-southeast-1.amazonaws.com/downloads.hansard.parlimen.gov.my/
 on:
   push:
     branches:
@@ -48,10 +51,7 @@ jobs:
             "NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}"
             "NEXT_PUBLIC_I18N_URL=${{ env.NEXT_PUBLIC_I18N_URL }}"
             "NEXT_PUBLIC_DOWNLOAD_URL=${{ env.NEXT_PUBLIC_DOWNLOAD_URL }}"
-            "NEXT_PUBLIC_SEJARAH_URL=${{ env.NEXT_PUBLIC_SEJARAH_URL }}"
             "NEXT_PUBLIC_AUTHORIZATION_TOKEN=${{ env.NEXT_PUBLIC_AUTHORIZATION_TOKEN }}"
-            "NEXT_PUBLIC_TILESERVER_URL=${{ env.NEXT_PUBLIC_TILESERVER_URL }}"
-            "NEXT_PUBLIC_GA_TAG=${{ env.NEXT_PUBLIC_GA_TAG }}"
       - name: Log out of Amazon ECR
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
       - name: Deploy with Spinnaker
