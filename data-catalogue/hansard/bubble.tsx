@@ -24,6 +24,7 @@ export type SpeechBubbleProps = {
   filename: string;
   hansard_id: string;
   index: number;
+  is_annotation: boolean;
   isYDP: boolean;
   length: number;
   side: boolean;
@@ -39,6 +40,7 @@ const SpeechBubble = ({
   // filename,
   hansard_id,
   index,
+  is_annotation,
   isYDP,
   length,
   side,
@@ -89,7 +91,7 @@ const SpeechBubble = ({
           )}
         >
           {speaker ? <div className="m">{speaker}</div> : <></>}
-          <div className="c">{children}</div>
+          <div className={cn("c", is_annotation && "d")}>{children}</div>
 
           <div
             className={cn(

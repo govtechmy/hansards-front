@@ -162,6 +162,7 @@ const Hansard = ({
                 timeString={timeString}
                 filename={hansard_url}
                 index={index}
+                is_annotation={is_annotation}
                 hansard_id={hansard_id}
                 date={date}
                 length={speech.length}
