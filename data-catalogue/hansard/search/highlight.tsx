@@ -117,8 +117,11 @@ export function highlightKeywordMarkdown(
     let str = "";
     for (let i = 0; i < matchData.slices.length; i++) {
       if (i === matchData.slices.length - 1) str += matchData.slices[i];
-      else
-        str += `${matchData.slices[i]}==${id}_${i}-${matchData.matches[i]}==`;
+      else {
+        str += matchData.slices[i];
+        str += `==${id}_${i}-${matchData.matches[i]}==`;
+        if (str.includes("====")) str = str.replace("====", "==‎==");
+      }
     }
     return inline ? md.renderInline(str) : md.render(str);
   }
