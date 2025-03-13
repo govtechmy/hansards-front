@@ -4,6 +4,7 @@ import { cn } from "@lib/helpers";
 import { Archive } from "@lib/types";
 import { Fragment, useEffect, useMemo, useRef } from "react";
 import CatalogueFolder, { FolderOpen } from "./folder";
+import { useRouter } from "next/router";
 
 /**
  * Catalogue Index
@@ -17,8 +18,8 @@ interface CatalogueIndexProps {
 
 const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
   const { t } = useTranslation(["catalogue", "common", "enum"]);
-  const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const folderRef = useRef<Record<string, FolderOpen | null>>({});
+  const router = useRouter();
 
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
@@ -76,15 +77,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
   return (
     <>
       <Container>
-        <Sidebar
-          data={data}
-          onClick={selected => {
-            scrollRef.current[selected]?.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          }}
-        >
+        <Sidebar data={data} onClick={selected => router.push("#" + selected)}>
           <div className="flex h-full w-full flex-col pb-6 pl-4.5 pt-3 sm:pl-8 lg:pb-8">
             {data ? (
               parlimens.map((_, index) => {
@@ -94,10 +87,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                 return (
                   <Fragment key={id}>
                     <div className="flex flex-col">
-                      <div
-                        className="sticky top-28 z-10 flex items-center gap-3 bg-background py-3"
-                        ref={ref => (scrollRef.current[parlimen_id] = ref)}
-                      >
+                      <div className="sticky top-28 z-10 flex items-center gap-3 bg-background py-3">
                         <h2
                           className="header flex w-fit scroll-mt-40 flex-wrap sm:whitespace-nowrap"
                           id={parlimen_id}
@@ -140,14 +130,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                                 {yearRange}
                               </h3>
 
-                              <div
-                                className="grid grid-cols-2 gap-x-6 gap-y-[54px] pb-6 pt-12 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5"
-                                ref={ref =>
-                                  (scrollRef.current[
-                                    `${parlimen_id}-${penggal_id}`
-                                  ] = ref)
-                                }
-                              >
+                              <div className="grid grid-cols-2 gap-x-6 gap-y-[54px] pb-6 pt-12 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
                                 {MEETINGS.map(id => {
                                   return (
                                     <CatalogueFolder
