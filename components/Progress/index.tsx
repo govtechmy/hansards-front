@@ -78,7 +78,7 @@ const Progress: FunctionComponent = () => {
     <div className="fixed left-0 top-0 z-50 h-[3px] w-full bg-transparent">
       {opacity === 1 && (
         <div
-          className="bg-primary dark:bg-secondary h-full transition-[width,_opacity] duration-300 ease-out"
+          className="h-full bg-bg-primary-600 transition-[width,_opacity] duration-300 ease-out dark:bg-secondary"
           style={{
             width: `${progress}%`,
             opacity: opacity,
