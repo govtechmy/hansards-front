@@ -1,9 +1,9 @@
 import { Container, Sidebar } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn } from "@lib/helpers";
 import { Archive } from "@lib/types";
 import { Fragment, useEffect, useMemo, useRef } from "react";
-import CatalogueFolder, { FolderOpen } from "./folder";
+import { FolderOpen } from "./folder";
+import Penggal from "./penggal";
 import { useRouter } from "next/router";
 
 /**
@@ -94,7 +94,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                         >
                           {t("parlimen", {
                             ns: "enum",
-                            count: id,
+                            count: Number(id),
                             ordinal: true,
                           })}
                           {yearRange}
@@ -103,52 +103,12 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                       </div>
 
                       <div className="space-y-8 pb-[42px] pt-3">
-                        {penggal.map(({ id, mesyuarat, yearRange }) => {
-                          const meetings = mesyuarat;
-                          const MEETINGS = Object.keys(meetings).sort(
-                            (a, b) =>
-                              Date.parse(meetings[a].end_date) -
-                              Date.parse(meetings[b].end_date)
-                          );
-                          const penggal_id = `penggal-${id}`;
-                          return (
-                            <div key={id} className="relative">
-                              <span
-                                className={cn(
-                                  classNames.hr,
-                                  "absolute left-0 top-3.5 -z-10 border-dashed"
-                                )}
-                              />
-                              <h3
-                                className="title flex w-fit scroll-mt-44 flex-wrap bg-background pr-3 sm:whitespace-nowrap"
-                                id={`${parlimen_id}-${penggal_id}`}
-                              >
-                                {t("penggal_full", {
-                                  ns: "enum",
-                                  n: id,
-                                })}
-                                {yearRange}
-                              </h3>
-
-                              <div className="grid grid-cols-2 gap-x-6 gap-y-[54px] pb-6 pt-12 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-                                {MEETINGS.map(id => {
-                                  return (
-                                    <CatalogueFolder
-                                      ref={ref =>
-                                        (folderRef.current[
-                                          `${parlimen_id}/${penggal_id}/mesyuarat-${id}`
-                                        ] = ref)
-                                      }
-                                      key={id}
-                                      meeting={meetings[id]}
-                                      meeting_id={id}
-                                    />
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        })}
+                        {penggal.map(penggal => (
+                          <Penggal
+                            penggal_id={`${parlimen_id}-penggal-${penggal.id}`}
+                            {...penggal}
+                          />
+                        ))}
                       </div>
                     </div>
                   </Fragment>
