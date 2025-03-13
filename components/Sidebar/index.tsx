@@ -49,7 +49,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
             const parlimen_id = `parlimen-${id}`;
             const parlimen = t("parlimen", {
               ns: "enum",
-              count: id,
+              count: Number(id),
               ordinal: true,
             });
             const open = TreeState === undefined ? false : TreeState[id];
@@ -175,7 +175,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
         {children}
       </div>
 
-      <div className="w-full max-lg:flex">
+      <div className="flex w-full lg:hidden">
         <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-otl-gray-200">
           <div className="sticky top-28 flex gap-3 bg-background px-2 py-3">
             <h4 className="title absolute origin-top-left translate-y-[150px] -rotate-90">
