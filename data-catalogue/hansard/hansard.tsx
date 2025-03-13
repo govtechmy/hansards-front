@@ -13,7 +13,7 @@ import SpeechBubble from "./bubble";
 import { highlightKeyword, highlightKeywordMarkdown } from "./search/highlight";
 import CiteButton from "./cite";
 import ShareButton from "./share";
-import HansardSearch from "./search-bar";
+import HansardSearchBar from "./search-bar";
 import Sidebar from "./sidebar";
 import { formatTimestamp, isSpeech, isYDP } from "@lib/utils";
 import { CiteIcon } from "@icons/index";
@@ -163,7 +163,7 @@ const Hansard = ({
             )}
             {author === "ANNOTATION" ? (
               <div className="a" id={`${index}`}>
-                {highlightKeyword(speech, speech_id)}
+                {highlightKeywordMarkdown(speech, speech_id)}
               </div>
             ) : (
               <SpeechBubble
@@ -234,7 +234,7 @@ const Hansard = ({
       onClick={selected => {
         scrollRef.current[selected]?.scrollIntoView({
           behavior: "smooth",
-          block: "start",
+          block: "center",
         });
       }}
     >
@@ -320,7 +320,7 @@ const Hansard = ({
           </Hero>
 
           <div className="sticky top-14 z-20 flex w-full items-center justify-between gap-1 border-b border-b-border bg-background pr-1.5 lg:gap-3 lg:px-8">
-            <HansardSearch />
+            <HansardSearchBar />
 
             <Dropdown>
               <DropdownTrigger asChild>
@@ -356,7 +356,7 @@ const Hansard = ({
                   <DropdownItem
                     key={filetype}
                     onSelect={() => {
-                      window.open(`${filename}.${filetype}`, "_blank");
+                      window.open(`${hansard_url}.${filetype}`, "_blank");
                       download(filetype as "pdf" | "csv");
                     }}
                   >
@@ -405,7 +405,7 @@ const Hansard = ({
                     <DropdownItem
                       key={filetype}
                       onSelect={() => {
-                        window.open(`${filename}.${filetype}`, "_blank");
+                        window.open(`${hansard_url}.${filetype}`, "_blank");
                         download(filetype as "pdf" | "csv");
                       }}
                     >
