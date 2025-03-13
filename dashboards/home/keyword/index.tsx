@@ -43,7 +43,14 @@ export interface KeywordProps extends ExcerptsProps {
   top_word_freq?: Record<string, number>;
 }
 
-const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_freq }: KeywordProps) => {
+const Keyword = ({
+  count,
+  excerpts,
+  query,
+  timeseries,
+  top_speakers,
+  top_word_freq,
+}: KeywordProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
   const ref = useRef<HTMLDivElement | null>(null);
   const { theme } = useTheme();
@@ -87,22 +94,22 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
 
         <KeywordFilter onLoad={() => setLoading(true)} query={query} />
 
-        <div className="w-full relative mt-6" ref={ref}>
-          {/* Time-series of "keyword” in Parliament */}
-          <h3 className="title leading-7 block mb-3">
+        {/* Time-series of "keyword” in Parliament */}
+        <div className="relative mt-6 w-full" ref={ref}>
+          <h3 className="title mb-3 block leading-7">
             {keyword &&
               t("timeseries_title", {
                 keyword: keyword,
-                house: t(house.replace("-", "_"), { ns: "common" })
+                house: t(house.replace("-", "_"), { ns: "common" }),
               })}
           </h3>
           <SliderProvider>
-            {(play) => (
+            {play => (
               <div className="relative">
                 <Timeseries
                   className={cn(
                     !loading && chartEmpty && "opacity-10",
-                    "h-[300px]"
+                    "h-[250px]"
                   )}
                   isLoading={loading}
                   enableAnimation={!play}
@@ -131,11 +138,11 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
                   period={diff > 1095 ? "month" : "day"}
                   value={range}
                   data={timeseries.date}
-                  onChange={(e) => setRange(e)}
+                  onChange={e => setRange(e)}
                 />
                 {!loading && chartEmpty && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-border flex items-center gap-2 rounded-md px-3 py-1.5">
+                    <div className="flex items-center gap-2 rounded-md bg-border px-3 py-1.5">
                       {keyword ? (
                         <>
                           <FaceFrownIcon className="size-6" />
@@ -159,15 +166,15 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
       {count > 0 && (
         <>
           <Excerpts count={count} excerpts={excerpts} query={query} />
+          {/* Words related to {{ keyword }} */}
           {top_word_freq && (
-            <section className="py-8 lg:py-12 space-y-6 lg:space-y-8">
-              {/* Words related to {{ keyword }} */}
+            <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
                 {t("words_related", { keyword: `"${query.q}"` })}
               </h3>
 
               <BubbleCloud
-                className="w-full h-[350px] sm:h-[900px]"
+                className="h-[350px] w-full sm:h-[700px]"
                 data={Object.entries(top_word_freq).map(([word, freq]) => ({
                   id: word,
                   value: freq,
@@ -175,9 +182,9 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
               />
             </section>
           )}
+          {/* "{{ keyword }}": Most spoken by */}
           {top_speakers && (
-            <section className="py-8 lg:py-12 space-y-6 lg:space-y-8">
-              {/* "{{ keyword }}": Most spoken by */}
+            <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
                 {t("most_spoken_by", {
                   keyword: `"${capitalize(String(query.q))}"`,
@@ -185,9 +192,9 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
               </h3>
 
               <BarMeter
-                className="max-w-screen-sm mx-auto"
+                className="mx-auto max-w-screen-sm"
                 layout="horizontal"
-                data={top_speakers.map((s) => ({
+                data={top_speakers.map(s => ({
                   x: UID_TO_NAME_DR[Object.keys(s)[0]] ?? Object.keys(s)[0],
                   y: Object.values(s)[0],
                 }))}

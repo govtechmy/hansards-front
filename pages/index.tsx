@@ -65,6 +65,8 @@ export const getServerSideProps: GetServerSideProps = withi18n(
 
       const {
         q,
+        page,
+        page_size,
         dewan,
         tarikh_mula,
         tarikh_akhir,
@@ -78,8 +80,9 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         get("api/search/", {
           q: q,
           house: dewan,
-          window_size: 40,
-          page: 1,
+          window_size: 100,
+          page: page ?? 1,
+          page_size: page_size ?? 10,
           start_date: tarikh_mula,
           end_date: tarikh_akhir,
           age_group: umur,

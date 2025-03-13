@@ -54,8 +54,17 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
-    query;
+  const {
+    q,
+    dewan,
+    page,
+    tarikh_mula,
+    tarikh_akhir,
+    umur,
+    etnik,
+    parti,
+    jantina,
+  } = query;
 
   const { data, setData } = useData({
     query: q ? String(q) : "",
@@ -79,6 +88,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
   const { setFilter } = useFilter({
     dewan: dewan,
+    page: page,
     q: q,
     tarikh_mula: tarikh_mula ?? "",
     tarikh_akhir: tarikh_akhir ?? "",
@@ -226,7 +236,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           )}
           <Button
             variant="primary"
-            className="h-9 rounded-full"
+            className="size-9 justify-center rounded-full max-sm:p-1.5 sm:w-fit"
             disabled={!data.query}
             onClick={() =>
               handleSearch(
@@ -239,8 +249,10 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               )
             }
           >
-            <MagnifyingGlassIcon className="h-5 w-5 text-white" />
-            {t("placeholder.search", { ns: "common" })}
+            <MagnifyingGlassIcon className="size-5 text-white" />
+            <span className="hidden sm:block">
+              {t("placeholder.search", { ns: "common" })}
+            </span>
           </Button>
         </div>
       </div>

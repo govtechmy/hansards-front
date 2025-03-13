@@ -1,10 +1,25 @@
-import { Button, Section, Skeleton, toast } from "@components/index";
-import ExcerptCard, { Excerpt } from "@dashboards/home/excerpts/excerpt-card";
+import { DateCard, Section } from "@components/index";
+import ExcerptList, {
+  Excerpt,
+} from "@dashboards/home/excerpts/excerpt-list-item";
 import { useTranslation } from "@hooks/useTranslation";
-import { useEffect, useState } from "react";
-import { get } from "@lib/api";
 import { ParsedUrlQuery } from "querystring";
 import { Dewan } from "@lib/types";
+import groupBy from "lodash/groupBy";
+import Link from "next/link";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@govtechmy/myds-react/select";
+import Paginator from "@components/Paginator";
+import { setSearchParams } from "@lib/utils";
+import { useRouter } from "next/router";
+// import { Tag } from "@govtechmy/myds-react/tag";
+// import { DewanNegaraIcon } from "@icons/dewan/dewan-negara";
+// import { DewanRakyatIcon } from "@icons/dewan/dewan-rakyat";
 
 /**
  * Excerpts
@@ -18,75 +33,136 @@ export interface ExcerptsProps {
 }
 
 const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
-  const { t } = useTranslation("home");
-  const [loading, setLoading] = useState(false);
-  const [_excerpts, setExcerpts] = useState<Excerpt[]>(excerpts);
-  const [nextPage, setNextPage] = useState<number>(2);
+  const { t, i18n } = useTranslation(["enum", "home"]);
+  const { q, dewan, page, page_size } = query;
 
-  const { q, uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } = query;
-
-  const HAS_REMAINDER = count > _excerpts.length;
-
-  useEffect(() => setExcerpts(excerpts), [excerpts]);
-
-  const handleClick = () => {
-    setLoading(true);
-    get("api/search/", {
-      q: q,
-      uid: uid,
-      house: dewan,
-      window_size: ("q" in query) ? 40 : 150,
-      page: nextPage,
-      start_date: tarikh_mula,
-      end_date: tarikh_akhir,
-      age_group: umur,
-      ethnicity: etnik,
-      party: parti,
-      sex: jantina,
-    })
-      .then(({ data }) => {
-        setExcerpts((prev_data) => prev_data.concat(data.results));
-        setNextPage((page) => page + 1);
-      })
-      .catch(e => {
-        toast.error(
-          t("toast.request_failure", { ns: "common" }),
-          t("toast.try_again", { ns: "common" })
-        );
-        console.error(e);
-      })
-      .finally(() => setLoading(false));
-  };
+  const excerptsByDate = groupBy(excerpts, "sitting.date");
+  const router = useRouter();
+  const ITEMS_PER_PAGE = 10;
+  const ROWS_PER_PAGE = [ITEMS_PER_PAGE, 25, 50].map(String);
 
   return (
     <>
       <Section className="space-y-6 lg:space-y-8">
-        <h2 className="header">{t("excerpts", { count: count })}</h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {_excerpts.map((excerpt, i) => (
-            <ExcerptCard
-              key={i}
-              dewan={(dewan ?? "dewan-rakyat") as Dewan}
-              excerpt={excerpt}
-              keyword={String(q)}
-            />
-          ))}
-        </div>
+        <h2 className="header">{t("home:excerpts", { count: count })}</h2>
+        <ul className="flex flex-col divide-otl-gray-200 sm:divide-y">
+          {Object.keys(excerptsByDate).map(date => {
+            const excerpt = excerptsByDate[date];
+            const sitting = excerpt[0].sitting;
 
-        {HAS_REMAINDER && (
-          <div className="flex flex-col items-center gap-6">
-            <p className="text-sm font-medium text-zinc-500">
-              {t("see_all", { total: count, count: _excerpts.length })}
-            </p>
-            {loading ? (
-              <Skeleton />
-            ) : (
-              <Button variant="outline" onClick={handleClick}>
-                {t("load_more")}
-              </Button>
-            )}
+            return (
+              <li className="flex flex-col gap-3 py-4.5 first:pt-0 sm:gap-6 sm:py-6 lg:flex-row">
+                <div className="flex shrink-0 items-start lg:max-w-md">
+                  <Link
+                    href={`hansard/${dewan}/${sitting.date}?search=${q}`}
+                    className="group flex items-center gap-3 sm:gap-4.5"
+                  >
+                    <DateCard date={date} size="sm" />
+
+                    <div className="relative flex flex-col justify-center gap-0.5">
+                      <p className="font-semibold sm:group-hover:underline">
+                        {new Date(date).toLocaleDateString(i18n.language, {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                        {`, ${new Date(date).toLocaleDateString(i18n.language, {
+                          weekday: "long",
+                        })}`}
+                      </p>
+                      <div>
+                        {/* <Tag
+                        size="medium"
+                        variant="default"
+                        mode="pill"
+                        className="border-[#134960]/20 bg-[#134960]/10 text-[#134960]"
+                      >
+                        <DewanRakyatIcon className="size-5" />
+                        {t("dewan_rakyat")}
+                      </Tag>
+                      <Tag
+                        size="medium"
+                        variant="default"
+                        mode="pill"
+                        className="border-[#66222A]/20 bg-[#66222A]/10 text-[#66222A]"
+                      >
+                        <DewanNegaraIcon className="size-5" />
+                        {t("dewan_negara")}
+                      </Tag> */}
+                      </div>
+                      <p className="flex gap-1 text-body-xs text-txt-black-700 sm:text-body-sm">
+                        {`${t("parlimen", {
+                          ordinal: true,
+                          count: sitting.term,
+                        })} / ${t("penggal", {
+                          ordinal: true,
+                          count: sitting.session,
+                        })} / ${t("mesyuarat_full", {
+                          ordinal: true,
+                          n: sitting.meeting,
+                        })}`}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+                <div className="flex max-h-fit w-full flex-col divide-y divide-otl-gray-200 rounded-xl border border-otl-gray-200">
+                  {excerpt
+                    .sort((a, b) => a.index - b.index)
+                    .map((excerpt, i) => (
+                      <ExcerptList
+                        key={i}
+                        dewan={(dewan ?? "dewan-rakyat") as Dewan}
+                        excerpt={excerpt}
+                        keyword={String(q)}
+                      />
+                    ))}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <div className="flex items-center gap-3">
+            <span className="text-dim-500 whitespace-nowrap text-sm">
+              {t("home:results_per_page")}
+            </span>
+            <Select
+              multiple={false}
+              variant="outline"
+              size="medium"
+              value={page_size ? String(page_size) : ROWS_PER_PAGE[0]}
+              onValueChange={size => {
+                const url = setSearchParams(router.asPath, "page", "1");
+                router.push(setSearchParams(url, "page_size", size));
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ROWS_PER_PAGE.map(rows => (
+                  <SelectItem key={rows} value={rows}>
+                    {rows}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        )}
+          <Paginator
+            count={count}
+            currentPage={page ? Number(page) : 1}
+            onPageChange={page => {
+              const url = setSearchParams(
+                router.asPath,
+                "page",
+                page.toString()
+              );
+              router.push(url);
+            }}
+            limit={page_size ? Number(page_size) : ITEMS_PER_PAGE}
+          />
+        </div>
       </Section>
     </>
   );
