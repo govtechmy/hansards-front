@@ -4,8 +4,10 @@ import {
   ChevronUpIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SearchContext, SearchEventContext } from "./search/context";
+import { useRouter } from "next/router";
+import { setSearchParams } from "@lib/utils";
 import { Button } from "@govtechmy/myds-react/button";
 
 /**
@@ -16,6 +18,21 @@ export default function HansardSearchBar() {
   const [query, setQuery] = useState<string>("");
   const { searchValue, activeCount, totalCount } = useContext(SearchContext);
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
+
+  // adds `?search={value} to URL`
+  // const param = "search";
+  // const router = useRouter();
+  // const asPath = router.asPath;
+
+  // useEffect(() => {
+  //   const hash = asPath.lastIndexOf("#");
+  //   const url = hash !== -1 ? asPath.slice(0, hash) : asPath;
+
+  //   const rx = new RegExp("[?&]" + param + "=([^&]+).*$");
+  //   const query_str = url.match(rx);
+  //   if (query_str !== null)
+  //     setQuery(query_str ? decodeURIComponent(query_str[1]) : "");
+  // }, [asPath]);
 
   return (
     <div className="flex w-full items-center gap-3 py-1.5">
@@ -34,6 +51,9 @@ export default function HansardSearchBar() {
           onClick={() => {
             setQuery("");
             onSearchChange("");
+            // router.push(asPath.slice(0, asPath.indexOf("?")), undefined, {
+            //   scroll: false,
+            // });
           }}
           iconOnly
         >
