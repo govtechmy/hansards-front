@@ -32,7 +32,7 @@
 }
 
 .markdown > table td,
-th {
+.markdown > table th {
   @apply px-3 py-1.5 text-start font-normal tabular-nums;
 }
 
