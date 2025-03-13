@@ -81,7 +81,7 @@ const FooterLayout = () => {
             ))}
           </SocialMedia>
         </FooterMainInfo>
-        <FooterContent>
+        {/* <FooterContent>
           <FooterContentColumn title={"Open Source"}>
             {open_source.map(({ name, href }) => (
               <Link
@@ -95,7 +95,7 @@ const FooterLayout = () => {
               </Link>
             ))}
           </FooterContentColumn>
-        </FooterContent>
+        </FooterContent> */}
       </FooterTopSection>
       <FooterBottomSection>
         <FooterCopyright>
