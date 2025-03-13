@@ -56,6 +56,23 @@ export function formatTimestamp(timestamp: number) {
   return formatted_timestamp;
 }
 
+export const setSearchParams = (
+  url: string,
+  key: string,
+  value: string | null
+) => {
+  const query_str = url.slice(url.indexOf("?") + 1);
+  const hash_idx = url.lastIndexOf("#");
+  const searchParams = new URLSearchParams(
+    hash_idx === -1 ? query_str : query_str.slice(0, hash_idx)
+  );
+
+  if (value) searchParams.set(key, value);
+  else searchParams.delete(key);
+
+  return "?" + searchParams.toString();
+};
+
 export function isSpeech(speech: Speech | NestedSpeech): speech is Speech {
   const keys = Object.keys(speech);
   return (
