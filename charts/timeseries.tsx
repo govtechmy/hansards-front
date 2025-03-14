@@ -157,7 +157,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
     AnnotationPlugin
   );
 
-  const { theme = "light" } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const display = (
     value: number,
@@ -291,7 +291,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
           ? {
               line: {
                 width: 0,
-                color: theme === "light" ? "#000" : "#FFF",
+                color: resolvedTheme === "light" ? "#000" : "#FFF",
                 dashPattern: [6, 4],
               },
               zoom: {
@@ -364,7 +364,8 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
             },
             drawTicks: false,
             drawBorder: false,
-            color: theme === "light" ? COLOR.OUTLINE : COLOR.WASHED_DARK,
+            color:
+              resolvedTheme === "light" ? COLOR.OUTLINE : COLOR.WASHED_DARK,
             offset: false,
             lineWidth(ctx) {
               if (ctx.tick.value === 0) return 2;
@@ -407,7 +408,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
         ...axisY,
       },
     };
-  }, [data, interval, theme]);
+  }, [data, interval, resolvedTheme]);
 
   const autoScale = useMemo(
     () => (data.labels!.length > 200 ? "month" : "day"),
@@ -457,7 +458,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
         </div>
       )}
       {description && (
-        <p className="text-zinc-500 pt-4 text-sm">{description}</p>
+        <p className="pt-4 text-sm text-zinc-500">{description}</p>
       )}
     </div>
   );
@@ -518,10 +519,10 @@ export const Stats: FunctionComponent<StatsProps> = ({ data, className }) => {
     <div className={cn("flex flex-row space-x-6 lg:space-x-8", className)}>
       {data.map(({ title, value, tooltip }: StatProps) => (
         <div key={`${title}_${value}`}>
-          <p className="text-zinc-500 text-sm">{title}</p>
+          <p className="text-sm text-zinc-500">{title}</p>
           {tooltip ? (
             <Tooltip tip={tooltip}>
-              {(open) => (
+              {open => (
                 <>
                   <p
                     className="font-medium underline decoration-dashed [text-underline-position:from-font]"

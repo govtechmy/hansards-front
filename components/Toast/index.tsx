@@ -3,8 +3,15 @@ import { FunctionComponent, ReactNode } from "react";
 import { Toaster, toast as _toast } from "sonner";
 
 const Toast: FunctionComponent<Parameters<typeof Toaster>[0]> = props => {
-  const { theme } = useTheme();
-  return <Toaster theme={theme as "light" | "dark"} position="top-center" richColors {...props} />;
+  const { resolvedTheme } = useTheme();
+  return (
+    <Toaster
+      theme={resolvedTheme as "light" | "dark"}
+      position="top-center"
+      richColors
+      {...props}
+    />
+  );
 };
 
 const toast = {
