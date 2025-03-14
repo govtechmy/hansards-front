@@ -111,6 +111,14 @@ export type Speech = {
 export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
 export type Speeches = Array<Speech | NestedSpeech>;
 
+export type Speaker = {
+  new_author_id: number;
+  name: string;
+  birth_year: number;
+  ethnicity: string;
+  sex: string;
+};
+
 export type Heading = {
   id: string;
   level: number;

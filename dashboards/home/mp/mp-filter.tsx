@@ -24,8 +24,7 @@ import { useData } from "@hooks/useData";
 import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
-import { OptionType } from "@lib/types";
-import { UID_TO_NAME_DR } from "@lib/uid";
+import { OptionType, Speaker } from "@lib/types";
 import { format } from "date-fns";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -47,6 +46,7 @@ import {
 
 export interface MPFilterProps {
   ind_or_grp: string;
+  speakers: Array<Speaker>;
   onFilter: (e: string) => void;
   onLoad: () => void;
   uid: string;
@@ -61,6 +61,7 @@ export interface MPFilterProps {
 
 const MPFilter = ({
   ind_or_grp,
+  speakers,
   onFilter,
   onLoad,
   uid,
@@ -75,18 +76,19 @@ const MPFilter = ({
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
 
-  const INDIVIDU_OPTIONS: OptionType[] = Object.keys(UID_TO_NAME_DR).map(
-    (key: string) => {
-      return { label: UID_TO_NAME_DR[key], value: key };
-    }
-  );
+  const INDIVIDU_OPTIONS: OptionType[] = speakers
+    .map(({ name, new_author_id }) => ({
+      label: name,
+      value: String(new_author_id),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const { data, setData } = useData({
     uid: uid,
     individu_option: uid
       ? INDIVIDU_OPTIONS.find(option => option.value === String(uid))
       : undefined,
-    dewan: dewan ?? "dewan-rakyat",
+    dewan: dewan ?? "dewan-negara",
     age: age,
     ethnic: ethnic,
     party: party,
@@ -164,20 +166,18 @@ const MPFilter = ({
     setFilter("etnik", "");
     setFilter("parti", "");
     setFilter("jantina", "");
-    // setFilter(
-    //   "tarikh_mula",
-    //   dateRange?.from
-    //     ? format(dateRange.from, "yyyy-MM-dd")
-    //     : ""
-    // );
-    // setFilter(
-    //   "tarikh_akhir",
-    //   dateRange?.to
-    //     ? format(dateRange.to, "yyyy-MM-dd")
-    //     : dateRange?.from
-    //       ? format(dateRange.from, "yyyy-MM-dd")
-    //       : ""
-    // );
+    setFilter(
+      "tarikh_mula",
+      dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : ""
+    );
+    setFilter(
+      "tarikh_akhir",
+      dateRange?.to
+        ? format(dateRange.to, "yyyy-MM-dd")
+        : dateRange?.from
+        ? format(dateRange.from, "yyyy-MM-dd")
+        : ""
+    );
   };
 
   const handleGroupSearch = (dewan: string) => {

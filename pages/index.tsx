@@ -16,6 +16,7 @@ const Home: Page = ({
   count,
   excerpts,
   query,
+  speakers,
   timeseries,
   top_word_freq,
   top_speakers,
@@ -31,6 +32,7 @@ const Home: Page = ({
             count={count}
             excerpts={excerpts}
             query={query}
+            speakers={speakers}
             timeseries={timeseries}
             top_word_freq={top_word_freq}
             top_speakers={top_speakers}
@@ -45,6 +47,8 @@ export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
   async ({ query }) => {
     try {
+      const { data: speakers } = await get("api/author/");
+
       if (Object.keys(query).length === 0)
         return {
           props: {
@@ -54,6 +58,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             count: 0,
             excerpts: null,
             query,
+            speakers,
             timeseries: {
               date: Array.from({ length: 365 }, (_, i) => i * 86400000),
               freq: [],
@@ -115,6 +120,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           count: excerpt.count ?? 0,
           excerpts: excerpt.results ?? null,
           query: query ?? null,
+          speakers,
           timeseries: data.chart_data ?? {
             date: Array.from({ length: 365 }, (_, i) => i * 86400000),
             freq: [],

@@ -12,7 +12,6 @@ import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import MPFilter from "./mp-filter";
-import { UID_TO_NAME_DR } from "@lib/uid";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { ParsedUrlQuery } from "querystring";
 import {
@@ -22,6 +21,7 @@ import {
   BOTH_SEXES,
 } from "../filter-options";
 import Excerpts, { ExcerptsProps } from "../excerpts";
+import { Speaker } from "@lib/types";
 
 /**
  * MP
@@ -43,6 +43,7 @@ const Timeseries = dynamic(() => import("@charts/timeseries"), {
 
 export interface MPProps extends ExcerptsProps {
   query: ParsedUrlQuery;
+  speakers: Array<Speaker>;
   timeseries: Record<"date" | "freq", number[]>;
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
@@ -52,13 +53,14 @@ const MP = ({
   count,
   excerpts,
   query,
+  speakers,
   timeseries,
   top_speakers,
   top_word_freq,
 }: MPProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
   const ref = useRef<HTMLDivElement | null>(null);
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
     query;
@@ -66,7 +68,6 @@ const MP = ({
 
   const mp = uid ? String(uid) : "";
   const house = dewan ? String(dewan) : undefined;
-  const mp_name = house === "dewan-rakyat" ? UID_TO_NAME_DR : UID_TO_NAME_DR;
 
   const age = umur ? String(umur) : ALL_AGES;
   const ethnic = etnik ? String(etnik) : ALL_ETHNICITIES;
@@ -96,6 +97,17 @@ const MP = ({
     []
   );
 
+  const barmeter_data = top_speakers
+    ? top_speakers.map(s => {
+        const id = Object.keys(s)[0];
+        const speaker = speakers.find(e => String(e.new_author_id) === id)
+          ?.name;
+        const total = s[id];
+
+        return { x: speaker ?? "", y: total };
+      })
+    : [];
+
   useEffect(() => {
     setLoading(false);
     setRange([0, timeseries.date.length - 1]);
@@ -116,6 +128,7 @@ const MP = ({
         <MPFilter
           onLoad={() => setLoading(true)}
           ind_or_grp={ind_or_grp}
+          speakers={speakers}
           onFilter={setIndOrGrp}
           uid={mp}
           dewan={house}
@@ -135,7 +148,7 @@ const MP = ({
             ((mp && IS_INDIVIDU) || (!mp && !IS_INDIVIDU))
               ? IS_INDIVIDU
                 ? t("timeseries_mp", {
-                    mp: mp_name[mp],
+                    mp: speakers.find(e => e.name === uid)?.name ?? "",
                     house: t(house.replace("-", "_"), { ns: "common" }),
                   })
                 : t("timeseries_mps", {
@@ -162,11 +175,13 @@ const MP = ({
                         data: chartEmpty ? dummyFreq : coordinate.freq,
                         label: chartEmpty ? "" : t("total_words"),
                         backgroundColor:
-                          theme === "light"
+                          resolvedTheme === "light"
                             ? COLOR.PRIMARY_H
                             : COLOR.SECONDARY_H,
                         borderColor:
-                          theme === "light" ? COLOR.PRIMARY : COLOR.SECONDARY,
+                          resolvedTheme === "light"
+                            ? COLOR.PRIMARY
+                            : COLOR.SECONDARY,
                         borderWidth: 1.5,
                       },
                     ],
@@ -214,7 +229,10 @@ const MP = ({
               <h3 className="header text-center">
                 {t("most_spoken_words", {
                   name: IS_INDIVIDU
-                    ? `${UID_TO_NAME_DR[String(query.uid)]}`
+                    ? `${
+                        speakers.find(e => String(e.new_author_id) === uid)
+                          ?.name ?? ""
+                      }`
                     : "",
                 })}
               </h3>
@@ -235,10 +253,7 @@ const MP = ({
               <BarMeter
                 className="mx-auto max-w-screen-sm"
                 layout="horizontal"
-                data={top_speakers.map(s => ({
-                  x: UID_TO_NAME_DR[Object.keys(s)[0]] ?? Object.keys(s)[0],
-                  y: Object.values(s)[0],
-                }))}
+                data={barmeter_data}
                 relative
                 precision={0}
               />

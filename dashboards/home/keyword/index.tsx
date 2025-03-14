@@ -9,7 +9,6 @@ import { COLOR } from "@lib/constants";
 import { SliderProvider } from "@lib/contexts/slider";
 import { cn } from "@lib/helpers";
 import { capitalize } from "@lib/utils";
-import { UID_TO_NAME_DR } from "@lib/uid";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
@@ -17,6 +16,7 @@ import { ParsedUrlQuery } from "querystring";
 import { useEffect, useMemo, useRef, useState } from "react";
 import KeywordFilter from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
+import { Speaker } from "@lib/types";
 
 /**
  * Keyword
@@ -38,6 +38,7 @@ const Timeseries = dynamic(() => import("@charts/timeseries"), {
 
 export interface KeywordProps extends ExcerptsProps {
   query: ParsedUrlQuery;
+  speakers: Array<Speaker>;
   timeseries: Record<"date" | "freq", number[]>;
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
@@ -47,6 +48,7 @@ const Keyword = ({
   count,
   excerpts,
   query,
+  speakers,
   timeseries,
   top_speakers,
   top_word_freq,
@@ -77,6 +79,17 @@ const Keyword = ({
     () => Array.from({ length: 365 }, () => Math.random() * 25 + 25),
     []
   );
+
+  const barmeter_data = top_speakers
+    ? top_speakers.map(s => {
+        const id = Object.keys(s)[0];
+        const speaker = speakers.find(e => String(e.new_author_id) === id)
+          ?.name;
+        const total = s[id];
+
+        return { x: speaker ?? "", y: total };
+      })
+    : [];
 
   useEffect(() => {
     setLoading(false);
@@ -194,10 +207,7 @@ const Keyword = ({
               <BarMeter
                 className="mx-auto max-w-screen-sm"
                 layout="horizontal"
-                data={top_speakers.map(s => ({
-                  x: UID_TO_NAME_DR[Object.keys(s)[0]] ?? Object.keys(s)[0],
-                  y: Object.values(s)[0],
-                }))}
+                data={barmeter_data}
                 relative
                 precision={0}
               />
