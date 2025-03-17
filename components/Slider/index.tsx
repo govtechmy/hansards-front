@@ -86,7 +86,7 @@ const Slider: FunctionComponent<SliderProps> = ({
   if (type === "single")
     return (
       <div className={cn("group flex w-full items-center gap-x-3", className)}>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-txt-black-500">
           {parseAsDate ? toDate(data[0], "yyyy", i18n.language) : data[0]}
         </p>
         <Root
@@ -97,8 +97,8 @@ const Slider: FunctionComponent<SliderProps> = ({
           onValueChange={e => setMinmax(e)}
           onValueCommit={(e: number[] & number) => onChange(e)}
         >
-          <Track className="relative z-0 h-2 grow rounded-full bg-slate-200 dark:bg-zinc-800">
-            <Range className="absolute z-0 h-full  rounded-xl bg-[#A1A1AA] group-hover:bg-bg-primary-600 dark:group-hover:bg-bg-primary-600 max-lg:group-focus-within:bg-bg-primary-600 dark:max-lg:group-focus-within:bg-secondary" />
+          <Track className="relative z-0 h-2 grow rounded-full bg-bg-black-200">
+            <Range className="absolute z-0 h-full rounded-xl bg-[#A1A1AA] group-hover:bg-bg-primary-600 dark:group-hover:bg-bg-primary-600 max-lg:group-focus-within:bg-bg-primary-600 dark:max-lg:group-focus-within:bg-secondary" />
           </Track>
           <Thumb className="max-lg:group-focus-within:border-otl-primary-600 max-lg:group-focus-within:ring-primary group-hover:border-otl-primary-600 group-hover:ring-primary block h-5 w-5 cursor-pointer rounded-full border-2 border-[#A1A1AA] bg-white shadow-button group-hover:ring-4 max-lg:group-focus-within:ring-4">
             <SliderTooltip>
@@ -112,7 +112,7 @@ const Slider: FunctionComponent<SliderProps> = ({
             </SliderTooltip>
           </Thumb>
         </Root>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-txt-black-500">
           {parseAsDate
             ? toDate(data[data.length - 1], "yyyy", i18n.language)
             : data[data.length - 1]}
@@ -151,13 +151,13 @@ const Slider: FunctionComponent<SliderProps> = ({
           onClick={togglePlayPause}
         >
           {play ? (
-            <PauseIcon className="h-4 w-4 text-zinc-900 dark:text-white" />
+            <PauseIcon className="h-4 w-4 text-txt-black-900" />
           ) : (
-            <PlayIcon className="h-4 w-4 text-zinc-900 dark:text-white" />
+            <PlayIcon className="h-4 w-4 text-txt-black-900" />
           )}
         </button>
       )}
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-txt-black-500">
         {parseAsDate ? toDate(data[0], "yyyy", i18n.language) : data[0]}
       </p>
       <Root
@@ -175,7 +175,7 @@ const Slider: FunctionComponent<SliderProps> = ({
         }}
         minStepsBetweenThumbs={1}
       >
-        <Track className="relative z-0 h-2 grow rounded-full bg-slate-200 dark:bg-zinc-800">
+        <Track className="relative z-0 h-2 grow rounded-full bg-bg-black-200">
           <Range className="absolute z-0 h-full rounded-xl bg-[#A1A1AA] group-hover:bg-bg-primary-600 dark:group-hover:bg-bg-primary-600 max-lg:group-focus-within:bg-bg-primary-600 dark:max-lg:group-focus-within:bg-secondary" />
         </Track>
         <Thumb className="max-lg:group-focus-within:border-otl-primary-600 max-lg:group-focus-within:ring-primary group-hover:border-otl-primary-600 group-hover:ring-primary block h-5 w-5 cursor-col-resize rounded-full border-2 border-[#A1A1AA] bg-white shadow-button group-hover:ring-4 max-lg:group-focus-within:ring-4">
@@ -201,7 +201,7 @@ const Slider: FunctionComponent<SliderProps> = ({
           </SliderTooltip>
         </Thumb>
       </Root>
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-txt-black-500">
         {parseAsDate
           ? toDate(data[data.length - 1], "yyyy", i18n.language)
           : data[data.length - 1]}
@@ -227,10 +227,10 @@ const SliderTooltip: FunctionComponent<SliderTooltipProps> = ({
         play ? "opacity-100" : "opacity-0"
       )}
     >
-      <span className="relative z-10 whitespace-nowrap rounded-lg bg-zinc-900 px-3 py-1.5 text-sm text-white shadow-floating dark:bg-white dark:text-zinc-900">
+      <span className="relative z-10 whitespace-nowrap rounded-lg bg-bg-black-900 px-3 py-1.5 text-sm text-txt-white shadow-floating">
         {children}
       </span>
-      <div className="absolute -bottom-1 h-2 w-2 rotate-45 bg-zinc-900 dark:bg-white"></div>
+      <div className="absolute -bottom-1 h-2 w-2 rotate-45 bg-bg-black-900 dark:bg-white"></div>
     </div>
   );
 };
