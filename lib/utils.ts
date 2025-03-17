@@ -56,19 +56,33 @@ export function formatTimestamp(timestamp: number) {
   return formatted_timestamp;
 }
 
+const getQueryString = (url: string) => {
+  const hash_idx = url.lastIndexOf("#");
+  const q_mark_idx = url.indexOf("?");
+
+  let query_str = url;
+  const hasHash = hash_idx > -1;
+  if (hasHash) query_str = query_str.slice(0, hash_idx);
+
+  const hasQMark = q_mark_idx > -1;
+  if (hasQMark) query_str = query_str.slice(q_mark_idx);
+  else query_str = "";
+
+  return query_str;
+};
+
 export const setSearchParams = (
   url: string,
-  key: string,
-  value: string | null
+  params: Record<string, string | null>
 ) => {
-  const query_str = url.slice(url.indexOf("?") + 1);
-  const hash_idx = url.lastIndexOf("#");
-  const searchParams = new URLSearchParams(
-    hash_idx === -1 ? query_str : query_str.slice(0, hash_idx)
-  );
+  const query_str = getQueryString(url);
+  const searchParams = new URLSearchParams(query_str);
 
-  if (value) searchParams.set(key, value);
-  else searchParams.delete(key);
+  Object.keys(params).map(key => {
+    const value = params[key];
+    if (value) searchParams.set(key, value);
+    else searchParams.delete(key);
+  });
 
   return "?" + searchParams.toString();
 };

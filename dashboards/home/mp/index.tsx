@@ -62,17 +62,11 @@ const MP = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const { resolvedTheme } = useTheme();
 
-  const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
-    query;
+  const { uid, dewan, tarikh_mula, tarikh_akhir } = query;
   const hasQuery = Object.keys(query).length > 0;
 
   const mp = uid ? String(uid) : "";
   const house = dewan ? String(dewan) : undefined;
-
-  const age = umur ? String(umur) : ALL_AGES;
-  const ethnic = etnik ? String(etnik) : ALL_ETHNICITIES;
-  const party = parti ? String(parti) : ALL_PARTIES;
-  const sex = jantina ? String(jantina) : BOTH_SEXES;
 
   const start_date = tarikh_mula ? String(tarikh_mula) : "";
   const end_date = tarikh_akhir ? String(tarikh_akhir) : "";
@@ -130,14 +124,7 @@ const MP = ({
           ind_or_grp={ind_or_grp}
           speakers={speakers}
           onFilter={setIndOrGrp}
-          uid={mp}
-          dewan={house}
-          party={party}
-          sex={sex}
-          age={age}
-          ethnic={ethnic}
-          start={start}
-          end={end}
+          query={query}
         />
 
         <div className="relative mt-6 w-full" ref={ref}>

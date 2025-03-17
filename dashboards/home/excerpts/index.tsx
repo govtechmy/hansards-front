@@ -133,8 +133,11 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
               size="medium"
               value={page_size ? String(page_size) : ROWS_PER_PAGE[0]}
               onValueChange={size => {
-                const url = setSearchParams(router.asPath, "page", "1");
-                router.push(setSearchParams(url, "page_size", size));
+                const url = setSearchParams(router.asPath, {
+                  page: "1",
+                  page_size: size,
+                });
+                router.push(url);
               }}
             >
               <SelectTrigger>
@@ -153,11 +156,9 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
             count={count}
             currentPage={page ? Number(page) : 1}
             onPageChange={page => {
-              const url = setSearchParams(
-                router.asPath,
-                "page",
-                page.toString()
-              );
+              const url = setSearchParams(router.asPath, {
+                page: page.toString(),
+              });
               router.push(url);
             }}
             limit={page_size ? Number(page_size) : ITEMS_PER_PAGE}
