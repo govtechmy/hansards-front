@@ -36,45 +36,40 @@ const CatalogueIndexPage: Page = ({
 export const getStaticProps: GetStaticProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async () => {
-    try {
-      const parlimens = [12, 13, 14, 15].map(String);
-      const results = await Promise.allSettled(
-        parlimens.map(term =>
-          get("api/catalogue/", {
-            house: "dewan-negara",
-            term,
-          })
-        )
-      );
+    const parlimens = [12, 13, 14, 15].map(String);
+    const results = await Promise.allSettled(
+      parlimens.map(term =>
+        get("api/catalogue/", {
+          house: "dewan-negara",
+          term,
+        })
+      )
+    );
 
-      const fulfilledResults = results.filter(assertFulfilled);
-      const data = fulfilledResults.map(e => e.value.data.catalogue_list);
+    const fulfilledResults = results.filter(assertFulfilled);
+    const data = fulfilledResults.map(e => e.value.data.catalogue_list);
 
-      const archive = data.reduce((res, curr) => {
-        for (const key in curr) {
-          if (curr.hasOwnProperty(key)) {
-            res[key] = curr[key];
-          }
+    const archive = data.reduce((res, curr) => {
+      for (const key in curr) {
+        if (curr.hasOwnProperty(key)) {
+          res[key] = curr[key];
         }
-        return res;
-      }, {});
+      }
+      return res;
+    }, {});
 
-      if (Object.keys(archive).length === 0) throw new Error();
+    if (Object.keys(archive).length === 0) throw new Error();
 
-      return {
-        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
-        props: {
-          meta: {
-            id: routes.KATALOG_DN,
-          },
-          archive,
-          parlimens,
+    return {
+      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      props: {
+        meta: {
+          id: routes.KATALOG_DN,
         },
-      };
-    } catch (error) {
-      console.error(error);
-      return { notFound: true };
-    }
+        archive,
+        parlimens,
+      },
+    };
   }
 );
 

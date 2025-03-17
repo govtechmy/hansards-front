@@ -56,30 +56,25 @@ export const getStaticPaths: GetStaticPaths = () => {
 export const getStaticProps: GetStaticProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async ({ params }) => {
-    try {
-      const date = params?.date ? params.date.toString() : null;
+    const date = params?.date ? params.date.toString() : null;
 
-      const { data } = await get("api/sitting/", {
-        house: "dewan-negara",
-        date,
-      });
+    const { data } = await get("api/sitting/", {
+      house: "dewan-negara",
+      date,
+    });
 
-      return {
-        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
-        props: {
-          meta: {
-            id: `${routes.HANSARD_DN}/${date}`,
-          },
-          cycle: data.meta.cycle,
-          date: date,
-          filename: data.meta.filename,
-          speeches: data.speeches,
+    return {
+      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      props: {
+        meta: {
+          id: `${routes.HANSARD_DN}/${date}`,
         },
-      };
-    } catch (error) {
-      console.error(error);
-      return { notFound: true };
-    }
+        cycle: data.meta.cycle,
+        date: date,
+        filename: data.meta.filename,
+        speeches: data.speeches,
+      },
+    };
   }
 );
 
