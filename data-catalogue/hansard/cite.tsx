@@ -98,7 +98,7 @@ export default function CiteDialogDrawer({
     },
     {
       label: "Vancouver",
-      value: `${author}. ${title} [Internet]. Year [cited ${new Date().getFullYear()} ${this_month} ${today.getDate()}]. Available from: ${URL}`,
+      value: `${author}. ${title} [Internet]. ${published_yr} [cited ${new Date().getFullYear()} ${this_month} ${today.getDate()}]. Available from: ${URL}`,
     },
   ];
 
