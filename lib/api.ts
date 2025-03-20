@@ -22,7 +22,9 @@ const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const config: AxiosRequestConfig = {
     baseURL: urls[base] || base,
     headers: {
-      Authorization: !BROWSER_RUNTIME ? `Bearer ${process.env.NEXT_PUBLIC_AUTHORIZATION_TOKEN}` : null,
+      Authorization: !BROWSER_RUNTIME
+        ? `Bearer ${process.env.API_AUTH_TOKEN}`
+        : null,
       ...headers,
     },
   };
