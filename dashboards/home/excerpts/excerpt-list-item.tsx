@@ -43,7 +43,7 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
       className="group p-3 first:rounded-t-xl last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 sm:p-4"
     >
       <div className="relative flex h-full flex-col gap-1">
-        <p className="text-body-sm font-medium">{speaker}</p>
+        <p className="line-clamp-1 text-body-sm font-medium">{speaker}</p>
         <div className="line-clamp-2 text-body-xs text-txt-black-700 sm:text-body-sm">
           {md.render(trimmed_speech)}
         </div>
