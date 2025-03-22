@@ -135,7 +135,9 @@ const MP = ({
             ((mp && IS_INDIVIDU) || (!mp && !IS_INDIVIDU))
               ? IS_INDIVIDU
                 ? t("timeseries_mp", {
-                    mp: speakers.find(e => e.name === uid)?.name ?? "",
+                    mp:
+                      speakers.find(e => String(e.new_author_id) === uid)
+                        ?.name ?? "",
                     house: t(house.replace("-", "_"), { ns: "common" }),
                   })
                 : t("timeseries_mps", {
