@@ -12,7 +12,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <div className="fixed inset-x-0 top-0 z-30 h-14 w-screen border-b bg-background dark:border-zinc-800">
+    <div className="sticky inset-x-0 top-0 z-30 h-14 w-screen border-b bg-background dark:border-zinc-800">
       <Container
         background="bg-background"
         className="flex items-center gap-4 py-[11px]"
@@ -23,9 +23,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
               <div className="flex size-8 items-center justify-center">
                 <ParlimenIcon />
               </div>
-              <div className="whitespace-nowrap font-poppins text-body-lg font-semibold">
-                Hansard Parlimen
-              </div>
+              <div className="header whitespace-nowrap">Hansard Parlimen</div>
             </div>
           </Link>
 
