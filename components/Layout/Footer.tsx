@@ -1,18 +1,11 @@
 import { useTranslation } from "@hooks/useTranslation";
 import {
   Footer,
-  FooterTopSection,
-  FooterMainInfo,
-  ImageWithTitle,
-  Address,
-  SocialMedia,
-  SocialMediaItem,
-  FooterContent,
-  FooterContentColumn,
-  FooterBottomSection,
-  FooterCopyright,
-  FooterCopyrightDate,
-  FooterTimestamp,
+  SiteInfo,
+  FooterSection,
+  SiteLinkGroup,
+  SiteLink,
+  FooterLogo,
 } from "@govtechmy/myds-react/footer";
 import { Link } from "@govtechmy/myds-react/link";
 import {
@@ -61,29 +54,32 @@ const FooterLayout = () => {
   ];
 
   return (
-    <Footer className="max-w-screen-2xl *:max-lg:mx-0">
-      <FooterTopSection>
-        <FooterMainInfo>
-          <ImageWithTitle
-            imgSrc="/static/images/jata_logo.png"
-            imgAlt="Jata Negara"
-          >
+    <Footer>
+      <FooterSection className="lg:mx-0 lg:max-w-screen-2xl">
+        <SiteInfo>
+          <div className="flex items-center gap-x-2.5 whitespace-nowrap font-poppins text-body-md font-semibold text-txt-black-900">
+            <FooterLogo
+              logo={
+                <img
+                  src="/static/images/jata-negara.png"
+                  width={36}
+                  height={28}
+                  alt="Jata Negara"
+                />
+              }
+            />
             {t("footer.parlimen")}
-          </ImageWithTitle>
-          <Address>
+          </div>
+          <p className="whitespace-pre-line text-body-sm text-txt-black-700">
             Bangunan Parlimen,{"\n"}
             Jalan Parlimen,{"\n"}
             50680, Kuala Lumpur
-          </Address>
-          <SocialMedia title="Follow Us">
+          </p>
+          <p className="text-body-sm font-semibold text-txt-black-900">
+            {t("footer.follow_us")}
+          </p>
+          <div className="flex gap-3">
             {social_media.map(({ icon, name, href }) => (
-              <SocialMediaItem key={name} icon={icon} href={href} name={name} />
-            ))}
-          </SocialMedia>
-        </FooterMainInfo>
-        {/* <FooterContent>
-          <FooterContentColumn title={"Open Source"}>
-            {open_source.map(({ name, href }) => (
               <Link
                 key={name}
                 newTab
@@ -91,18 +87,31 @@ const FooterLayout = () => {
                 underline="hover"
                 className="hover:text-txt-black-900"
               >
-                {t("footer." + name)}
+                {icon}
               </Link>
             ))}
-          </FooterContentColumn>
-        </FooterContent> */}
-      </FooterTopSection>
-      <FooterBottomSection>
-        <FooterCopyright>
-          <FooterCopyrightDate>All Rights Reserved</FooterCopyrightDate>
-        </FooterCopyright>
-        {/* <FooterTimestamp time=""></FooterTimestamp> */}
-      </FooterBottomSection>
+          </div>
+        </SiteInfo>
+
+        {/* <SiteLinkGroup groupTitle={t("footer.open_source")}>
+            {open_source.map(({ name, href }) => (
+              <SiteLink
+                key={name}
+                newTab
+                href={href}
+                underline="hover"
+                className="hover:text-txt-black-900"
+              >
+                {t("footer." + name)}
+              </SiteLink>
+            ))}
+          </SiteLinkGroup> */}
+      </FooterSection>
+      <FooterSection className="flex w-full flex-col justify-between gap-4 border-none text-sm text-txt-black-500 md:pb-0 md:max-lg:gap-4.5 lg:max-w-screen-2xl lg:flex-row lg:gap-6">
+        <p>
+          {t("footer.all_rights_reserved")} © {new Date().getFullYear()}
+        </p>
+      </FooterSection>
     </Footer>
   );
 };
