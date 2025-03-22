@@ -39,6 +39,8 @@ import {
 import { useRouter } from "next/router";
 import { setSearchParams } from "@lib/utils";
 import { ParsedUrlQuery } from "querystring";
+import { format } from "date-fns";
+import { useMediaQuery } from "@hooks/useMediaQuery";
 
 /**
  * MP - Filter
@@ -140,9 +142,9 @@ const MPFilter = ({
     value: key,
   }));
 
+  const isTablet = useMediaQuery("(min-width: 768px)");
   const router = useRouter();
-  const format = (date?: Date) =>
-    !date ? "" : date.toISOString().slice(0, 10);
+  const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
   const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
@@ -248,7 +250,7 @@ const MPFilter = ({
                 }}
               />
             </div>
-            <div className="hidden justify-center gap-2 sm:flex">
+            <div className="flex justify-center gap-2">
               <Daterange
                 className="text-blue-600 dark:text-primary-dark"
                 placeholder={t("current_parlimen")}
@@ -258,10 +260,11 @@ const MPFilter = ({
                   setSelectedDateRange(dateRange);
                   if (data.uid && dateRange && dateRange?.from && dateRange?.to)
                     handleSearch({
-                      tarikh_akhir: format(dateRange.from),
-                      tarikh_mula: format(dateRange.to),
+                      tarikh_akhir: formatDate(dateRange.from),
+                      tarikh_mula: formatDate(dateRange.to),
                     });
                 }}
+                numberOfMonths={isTablet ? 2 : 1}
               />
               {selectedDateRange && (
                 <Button
@@ -347,8 +350,8 @@ const MPFilter = ({
                       jantina: data.sex !== BOTH_SEXES ? data.sex : "",
                       umur: data.age !== ALL_AGES ? data.age : "",
                       etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                      tarikh_akhir: format(selectedDateRange?.from),
-                      tarikh_mula: format(selectedDateRange?.to),
+                      tarikh_akhir: formatDate(selectedDateRange?.from),
+                      tarikh_mula: formatDate(selectedDateRange?.to),
                     })
                   }
                 >
@@ -484,8 +487,8 @@ const MPFilter = ({
                         jantina: data.sex !== BOTH_SEXES ? data.sex : "",
                         umur: data.age !== ALL_AGES ? data.age : "",
                         etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                        tarikh_akhir: format(selectedDateRange?.from),
-                        tarikh_mula: format(selectedDateRange?.to),
+                        tarikh_akhir: formatDate(selectedDateRange?.from),
+                        tarikh_mula: formatDate(selectedDateRange?.to),
                       });
                     }}
                   >

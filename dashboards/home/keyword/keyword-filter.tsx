@@ -39,6 +39,7 @@ import {
 import { setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
+import { format } from "date-fns";
 
 /**
  * Keyword - Filter
@@ -113,8 +114,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
   const router = useRouter();
 
-  const format = (date?: Date) =>
-    !date ? "" : date.toISOString().slice(0, 10);
+  const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
   const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
@@ -205,8 +205,8 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                 jantina: data.sex !== BOTH_SEXES ? data.sex : "",
                 umur: data.age !== ALL_AGES ? data.age : "",
                 etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                tarikh_akhir: format(selectedDateRange?.from),
-                tarikh_mula: format(selectedDateRange?.to),
+                tarikh_akhir: formatDate(selectedDateRange?.from),
+                tarikh_mula: formatDate(selectedDateRange?.to),
               })
             }
           >
@@ -229,8 +229,8 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             setSelectedDateRange(dateRange);
             if (data.query && dateRange && dateRange.from && dateRange.to)
               handleSearch({
-                tarikh_akhir: format(dateRange.from),
-                tarikh_mula: format(dateRange.to),
+                tarikh_akhir: formatDate(dateRange.from),
+                tarikh_mula: formatDate(dateRange.to),
               });
           }}
         />
@@ -421,8 +421,8 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                   jantina: data.sex !== BOTH_SEXES ? data.sex : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
                   etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                  tarikh_akhir: format(selectedDateRange?.from),
-                  tarikh_mula: format(selectedDateRange?.to),
+                  tarikh_akhir: formatDate(selectedDateRange?.from),
+                  tarikh_mula: formatDate(selectedDateRange?.to),
                 });
               }}
             >
