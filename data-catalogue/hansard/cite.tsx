@@ -15,16 +15,16 @@ import {
   SummaryListRow,
   SummaryListTerm,
 } from "@govtechmy/myds-react/summary-list";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeading,
-  SheetTrigger,
-} from "@components/Sheet";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { Trans, useTranslation } from "next-i18next";
 import { ReactNode, useState } from "react";
 import { CopyIcon } from "@govtechmy/myds-react/icon";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from "@components/Drawer";
 
 /**
  * Cite Dialog/Drawer
@@ -35,7 +35,6 @@ interface CiteDialogDrawerProps {
   date: string;
   dewan: string;
   hansard_id: string;
-  // trigger: ReactNode;
   trigger: (onClick: () => void) => ReactNode;
 }
 
@@ -103,48 +102,46 @@ export default function CiteDialogDrawer({
   ];
 
   const CiteButton = () => (
-    <div className="max-h-[80dvh] space-y-5 overflow-auto">
-      <SummaryList className="table-auto text-sm">
-        <SummaryListBody>
-          {CITE_OPTIONS.map(({ label, value }) => (
-            <SummaryListRow>
-              <SummaryListTerm className="min-w-[100px]">
+    <SummaryList className="max-h-[80dvh] overflow-auto max-sm:px-4.5">
+      <SummaryListBody>
+        {CITE_OPTIONS.map(({ label, value }) => {
+          const plain = "text/plain";
+          const html = "text/html";
+          const text = document.getElementById(label)?.innerText || "";
+          const blobHtml = new Blob([value], { type: html });
+          const blobText = new Blob([text], { type: plain });
+          const data = [
+            new ClipboardItem({
+              [plain]: blobText,
+              [html]: blobHtml,
+            }),
+          ];
+
+          return (
+            <SummaryListRow className="max-sm:block">
+              <SummaryListTerm className="min-w-fit max-sm:pt-4.5">
                 {label}
               </SummaryListTerm>
               <SummaryListDetail
                 id={label}
-                className="select-all text-txt-black-700"
+                className="w-fit text-txt-black-700 max-sm:order-last max-sm:p-0 sm:w-max"
               >
                 {label === "JournalMP" ? value : <Trans>{value}</Trans>}
               </SummaryListDetail>
-              <SummaryListAction>
+              <SummaryListAction className="max-sm:pb-3 max-sm:pr-0">
                 <Button
                   variant="primary-ghost"
-                  onClick={async () => {
-                    const plain = "text/plain";
-                    const html = "text/html";
-                    const text =
-                      document.getElementById(label)?.innerText || "";
-                    const blobHtml = new Blob([value], { type: html });
-                    const blobText = new Blob([text], { type: plain });
-                    const data = [
-                      new ClipboardItem({
-                        [plain]: blobText,
-                        [html]: blobHtml,
-                      }),
-                    ];
-                    await navigator.clipboard.write(data);
-                  }}
-                  iconOnly
+                  onClick={async () => await navigator.clipboard.write(data)}
                 >
                   <CopyIcon className="size-5" />
+                  {t("common:copy")}
                 </Button>
               </SummaryListAction>
             </SummaryListRow>
-          ))}
-        </SummaryListBody>
-      </SummaryList>
-    </div>
+          );
+        })}
+      </SummaryListBody>
+    </SummaryList>
   );
 
   if (isDesktop)
@@ -155,7 +152,7 @@ export default function CiteDialogDrawer({
           <DialogHeader>
             <DialogTitle>{t("cite_hansard")}</DialogTitle>
           </DialogHeader>
-          <DialogContent className="pt-0">
+          <DialogContent className="pb-6 pt-0">
             <CiteButton />
           </DialogContent>
         </DialogBody>
@@ -163,16 +160,16 @@ export default function CiteDialogDrawer({
     );
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>{trigger(() => setOpen(true))}</SheetTrigger>
-      <SheetContent side="bottom" className="rounded-t-xl p-0">
-        <SheetHeading className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>{trigger(() => setOpen(true))}</DrawerTrigger>
+      <DrawerContent className="rounded-t-xl p-0">
+        <DrawerHeader className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
           <span className="font-medium text-foreground">
             {t("cite_hansard")}
           </span>
-        </SheetHeading>
+        </DrawerHeader>
         <CiteButton />
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 }

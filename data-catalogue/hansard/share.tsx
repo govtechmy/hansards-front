@@ -6,11 +6,11 @@ import {
   DialogTrigger,
 } from "@components/Dialog";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeading,
-  SheetTrigger,
-} from "@components/Sheet";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from "@components/Drawer";
 import DateCard from "@components/Card/date-card";
 import { DocumentDuplicateIcon, EnvelopeIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
@@ -158,8 +158,8 @@ export const ShareDialogDrawer = ({
     );
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild onClick={e => e.preventDefault()}>
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild onClick={e => e.preventDefault()}>
         {trigger ? (
           trigger(handleClick)
         ) : (
@@ -168,16 +168,16 @@ export const ShareDialogDrawer = ({
             {t("share")}
           </Button>
         )}
-      </SheetTrigger>
-      <SheetContent side="bottom" className="rounded-t-xl p-0">
-        <SheetHeading className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
+      </DrawerTrigger>
+      <DrawerContent className="rounded-t-xl p-0">
+        <DrawerHeader className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
           <span className="font-medium text-foreground">
             {t("share_hansard")}
           </span>
-        </SheetHeading>
+        </DrawerHeader>
         <ShareButton />
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
