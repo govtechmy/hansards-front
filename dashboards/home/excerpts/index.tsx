@@ -52,7 +52,7 @@ const Excerpts = ({ count, excerpts, query }: ExcerptsProps) => {
 
             return (
               <li className="flex flex-col gap-3 py-4.5 first:pt-0 sm:gap-6 sm:py-6 lg:flex-row">
-                <div className="flex shrink-0 items-start lg:max-w-md">
+                <div className="sticky top-16 flex h-24 shrink-0 items-center lg:max-w-md">
                   <Link
                     href={`hansard/${dewan}/${sitting.date}?search=${q}`}
                     className="group flex items-center gap-3 sm:gap-4.5"

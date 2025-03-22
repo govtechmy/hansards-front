@@ -28,7 +28,7 @@ interface CatalogueFolderProps {
 }
 
 export interface FolderOpen {
-  open: (url: string) => void;
+  open: () => void;
 }
 
 const CatalogueFolder = forwardRef(
@@ -72,12 +72,12 @@ const CatalogueFolder = forwardRef(
           height={20}
           alt="Open Folder"
         />
-        <span className="flex flex-wrap gap-x-3 font-medium text-zinc-900 dark:text-white">
+        <span className="flex flex-wrap gap-x-3 font-medium text-txt-black-900">
           {t("mesyuarat_full", {
             ns: "enum",
             n: meeting_id,
           })}
-          <span className="font-normal text-zinc-500">{dateRange}</span>
+          <span className="font-normal text-txt-black-500">{dateRange}</span>
         </span>
       </span>
     );
@@ -86,7 +86,7 @@ const CatalogueFolder = forwardRef(
       <>
         <div
           className={cn(
-            "relative mb-1.5 h-20 w-[100px] rounded-md border group-hover:border-border",
+            "relative mb-1.5 h-20 w-[100px] rounded-md border group-hover:border-otl-gray-200",
             open ? "visible pl-2 pt-2" : "border-transparent p-2"
           )}
         >
@@ -97,7 +97,7 @@ const CatalogueFolder = forwardRef(
             alt="Closed Folder"
           />
           <span className="absolute bottom-3 right-3 flex items-center gap-0.5 rounded-md bg-slate-400 px-1.5 py-0.5 text-white">
-            <BookmarkIcon className="h-3.5 w-3.5" />
+            <BookmarkIcon className="size-3.5" />
             {sitting_list.length}
           </span>
         </div>
@@ -105,7 +105,9 @@ const CatalogueFolder = forwardRef(
           ns: "enum",
           n: meeting_id,
         })}
-        <span className="text-sm font-normal text-zinc-500">{dateRange}</span>
+        <span className="text-sm font-normal text-txt-black-500">
+          {dateRange}
+        </span>
       </>
     );
 
@@ -126,7 +128,7 @@ const CatalogueFolder = forwardRef(
           <Folder />
         </DrawerTrigger>
         <DrawerContent>
-          <DrawerHeader className="flex justify-between gap-x-3 border-b border-border">
+          <DrawerHeader className="flex justify-between gap-x-3 border-b border-otl-gray-200">
             <FolderTab />
             <DrawerClose>
               <XMarkIcon className="h-5 w-5" />

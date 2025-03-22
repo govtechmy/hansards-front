@@ -319,7 +319,7 @@ const Hansard = ({
             </div>
           </Hero>
 
-          <div className="sticky top-14 z-20 flex w-full items-center justify-between gap-1 border-b border-b-border bg-background pr-1.5 lg:gap-3 lg:px-8">
+          <div className="sticky top-14 z-20 flex w-full items-center justify-between gap-1 border-b border-b-border bg-background pr-3 lg:gap-3 lg:px-8">
             <HansardSearchBar />
 
             <Dropdown>
@@ -381,7 +381,7 @@ const Hansard = ({
               </DropdownContent>
             </Dropdown>
 
-            <div className="z-50 hidden whitespace-nowrap border-l border-otl-gray-200 pl-3 md:flex">
+            <div className="z-50 hidden gap-1 whitespace-nowrap border-l border-otl-gray-200 pl-3 md:flex">
               <CiteButton
                 date={date}
                 hansard_id={hansard_id}

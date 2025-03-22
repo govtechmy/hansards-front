@@ -55,7 +55,7 @@ const Daterange = ({
   const [invalidFromValue, setInvalidFromValue] = useState<string>("");
   const [invalidToValue, setInvalidToValue] = useState<string>("");
 
-  const handleFromChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleFromChange: ChangeEventHandler<HTMLInputElement> = e => {
     setFromValue(e.target.value);
     const date = parse(e.target.value, "yyyy-MM-dd", TODAY);
 
@@ -78,7 +78,7 @@ const Daterange = ({
     }
   };
 
-  const handleToChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleToChange: ChangeEventHandler<HTMLInputElement> = e => {
     setToValue(e.target.value);
     const date = parse(e.target.value, "yyyy-MM-dd", TODAY);
     const fromDate = subSeconds(
@@ -127,16 +127,16 @@ const Daterange = ({
     <Popover className="relative">
       <Popover.Button
         className={cn(
-          "shadow-button flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-foreground",
-          "active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800 select-none bg-background",
-          "border-border hover:border-border-hover border",
+          "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-foreground shadow-button",
+          "select-none bg-background active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800",
+          "border border-border hover:border-border-hover",
           disabled &&
-            "disabled:bg-border disabled:border-border disabled:text-border-hover disabled:pointer-events-none disabled:cursor-not-allowed",
+            "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-border disabled:bg-border disabled:text-border-hover",
           className
         )}
         disabled={disabled}
       >
-        <CalendarIcon className="text-foreground h-4.5 w-4.5" />
+        <CalendarIcon className="h-4.5 w-4.5 text-foreground" />
         <span className="text-foreground">
           {label}
           {(selected || placeholder) && ":"}
@@ -167,7 +167,7 @@ const Daterange = ({
       >
         <Popover.Panel
           className={cn(
-            "min-w-full max-h-100 shadow-floating absolute z-20 mt-1 rounded-md bg-background text-sm focus:outline-none border border-border",
+            "max-h-100 absolute z-20 mt-1 min-w-full rounded-md border border-border bg-background text-sm shadow-floating focus:outline-none",
             anchor === "right"
               ? "right-0"
               : anchor === "left"
@@ -175,17 +175,17 @@ const Daterange = ({
               : anchor
           )}
         >
-          <form className="max-sm:hidden pt-3 px-3 flex flex-col">
+          <form className="flex flex-col px-3 pt-3 max-sm:hidden">
             <div className="flex items-center gap-x-3">
               <input
                 type="date"
                 className={cn(
-                  "btn-default text-center w-full focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none focus:border-none",
+                  "btn-default w-full text-center ring-primary-600 focus:border-none focus:outline-none focus:ring-2",
                   invalidFromValue && "invalid:ring-red-600"
                 )}
                 value={fromValue}
                 onChange={handleFromChange}
-                onClick={(event) => event.preventDefault()}
+                onClick={event => event.preventDefault()}
                 min="1959-08-11"
                 max={toValue ? toValue : TODAY.toISOString().slice(0, 10)}
               />
@@ -193,19 +193,21 @@ const Daterange = ({
               <input
                 type="date"
                 className={cn(
-                  "btn-default text-center w-full focus:ring-2 ring-blue-600 dark:ring-primary-dark focus:outline-none focus:border-none",
-                  invalidToValue && "invalid:ring-red-600"
+                  "btn-default w-full text-center ring-primary-600 focus:border-none focus:outline-none focus:ring-2",
+                  invalidToValue && "invalid:ring-otl-danger-200"
                 )}
                 value={toValue}
                 onChange={handleToChange}
-                onClick={(event) => event.preventDefault()}
+                onClick={event => event.preventDefault()}
                 min={fromValue ? fromValue : "1959-08-11"}
                 max={new Date().toISOString().slice(0, 10)}
               />
             </div>
             <div className="flex gap-[42px] pt-1">
-              <p className="text-xs text-red-600 w-full">{invalidFromValue}</p>
-              <p className="text-xs text-red-600 w-full">{invalidToValue}</p>
+              <p className="w-full text-xs text-txt-danger">
+                {invalidFromValue}
+              </p>
+              <p className="w-full text-xs text-txt-danger">{invalidToValue}</p>
             </div>
           </form>
 

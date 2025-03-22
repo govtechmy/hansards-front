@@ -41,10 +41,10 @@ export const OpenFolder = ({
   const dateRange = start === end ? `${start}` : `${start} - ${end}`;
 
   return (
-    <div className="hidden flex-col gap-6 sm:flex">
-      <div className="flex flex-wrap items-center gap-1 whitespace-nowrap text-sm font-medium">
+    <div className="hidden flex-col gap-3 sm:flex">
+      <div className="top-[164px] z-10 flex flex-wrap items-center gap-1 whitespace-nowrap bg-bg-white py-3 text-sm font-medium xl:sticky">
         <Button variant="reset" onClick={() => setPenggalIndex(-1)}>
-          <h3 className="flex w-fit flex-wrap items-center gap-3 text-lg font-semibold text-zinc-500 hover:text-txt-black-900 sm:whitespace-nowrap">
+          <h3 className="flex w-fit flex-wrap items-center gap-3 text-lg font-semibold text-txt-black-500 hover:text-txt-black-900 sm:whitespace-nowrap">
             <ArrowBackIcon className="size-6" />
             {t("penggal_full", {
               n: id,
@@ -53,7 +53,7 @@ export const OpenFolder = ({
           </h3>
         </Button>
 
-        <ChevronRightIcon className="size-6 text-zinc-500" />
+        <ChevronRightIcon className="size-6 text-txt-black-500" />
 
         <div className="flex grow items-center gap-3">
           <OpenFolderIcon className="h-6 w-8 shrink-0" />
@@ -63,11 +63,13 @@ export const OpenFolder = ({
               n: meeting_id,
             })}
           </span>
-          <span className="text-sm font-normal text-zinc-500">{dateRange}</span>
+          <span className="text-sm font-normal text-txt-black-500">
+            {dateRange}
+          </span>
           <span
             className={cn(
               "hidden h-0.5 w-full grow sm:block",
-              "border border-dashed border-slate-200 dark:border-zinc-800"
+              "border border-dashed border-otl-gray-200"
             )}
           />
         </div>

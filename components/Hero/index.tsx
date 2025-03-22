@@ -95,7 +95,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                   {description && Array.isArray(description) ? (
                     <p
                       className={cn(
-                        "text-zinc-500 max-xl:max-w-prose xl:w-2/3",
+                        "text-txt-black-500 max-xl:max-w-prose xl:w-2/3",
                         description[1]
                       )}
                       data-testid="hero-description"
@@ -108,7 +108,7 @@ const Hero: FunctionComponent<HeroProps> = ({
 
                   {counts.views >= 0 ? (
                     <p
-                      className="flex gap-2 text-sm text-zinc-500"
+                      className="flex gap-2 text-sm text-txt-black-500"
                       data-testid="hero-views"
                     >
                       <EyeIcon className="h-4.5 w-4.5 self-center" />
@@ -127,7 +127,7 @@ const Hero: FunctionComponent<HeroProps> = ({
                   {action}
                   {last_updated && (
                     <time
-                      className="text-sm text-zinc-500"
+                      className="text-sm text-txt-black-500"
                       data-testid="hero-last-updated"
                     >
                       {t("last_updated", {

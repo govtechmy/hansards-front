@@ -458,7 +458,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
         </div>
       )}
       {description && (
-        <p className="pt-4 text-sm text-zinc-500">{description}</p>
+        <p className="pt-4 text-sm text-txt-black-500">{description}</p>
       )}
     </div>
   );
@@ -519,7 +519,7 @@ export const Stats: FunctionComponent<StatsProps> = ({ data, className }) => {
     <div className={cn("flex flex-row space-x-6 lg:space-x-8", className)}>
       {data.map(({ title, value, tooltip }: StatProps) => (
         <div key={`${title}_${value}`}>
-          <p className="text-sm text-zinc-500">{title}</p>
+          <p className="text-sm text-txt-black-500">{title}</p>
           {tooltip ? (
             <Tooltip tip={tooltip}>
               {open => (
