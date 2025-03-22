@@ -1,6 +1,6 @@
 import { useTranslation } from "@hooks/useTranslation";
 import { Mesyuarat } from "@lib/types";
-import { useRef, useState } from "react";
+import { MutableRefObject, useState } from "react";
 import CatalogueFolder, { FolderOpen } from "./folder";
 import { OpenFolder } from "./folder-open";
 
@@ -10,6 +10,7 @@ import { OpenFolder } from "./folder-open";
  */
 
 interface PenggalProps {
+  folderRef: MutableRefObject<Record<string, FolderOpen | null>>;
   id: string;
   mesyuarat: {
     [key: string]: Mesyuarat;
@@ -19,6 +20,7 @@ interface PenggalProps {
 }
 
 const CataloguePenggal = ({
+  folderRef,
   id,
   mesyuarat,
   penggal_id,
@@ -29,7 +31,6 @@ const CataloguePenggal = ({
       Date.parse(mesyuarat[a].end_date) - Date.parse(mesyuarat[b].end_date)
   );
   const { t } = useTranslation("enum");
-  const folderRef = useRef<Record<string, FolderOpen | null>>({});
   const [penggalIndex, setPenggalIndex] = useState(-1);
 
   return (
@@ -44,7 +45,7 @@ const CataloguePenggal = ({
         />
       ) : (
         <>
-          <div className="flex grow items-center gap-3">
+          <div className="flex grow items-center gap-3 pt-3">
             <h3 className="flex w-fit flex-wrap text-lg font-semibold sm:whitespace-nowrap">
               {t("penggal_full", {
                 n: id,
@@ -58,7 +59,7 @@ const CataloguePenggal = ({
               <CatalogueFolder
                 key={id}
                 ref={ref =>
-                  (folderRef.current[`${penggal_id}/mesyuarat-${id}`] = ref)
+                  (folderRef.current[`${penggal_id}-mesyuarat-${id}`] = ref)
                 }
                 onOpen={() => setPenggalIndex(Number(id))}
                 meeting={mesyuarat[id]}

@@ -1,7 +1,7 @@
 import { Container, Sidebar } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
 import { Archive } from "@lib/types";
-import { Fragment, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { FolderOpen } from "./folder";
 import Penggal from "./penggal";
 import { useRouter } from "next/router";
@@ -69,14 +69,14 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
       const [parlimen, penggal, mesyuarat] = levels;
       const url = `${parlimen}-${penggal}-${mesyuarat}`;
       if (mesyuarat && folderRef.current) {
-        folderRef.current[url]?.open(url);
+        folderRef.current[url]?.open();
       }
     }
   }, []);
 
   return (
     <>
-      <Container>
+      <Container className="pl-1.5">
         <Sidebar data={data} onClick={selected => router.push("#" + selected)}>
           <div className="flex h-full w-full flex-col pb-6 pl-4.5 pt-3 sm:pl-8 lg:pb-8">
             {data ? (
@@ -85,33 +85,32 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                 const parlimen_id = `parlimen-${id}`;
 
                 return (
-                  <Fragment key={id}>
-                    <div className="flex flex-col">
-                      <div className="sticky top-28 z-10 flex items-center gap-3 bg-background py-3">
-                        <h2
-                          className="header flex w-fit scroll-mt-40 flex-wrap sm:whitespace-nowrap"
-                          id={parlimen_id}
-                        >
-                          {t("parlimen", {
-                            ns: "enum",
-                            count: Number(id),
-                            ordinal: true,
-                          })}
-                          {yearRange}
-                        </h2>
-                        <span className={classNames.hr} />
-                      </div>
-
-                      <div className="space-y-8 pb-[42px] pt-3">
-                        {penggal.map(penggal => (
-                          <Penggal
-                            penggal_id={`${parlimen_id}-penggal-${penggal.id}`}
-                            {...penggal}
-                          />
-                        ))}
-                      </div>
+                  <div key={id} className="flex flex-col">
+                    <div className="sticky top-28 z-20 flex items-center gap-3 bg-background py-3">
+                      <h2
+                        className="header flex w-fit scroll-mt-40 flex-wrap sm:whitespace-nowrap"
+                        id={parlimen_id}
+                      >
+                        {t("parlimen", {
+                          ns: "enum",
+                          count: Number(id),
+                          ordinal: true,
+                        })}
+                        {yearRange}
+                      </h2>
+                      <span className={classNames.hr} />
                     </div>
-                  </Fragment>
+
+                    <div className="space-y-8 pb-[42px]">
+                      {penggal.map(penggal => (
+                        <Penggal
+                          penggal_id={`${parlimen_id}-penggal-${penggal.id}`}
+                          folderRef={folderRef}
+                          {...penggal}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 );
               })
             ) : (
