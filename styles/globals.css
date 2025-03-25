@@ -75,7 +75,7 @@
 
 @layer components {
   .header {
-    @apply font-poppins text-xl font-bold;
+    @apply font-poppins text-xl font-semibold;
   }
 
   .title {

@@ -33,7 +33,7 @@ const Radio: FunctionComponent<RadioProps> = ({
                 type="radio"
                 name={name}
                 checked={value && option.value === value.value}
-                className="border-slate-200 text-primary focus:ring-primary dark:checked:bg-primary border-2 dark:bg-inherit"
+                className="focus:ring-primary border-2 border-otl-gray-200 text-txt-primary checked:bg-bg-primary-600 dark:bg-inherit"
                 onChange={e => onChange && onChange(option)}
               />
               <span className="block text-sm">{option.label}</span>

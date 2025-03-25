@@ -167,7 +167,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
                 item => item.value === option.value
               )
             }
-            className="h-4 w-4 rounded border-slate-200 text-primary focus:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:checked:border-primary dark:checked:bg-primary-dark"
+            className="text-primary dark:checked:border-primary h-4 w-4 rounded border-slate-200 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:checked:bg-primary-dark"
           />
         </span>
       )}
@@ -176,7 +176,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       {!multiple &&
         selected &&
         (selected as OptionType).value === option.value && (
-          <CheckCircleIcon className="disabled: h-4 w-4 text-primary dark:text-primary-dark" />
+          <CheckCircleIcon className="disabled: text-primary h-4 w-4 dark:text-primary-dark" />
         )}
     </Listbox.Option>
   );
@@ -243,7 +243,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               </span>
               {/* Label (multiple) */}
               {multiple && (selected as OptionType[])?.length > 0 && (
-                <span className="h-5 w-4.5 rounded-md bg-primary text-center text-white dark:bg-primary-dark">
+                <span className="h-5 w-4.5 rounded-md bg-bg-primary-600 text-center text-white">
                   {selected && (selected as OptionType[]).length}
                 </span>
               )}

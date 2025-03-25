@@ -15,6 +15,7 @@ const CariMP: Page = ({
   count,
   excerpts,
   query,
+  speakers,
   timeseries,
   top_speakers,
   top_word_freq,
@@ -27,6 +28,7 @@ const CariMP: Page = ({
           count={count}
           excerpts={excerpts}
           query={query}
+          speakers={speakers}
           timeseries={timeseries}
           top_speakers={top_speakers}
           top_word_freq={top_word_freq}
@@ -39,88 +41,87 @@ const CariMP: Page = ({
 export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
   async ({ query }) => {
-    try {
-      if (Object.keys(query).length === 0)
-        return {
-          notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
-          props: {
-            meta: {
-              id: "home",
-            },
-            count: 0,
-            excerpts: null,
-            query: query ?? null,
-            timeseries: {
-              date: Array.from({ length: 365 }, (_, i) => i * 86400000),
-              freq: [],
-            },
-            top_word_freq: null,
-            top_speakers: null,
-          },
-        };
+    const { data: speakers } = await get("api/author/");
 
-      const {
-        uid,
-        dewan,
-        tarikh_mula,
-        tarikh_akhir,
-        umur,
-        etnik,
-        parti,
-        jantina,
-      } = query;
-
-      const results = await Promise.allSettled([
-        get("api/search/", {
-          uid: uid,
-          house: dewan,
-          window_size: 150,
-          page: 1,
-          start_date: tarikh_mula,
-          end_date: tarikh_akhir,
-          age_group: umur,
-          ethnicity: etnik,
-          party: parti,
-          sex: jantina,
-        }),
-        get("api/search-plot/", {
-          uid: uid,
-          house: dewan,
-          start_date: tarikh_mula,
-          end_date: tarikh_akhir,
-          age_group: umur,
-          ethnicity: etnik,
-          party: parti,
-          sex: jantina,
-        }),
-      ]);
-
-      const [excerpt, data] = results.map(e => {
-        if (e.status === "rejected") return {};
-        else return e.value.data;
-      });
-
+    if (Object.keys(query).length === 0)
       return {
         notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
         props: {
           meta: {
-            id: "/cari-mp",
+            id: "home",
           },
-          count: excerpt.count ?? 0,
-          excerpts: excerpt.results ?? null,
+          count: 0,
+          excerpts: null,
           query: query ?? null,
-          timeseries: data.chart_data ?? {
+          speakers,
+          timeseries: {
             date: Array.from({ length: 365 }, (_, i) => i * 86400000),
             freq: [],
           },
-          top_word_freq: data.top_word_freq ?? null,
-          top_speakers: data.top_speakers ?? null,
+          top_word_freq: null,
+          top_speakers: null,
         },
       };
-    } catch (error: any) {
-      console.error(error.message);
-      return { notFound: true };
-    }
+
+    const {
+      uid,
+      dewan,
+      tarikh_mula,
+      tarikh_akhir,
+      umur,
+      etnik,
+      parti,
+      jantina,
+    } = query;
+
+    const results = await Promise.allSettled([
+      get("api/search/", {
+        uid: uid,
+        house: dewan,
+        window_size: 150,
+        page: 1,
+        start_date: tarikh_mula,
+        end_date: tarikh_akhir,
+        age_group: umur,
+        ethnicity: etnik,
+        party: parti,
+        sex: jantina,
+      }),
+      get("api/search-plot/", {
+        uid: uid,
+        house: dewan,
+        start_date: tarikh_mula,
+        end_date: tarikh_akhir,
+        age_group: umur,
+        ethnicity: etnik,
+        party: parti,
+        sex: jantina,
+      }),
+    ]);
+
+    const [excerpt, data] = results.map(e => {
+      if (e.status === "rejected") return {};
+      else return e.value.data;
+    });
+
+    return {
+      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      props: {
+        meta: {
+          id: "/cari-mp",
+        },
+        count: excerpt.count ?? 0,
+        excerpts: excerpt.results ?? null,
+        query: query ?? null,
+        speakers,
+        timeseries: data.chart_data ?? {
+          date: Array.from({ length: 365 }, (_, i) => i * 86400000),
+          freq: [],
+        },
+        top_word_freq: data.top_word_freq ?? null,
+        top_speakers: data.top_speakers ?? null,
+      },
+    };
   }
 );
 

@@ -44,50 +44,49 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-20 flex h-14 justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center">
+      <nav className="sticky top-14 z-30 flex h-14 justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center">
         <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
-          {TAB_OPTIONS.map(tab => (
-            <div key={tab.path} className="snap-start">
-              <At
-                href={tab.path}
-                scrollTop={false}
-                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center"
-              >
-                <div
-                  className={cn(
-                    pathname.includes(tab.path) && "dark:bg-zinc-800",
-                    "relative flex h-full flex-col items-center justify-center p-4"
-                  )}
+          {TAB_OPTIONS.map(tab => {
+            const isPath = pathname.includes(tab.path);
+            return (
+              <div key={tab.path} className="snap-start">
+                <At
+                  href={tab.path}
+                  scrollTop={false}
+                  className="flex h-full min-w-[56px] cursor-pointer items-center justify-center"
                 >
-                  <div className="flex items-center gap-2">
-                    <tab.icon
-                      className={cn(
-                        "size-6",
-                        pathname.includes(tab.path)
-                          ? "text-txt-black-900"
-                          : "text-zinc-500"
-                      )}
-                    />
-                    <div
-                      className={cn(
-                        "flex items-center gap-2",
-                        pathname.includes(tab.path)
-                          ? "text-txt-black-900"
-                          : "text-zinc-500"
-                      )}
-                    >
-                      <span className="whitespace-nowrap text-base font-medium">
-                        {t(tab.name, { ns: "common" })}
-                      </span>
+                  <div
+                    className={cn(
+                      isPath && "bg-bg-black-50 dark:bg-bg-black-200",
+                      "relative flex h-full flex-col items-center justify-center p-4"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <tab.icon
+                        className={cn(
+                          "size-6",
+                          isPath ? "text-txt-black-900" : "text-txt-black-500"
+                        )}
+                      />
+                      <div
+                        className={cn(
+                          "flex items-center gap-2",
+                          isPath ? "text-txt-black-900" : "text-txt-black-500"
+                        )}
+                      >
+                        <span className="whitespace-nowrap text-base font-medium">
+                          {t(tab.name, { ns: "common" })}
+                        </span>
+                      </div>
                     </div>
+                    {isPath && (
+                      <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
+                    )}
                   </div>
-                  {pathname.includes(tab.path) && (
-                    <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
-                  )}
-                </div>
-              </At>
-            </div>
-          ))}
+                </At>
+              </div>
+            );
+          })}
         </div>
       </nav>
 

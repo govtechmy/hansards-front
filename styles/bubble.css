@@ -1,5 +1,5 @@
 /* time */
-p.t {
+time.t {
   @apply text-center italic text-zinc-500;
 }
 
@@ -14,11 +14,13 @@ div.s {
 
   /* bubble */
   div.b {
-    @apply relative flex min-w-[250px] scroll-mt-40 flex-col rounded-xl border border-transparent bg-slate-50
-    px-3 pb-6 pt-3 
-    text-[15px] hover:border-border
-    hover:bg-background hover:shadow-floating dark:bg-zinc-800 dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)]
-    sm:px-4.5 sm:text-base lg:scroll-mt-60;
+    @apply relative flex min-w-[100px] scroll-mt-40 flex-col rounded-xl border border-transparent bg-bg-white-hover
+    px-3 pb-6 pt-3 text-[15px] hover:border-border hover:bg-background hover:shadow-floating
+    dark:hover:shadow-[0_6px_24px_rgba(255,255,255,20%)] sm:px-4.5 sm:text-base lg:scroll-mt-60;
+  }
+
+  div.h {
+    @apply shadow-floating dark:shadow-[0_6px_24px_rgba(255,255,255,20%)];
   }
 
   /* speech container */
@@ -52,47 +54,59 @@ div.s {
   }
 
   img.p {
-    @apply h-full w-full rounded-full border border-border object-cover;
+    @apply h-full w-full rounded-full border border-otl-gray-200 object-cover;
   }
 
   .b.ydp {
-    @apply bg-[#FAF8F0] hover:bg-[#FAF8F0] dark:bg-[#3E3713] hover:dark:bg-[#3E3713];
+    @apply bg-[#FEFCF4] hover:bg-[#FEFCF4] dark:bg-[#2D2602] hover:dark:bg-[#2D2602];
   }
 
   p.n.ydp {
-    @apply text-[#B49B1A];
-  }
-
-  p.n.r {
-    @apply text-red-600 dark:text-red-500;
+    @apply text-[#887000] dark:text-secondary;
   }
 
   p.n.o {
-    @apply text-orange-600 dark:text-orange-500;
+    @apply text-[#c2410c] dark:text-[#fb923c];
+  }
+
+  p.n.l {
+    @apply text-[#4d7c0f] dark:text-[#a3e635];
   }
 
   p.n.g {
-    @apply text-green-600 dark:text-green-500;
+    @apply text-[#15803d] dark:text-[#4ade80];
+  }
+
+  p.n.t {
+    @apply text-[#0f766e] dark:text-[#2dd4bf];
   }
 
   p.n.c {
-    @apply text-cyan-600 dark:text-cyan-500;
+    @apply text-[#0e7490] dark:text-[#22d3ee];
   }
 
   p.n.b {
-    @apply text-blue-600 dark:text-blue-500;
+    @apply text-txt-primary;
   }
 
   p.n.v {
-    @apply text-violet-600 dark:text-violet-500;
+    @apply text-[#7c3aed] dark:text-[#a78bfa];
+  }
+
+  p.n.f {
+    @apply text-[#c026d3] dark:text-[#e879f9];
   }
 
   p.n.p {
-    @apply text-pink-600 dark:text-pink-400;
+    @apply text-[#be185d] dark:text-[#f472b6];
+  }
+
+  p.n.r {
+    @apply text-[#e11d48] dark:text-[#fb7185];
   }
 
   p.n.z {
-    @apply text-zinc-500;
+    @apply text-txt-black-500;
   }
 
   /* Minister or MP */
@@ -107,12 +121,12 @@ div.s {
 
   /* other name */
   .o {
-    @apply font-normal text-zinc-500 dark:text-zinc-400;
+    @apply font-normal text-txt-black-500;
   }
 
   /* timestamp */
   span.t {
-    @apply absolute bottom-1.5 right-4.5 text-xs text-zinc-500;
+    @apply absolute bottom-1.5 right-4.5 text-xs text-txt-black-500;
   }
 
   /* Max width */
@@ -121,7 +135,7 @@ div.s {
   }
   /* footer */
   .ft {
-    @apply absolute bottom-4.5 right-6 flex items-center bg-inherit [mask-image:linear-gradient(279deg,#FFF_95%,rgba(0,0,0,0)_100%)];
+    @apply absolute bottom-4.5 right-6 flex items-center bg-inherit [mask-image:linear-gradient(279deg,#FFF_90%,rgba(0,0,0,0)_100%)];
   }
   /* share button */
   .bt {
@@ -130,7 +144,7 @@ div.s {
   }
 
   table td,
-  th {
+  table th {
     @apply px-3 py-1.5 text-start font-normal tabular-nums;
   }
 
@@ -156,7 +170,7 @@ div.s {
   @apply flex-row-reverse;
 }
 
-.i {
+button > div.i {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='rgb(37,99,235)' %3E%3Cpath d='M13 4.5a2.5 2.5 0 11.702 1.737L6.97 9.604a2.518 2.518 0 010 .792l6.733 3.367a2.5 2.5 0 11-.671 1.341l-6.733-3.367a2.5 2.5 0 110-3.475l6.733-3.366A2.52 2.52 0 0113 4.5z' /%3E%3C/svg%3E");
   @apply h-5 w-5;
 }

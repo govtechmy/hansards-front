@@ -1,5 +1,6 @@
 export const routes = {
   HOME: "/",
+  CARI: "/cari",
   CARI_MP: "/cari-mp",
   KATALOG_DR: "/katalog/dewan-rakyat",
   KATALOG_DN: "/katalog/dewan-negara",
@@ -15,5 +16,13 @@ export const routes = {
   SEJARAH_PARTI: "/sejarah/parti",
 };
 
-export const hansard_routes = [routes.HANSARD_DR, routes.HANSARD_DN, routes.HANSARD_KK];
-export const katalog_routes = [routes.KATALOG_DR, routes.KATALOG_DN, routes.KATALOG_KK];
+export const hansard_routes = [
+  routes.HANSARD_DR,
+  routes.HANSARD_DN,
+  routes.HANSARD_KK,
+];
+export const katalog_routes = [
+  routes.KATALOG_DR,
+  routes.KATALOG_DN,
+  routes.KATALOG_KK,
+];

@@ -64,9 +64,9 @@ const MapPlot: FunctionComponent<MapPlotProps> = ({
   geojson,
   _ref,
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const controlRef = useRef<MapControlRef>(null);
-  const _theme = tileTheme ?? theme;
+  const _theme = tileTheme ?? resolvedTheme;
   useImperativeHandle(
     _ref,
     () => {

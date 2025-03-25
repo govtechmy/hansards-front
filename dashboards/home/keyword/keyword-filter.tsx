@@ -20,11 +20,9 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { useData } from "@hooks/useData";
-import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
-import { format } from "date-fns";
 import { ParsedUrlQuery } from "querystring";
 import { useRef, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -38,6 +36,10 @@ import {
   ETHNICITIES,
   SEXES,
 } from "../filter-options";
+import { setSearchParams } from "@lib/utils";
+import { routes } from "@lib/routes";
+import { useRouter } from "next/router";
+import { format } from "date-fns";
 
 /**
  * Keyword - Filter
@@ -77,17 +79,6 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
       : undefined
   );
 
-  const { setFilter } = useFilter({
-    dewan: dewan,
-    q: q,
-    tarikh_mula: tarikh_mula ?? "",
-    tarikh_akhir: tarikh_akhir ?? "",
-    parti: data.party === ALL_PARTIES ? "" : data.party,
-    jantina: data.sex === BOTH_SEXES ? "" : data.sex,
-    umur: data.age === ALL_AGES ? "" : data.age,
-    etnik: data.etnik === ALL_ETHNICITIES ? "" : data.etnik,
-  });
-
   const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
     label: t(key.replace("-", "_"), { ns: "common" }),
     value: key,
@@ -121,36 +112,26 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
     value: key,
   }));
 
-  const handleSearch = (
-    dewan: string,
-    party: string,
-    sex: string,
-    age: string,
-    etnik: string,
-    daterange?: DateRange
-  ) => {
+  const router = useRouter();
+
+  const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
+
+  const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
-    setFilter("dewan", dewan);
-    setFilter("q", data.query);
-    setFilter(
-      "tarikh_mula",
-      daterange?.from ? format(daterange.from, "yyyy-MM-dd") : ""
-    );
-    setFilter(
-      "tarikh_akhir",
-      daterange?.to
-        ? format(daterange.to, "yyyy-MM-dd")
-        : daterange?.from
-        ? format(daterange.from, "yyyy-MM-dd")
-        : ""
-    );
-    setFilter("parti", party === ALL_PARTIES ? "" : party);
-    setFilter("jantina", sex === BOTH_SEXES ? "" : sex);
-    setFilter("umur", age === ALL_AGES ? "" : age);
-    setFilter("etnik", etnik === ALL_ETHNICITIES ? "" : etnik);
+    router.push(`${routes.CARI}${setSearchParams(router.asPath, params)}`);
   };
 
   const handleClear = () => {
+    if (data.query) {
+      handleSearch({
+        parti: "",
+        umur: "",
+        etnik: "",
+        jantina: "",
+        tarikh_akhir: "",
+        tarikh_mula: "",
+      });
+    }
     setSelectedDateRange(undefined);
     setData("party", ALL_PARTIES);
     setData("age", ALL_AGES);
@@ -167,17 +148,9 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             value={data.dewan}
             onValueChange={dewan => {
               setData("dewan", dewan);
-              if (data.query)
-                handleSearch(
-                  dewan,
-                  data.party,
-                  data.sex,
-                  data.age,
-                  data.etnik,
-                  selectedDateRange
-                );
+              if (data.query) handleSearch({ dewan });
             }}
-            defaultValue="dewan-rakyat"
+            defaultValue="dewan-negara"
           >
             <TabsList className="flex-nowrap">
               {DEWAN_OPTIONS.map(dewan => (
@@ -199,14 +172,10 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             onChange={e => setData("query", e.target.value)}
             onKeyDown={e => {
               if (e.key === "Enter")
-                handleSearch(
-                  data.dewan,
-                  data.party,
-                  data.sex,
-                  data.age,
-                  data.etnik,
-                  selectedDateRange
-                );
+                handleSearch({
+                  dewan: data.dewan,
+                  q: data.query,
+                });
             }}
             placeholder={t("search_keyword")}
             className="grow truncate border-none bg-background focus:outline-none focus:ring-0"
@@ -226,21 +195,25 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           )}
           <Button
             variant="primary"
-            className="h-9 rounded-full"
+            className="size-9 justify-center rounded-full max-sm:p-1.5 sm:w-fit"
             disabled={!data.query}
             onClick={() =>
-              handleSearch(
-                data.dewan,
-                data.party,
-                data.sex,
-                data.age,
-                data.etnik,
-                selectedDateRange
-              )
+              handleSearch({
+                dewan: data.dewan,
+                q: data.query,
+                parti: data.party !== ALL_PARTIES ? data.party : "",
+                jantina: data.sex !== BOTH_SEXES ? data.sex : "",
+                umur: data.age !== ALL_AGES ? data.age : "",
+                etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+                tarikh_akhir: formatDate(selectedDateRange?.from),
+                tarikh_mula: formatDate(selectedDateRange?.to),
+              })
             }
           >
-            <MagnifyingGlassIcon className="h-5 w-5 text-white" />
-            {t("placeholder.search", { ns: "common" })}
+            <MagnifyingGlassIcon className="size-5 text-white" />
+            <span className="hidden sm:block">
+              {t("placeholder.search", { ns: "common" })}
+            </span>
           </Button>
         </div>
       </div>
@@ -254,15 +227,11 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           selected={selectedDateRange}
           onChange={dateRange => {
             setSelectedDateRange(dateRange);
-            if (data.query && dateRange && dateRange?.from && dateRange?.to)
-              handleSearch(
-                data.dewan,
-                data.party,
-                data.sex,
-                data.age,
-                data.etnik,
-                dateRange
-              );
+            if (data.query && dateRange && dateRange.from && dateRange.to)
+              handleSearch({
+                tarikh_akhir: formatDate(dateRange.from),
+                tarikh_mula: formatDate(dateRange.to),
+              });
           }}
         />
 
@@ -280,14 +249,9 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           onChange={e => {
             setData("party", e.value);
             if (data.query)
-              handleSearch(
-                data.dewan,
-                e.value,
-                data.sex,
-                data.age,
-                data.etnik,
-                selectedDateRange
-              );
+              handleSearch({
+                parti: e.value,
+              });
           }}
         />
         <Dropdown
@@ -299,14 +263,9 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           onChange={e => {
             setData("sex", e.value);
             if (data.query)
-              handleSearch(
-                data.dewan,
-                data.party,
-                e.value,
-                data.age,
-                data.etnik,
-                selectedDateRange
-              );
+              handleSearch({
+                jantina: e.value,
+              });
           }}
         />
         <Dropdown
@@ -318,14 +277,9 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           onChange={e => {
             setData("age", e.value);
             if (data.query)
-              handleSearch(
-                data.dewan,
-                data.party,
-                data.sex,
-                e.value,
-                data.etnik,
-                selectedDateRange
-              );
+              handleSearch({
+                umur: e.value,
+              });
           }}
         />
         <Dropdown
@@ -337,14 +291,9 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           onChange={e => {
             setData("etnik", e.value);
             if (data.query)
-              handleSearch(
-                data.dewan,
-                data.party,
-                data.sex,
-                data.age,
-                e.value,
-                selectedDateRange
-              );
+              handleSearch({
+                etnik: e.value,
+              });
           }}
         />
 
@@ -466,14 +415,15 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               onClick={() => {
                 setOpen(false);
                 onLoad();
-                handleSearch(
-                  data.dewan,
-                  data.party,
-                  data.sex,
-                  data.age,
-                  data.etnik,
-                  selectedDateRange
-                );
+                handleSearch({
+                  dewan: data.dewan,
+                  parti: data.party !== ALL_PARTIES ? data.party : "",
+                  jantina: data.sex !== BOTH_SEXES ? data.sex : "",
+                  umur: data.age !== ALL_AGES ? data.age : "",
+                  etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+                  tarikh_akhir: formatDate(selectedDateRange?.from),
+                  tarikh_mula: formatDate(selectedDateRange?.to),
+                });
               }}
             >
               {t("filter", { ns: "common" })}
@@ -481,7 +431,10 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             <Button
               variant="ghost"
               className="w-full justify-center text-foreground"
-              onClick={handleClear}
+              onClick={() => {
+                handleClear();
+                setOpen(false);
+              }}
             >
               {t("clear_all", { ns: "common" })}
             </Button>

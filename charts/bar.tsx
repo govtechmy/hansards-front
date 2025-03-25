@@ -73,9 +73,16 @@ const Bar: FunctionComponent<BarProps> = ({
 }) => {
   const ref = useRef<ChartJSOrUndefined<"bar", any[], string | number>>();
   const isVertical = useMemo(() => layout === "vertical", [layout]);
-  const isMobile = useMediaQuery("min-width: 640px")
-  ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, ChartTooltip, Legend);
-  const { theme = "light" } = useTheme();
+  const isMobile = useMediaQuery("min-width: 640px");
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    BarElement,
+    ChartTooltip,
+    Legend
+  );
+  const { resolvedTheme } = useTheme();
 
   const display = (
     value: number,
@@ -95,7 +102,10 @@ const Bar: FunctionComponent<BarProps> = ({
     if (!reverse) return data;
     return {
       labels: data.labels?.slice().reverse(),
-      datasets: data.datasets.map(set => ({ ...set, data: set.data.slice().reverse() })),
+      datasets: data.datasets.map(set => ({
+        ...set,
+        data: set.data.slice().reverse(),
+      })),
     };
   }, [data]);
 
@@ -145,7 +155,7 @@ const Bar: FunctionComponent<BarProps> = ({
           display: enableGridX,
           borderWidth: 1,
           borderDash: [5, 10],
-          color: theme === "light" ? COLOR.OUTLINE : COLOR.WASHED_DARK,
+          color: resolvedTheme === "light" ? COLOR.OUTLINE : COLOR.WASHED_DARK,
           drawTicks: true,
           drawBorder: true,
         },
@@ -156,7 +166,11 @@ const Bar: FunctionComponent<BarProps> = ({
           },
           stepSize:
             enableStep && Math.min.apply(Math, _data.datasets[0].data) <= 0
-              ? Math.ceil(Math.abs(Math.floor(Math.min.apply(Math, _data.datasets[0].data))))
+              ? Math.ceil(
+                  Math.abs(
+                    Math.floor(Math.min.apply(Math, _data.datasets[0].data))
+                  )
+                )
               : 0,
           callback: function (value: string | number) {
             if (!formatX) {
@@ -182,7 +196,7 @@ const Bar: FunctionComponent<BarProps> = ({
           drawTicks: false,
           drawBorder: false,
           offset: false,
-          color: theme === "light" ? COLOR.OUTLINE : COLOR.WASHED_DARK,
+          color: resolvedTheme === "light" ? COLOR.OUTLINE : COLOR.WASHED_DARK,
           borderDash(ctx) {
             if (ctx.tick.value === 0) return [0, 0];
             return [5, 5];
@@ -221,7 +235,10 @@ const Bar: FunctionComponent<BarProps> = ({
               const element = getElementAtEvent(ref.current, event);
               onClick &&
                 element.length &&
-                onClick(_data?.labels![element[0].index].toString(), element[0].index);
+                onClick(
+                  _data?.labels![element[0].index].toString(),
+                  element[0].index
+                );
             }
           }}
           data={_data}

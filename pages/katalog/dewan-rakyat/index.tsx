@@ -8,13 +8,13 @@ import { withi18n } from "@lib/decorators";
 import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
 import { assertFulfilled } from "@lib/utils";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
   meta,
   archive,
   parlimens,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation("catalogue");
 
   return (
@@ -33,48 +33,43 @@ const CatalogueIndexPage: Page = ({
   );
 };
 
-export const getStaticProps: GetStaticProps = withi18n(
+export const getServerSideProps: GetServerSideProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async () => {
-    try {
-      const parlimens = [12, 13, 14, 15].map(String);
-      const results = await Promise.allSettled(
-        parlimens.map(term =>
-          get("api/catalogue/", {
-            house: "dewan-rakyat",
-            term,
-          })
-        )
-      );
+    const parlimens = [12, 13, 14, 15].map(String);
+    const results = await Promise.allSettled(
+      parlimens.map(term =>
+        get("api/catalogue/", {
+          house: "dewan-rakyat",
+          term,
+        })
+      )
+    );
 
-      const fulfilledResults = results.filter(assertFulfilled);
-      const data = fulfilledResults.map(e => e.value.data.catalogue_list);
+    const fulfilledResults = results.filter(assertFulfilled);
+    const data = fulfilledResults.map(e => e.value.data.catalogue_list);
 
-      const archive = data.reduce((res, curr) => {
-        for (const key in curr) {
-          if (curr.hasOwnProperty(key)) {
-            res[key] = curr[key];
-          }
+    const archive = data.reduce((res, curr) => {
+      for (const key in curr) {
+        if (curr.hasOwnProperty(key)) {
+          res[key] = curr[key];
         }
-        return res;
-      }, {});
+      }
+      return res;
+    }, {});
 
-      if (Object.keys(archive).length === 0) throw new Error();
+    if (Object.keys(archive).length === 0) throw new Error();
 
-      return {
-        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
-        props: {
-          meta: {
-            id: routes.KATALOG_DR,
-          },
-          archive,
-          parlimens,
+    return {
+      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      props: {
+        meta: {
+          id: routes.KATALOG_DR,
         },
-      };
-    } catch (error) {
-      console.error(error);
-      return { notFound: true };
-    }
+        archive,
+        parlimens,
+      },
+    };
   }
 );
 

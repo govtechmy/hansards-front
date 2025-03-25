@@ -44,11 +44,11 @@ const Search = ({
         value={query}
         autoComplete="off"
         spellCheck="false"
-        className="placeholder:text-zinc-500 text-foreground block w-full bg-inherit pl-10 focus:outline-none py-1.5"
+        className="block w-full bg-inherit py-1.5 pl-10 text-foreground placeholder:text-txt-black-500 focus:outline-none"
         {...props}
       />
       <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-        <SearchIcon className="text-zinc-500 h-4.5 w-4.5" />
+        <SearchIcon className="h-4.5 w-4.5 text-txt-black-500" />
       </div>
     </div>
   );

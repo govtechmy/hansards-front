@@ -7,7 +7,7 @@ import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
 import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const HansardPage: Page = ({
   meta,
@@ -15,7 +15,7 @@ const HansardPage: Page = ({
   date,
   filename,
   speeches,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation("hansard");
 
   return (
@@ -46,40 +46,28 @@ const HansardPage: Page = ({
   );
 };
 
-export const getStaticPaths: GetStaticPaths = () => {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-};
-
-export const getStaticProps: GetStaticProps = withi18n(
+export const getServerSideProps: GetServerSideProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async ({ params }) => {
-    try {
-      const date = params?.date ? params.date.toString() : null;
+    const date = params?.date ? params.date.toString() : null;
 
-      const { data } = await get("api/sitting/", {
-        house: "dewan-rakyat",
-        date,
-      });
+    const { data } = await get("api/sitting/", {
+      house: "dewan-rakyat",
+      date,
+    });
 
-      return {
-        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
-        props: {
-          meta: {
-            id: `${routes.HANSARD_DR}/${date}`,
-          },
-          cycle: data.meta.cycle,
-          date: date,
-          filename: data.meta.filename,
-          speeches: data.speeches,
+    return {
+      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      props: {
+        meta: {
+          id: `${routes.HANSARD_DR}/${date}`,
         },
-      };
-    } catch (error) {
-      console.error(error);
-      return { notFound: true };
-    }
+        cycle: data.meta.cycle,
+        date: date,
+        filename: data.meta.filename,
+        speeches: data.speeches,
+      },
+    };
   }
 );
 

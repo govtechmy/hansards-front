@@ -6,18 +6,18 @@ import {
   DialogTrigger,
 } from "@components/Dialog";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeading,
-  SheetTrigger,
-} from "@components/Sheet";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from "@components/Drawer";
 import DateCard from "@components/Card/date-card";
 import { DocumentDuplicateIcon, EnvelopeIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { copyClipboard } from "@lib/helpers";
-import { ComponentProps, ReactNode, useState } from "react";
+import { ComponentProps, memo, ReactNode, useState } from "react";
 
 /**
  * Share Dialog/Drawer
@@ -31,12 +31,12 @@ interface ShareDialogDrawerProps {
   trigger?: (onClick: () => void) => ReactNode;
 }
 
-export default function ShareDialogDrawer({
+export const ShareDialogDrawer = ({
   date,
   hansard_id,
   index,
   trigger,
-}: ShareDialogDrawerProps) {
+}: ShareDialogDrawerProps) => {
   const { t, i18n } = useTranslation(["hansard", "catalogue"]);
   const [open, setOpen] = useState<boolean>(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -158,8 +158,8 @@ export default function ShareDialogDrawer({
     );
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild onClick={e => e.preventDefault()}>
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild onClick={e => e.preventDefault()}>
         {trigger ? (
           trigger(handleClick)
         ) : (
@@ -168,18 +168,18 @@ export default function ShareDialogDrawer({
             {t("share")}
           </Button>
         )}
-      </SheetTrigger>
-      <SheetContent side="bottom" className="rounded-t-xl p-0">
-        <SheetHeading className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
+      </DrawerTrigger>
+      <DrawerContent className="rounded-t-xl p-0">
+        <DrawerHeader className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
           <span className="font-medium text-foreground">
             {t("share_hansard")}
           </span>
-        </SheetHeading>
+        </DrawerHeader>
         <ShareButton />
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
-}
+};
 
 const XShare = (props: ComponentProps<"svg">) => {
   return (
@@ -242,3 +242,5 @@ const FBShare = (props: ComponentProps<"svg">) => {
     </svg>
   );
 };
+
+export default memo(ShareDialogDrawer);

@@ -6,7 +6,6 @@ import {
   SheetTrigger,
 } from "@components/Sheet";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { SidebarL } from "@icons/index";
 import { cn } from "@lib/helpers";
@@ -32,7 +31,6 @@ const TreeState: Record<string, boolean> = Object.create(null);
 export default function Sidebar({ children, data, onClick }: SidebarProps) {
   const { t } = useTranslation(["catalogue", "enum"]);
   const [selected, setSelected] = useState<string>();
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const [showSidebar, setSidebar] = useState<boolean>(true);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
@@ -40,7 +38,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
   const styles = {
     base: "px-5 py-1.5 w-full text-start leading-tight",
     active: "bg-bg-hover font-medium text-foreground",
-    inactive: "text-zinc-500",
+    inactive: "text-txt-black-500",
   };
 
   const Sidebar = () => (
@@ -51,7 +49,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
             const parlimen_id = `parlimen-${id}`;
             const parlimen = t("parlimen", {
               ns: "enum",
-              count: id,
+              count: Number(id),
               ordinal: true,
             });
             const open = TreeState === undefined ? false : TreeState[id];
@@ -113,7 +111,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
             );
           })
         ) : (
-          <li className="px-5 py-1.5 text-sm italic text-zinc-500">
+          <li className="px-5 py-1.5 text-sm italic text-txt-black-500">
             {t("no_entries")}
           </li>
         )}
@@ -128,19 +126,19 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
     </div>
   );
 
-  if (isDesktop)
-    return (
-      <div className="flex w-full">
+  return (
+    <>
+      <div className="hidden w-full lg:flex">
         <div
           className={cn(
-            "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-border",
+            "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-otl-gray-200",
             "transform-gpu ease-in-out [transition-property:width] motion-reduce:transition-none",
             showSidebar ? "duration-300 lg:w-60" : "hide-scrollbar duration-500"
           )}
         >
           <div
             className={cn(
-              "sticky top-0 z-10 flex items-end justify-between gap-3 whitespace-nowrap bg-background p-3 pb-1.5",
+              "sticky top-0 z-10 flex items-end justify-between gap-3 whitespace-nowrap bg-bg-white p-3 pb-1.5",
               showSidebar && "lg:pl-5"
             )}
           >
@@ -148,7 +146,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
               className={cn(
                 "title",
                 !showSidebar &&
-                  "absolute origin-top-left translate-y-[150px] -rotate-90 text-zinc-500"
+                  "absolute origin-top-left translate-y-[150px] -rotate-90 text-txt-black-500"
               )}
             >
               {t("full_archive")}
@@ -176,12 +174,9 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
 
         {children}
       </div>
-    );
 
-  return (
-    <>
-      <div className="flex w-full">
-        <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-border">
+      <div className="flex w-full lg:hidden">
+        <div className="sticky top-28 h-screen whitespace-nowrap border-r border-r-otl-gray-200">
           <div className="sticky top-28 flex gap-3 bg-background px-2 py-3">
             <h4 className="title absolute origin-top-left translate-y-[150px] -rotate-90">
               {t("full_archive")}

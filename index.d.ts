@@ -8,7 +8,7 @@ declare namespace NodeJS {
     NEXT_PUBLIC_I18N_URL: string;
     NEXT_PUBLIC_DOWNLOAD_URL: string;
     NEXT_PUBLIC_SEJARAH_URL: string;
-    NEXT_PUBLIC_AUTHORIZATION_TOKEN: string;
+    API_AUTH_TOKEN: string;
 
     TINYBIRD_API: string;
     GET_TOKEN: string;
@@ -43,5 +43,11 @@ declare module "canvas2svg" {
 }
 
 declare module "geojson-bbox" {
-  export default function (geojson: GeoJSONObject): [number, number, number, number] {}
+  export default function (
+    geojson: GeoJSONObject
+  ): [number, number, number, number] {}
+}
+
+declare module "remarkable-react" {
+  export default any;
 }
