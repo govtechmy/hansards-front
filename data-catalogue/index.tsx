@@ -1,10 +1,10 @@
-import { Container, Sidebar } from "@components/index";
+import { Container } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
 import { Archive } from "@lib/types";
-import { useEffect, useMemo, useRef } from "react";
-import { FolderOpen } from "./folder";
-import Penggal from "./penggal";
-import { useRouter } from "next/router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { DrawerOpen } from "./folder";
+import Penggal, { FolderOpen } from "./penggal";
+import dynamic from "next/dynamic";
 
 /**
  * Catalogue Index
@@ -16,10 +16,16 @@ interface CatalogueIndexProps {
   parlimens: string[];
 }
 
+const Sidebar = dynamic(() => import("@components/Sidebar"), {
+  loading: () => <div className="h-full w-60" />,
+  ssr: false,
+});
+
 const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
   const { t } = useTranslation(["catalogue", "common", "enum"]);
+  const drawerRef = useRef<Record<string, DrawerOpen | null>>({});
   const folderRef = useRef<Record<string, FolderOpen | null>>({});
-  const router = useRouter();
+  const scrollRef = useRef<Record<string, HTMLElement | null>>({});
 
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
@@ -60,6 +66,16 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
     []
   );
 
+  const [selected, setSelected] = useState<string>("");
+
+  useEffect(() => {
+    const el = scrollRef.current[selected];
+    if (el)
+      el.scrollIntoView({
+        behavior: "smooth",
+      });
+  }, [selected]);
+
   useEffect(() => {
     const hash = document.location.hash;
     const regex = /(parlimen|penggal|mesyuarat)-\d+/g;
@@ -67,17 +83,24 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
 
     if (levels && levels.length === 3) {
       const [parlimen, penggal, mesyuarat] = levels;
-      const url = `${parlimen}-${penggal}-${mesyuarat}`;
-      if (mesyuarat && folderRef.current) {
-        folderRef.current[url]?.open();
+      if (mesyuarat) {
+        const id = hash.slice(1);
+        const el = drawerRef.current[id];
+        if (el) el.open();
       }
     }
   }, []);
 
   return (
     <>
-      <Container className="pl-1.5">
-        <Sidebar data={data} onClick={selected => router.push("#" + selected)}>
+      <Container className="pl-1.5 pr-3">
+        <Sidebar
+          data={data}
+          onClick={selected => {
+            window.location.hash = selected;
+            setSelected(selected);
+          }}
+        >
           <div className="flex h-full w-full flex-col pb-6 pl-4.5 pt-3 sm:pl-8 lg:pb-8">
             {data ? (
               parlimens.map((_, index) => {
@@ -88,7 +111,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                   <div key={id} className="flex flex-col">
                     <div className="sticky top-28 z-20 flex items-center gap-3 bg-background py-3">
                       <h2
-                        className="header flex w-fit scroll-mt-40 flex-wrap sm:whitespace-nowrap"
+                        className="header scroll-mt-40 break-all max-sm:line-clamp-1 sm:whitespace-nowrap lg:scroll-mt-28"
                         id={parlimen_id}
                       >
                         {t("parlimen", {
@@ -102,13 +125,20 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                     </div>
 
                     <div className="space-y-8 pb-[42px]">
-                      {penggal.map(penggal => (
-                        <Penggal
-                          penggal_id={`${parlimen_id}-penggal-${penggal.id}`}
-                          folderRef={folderRef}
-                          {...penggal}
-                        />
-                      ))}
+                      {penggal.map(penggal => {
+                        const parlimen_penggal = `${parlimen_id}-penggal-${penggal.id}`;
+                        return (
+                          <Penggal
+                            penggal_id={parlimen_penggal}
+                            drawerRef={drawerRef}
+                            scrollRef={scrollRef}
+                            ref={ref =>
+                              (folderRef.current[parlimen_penggal] = ref)
+                            }
+                            {...penggal}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 );
