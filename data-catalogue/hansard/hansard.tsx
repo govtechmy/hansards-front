@@ -76,7 +76,7 @@ const Hansard = ({
   let curr_timestamp = 0;
 
   const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
-    let curr_author = "";
+    let curr_author_id = 0;
     let curr_dir = false;
 
     return speeches.map((s, i) => {
@@ -103,8 +103,8 @@ const Hansard = ({
 
         // Search
         const author = _author ?? "";
-        if (author !== curr_author) curr_dir = !curr_dir;
-        curr_author = author;
+        if (author_id !== curr_author_id) curr_dir = !curr_dir;
+        curr_author_id = author_id ?? 0;
         const names = author.includes(" [") ? author.split(" [") : [author];
 
         const IS_YDP = isYDP(author);
