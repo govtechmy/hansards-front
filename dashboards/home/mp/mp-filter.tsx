@@ -250,7 +250,7 @@ const MPFilter = ({
                 }}
               />
             </div>
-            <div className="flex flex-col items-center justify-center gap-2 sm:flex-row">
+            <div className="hidden justify-center gap-2 md:flex">
               <Daterange
                 className="text-txt-primary"
                 placeholder={t("current_parlimen")}
@@ -277,10 +277,83 @@ const MPFilter = ({
                 </Button>
               )}
             </div>
+
+            {/* Mobile Drawer */}
+            <Drawer open={open} onOpenChange={setOpen}>
+              <DrawerTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="ml-auto shadow-button md:hidden"
+                  onClick={() => setOpen(true)}
+                >
+                  <span>{t("filters", { ns: "common" })}</span>
+                  <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
+                    2
+                  </span>
+                  <ChevronDownIcon className="-mx-[5px] size-5" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader className="flex justify-between border-b border-slate-200 dark:border-zinc-700">
+                  <span className="font-semibold text-foreground">
+                    {t("filters", { ns: "common" }) + ":"}
+                  </span>
+                  <DrawerClose />
+                </DrawerHeader>
+                <div className="flex flex-col divide-y bg-background px-4 dark:divide-zinc-800">
+                  <div className="space-y-1 py-3">
+                    <Label label={t("dewan", { ns: "home" }) + ":"} />
+                    <Dropdown
+                      options={DEWAN_OPTIONS}
+                      selected={DEWAN_OPTIONS.find(e => e.value === data.dewan)}
+                      onChange={e => setData("dewan", e.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1 py-3">
+                    <Label label={t("date") + ":"} />
+                    <Daterange
+                      className="w-full"
+                      numberOfMonths={1}
+                      placeholder={t("current_parlimen")}
+                      selected={selectedDateRange}
+                      onChange={setSelectedDateRange}
+                    />
+                  </div>
+                </div>
+
+                <DrawerFooter>
+                  <Button
+                    variant="primary"
+                    className="w-full justify-center"
+                    onClick={() => {
+                      setOpen(false);
+                      handleSearch({
+                        uid: data.uid,
+                        dewan: data.dewan,
+                        tarikh_akhir: formatDate(selectedDateRange?.from),
+                        tarikh_mula: formatDate(selectedDateRange?.to),
+                      });
+                    }}
+                  >
+                    {t("filter", { ns: "common" })}
+                  </Button>
+                  <Button
+                    className="btn w-full justify-center px-3 py-1.5"
+                    onClick={() => {
+                      handleClear();
+                      setOpen(false);
+                    }}
+                  >
+                    {t("clear_all", { ns: "common" })}
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           </>
         ) : (
           <div className="space-y-3">
-            <div className="mx-auto flex w-full justify-between rounded-full border border-border py-2 pl-4.5 pr-1.5 sm:w-fit">
+            <div className="mx-auto flex w-full justify-between rounded-full border border-otl-gray-200 py-2 pl-4.5 pr-1.5 sm:w-fit">
               <div className="flex self-center">
                 <Dropdown
                   className={className.dropdown_ind_grp}
