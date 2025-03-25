@@ -4,7 +4,7 @@ import SearchKeyword from "@dashboards/home/keyword";
 import HomeLayout from "@dashboards/home/layout";
 import { withi18n } from "@lib/decorators";
 import { Page } from "@lib/types";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 /**
  * Home
@@ -13,7 +13,7 @@ import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const Home: Page = ({
   timeseries,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
       <Metadata keywords="hansard.parlimen.gov.my data malaysia hansards parlimen parliament" />
@@ -34,7 +34,7 @@ const Home: Page = ({
   );
 };
 
-export const getStaticProps: GetStaticProps = withi18n(
+export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
   async () => {
     return {

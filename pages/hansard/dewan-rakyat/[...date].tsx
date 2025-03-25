@@ -7,7 +7,7 @@ import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
 import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const HansardPage: Page = ({
   meta,
@@ -15,7 +15,7 @@ const HansardPage: Page = ({
   date,
   filename,
   speeches,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation("hansard");
 
   return (
@@ -46,14 +46,7 @@ const HansardPage: Page = ({
   );
 };
 
-export const getStaticPaths: GetStaticPaths = () => {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-};
-
-export const getStaticProps: GetStaticProps = withi18n(
+export const getServerSideProps: GetServerSideProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async ({ params }) => {
     const date = params?.date ? params.date.toString() : null;

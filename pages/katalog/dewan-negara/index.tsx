@@ -8,13 +8,13 @@ import { withi18n } from "@lib/decorators";
 import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
 import { assertFulfilled } from "@lib/utils";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
   meta,
   archive,
   parlimens,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation("catalogue");
 
   return (
@@ -33,7 +33,7 @@ const CatalogueIndexPage: Page = ({
   );
 };
 
-export const getStaticProps: GetStaticProps = withi18n(
+export const getServerSideProps: GetServerSideProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async () => {
     const parlimens = [12, 13, 14, 15].map(String);
