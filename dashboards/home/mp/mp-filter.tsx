@@ -250,9 +250,9 @@ const MPFilter = ({
                 }}
               />
             </div>
-            <div className="flex justify-center gap-2">
+            <div className="flex flex-col items-center justify-center gap-2 sm:flex-row">
               <Daterange
-                className="text-blue-600 dark:text-primary-dark"
+                className="text-txt-primary"
                 placeholder={t("current_parlimen")}
                 label={t("date", { ns: "home" })}
                 selected={selectedDateRange}

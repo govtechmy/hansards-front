@@ -127,17 +127,17 @@ const Daterange = ({
     <Popover className="relative">
       <Popover.Button
         className={cn(
-          "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-foreground shadow-button",
-          "select-none bg-background active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800",
-          "border border-border hover:border-border-hover",
+          "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-txt-black-900 shadow-button",
+          "select-none bg-bg-white hover:bg-bg-white-hover",
+          "whitespace-nowrap border border-otl-gray-200 hover:border-otl-gray-300",
           disabled &&
-            "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-border disabled:bg-border disabled:text-border-hover",
+            "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-otl-gray-200 disabled:bg-border disabled:text-txt-black-disabled",
           className
         )}
         disabled={disabled}
       >
-        <CalendarIcon className="h-4.5 w-4.5 text-foreground" />
-        <span className="text-foreground">
+        <CalendarIcon className="h-4.5 w-4.5 text-txt-black-900" />
+        <span className="text-txt-black-900">
           {label}
           {(selected || placeholder) && ":"}
         </span>
@@ -145,13 +145,13 @@ const Daterange = ({
           selected?.to ? (
             <>
               {format(new Date(selected?.from), "dd-MM-yyyy", { locale: ms })}
-              <ArrowRightIcon className="h-3 w-3" />
+              <ArrowRightIcon className="size-3" />
               {format(new Date(selected?.to), "dd-MM-y", { locale: ms })}
             </>
           ) : (
             <>
               {format(new Date(selected?.from), "dd-MM-yyyy", { locale: ms })}
-              <ArrowRightIcon className="h-3 w-3" />
+              <ArrowRightIcon className="size-3" />
               dd/mm/yyyy
             </>
           )
@@ -167,7 +167,7 @@ const Daterange = ({
       >
         <Popover.Panel
           className={cn(
-            "max-h-100 absolute z-20 mt-1 min-w-full rounded-md border border-border bg-background text-sm shadow-floating focus:outline-none",
+            "max-h-100 absolute z-20 mt-1 min-w-full rounded-md border border-otl-gray-200 bg-bg-white text-sm shadow-floating focus:outline-none",
             anchor === "right"
               ? "right-0"
               : anchor === "left"
@@ -180,8 +180,8 @@ const Daterange = ({
               <input
                 type="date"
                 className={cn(
-                  "btn-default w-full text-center ring-primary-600 focus:border-none focus:outline-none focus:ring-2",
-                  invalidFromValue && "invalid:ring-red-600"
+                  "btn-default w-full text-center ring-otl-primary-200 focus:border-none focus:outline-none focus:ring-2",
+                  invalidFromValue && "invalid:ring-otl-danger-200"
                 )}
                 value={fromValue}
                 onChange={handleFromChange}
@@ -189,11 +189,11 @@ const Daterange = ({
                 min="1959-08-11"
                 max={toValue ? toValue : TODAY.toISOString().slice(0, 10)}
               />
-              <ArrowRightIcon className="h-4.5 w-4.5 shrink-0 text-zinc-500" />
+              <ArrowRightIcon className="size-4.5 shrink-0 text-txt-black-500" />
               <input
                 type="date"
                 className={cn(
-                  "btn-default w-full text-center ring-primary-600 focus:border-none focus:outline-none focus:ring-2",
+                  "btn-default w-full text-center ring-otl-primary-200 focus:border-none focus:outline-none focus:ring-2",
                   invalidToValue && "invalid:ring-otl-danger-200"
                 )}
                 value={toValue}
