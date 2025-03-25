@@ -27,14 +27,14 @@ interface CatalogueFolderProps {
   onOpen: (id: number) => void;
 }
 
-export interface FolderOpen {
+export interface DrawerOpen {
   open: () => void;
 }
 
 const CatalogueFolder = forwardRef(
   (
     { meeting, meeting_id, onOpen }: CatalogueFolderProps,
-    ref: ForwardedRef<FolderOpen>
+    ref: ForwardedRef<DrawerOpen>
   ) => {
     const { t, i18n } = useTranslation(["catalogue", "enum", "hansard"]);
     const isDesktop = useMediaQuery("(min-width: 768px)");

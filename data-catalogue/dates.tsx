@@ -61,7 +61,7 @@ export const MesyuaratDates = ({
     //     </TableRow>
     //   </TableHeader>
     //   <TableBody>
-    <div className="mx-auto grid w-full grid-cols-1 gap-4 overflow-auto max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
       {sitting_list.map((sitting, i) => {
         const { filename, date } = sitting;
         const hansard_id = `${
@@ -73,10 +73,6 @@ export const MesyuaratDates = ({
         }/${date}`;
         const { download, share } = useAnalytics(hansard_id);
         const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
-
-        const cols = minWidth1280px ? 3 : 2;
-        const modulo = sitting_list.length % cols;
-        const itemsInLastRow = !isDesktop ? 1 : modulo === 0 ? cols : modulo;
 
         const className = {
           dropdown:
@@ -239,11 +235,6 @@ export const MesyuaratDates = ({
                       { label: "PDF", value: "pdf" },
                       { label: t("csv"), value: "csv" },
                     ]}
-                    anchor={
-                      i > sitting_list.length - itemsInLastRow - 1
-                        ? "bottom-6"
-                        : ""
-                    }
                     onChange={({ value: filetype }) => {
                       window.open(
                         `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
@@ -280,11 +271,6 @@ export const MesyuaratDates = ({
                         value: "copy",
                       },
                     ]}
-                    anchor={
-                      i > sitting_list.length - itemsInLastRow - 1
-                        ? "bottom-6 right-0"
-                        : "right"
-                    }
                     onChange={({ value: link }) => {
                       share();
                       if (link === "copy") {

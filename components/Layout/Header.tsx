@@ -12,7 +12,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <div className="sticky inset-x-0 top-0 z-30 h-14 w-screen border-b bg-background dark:border-zinc-800">
+    <div className="sticky inset-x-0 top-0 z-30 h-14 border-b bg-background dark:border-zinc-800">
       <Container
         background="bg-background"
         className="flex items-center gap-4 py-[11px]"

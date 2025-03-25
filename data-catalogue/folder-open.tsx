@@ -42,7 +42,7 @@ export const OpenFolder = ({
 
   return (
     <div className="hidden flex-col gap-3 sm:flex">
-      <div className="top-[164px] z-10 flex flex-wrap items-center gap-1 whitespace-nowrap bg-bg-white py-3 text-sm font-medium xl:sticky">
+      <div className="sticky top-[164px] z-10 flex flex-wrap items-center gap-1 whitespace-nowrap bg-bg-white py-3 text-sm font-medium">
         <Button variant="reset" onClick={() => setPenggalIndex(-1)}>
           <h3 className="flex w-fit flex-wrap items-center gap-3 text-lg font-semibold text-txt-black-500 hover:text-txt-black-900 sm:whitespace-nowrap">
             <ArrowBackIcon className="size-6" />

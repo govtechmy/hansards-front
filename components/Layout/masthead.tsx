@@ -15,7 +15,9 @@ export default function MastHead() {
   return (
     <Masthead className="*:max-w-screen-2xl">
       <MastheadHeader className="flex items-center gap-2 px-4.5 py-2 outline-none sm:py-1 xl:px-6">
-        <MastheadTitle>{t("masthead.official_gov_website")}</MastheadTitle>
+        <MastheadTitle className="max-w-full">
+          {t("masthead.official_gov_website")}
+        </MastheadTitle>
         <MastheadTrigger>{t("masthead.how_to_identify")}</MastheadTrigger>
       </MastheadHeader>
       <MastheadContent>
