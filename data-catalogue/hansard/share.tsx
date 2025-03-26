@@ -1,23 +1,35 @@
-import Button from "@components/Button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@components/Dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTrigger,
 } from "@components/Drawer";
-import DateCard from "@components/Card/date-card";
-import { DocumentDuplicateIcon, EnvelopeIcon } from "@heroicons/react/24/solid";
+import { EnvelopeIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { copyClipboard } from "@lib/helpers";
 import { ComponentProps, memo, ReactNode, useState } from "react";
+import {
+  CopyIcon,
+  FacebookIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  OptionsVerticalIcon,
+  WhatsappIcon,
+  XIcon,
+} from "@govtechmy/myds-react/icon";
+import { Button } from "@govtechmy/myds-react/button";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@govtechmy/myds-react/dialog";
+import { Input } from "@govtechmy/myds-react/input";
+import { Link } from "@govtechmy/myds-react/link";
 
 /**
  * Share Dialog/Drawer
@@ -37,37 +49,37 @@ export const ShareDialogDrawer = ({
   index,
   trigger,
 }: ShareDialogDrawerProps) => {
-  const { t, i18n } = useTranslation(["hansard", "catalogue"]);
+  const { t } = useTranslation(["hansard", "catalogue", "demografi"]);
   const [open, setOpen] = useState<boolean>(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 640px)");
 
-  const [copyText, setCopyText] = useState<string>("copy_link");
+  const [copyText, setCopyText] = useState<string>("copy");
   const { share } = useAnalytics(hansard_id);
-  const title = `Hansard Parlimen`;
+  const title = "Hansard Parlimen";
   const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}${
     index ? `#${index}` : ""
   }`;
 
   const SHARE_OPTIONS = [
     {
+      name: "WhatsApp",
+      icon: WhatsappIcon,
+      link: `https://api.whatsapp.com/send/?text=${URL}`,
+    },
+    {
       name: "Facebook",
-      icon: <FBShare className="size-8" />,
+      icon: FacebookIcon,
       link: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
     },
     {
-      name: "Twitter",
-      icon: <XShare className="size-8" />,
-      link: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
+      name: "X",
+      icon: XIcon,
+      link: `https://www.x.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
     },
     {
       name: t("email"),
-      icon: <EnvelopeIcon className="size-8" />,
+      icon: EnvelopeIcon,
       link: `mailto:?subject=${title}&body=${URL}`,
-    },
-    {
-      name: t(copyText),
-      icon: <DocumentDuplicateIcon className="size-8" />,
-      link: "copy",
     },
   ];
 
@@ -88,8 +100,8 @@ export const ShareDialogDrawer = ({
   };
 
   const ShareButton = () => (
-    <div className="space-y-5 max-md:p-4">
-      <div className="mx-auto flex w-fit items-center gap-4.5 rounded-2xl border border-border bg-background p-3 shadow-button">
+    <div className="flex flex-col gap-6 max-sm:p-4.5">
+      {/* <div className="mx-auto flex w-fit items-center gap-4.5 rounded-2xl border border-border bg-background p-3 shadow-button">
         <DateCard date={date} size="sm" />
         <p>
           {new Date(date).toLocaleDateString(i18n.language, {
@@ -99,36 +111,60 @@ export const ShareDialogDrawer = ({
             day: "numeric",
           })}
         </p>
-      </div>
-      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4">
-        {SHARE_OPTIONS.map(({ name, icon, link }) => {
+      </div> */}
+      <div className="flex items-center justify-between gap-3 text-body-xs text-txt-black-700 sm:text-body-sm">
+        {SHARE_OPTIONS.map(s => {
           return (
-            <Button
-              key={name}
-              variant="outline"
-              className="flex flex-col whitespace-nowrap"
-              onClick={() => {
-                share();
-                if (link === "copy") {
-                  copyClipboard(URL);
-                  setCopyText("copied");
-                  setTimeout(() => {
-                    setCopyText("copy_link");
-                  }, 1000);
-                }
-              }}
+            <Link
+              target="_blank"
+              href={s.link}
+              onClick={share}
+              underline="none"
+              className="flex w-14 flex-col items-center gap-1 sm:w-20 sm:gap-2 sm:p-2"
             >
-              {icon}
-              {link === "copy" ? (
-                name
-              ) : (
-                <a target="_blank" href={link}>
-                  {name}
-                </a>
-              )}
-            </Button>
+              <s.icon className="size-10 p-1 sm:size-12" />
+              {s.name}
+            </Link>
           );
         })}
+        <Button
+          variant="unset"
+          className="flex w-14 flex-col items-center gap-1 p-0 font-normal max-sm:text-body-xs sm:w-20 sm:gap-2 sm:p-2"
+          onClick={() => {
+            if (navigator.share) {
+              share();
+              navigator
+                .share({
+                  title: title,
+                  text: title,
+                  url: URL,
+                })
+                .catch(error => console.error("Error sharing", error));
+            }
+          }}
+        >
+          <OptionsVerticalIcon className="size-10 p-2 sm:size-12" />
+          {t("demografi:other")}
+        </Button>
+      </div>
+      <div className="flex items-center gap-3">
+        <Input value={URL} className="w-full" />
+
+        <Button
+          variant="primary-ghost"
+          className="whitespace-nowrap"
+          onClick={() => {
+            share();
+            copyClipboard(URL);
+            setCopyText("copied");
+            setTimeout(() => {
+              setCopyText("copy");
+            }, 1000);
+          }}
+        >
+          <CopyIcon className="size-5" />
+          {t("common:" + copyText)}
+        </Button>
       </div>
     </div>
   );
@@ -140,20 +176,20 @@ export const ShareDialogDrawer = ({
           {trigger ? (
             trigger(handleClick)
           ) : (
-            <Button variant="reset" className="bt" onClick={handleClick}>
+            <Button variant="unset" className="bt" onClick={handleClick}>
               <div className="i" />
               {t("share")}
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="max-w-[536px]">
-          <DialogHeader className="flex w-full justify-between">
-            <span className="w-full text-center font-medium text-foreground">
-              {t("share_hansard")}
-            </span>
+        <DialogBody>
+          <DialogHeader border>
+            <DialogTitle>{t("share_hansard")}</DialogTitle>
           </DialogHeader>
-          <ShareButton />
-        </DialogContent>
+          <DialogContent className="pb-6">
+            <ShareButton />
+          </DialogContent>
+        </DialogBody>
       </Dialog>
     );
 
@@ -163,13 +199,13 @@ export const ShareDialogDrawer = ({
         {trigger ? (
           trigger(handleClick)
         ) : (
-          <Button variant="reset" className="bt" onClick={handleClick}>
+          <Button variant="unset" className="bt" onClick={handleClick}>
             <div className="i" />
             {t("share")}
           </Button>
         )}
       </DrawerTrigger>
-      <DrawerContent className="rounded-t-xl p-0">
+      <DrawerContent className="rounded-t-xl">
         <DrawerHeader className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
           <span className="font-medium text-foreground">
             {t("share_hansard")}
