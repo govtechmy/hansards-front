@@ -1,9 +1,3 @@
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTrigger,
-} from "@components/Drawer";
 import { EnvelopeIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
@@ -83,92 +77,9 @@ export const ShareDialogDrawer = ({
 
   const handleClick = () => setOpen(true);
 
-  const ShareButton = () => (
-    <div className="flex flex-col gap-6 max-sm:p-4.5">
-      <div className="flex items-center justify-between gap-3 text-body-xs text-txt-black-700 sm:text-body-sm">
-        {SHARE_OPTIONS.map(s => {
-          return (
-            <Link
-              target="_blank"
-              href={s.link}
-              onClick={share}
-              underline="none"
-              className="flex w-14 flex-col items-center gap-1 sm:w-20 sm:gap-2 sm:p-2"
-            >
-              <s.icon className="size-10 p-1 sm:size-12" />
-              {s.name}
-            </Link>
-          );
-        })}
-        <Button
-          variant="unset"
-          className="flex w-14 flex-col items-center gap-1 p-0 font-normal max-sm:text-body-xs sm:w-20 sm:gap-2 sm:p-2"
-          onClick={() => {
-            if (navigator.share) {
-              share();
-              navigator
-                .share({
-                  title: title,
-                  text: title,
-                  url: URL,
-                })
-                .catch(error => console.error("Error sharing", error));
-            }
-          }}
-        >
-          <OptionsVerticalIcon className="size-10 p-2 sm:size-12" />
-          {t("demografi:other")}
-        </Button>
-      </div>
-      <div className="flex items-center gap-3">
-        <Input value={URL} className="w-full" />
-
-        <Button
-          variant="primary-ghost"
-          className="whitespace-nowrap"
-          onClick={() => {
-            share();
-            copyClipboard(URL);
-            setCopyText("copied");
-            setTimeout(() => {
-              setCopyText("copy");
-            }, 1000);
-          }}
-        >
-          <CopyIcon className="size-5" />
-          {t("common:" + copyText)}
-        </Button>
-      </div>
-    </div>
-  );
-
-  if (isDesktop)
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild onClick={e => e.preventDefault()}>
-          {trigger ? (
-            trigger(handleClick)
-          ) : (
-            <Button variant="unset" className="bt" onClick={handleClick}>
-              <div className="i" />
-              {t("share")}
-            </Button>
-          )}
-        </DialogTrigger>
-        <DialogBody className="sm:max-w-xl">
-          <DialogHeader border>
-            <DialogTitle>{t("share_hansard")}</DialogTitle>
-          </DialogHeader>
-          <DialogContent className="pb-6">
-            <ShareButton />
-          </DialogContent>
-        </DialogBody>
-      </Dialog>
-    );
-
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild onClick={e => e.preventDefault()}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild onClick={e => e.preventDefault()}>
         {trigger ? (
           trigger(handleClick)
         ) : (
@@ -177,16 +88,70 @@ export const ShareDialogDrawer = ({
             {t("share")}
           </Button>
         )}
-      </DrawerTrigger>
-      <DrawerContent className="rounded-t-xl">
-        <DrawerHeader className="flex justify-between border-b border-slate-200 p-4 dark:border-zinc-700">
-          <span className="font-medium text-foreground">
-            {t("share_hansard")}
-          </span>
-        </DrawerHeader>
-        <ShareButton />
-      </DrawerContent>
-    </Drawer>
+      </DialogTrigger>
+      <DialogBody className="sm:max-w-xl">
+        <DialogHeader border>
+          <DialogTitle>{t("share_hansard")}</DialogTitle>
+        </DialogHeader>
+        <DialogContent className="pb-6">
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between gap-3 text-body-xs text-txt-black-700 sm:text-body-sm">
+              {SHARE_OPTIONS.map(s => {
+                return (
+                  <Link
+                    target="_blank"
+                    href={s.link}
+                    onClick={share}
+                    underline="none"
+                    className="flex w-14 flex-col items-center gap-1 sm:w-20 sm:gap-2 sm:p-2"
+                  >
+                    <s.icon className="size-10 p-1 sm:size-12" />
+                    {s.name}
+                  </Link>
+                );
+              })}
+              <Button
+                variant="unset"
+                className="flex w-14 flex-col items-center gap-1 p-0 font-normal max-sm:text-body-xs sm:w-20 sm:gap-2 sm:p-2"
+                onClick={() => {
+                  if (navigator.share) {
+                    share();
+                    navigator
+                      .share({
+                        title: title,
+                        text: title,
+                        url: URL,
+                      })
+                      .catch(error => console.error("Error sharing", error));
+                  }
+                }}
+              >
+                <OptionsVerticalIcon className="size-10 p-2 sm:size-12" />
+                {t("demografi:other")}
+              </Button>
+            </div>
+            <div className="flex flex-col items-end gap-3">
+              <Input value={URL} className="w-full" />
+
+              <Button
+                variant={copyText === "copy" ? "primary-fill" : "primary-ghost"}
+                className="whitespace-nowrap"
+                onClick={() => {
+                  share();
+                  copyClipboard(URL);
+                  setCopyText("copied");
+                  setTimeout(() => {
+                    setCopyText("copy");
+                  }, 1000);
+                }}
+              >
+                {t("common:" + copyText)}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </DialogBody>
+    </Dialog>
   );
 };
 
