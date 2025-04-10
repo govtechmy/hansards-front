@@ -4,7 +4,6 @@ env:
   ENVIRONMENT: development
   NEXT_PUBLIC_APP_URL: https://hansards.govtechmy.dev
   NEXT_PUBLIC_APP_ENV: staging
-  NEXT_PUBLIC_API_URL: https://api-dev.hansard-parlimen.dev
   NEXT_PUBLIC_I18N_URL: https://d1vs1jbluuybk5.cloudfront.net
   NEXT_PUBLIC_DOWNLOAD_URL: https://s3.ap-southeast-1.amazonaws.com/downloads.hansard.parlimen.gov.my/
 on:
@@ -47,7 +46,6 @@ jobs:
           build-args: |
             "NEXT_PUBLIC_APP_URL=${{ env.NEXT_PUBLIC_APP_URL }}"
             "NEXT_PUBLIC_APP_ENV=${{ env.NEXT_PUBLIC_APP_ENV }}"
-            "NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}"
             "NEXT_PUBLIC_I18N_URL=${{ env.NEXT_PUBLIC_I18N_URL }}"
             "NEXT_PUBLIC_DOWNLOAD_URL=${{ env.NEXT_PUBLIC_DOWNLOAD_URL }}"
       - name: Log out of Amazon ECR

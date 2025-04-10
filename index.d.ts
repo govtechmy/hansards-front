@@ -4,11 +4,13 @@ declare namespace NodeJS {
     APP_ENV: string;
     NEXT_PUBLIC_APP_URL: string;
     NEXT_PUBLIC_APP_ENV: string;
-    NEXT_PUBLIC_API_URL: string;
     NEXT_PUBLIC_I18N_URL: string;
     NEXT_PUBLIC_DOWNLOAD_URL: string;
     NEXT_PUBLIC_SEJARAH_URL: string;
     API_AUTH_TOKEN: string;
+    API_URL: string;
+    CLOUDFLARE_APP_URL: string;
+    CLOUDFLARE_ZONE_ID: string;
 
     TINYBIRD_API: string;
     GET_TOKEN: string;
