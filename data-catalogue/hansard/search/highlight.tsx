@@ -66,27 +66,39 @@ export function highlightKeywordMarkdown(
 ) {
   const { searchValue } = useContext(SearchContext);
   const { onUpdateMatchList } = useContext(SearchEventContext);
-
-  const matchData = useMemo(
-    () =>
-      searchValue && searchValue.length > 1
-        ? getMatchText(
-            searchValue.trim(),
-            text.replaceAll("*", "").replaceAll("**", "") // omit asterisk to allow matching during search
-          )
-        : text,
-    [searchValue, text]
-  );
+  const matches = useMemo(() => kmpSearch(text, searchValue), [searchValue]);
+  const highlighted = highlightText(text, matches, searchValue.length, id);
 
   useEffect(() => {
-    if (typeof matchData === "object") {
-      const matchIds = matchData.matches.map((_, i) => ({
+    if (matches.length > 0) {
+      const matchIds = matches.map((_, i) => ({
         id: `${id}_${i}`,
         idCount: i,
       }));
       onUpdateMatchList(matchIds);
-    } else onUpdateMatchList([]);
-  }, [matchData]);
+    }
+  }, [matches]);
+
+  // const matchData = useMemo(
+  //   () =>
+  //     searchValue && searchValue.length > 1
+  //       ? getMatchText(
+  //           searchValue.trim(),
+  //           text.replaceAll("*", "").replaceAll("**", "") // omit asterisk to allow matching during search
+  //         )
+  //       : text,
+  //   [searchValue, text]
+  // );
+
+  // useEffect(() => {
+  //   if (typeof matchData === "object") {
+  //     const matchIds = matchData.matches.map((_, i) => ({
+  //       id: `${id}_${i}`,
+  //       idCount: i,
+  //     }));
+  //     onUpdateMatchList(matchIds);
+  //   } else onUpdateMatchList([]);
+  // }, [matchData]);
 
   const md = new Remarkable();
   md.inline.ruler.enable(["mark"]);
@@ -114,17 +126,85 @@ export function highlightKeywordMarkdown(
     },
   });
 
-  if (typeof matchData === "string")
-    return inline ? md.renderInline(matchData) : md.render(matchData);
-  else {
-    let str = "";
-    for (let i = 0; i < matchData.slices.length; i++) {
-      if (i === matchData.slices.length - 1) str += matchData.slices[i];
-      else {
-        str += `${matchData.slices[i]}==${id}_${i}-${matchData.matches[i]}==`;
-        if (str.includes("====")) str = str.replace("====", "==‎==");
-      }
+  // if (typeof matchData === "string")
+  //   return inline ? md.renderInline(matchData) : md.render(matchData);
+  // else {
+  //   let str = "";
+  //   for (let i = 0; i < matchData.slices.length; i++) {
+  //     if (i === matchData.slices.length - 1) str += matchData.slices[i];
+  //     else {
+  //       str += `${matchData.slices[i]}==${id}_${i}-${matchData.matches[i]}==`;
+  //       if (str.includes("====")) str = str.replace("====", "==‎==");
+  //     }
+  //   }
+  //   return inline ? md.renderInline(str) : md.render(str);
+  // }
+
+  const render = (text: string) =>
+    inline ? md.renderInline(text) : md.render(text);
+
+  if (searchValue.length < 2) return render(text);
+  return render(highlighted);
+}
+
+// KMP search: finds all starting indices of `pattern` in `text`
+function kmpSearch(text: string, pattern: string): number[] {
+  const n = text.length;
+  const m = pattern.length;
+  if (m === 0) return [];
+
+  const lps: number[] = new Array(m).fill(0);
+  let j = 0;
+
+  // Build LPS (Longest Prefix Suffix) table
+  for (let i = 1; i < m; i++) {
+    while (j > 0 && pattern[i] !== pattern[j]) {
+      j = lps[j - 1];
     }
-    return inline ? md.renderInline(str) : md.render(str);
+    if (pattern[i] === pattern[j]) {
+      j++;
+      lps[i] = j;
+    }
   }
+
+  // Search phase
+  const result: number[] = [];
+  j = 0;
+  for (let i = 0; i < n; i++) {
+    while (j > 0 && text[i] !== pattern[j]) {
+      j = lps[j - 1];
+    }
+    if (text[i] === pattern[j]) {
+      j++;
+    }
+    if (j === m) {
+      result.push(i - m + 1);
+      j = lps[j - 1];
+    }
+  }
+
+  return result;
+}
+
+// Highlight matches in the text with <mark> tags
+function highlightText(
+  text: string,
+  indices: number[],
+  keywordLength: number,
+  id: string
+): string {
+  if (indices.length === 0) return text;
+
+  let result = "";
+  let lastIndex = 0;
+
+  indices.map((index, i) => {
+    result += text.slice(lastIndex, index);
+    result += `==${id}_${i}-` + text.slice(index, index + keywordLength) + "==";
+    lastIndex = index + keywordLength;
+  });
+
+  result += text.slice(lastIndex);
+  if (result.includes("====")) result = result.replaceAll("====", "==‎==");
+  return result;
 }
