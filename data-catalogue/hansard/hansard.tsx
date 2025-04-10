@@ -93,7 +93,7 @@ const Hansard = ({
           speech,
           timestamp,
         } = s;
-        const speech_id = `${prev_id}_${i}`;
+        const speech_id = `${sidebar_id}_${i}`;
 
         // Timestamp
         const timeChanged = curr_timestamp !== timestamp;
