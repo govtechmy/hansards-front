@@ -1,5 +1,5 @@
 import { cn } from "@lib/helpers";
-import ShareButton from "./share";
+import ShareButton from "../share";
 import { useTranslation } from "react-i18next";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { DownloadIcon, UserIcon } from "@govtechmy/myds-react/icon";
