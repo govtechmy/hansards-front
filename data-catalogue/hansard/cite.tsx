@@ -107,15 +107,6 @@ export default function CiteDialogDrawer({
         {CITE_OPTIONS.map(({ label, value }) => {
           const plain = "text/plain";
           const html = "text/html";
-          const text = document.getElementById(label)?.innerText || "";
-          const blobHtml = new Blob([value], { type: html });
-          const blobText = new Blob([text], { type: plain });
-          const data = [
-            new ClipboardItem({
-              [plain]: blobText,
-              [html]: blobHtml,
-            }),
-          ];
 
           return (
             <SummaryListRow className="max-sm:block">
@@ -131,7 +122,20 @@ export default function CiteDialogDrawer({
               <SummaryListAction className="max-sm:pb-3 max-sm:pr-0">
                 <Button
                   variant="primary-ghost"
-                  onClick={async () => await navigator.clipboard.write(data)}
+                  onClick={() => {
+                    const text =
+                      document.getElementById(label)?.innerText || "";
+                    const blobHtml = new Blob([value], { type: html });
+                    const blobText = new Blob([text], { type: plain });
+                    const clipboardItem = new ClipboardItem({
+                      [plain]: blobText,
+                      [html]: blobHtml,
+                    });
+
+                    navigator.clipboard
+                      .write([clipboardItem])
+                      .catch(e => console.error(e));
+                  }}
                 >
                   <CopyIcon className="size-5" />
                   {t("common:copy")}
