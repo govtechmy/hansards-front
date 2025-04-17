@@ -38,6 +38,7 @@
     "chartjs-plugin-annotation": "2.2.1",
     "chartjs-plugin-crosshair": "^1.2.0",
     "chartjs-plugin-datalabels": "^2.2.0",
+    "cloudflare": "^4.2.0",
     "clsx": "^2.0.0",
     "cookie": "^0.5.0",
     "d3-scale-chromatic": "^3.0.0",

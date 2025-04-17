@@ -35,11 +35,11 @@ cp .env.example .env
 
 The following are the environment variables (.env) used for hansard.parlimen.gov.my. Please take note, there are only 2 variables required to get the app running, both of which are related to the [Backend](https://github.com/govtech-malaysia/hansards-back).
 
-| Variables                       | Required | Default                             | Description                              |
-| ------------------------------- | -------- | ----------------------------------- | ---------------------------------------- |
-| NEXT_PUBLIC_APP_URL             | ⬜️       | http://localhost:3000 (development) | App domain. Optional                     |
-| NEXT_PUBLIC_API_URL             | ✅       | http://localhost:8000 (development) | Back-end URL                             |
-| NEXT_PUBLIC_AUTHORIZATION_TOKEN | ✅       | _Create own_                        | Authorization token for BE communication |
+| Variables           | Required | Default                             | Description                              |
+| ------------------- | -------- | ----------------------------------- | ---------------------------------------- |
+| NEXT_PUBLIC_APP_URL | ⬜️       | http://localhost:3000 (development) | App domain. Optional                     |
+| API_URL             | ✅       | http://localhost:8000 (development) | Back-end URL                             |
+| API_AUTH_TOKEN      | ✅       | _Create own_                        | Authorization token for BE communication |
 
 ## Commands to Know
 

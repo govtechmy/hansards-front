@@ -1,6 +1,7 @@
-import { DateCard, Dropdown } from "@components/index";
+import { DateCard } from "@components/index";
 import { Button, ButtonIcon } from "@govtechmy/myds-react/button";
 import {
+  ChevronDownIcon,
   DocumentIcon,
   EmailIcon,
   ExcelFileIcon,
@@ -9,6 +10,12 @@ import {
   PdfFileIcon,
   XIcon,
 } from "@govtechmy/myds-react/icon";
+import {
+  Dropdown,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+} from "@govtechmy/myds-react/dropdown";
 import { Link } from "@govtechmy/myds-react/link";
 import {
   Table,
@@ -27,6 +34,9 @@ import { routes } from "@lib/routes";
 import { Sitting } from "@lib/types";
 import NextLink from "next/link";
 import { useState } from "react";
+import CiteButton from "./cite";
+import ShareButton from "./share";
+import {} from "@govtechmy/myds-react/icon";
 
 /**
  * Mesyuarat Dates
@@ -64,20 +74,17 @@ export const MesyuaratDates = ({
     <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
       {sitting_list.map((sitting, i) => {
         const { filename, date } = sitting;
+        const IS_KK = filename.startsWith("kk");
+        const IS_DR = filename.startsWith("dr");
         const hansard_id = `${
-          filename.startsWith("kk")
+          IS_KK
             ? routes.HANSARD_KK
-            : filename.startsWith("dr")
+            : IS_DR
             ? routes.HANSARD_DR
             : routes.HANSARD_DN
         }/${date}`;
         const { download, share } = useAnalytics(hansard_id);
         const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
-
-        const className = {
-          dropdown:
-            "link p-0 border-none shadow-none text-blue-600 dark:text-primary-dark font-normal gap-1 dark:hover:bg-transparent active:bg-transparent dark:active:bg-transparent dark:hover:text-blue-600 overflow-x-hidden",
-        };
 
         return (
           // table view
@@ -222,65 +229,76 @@ export const MesyuaratDates = ({
               </NextLink>
               <div>
                 <div className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-blue-600 dark:text-primary-dark">
-                  {/* <span className="link dark:hover:text-blue-600">
+                  <CiteButton
+                    date={date}
+                    hansard_id={hansard_id}
+                    dewan={IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
+                    trigger={onClick => (
+                      <Link
+                        primary
+                        underline="hover"
+                        onClick={onClick}
+                        className="cursor-pointer"
+                      >
                         {t("cite")}
-                      </span>
-                      • */}
-                  <Dropdown
-                    className={className.dropdown}
-                    width="w-fit"
-                    placeholder={t("download")}
-                    selected={undefined}
-                    options={[
-                      { label: "PDF", value: "pdf" },
-                      { label: t("csv"), value: "csv" },
-                    ]}
-                    onChange={({ value: filetype }) => {
-                      window.open(
-                        `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                          filename.startsWith("dr")
-                            ? "dewanrakyat"
-                            : "dewannegara"
-                        }/${filename}.${filetype}`,
-                        "_blank"
-                      );
-                      download(filetype);
-                    }}
+                      </Link>
+                    )}
                   />
                   •
-                  <Dropdown
-                    className={className.dropdown}
-                    width="w-fit"
-                    placeholder={t("share")}
-                    selected={undefined}
-                    options={[
-                      {
-                        label: "Twitter",
-                        value: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}`,
-                      },
-                      {
-                        label: "Facebook",
-                        value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
-                      },
-                      {
-                        label: t("email", { ns: "hansard" }),
-                        value: `mailto:?subject=${title}&body=${URL}`,
-                      },
-                      {
-                        label: t(copyText, { ns: "common" }),
-                        value: "copy",
-                      },
-                    ]}
-                    onChange={({ value: link }) => {
-                      share();
-                      if (link === "copy") {
-                        copyClipboard(URL);
-                        setCopyText("copied");
-                        setTimeout(() => {
-                          setCopyText("copy");
-                        }, 1000);
-                      } else window.open(link, "_blank");
-                    }}
+                  <Dropdown>
+                    <DropdownTrigger asChild>
+                      <Link
+                        primary
+                        underline="hover"
+                        className="flex cursor-pointer items-center"
+                      >
+                        {t("download", { ns: "catalogue" })}
+                        <ChevronDownIcon />
+                      </Link>
+                    </DropdownTrigger>
+                    <DropdownContent align="start">
+                      {["pdf", "csv"].map(filetype => (
+                        <DropdownItem
+                          key={filetype}
+                          onSelect={() => {
+                            window.open(
+                              `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                                filename.startsWith("dr")
+                                  ? "dewanrakyat"
+                                  : "dewannegara"
+                              }/${filename}.${filetype}`,
+                              "_blank"
+                            );
+                            download(filetype as "pdf" | "csv");
+                          }}
+                        >
+                          {filetype === "pdf" ? (
+                            <PdfFileIcon className="size-4" />
+                          ) : (
+                            <ExcelFileIcon className="size-4" />
+                          )}
+                          <p className="sr-only">
+                            {t("download", { context: filetype })}
+                          </p>
+                          {filetype.toUpperCase()}
+                        </DropdownItem>
+                      ))}
+                    </DropdownContent>
+                  </Dropdown>
+                  •
+                  <ShareButton
+                    date={date}
+                    hansard_id={hansard_id}
+                    trigger={onClick => (
+                      <Link
+                        primary
+                        underline="hover"
+                        onClick={onClick}
+                        className="cursor-pointer"
+                      >
+                        {t("share")}
+                      </Link>
+                    )}
                   />
                 </div>
               </div>

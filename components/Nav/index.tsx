@@ -97,7 +97,7 @@ const Nav: NavFunctionComponent = ({ children, stateSelector }) => {
       {/* Mobile - Menu */}
       <div
         className={cn(
-          "fixed left-0 top-14 flex w-screen flex-col gap-0 divide-y bg-white px-4 py-2 shadow-floating backdrop-blur-md dark:divide-zinc-800 dark:bg-zinc-900 lg:hidden",
+          "absolute left-0 top-14 flex w-screen flex-col gap-0 divide-y bg-white px-4 py-2 shadow-floating backdrop-blur-md dark:divide-zinc-800 dark:bg-zinc-900 lg:hidden",
           showMobile ? "flex" : "hidden"
         )}
       >

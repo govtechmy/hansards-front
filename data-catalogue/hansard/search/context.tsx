@@ -238,11 +238,11 @@ export const SearchProvider = (props: SearchProviderProps) => {
       //         payload: { activeId, activeCount: activeCount + 1 },
       //       });
       //   } else
-      //     dispatch({
-      //       type: IActionTypes.setActiveMatch,
-      //       payload: { activeId: store.matchedList[0].id, activeCount: 1 },
-      //     });
-      // } else {
+      dispatch({
+        type: IActionTypes.setActiveMatch,
+        payload: { activeId: store.matchedList[0].id, activeCount: 1 },
+      });
+    } else {
       dispatch({
         type: IActionTypes.setActiveMatch,
         payload: { activeId: "", activeCount: 0 },

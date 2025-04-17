@@ -131,7 +131,7 @@ const CatalogueFolder = forwardRef(
           <DrawerHeader className="flex justify-between gap-x-3 border-b border-otl-gray-200">
             <FolderTab />
             <DrawerClose>
-              <XMarkIcon className="h-5 w-5" />
+              <XMarkIcon className="h-5 w-5 text-txt-black-500" />
             </DrawerClose>
           </DrawerHeader>
           <MesyuaratDates

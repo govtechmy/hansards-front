@@ -11,8 +11,8 @@ import Link from "next/link";
 import { ReactNode, useRef } from "react";
 import SpeechBubble from "./bubble";
 import { highlightKeyword, highlightKeywordMarkdown } from "./search/highlight";
-import CiteButton from "./cite";
-import ShareButton from "./share";
+import CiteButton from "../cite";
+import ShareButton from "../share";
 import HansardSearchBar from "./search-bar";
 import Sidebar from "./sidebar";
 import { formatTimestamp, isSpeech, isYDP } from "@lib/utils";
@@ -93,7 +93,7 @@ const Hansard = ({
           speech,
           timestamp,
         } = s;
-        const speech_id = `${prev_id}_${i}`;
+        const speech_id = `${sidebar_id}_${i}`;
 
         // Timestamp
         const timeChanged = curr_timestamp !== timestamp;

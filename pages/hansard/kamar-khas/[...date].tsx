@@ -47,7 +47,7 @@ const HansardPage: Page = ({
 };
 
 export const getServerSideProps: GetServerSideProps = withi18n(
-  ["catalogue", "enum", "hansard"],
+  ["catalogue", "demografi", "enum", "hansard"],
   async ({ params }) => {
     const date = params?.date ? params.date.toString() : null;
 
