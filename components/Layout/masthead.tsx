@@ -20,7 +20,7 @@ export default function MastHead() {
         </MastheadTitle>
         <MastheadTrigger>{t("masthead.how_to_identify")}</MastheadTrigger>
       </MastheadHeader>
-      <MastheadContent>
+      <MastheadContent className="xl:px-6">
         <MastheadSection icon={<GovMyIcon />} title={t("masthead.official")}>
           {t("masthead.not_govmy")}
           <b>.gov.my</b>
