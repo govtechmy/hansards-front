@@ -7,6 +7,7 @@ import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
 import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
+
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const HansardPage: Page = ({

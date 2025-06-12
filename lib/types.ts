@@ -80,6 +80,7 @@ export type Sitting = {
   download_count: number;
   view_count: number;
   cite_count: number;
+  is_final: boolean;
 };
 
 export type Mesyuarat = Period & {
