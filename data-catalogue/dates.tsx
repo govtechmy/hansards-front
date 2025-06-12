@@ -80,8 +80,8 @@ export const MesyuaratDates = ({
           IS_KK
             ? routes.HANSARD_KK
             : IS_DR
-            ? routes.HANSARD_DR
-            : routes.HANSARD_DN
+              ? routes.HANSARD_DR
+              : routes.HANSARD_DN
         }/${date}`;
         const { download, share } = useAnalytics(hansard_id);
         const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
@@ -265,7 +265,9 @@ export const MesyuaratDates = ({
                               `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
                                 filename.startsWith("dr")
                                   ? "dewanrakyat"
-                                  : "dewannegara"
+                                  : filename.startsWith("kk")
+                                    ? "kamarkhas"
+                                    : "dewannegara"
                               }/${filename}.${filetype}`,
                               "_blank"
                             );

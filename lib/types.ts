@@ -116,7 +116,7 @@ export type Speaker = {
   name: string;
   birth_year: number;
   ethnicity: string;
-  sex: string;
+  gender: string;
 };
 
 export type Heading = {

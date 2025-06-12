@@ -5,7 +5,8 @@ import canvasToSvg from "canvas2svg";
 import { extendTailwindMerge } from "tailwind-merge";
 import clsx, { ClassValue } from "clsx";
 import { format, parseISO } from "date-fns";
-import { enGB, ms } from "date-fns/locale";
+import enGB from "date-fns/locale/en-GB/index.js";
+import ms from "date-fns/locale/ms/index.js";
 
 const twMerge = extendTailwindMerge({
   classGroups: {
