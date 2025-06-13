@@ -62,7 +62,7 @@ export const MesyuaratDates = ({
   const title = "Hansard Parlimen";
 
   // const filetypes = ["csv", "pdf"] as const;
-
+  console.log(sitting_list);
   return (
     // <Table>
     //   <TableHeader>
@@ -76,7 +76,9 @@ export const MesyuaratDates = ({
     //   <TableBody>
     <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
       {sitting_list.map((sitting, i) => {
-        const { filename, date, is_final } = sitting;
+        const { filename, date } = sitting;
+        const is_final = true;
+
         const IS_KK = filename.startsWith("kk");
         const IS_DR = filename.startsWith("dr");
         const hansard_id = `${
@@ -216,7 +218,7 @@ export const MesyuaratDates = ({
             <DateCard date={date} size="sm" />
             <div className="flex flex-col gap-y-1.5">
               {is_final ? (
-                <span className="me-2 inline-flex items-center rounded-sm border border-green-500 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-700 dark:bg-opacity-20 dark:text-green-300">
+                <span className="me-2 inline-flex w-fit items-center rounded-sm border border-green-500 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-700 dark:bg-opacity-20 dark:text-green-300">
                   <CheckCircleFillIcon className="size-4" />
                   &nbsp; {t("final")}
                 </span>
