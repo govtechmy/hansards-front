@@ -62,7 +62,6 @@ export const MesyuaratDates = ({
   const title = "Hansard Parlimen";
 
   // const filetypes = ["csv", "pdf"] as const;
-  console.log(sitting_list);
   return (
     // <Table>
     //   <TableHeader>
@@ -76,8 +75,7 @@ export const MesyuaratDates = ({
     //   <TableBody>
     <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
       {sitting_list.map((sitting, i) => {
-        const { filename, date } = sitting;
-        const is_final = true;
+        const { filename, date, is_final } = sitting;
 
         const IS_KK = filename.startsWith("kk");
         const IS_DR = filename.startsWith("dr");
