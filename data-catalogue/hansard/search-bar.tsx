@@ -15,9 +15,19 @@ import { Button } from "@govtechmy/myds-react/button";
  */
 
 export default function HansardSearchBar() {
+  const router = useRouter();
   const [query, setQuery] = useState<string>("");
   const { searchValue, activeCount, totalCount } = useContext(SearchContext);
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
+
+  // Initialize query from URL 'q' parameter
+  useEffect(() => {
+    if (router.isReady) {
+      const q = router.query.q;
+      setQuery(q ? String(q) : "");
+      if (q) onSearchChange(String(q));
+    }
+  }, [router.isReady, router.query.q]);
 
   // adds `?search={value} to URL`
   // const param = "search";

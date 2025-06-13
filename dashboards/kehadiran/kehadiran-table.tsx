@@ -31,7 +31,7 @@ type Individual = Kehadiran & {
   area: string;
   age: number;
   age_group: string;
-  sex: string;
+  gender: string;
   ethnicity: string;
 };
 type Party = Kehadiran & {
@@ -138,8 +138,8 @@ const KehadiranTable = ({
                   className: "text-left",
                 },
                 {
-                  accessorKey: "sex",
-                  header: t("sex", { ns: "demografi" }),
+                  accessorKey: "gender",
+                  header: t("gender", { ns: "demografi" }),
                   cell: ({ getValue }) => (
                     <>{t(getValue(), { ns: "demografi" })}</>
                   ),

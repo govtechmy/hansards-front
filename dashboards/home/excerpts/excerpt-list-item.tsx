@@ -37,8 +37,7 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
 
   return (
     <Link
-      href={`hansard/${dewan}/${sitting.date}#${index}`}
-      // href={`hansard/${dewan}/${sitting.date}?search=${keyword}#${index}`}
+      href={`hansard/${dewan}/${sitting.date}?q=${encodeURIComponent(keyword)}#${index}`}
       prefetch={false}
       className="group p-3 first:rounded-t-xl last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 sm:p-4"
     >

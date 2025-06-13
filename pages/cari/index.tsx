@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         age_group: umur,
         ethnicity: etnik,
         party: parti,
-        sex: jantina,
+        gender: jantina,
       }),
       get("api/search-plot/", {
         q: q,
@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         age_group: umur,
         ethnicity: etnik,
         party: parti,
-        sex: jantina,
+        gender: jantina,
       }),
       get("api/author/"),
     ]);

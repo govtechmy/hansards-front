@@ -42,7 +42,7 @@ const Search = ({
         type="search"
         placeholder={placeholder ?? t("placeholder.search")}
         value={query}
-        autoComplete="off"
+        autoComplete="on"
         spellCheck="false"
         className="block w-full bg-inherit py-1.5 pl-10 text-foreground placeholder:text-txt-black-500 focus:outline-none"
         {...props}

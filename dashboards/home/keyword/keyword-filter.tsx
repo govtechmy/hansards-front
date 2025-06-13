@@ -31,10 +31,10 @@ import {
   ALL_AGES,
   ALL_ETHNICITIES,
   ALL_PARTIES,
-  BOTH_SEXES,
+  BOTH_GENDERS,
   DEWANS,
   ETHNICITIES,
-  SEXES,
+  GENDERS,
 } from "../filter-options";
 import { setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
@@ -56,7 +56,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
+  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
     query;
 
   const { data, setData } = useData({
@@ -65,7 +65,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
     age: umur ? String(umur) : ALL_AGES,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
     party: parti ? String(parti) : ALL_PARTIES,
-    sex: jantina ? String(jantina) : BOTH_SEXES,
+    gender: gender ? String(gender) : BOTH_GENDERS,
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<
@@ -102,7 +102,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
     }))
   );
 
-  const SEX_OPTIONS: OptionType[] = SEXES.map((key: string) => ({
+  const GENDER_OPTIONS: OptionType[] = GENDERS.map((key: string) => ({
     label: t(key, { ns: "demografi" }),
     value: key,
   }));
@@ -127,7 +127,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
         parti: "",
         umur: "",
         etnik: "",
-        jantina: "",
+        gender: "",
         tarikh_akhir: "",
         tarikh_mula: "",
       });
@@ -136,7 +136,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
     setData("party", ALL_PARTIES);
     setData("age", ALL_AGES);
     setData("etnik", ALL_ETHNICITIES);
-    setData("sex", BOTH_SEXES);
+    setData("gender", BOTH_GENDERS);
   };
 
   return (
@@ -202,7 +202,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                 dewan: data.dewan,
                 q: data.query,
                 parti: data.party !== ALL_PARTIES ? data.party : "",
-                jantina: data.sex !== BOTH_SEXES ? data.sex : "",
+                gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                 umur: data.age !== ALL_AGES ? data.age : "",
                 etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                 tarikh_akhir: formatDate(selectedDateRange?.from),
@@ -255,16 +255,16 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           }}
         />
         <Dropdown
-          sublabel={t("sex", { ns: "demografi" })}
+          sublabel={t("gender", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
-          options={SEX_OPTIONS}
-          selected={SEX_OPTIONS.find(e => e.value === data.sex)}
+          options={GENDER_OPTIONS}
+          selected={GENDER_OPTIONS.find(e => e.value === data.gender)}
           onChange={e => {
-            setData("sex", e.value);
+            setData("gender", e.value);
             if (data.query)
               handleSearch({
-                jantina: e.value,
+                gender: e.value,
               });
           }}
         />
@@ -299,7 +299,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
         {(selectedDateRange ||
           data.party !== ALL_PARTIES ||
-          data.sex !== BOTH_SEXES ||
+          data.gender !== BOTH_GENDERS ||
           data.age !== ALL_AGES ||
           data.etnik !== ALL_ETHNICITIES) && (
           <Button
@@ -386,12 +386,12 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               </div>
 
               <div className="space-y-1">
-                <Label label={t("sex", { ns: "demografi" }) + ":"} />
+                <Label label={t("gender", { ns: "demografi" }) + ":"} />
                 <Dropdown
                   width="w-full"
-                  options={SEX_OPTIONS}
-                  selected={SEX_OPTIONS.find(e => e.value === data.sex)}
-                  onChange={e => setData("sex", e.value)}
+                  options={GENDER_OPTIONS}
+                  selected={GENDER_OPTIONS.find(e => e.value === data.gender)}
+                  onChange={e => setData("gender", e.value)}
                 />
               </div>
             </div>
@@ -418,7 +418,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                 handleSearch({
                   dewan: data.dewan,
                   parti: data.party !== ALL_PARTIES ? data.party : "",
-                  jantina: data.sex !== BOTH_SEXES ? data.sex : "",
+                  gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
                   etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                   tarikh_akhir: formatDate(selectedDateRange?.from),
