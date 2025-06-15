@@ -235,17 +235,37 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                     q: data.query,
                   });
                 } else if (
-                  (e.key === "Tab" || //tab for suggestion text comppletion
+                  (e.key === "Tab" ||
                     (e.key === "ArrowRight" &&
                       e.currentTarget.selectionStart === data.query.length)) &&
                   suggestion &&
-                  suggestion
-                    .toLowerCase()
-                    .startsWith(data.query.toLowerCase()) &&
-                  suggestion.toLowerCase() !== data.query.toLowerCase()
+                  (() => {
+                    // Support multiple keyword suggestion if user has space
+                    const lastSpaceIdx = data.query.lastIndexOf(" ");
+                    const prefix =
+                      lastSpaceIdx !== -1
+                        ? data.query.slice(0, lastSpaceIdx + 1)
+                        : "";
+                    const currentWord =
+                      lastSpaceIdx !== -1
+                        ? data.query.slice(lastSpaceIdx + 1)
+                        : data.query;
+                    return (
+                      suggestion
+                        .toLowerCase()
+                        .startsWith(currentWord.toLowerCase()) &&
+                      suggestion.toLowerCase() !== currentWord.toLowerCase()
+                    );
+                  })()
                 ) {
                   e.preventDefault();
-                  setData("query", suggestion);
+                  // Complete only the last word with suggestion
+                  const lastSpaceIdx = data.query.lastIndexOf(" ");
+                  const prefix =
+                    lastSpaceIdx !== -1
+                      ? data.query.slice(0, lastSpaceIdx + 1)
+                      : "";
+                  setData("query", prefix + suggestion);
                   setSuggestion("");
                 }
               }}
