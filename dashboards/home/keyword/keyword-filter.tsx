@@ -148,30 +148,19 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   };
 
   const getAutocomplete = async (query: string) => {
-    const response = await get(
-      "autocomplete",
-      {
-        q: query,
-      },
-      "api"
-    );
-    return response.data.suggestions;
-
-    // FAKE DATA for MVC
-    // return new Promise<{ suggestions: string[]; query: string }>(resolve => {
-    //   setTimeout(() => {
-    //     const fakeSuggestions: Record<string, string[]> = {
-    //       yuran: ["yurannya", "yuran pengajian"],
-    //       ss: ["ssystem", "ss-gb"],
-    //       parlimen: ["parlimen malaysia", "parlimen digital"],
-    //       rakyat: ["rakyat malaysia", "rakyat jelata"],
-    //     };
-
-    //     const suggestions =
-    //       fakeSuggestions[query.toLowerCase().split(" ")[0]] || [];
-    //     resolve({ suggestions, query });
-    //   }, 150);
-    // });
+    try {
+      const response = await get(
+        "api/autocomplete",
+        {
+          q: query,
+        },
+        "app"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching autocomplete:", error);
+      return { suggestions: [], query };
+    }
   };
 
   const handleClear = () => {
