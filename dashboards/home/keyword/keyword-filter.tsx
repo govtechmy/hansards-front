@@ -24,7 +24,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -40,6 +40,7 @@ import { setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
+import { get } from "@lib/api";
 
 /**
  * Keyword - Filter
@@ -55,6 +56,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [suggestion, setSuggestion] = useState<string>("");
 
   const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
     query;
@@ -114,11 +116,62 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchSuggestion = async () => {
+      if (data.query.length > 0) {
+        try {
+          const result = await getAutocomplete(data.query);
+          if (result.suggestions && result.suggestions.length > 0) {
+            setSuggestion(result.suggestions[0]);
+          } else {
+            setSuggestion("");
+          }
+        } catch (error) {
+          console.error("Error fetching autocomplete:", error);
+          setSuggestion("");
+        }
+      } else {
+        setSuggestion("");
+      }
+    };
+
+    const debounceTimeout = setTimeout(fetchSuggestion, 200);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [data.query]);
+
   const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
   const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
     router.push(`${routes.CARI}${setSearchParams(router.asPath, params)}`);
+  };
+
+  const getAutocomplete = async (query: string) => {
+    const response = await get(
+      "autocomplete",
+      {
+        q: query,
+      },
+      "api"
+    );
+    return response.data.suggestions;
+
+    // FAKE DATA for MVC
+    // return new Promise<{ suggestions: string[]; query: string }>(resolve => {
+    //   setTimeout(() => {
+    //     const fakeSuggestions: Record<string, string[]> = {
+    //       yuran: ["yurannya", "yuran pengajian"],
+    //       ss: ["ssystem", "ss-gb"],
+    //       parlimen: ["parlimen malaysia", "parlimen digital"],
+    //       rakyat: ["rakyat malaysia", "rakyat jelata"],
+    //     };
+
+    //     const suggestions =
+    //       fakeSuggestions[query.toLowerCase().split(" ")[0]] || [];
+    //     resolve({ suggestions, query });
+    //   }, 150);
+    // });
   };
 
   const handleClear = () => {
@@ -164,23 +217,54 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
         {/* Search Bar */}
         <div className="mx-auto flex h-[50px] w-full select-none items-center gap-2.5 rounded-full border border-border bg-background py-3 pl-4.5 pr-1.5 hover:border-border-hover sm:w-[500px]">
-          <input
-            required
-            spellCheck="false"
-            type="text"
-            value={data.query}
-            onChange={e => setData("query", e.target.value)}
-            onKeyDown={e => {
-              if (e.key === "Enter")
-                handleSearch({
-                  dewan: data.dewan,
-                  q: data.query,
-                });
-            }}
-            placeholder={t("search_keyword")}
-            className="grow truncate border-none bg-background focus:outline-none focus:ring-0"
-            ref={inputRef}
-          />
+          <div className="relative flex-grow">
+            <input
+              readOnly
+              tabIndex={-1}
+              value={
+                suggestion &&
+                data.query &&
+                suggestion.toLowerCase().startsWith(data.query.toLowerCase()) &&
+                suggestion.toLowerCase() !== data.query.toLowerCase()
+                  ? suggestion
+                  : ""
+              }
+              className="pointer-events-none absolute inset-0 w-full truncate border-none bg-transparent text-gray-400 placeholder:text-transparent focus:outline-none focus:ring-0"
+            />
+            <input
+              required
+              spellCheck="false"
+              type="text"
+              value={data.query}
+              onChange={e => {
+                setData("query", e.target.value);
+              }}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  handleSearch({
+                    dewan: data.dewan,
+                    q: data.query,
+                  });
+                } else if (
+                  (e.key === "Tab" || //tab for suggestion text comppletion
+                    (e.key === "ArrowRight" &&
+                      e.currentTarget.selectionStart === data.query.length)) &&
+                  suggestion &&
+                  suggestion
+                    .toLowerCase()
+                    .startsWith(data.query.toLowerCase()) &&
+                  suggestion.toLowerCase() !== data.query.toLowerCase()
+                ) {
+                  e.preventDefault();
+                  setData("query", suggestion);
+                  setSuggestion("");
+                }
+              }}
+              placeholder={t("search_keyword")}
+              className="relative w-full truncate border-none bg-transparent focus:outline-none focus:ring-0"
+              ref={inputRef}
+            />
+          </div>
           {data.query && (
             <Button
               variant="ghost"
