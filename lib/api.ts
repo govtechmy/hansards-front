@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
-type BaseURL = "api" | "app" | string;
+type BaseURL = "api" | "app" | "api_backend" | string;
 
 /**
  * Base URL builder.
@@ -9,11 +9,13 @@ type BaseURL = "api" | "app" | string;
  * @returns Base of URL
  *
  * @example "api" -> "https://[API_URL]/"
+ * @example "api_backend" -> "http://localhost:8000/"
  * @example "app" -> "https://[NEXT_PUBLIC_APP_URL]/"
  */
 const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const urls: Record<BaseURL, string> = {
     api: process.env.API_URL,
+    api_backend: process.env.NEXT_PUBLIC_API_URL || "",
     app: process.env.NEXT_PUBLIC_APP_URL,
     sejarah: process.env.NEXT_PUBLIC_SEJARAH_URL,
   };
