@@ -41,6 +41,7 @@ import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { get } from "@lib/api";
+import { Dispatch, SetStateAction } from "react";
 
 /**
  * Keyword - Filter
@@ -50,19 +51,28 @@ import { get } from "@lib/api";
 export interface KeywordFilterProps {
   onLoad: () => void;
   query: ParsedUrlQuery;
+  keywordQuery: string;
+  setKeywordQuery: Dispatch<SetStateAction<string>>;
+  suggestion: string;
+  setSuggestion: Dispatch<SetStateAction<string>>;
 }
 
-const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
+const KeywordFilter = ({
+  onLoad,
+  query,
+  keywordQuery,
+  setKeywordQuery,
+  suggestion,
+  setSuggestion,
+}: KeywordFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [suggestion, setSuggestion] = useState<string>("");
 
   const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
     query;
 
   const { data, setData } = useData({
-    query: q ? String(q) : "",
     dewan: dewan ? String(dewan) : "dewan-negara",
     age: umur ? String(umur) : ALL_AGES,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
@@ -116,30 +126,6 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchSuggestion = async () => {
-      if (data.query.length > 0) {
-        try {
-          const result = await getAutocomplete(data.query);
-          if (result.suggestions && result.suggestions.length > 0) {
-            setSuggestion(result.suggestions[0]);
-          } else {
-            setSuggestion("");
-          }
-        } catch (error) {
-          console.error("Error fetching autocomplete:", error);
-          setSuggestion("");
-        }
-      } else {
-        setSuggestion("");
-      }
-    };
-
-    const debounceTimeout = setTimeout(fetchSuggestion, 200);
-
-    return () => clearTimeout(debounceTimeout);
-  }, [data.query]);
-
   const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
   const handleSearch = (params: Record<string, string | null>) => {
@@ -147,24 +133,8 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
     router.push(`${routes.CARI}${setSearchParams(router.asPath, params)}`);
   };
 
-  const getAutocomplete = async (query: string) => {
-    try {
-      const response = await get(
-        "api/autocomplete",
-        {
-          q: query,
-        },
-        "app"
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching autocomplete:", error);
-      return { suggestions: [], query };
-    }
-  };
-
   const handleClear = () => {
-    if (data.query) {
+    if (keywordQuery) {
       handleSearch({
         parti: "",
         umur: "",
@@ -190,7 +160,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
             value={data.dewan}
             onValueChange={dewan => {
               setData("dewan", dewan);
-              if (data.query) handleSearch({ dewan });
+              if (keywordQuery) handleSearch({ dewan });
             }}
             defaultValue="dewan-negara"
           >
@@ -212,9 +182,11 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               tabIndex={-1}
               value={
                 suggestion &&
-                data.query &&
-                suggestion.toLowerCase().startsWith(data.query.toLowerCase()) &&
-                suggestion.toLowerCase() !== data.query.toLowerCase()
+                keywordQuery &&
+                suggestion
+                  .toLowerCase()
+                  .startsWith(keywordQuery.toLowerCase()) &&
+                suggestion.toLowerCase() !== keywordQuery.toLowerCase()
                   ? suggestion
                   : ""
               }
@@ -224,32 +196,33 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               required
               spellCheck="false"
               type="text"
-              value={data.query}
+              value={keywordQuery}
               onChange={e => {
-                setData("query", e.target.value);
+                setKeywordQuery(e.target.value);
               }}
               onKeyDown={e => {
                 if (e.key === "Enter") {
                   handleSearch({
                     dewan: data.dewan,
-                    q: data.query,
+                    q: keywordQuery,
                   });
                 } else if (
                   (e.key === "Tab" ||
                     (e.key === "ArrowRight" &&
-                      e.currentTarget.selectionStart === data.query.length)) &&
+                      e.currentTarget.selectionStart ===
+                        keywordQuery.length)) &&
                   suggestion &&
                   (() => {
                     // Support multiple keyword suggestion if user has space
-                    const lastSpaceIdx = data.query.lastIndexOf(" ");
+                    const lastSpaceIdx = keywordQuery.lastIndexOf(" ");
                     const prefix =
                       lastSpaceIdx !== -1
-                        ? data.query.slice(0, lastSpaceIdx + 1)
+                        ? keywordQuery.slice(0, lastSpaceIdx + 1)
                         : "";
                     const currentWord =
                       lastSpaceIdx !== -1
-                        ? data.query.slice(lastSpaceIdx + 1)
-                        : data.query;
+                        ? keywordQuery.slice(lastSpaceIdx + 1)
+                        : keywordQuery;
                     return (
                       suggestion
                         .toLowerCase()
@@ -260,12 +233,12 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
                 ) {
                   e.preventDefault();
                   // Complete only the last word with suggestion
-                  const lastSpaceIdx = data.query.lastIndexOf(" ");
+                  const lastSpaceIdx = keywordQuery.lastIndexOf(" ");
                   const prefix =
                     lastSpaceIdx !== -1
-                      ? data.query.slice(0, lastSpaceIdx + 1)
+                      ? keywordQuery.slice(0, lastSpaceIdx + 1)
                       : "";
-                  setData("query", prefix + suggestion);
+                  setKeywordQuery(prefix + suggestion);
                   setSuggestion("");
                 }
               }}
@@ -274,12 +247,12 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
               ref={inputRef}
             />
           </div>
-          {data.query && (
+          {keywordQuery && (
             <Button
               variant="ghost"
               className="group flex justify-center rounded-full p-0 sm:-mx-1.5 sm:h-8 sm:w-8"
               onClick={() => {
-                setData("query", "");
+                setKeywordQuery("");
                 inputRef.current && inputRef.current.focus();
               }}
             >
@@ -289,11 +262,11 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           <Button
             variant="primary"
             className="size-9 justify-center rounded-full max-sm:p-1.5 sm:w-fit"
-            disabled={!data.query}
+            disabled={!keywordQuery}
             onClick={() =>
               handleSearch({
                 dewan: data.dewan,
-                q: data.query,
+                q: keywordQuery,
                 parti: data.party !== ALL_PARTIES ? data.party : "",
                 gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                 umur: data.age !== ALL_AGES ? data.age : "",
@@ -320,7 +293,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           selected={selectedDateRange}
           onChange={dateRange => {
             setSelectedDateRange(dateRange);
-            if (data.query && dateRange && dateRange.from && dateRange.to)
+            if (keywordQuery && dateRange && dateRange.from && dateRange.to)
               handleSearch({
                 tarikh_akhir: formatDate(dateRange.from),
                 tarikh_mula: formatDate(dateRange.to),
@@ -341,7 +314,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           selected={PARTY_OPTIONS.find(e => e.value === data.party)}
           onChange={e => {
             setData("party", e.value);
-            if (data.query)
+            if (keywordQuery)
               handleSearch({
                 parti: e.value,
               });
@@ -355,7 +328,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           selected={GENDER_OPTIONS.find(e => e.value === data.gender)}
           onChange={e => {
             setData("gender", e.value);
-            if (data.query)
+            if (keywordQuery)
               handleSearch({
                 gender: e.value,
               });
@@ -369,7 +342,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           selected={AGE_OPTIONS.find(e => e.value === data.age)}
           onChange={e => {
             setData("age", e.value);
-            if (data.query)
+            if (keywordQuery)
               handleSearch({
                 umur: e.value,
               });
@@ -383,7 +356,7 @@ const KeywordFilter = ({ onLoad, query }: KeywordFilterProps) => {
           selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
           onChange={e => {
             setData("etnik", e.value);
-            if (data.query)
+            if (keywordQuery)
               handleSearch({
                 etnik: e.value,
               });
