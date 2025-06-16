@@ -277,9 +277,9 @@ export const MesyuaratDates = ({
                           onSelect={() => {
                             window.open(
                               `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-                                filename.startsWith("dr")
+                                IS_DR
                                   ? "dewanrakyat"
-                                  : filename.startsWith("kk")
+                                  : IS_KK
                                     ? "kamarkhas"
                                     : "dewannegara"
                               }/${filename}.${filetype}`,
