@@ -87,7 +87,7 @@ const Keyword = ({
   const getAutocomplete = async (query: string) => {
     try {
       const response = await get(
-        "api/autocomplete",
+        "autocomplete",
         {
           q: query,
         },
