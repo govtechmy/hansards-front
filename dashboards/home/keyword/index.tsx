@@ -91,7 +91,7 @@ const Keyword = ({
         {
           q: query,
         },
-        "app"
+        "api"
       );
       return response.data;
     } catch (error) {
