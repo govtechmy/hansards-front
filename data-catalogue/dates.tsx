@@ -39,6 +39,7 @@ import NextLink from "next/link";
 import { useState } from "react";
 import CiteButton from "./cite";
 import ShareButton from "./share";
+import { DOWNLOAD_URL } from "@lib/config";
 import {} from "@govtechmy/myds-react/icon";
 
 /**
@@ -60,7 +61,6 @@ export const MesyuaratDates = ({
   const minWidth1280px = useMediaQuery("(min-width: 1280px)");
   const [copyText, setCopyText] = useState<string>("copy");
   const title = "Hansard Parlimen";
-  const DOWNLOAD_URL = process.env.NEXT_PUBLIC_DOWNLOAD_URL;
 
   if (typeof window !== "undefined" && !DOWNLOAD_URL) {
     console.warn("NEXT_PUBLIC_DOWNLOAD_URL is not set!");
@@ -279,14 +279,14 @@ export const MesyuaratDates = ({
                         <DropdownItem
                           key={filetype}
                           onSelect={() => {
+                            if (!DOWNLOAD_URL) {
+                              alert(
+                                "Download is currently unavailable. Please contact support."
+                              );
+                              return;
+                            }
                             window.open(
-                              `${DOWNLOAD_URL}${
-                                IS_DR
-                                  ? "dewanrakyat"
-                                  : IS_KK
-                                    ? "kamarkhas"
-                                    : "dewannegara"
-                              }/${filename}.${filetype}`,
+                              `${DOWNLOAD_URL}${IS_DR ? "dewanrakyat" : IS_KK ? "kamarkhas" : "dewannegara"}/${filename}.${filetype}`,
                               "_blank"
                             );
                             download(filetype as "pdf" | "csv");
