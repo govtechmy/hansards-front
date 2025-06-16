@@ -21,6 +21,9 @@ const nextConfig = {
   output: process.env.NEXT_OUTPUT,
   reactStrictMode: true,
   swcMinify: true,
+  env: {
+    NEXT_PUBLIC_DOWNLOAD_URL: process.env.NEXT_PUBLIC_DOWNLOAD_URL,
+  },
   publicRuntimeConfig: {
     APP_NAME: "hansard.parlimen.gov.my",
     META_AUTHOR: "Parliament of Malaysia",
