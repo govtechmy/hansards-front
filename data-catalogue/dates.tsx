@@ -60,7 +60,11 @@ export const MesyuaratDates = ({
   const minWidth1280px = useMediaQuery("(min-width: 1280px)");
   const [copyText, setCopyText] = useState<string>("copy");
   const title = "Hansard Parlimen";
+  const DOWNLOAD_URL = process.env.NEXT_PUBLIC_DOWNLOAD_URL;
 
+  if (typeof window !== "undefined" && !DOWNLOAD_URL) {
+    console.warn("NEXT_PUBLIC_DOWNLOAD_URL is not set!");
+  }
   // const filetypes = ["csv", "pdf"] as const;
   return (
     // <Table>
@@ -270,14 +274,13 @@ export const MesyuaratDates = ({
                         <ChevronDownIcon />
                       </Link>
                     </DropdownTrigger>
-                    <div> {process.env.NEXT_PUBLIC_DOWNLOAD_URL}</div>
                     <DropdownContent align="start">
                       {["pdf", "csv"].map(filetype => (
                         <DropdownItem
                           key={filetype}
                           onSelect={() => {
                             window.open(
-                              `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
+                              `${DOWNLOAD_URL}${
                                 IS_DR
                                   ? "dewanrakyat"
                                   : IS_KK
