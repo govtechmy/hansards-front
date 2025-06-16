@@ -270,6 +270,7 @@ export const MesyuaratDates = ({
                         <ChevronDownIcon />
                       </Link>
                     </DropdownTrigger>
+                    <div> {process.env.NEXT_PUBLIC_DOWNLOAD_URL}</div>
                     <DropdownContent align="start">
                       {["pdf", "csv"].map(filetype => (
                         <DropdownItem
