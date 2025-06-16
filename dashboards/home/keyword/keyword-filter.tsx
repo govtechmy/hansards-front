@@ -24,7 +24,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -126,6 +126,25 @@ const KeywordFilter = ({
 
   const router = useRouter();
 
+  const { suggestedValue, currentWord } = useMemo(() => {
+    if (!suggestion || !keywordQuery)
+      return { suggestedValue: "", currentWord: "" };
+
+    const lastSpaceIndex = keywordQuery.lastIndexOf(" ");
+    const currentWord = keywordQuery.substring(lastSpaceIndex + 1);
+
+    if (
+      currentWord.length > 0 &&
+      suggestion.toLowerCase().startsWith(currentWord.toLowerCase()) &&
+      suggestion.toLowerCase() !== currentWord.toLowerCase()
+    ) {
+      const prefix = keywordQuery.substring(0, lastSpaceIndex + 1);
+      return { suggestedValue: prefix + suggestion, currentWord };
+    }
+
+    return { suggestedValue: "", currentWord };
+  }, [suggestion, keywordQuery]);
+
   const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
   const handleSearch = (params: Record<string, string | null>) => {
@@ -180,16 +199,7 @@ const KeywordFilter = ({
             <input
               readOnly
               tabIndex={-1}
-              value={
-                suggestion &&
-                keywordQuery &&
-                suggestion
-                  .toLowerCase()
-                  .startsWith(keywordQuery.toLowerCase()) &&
-                suggestion.toLowerCase() !== keywordQuery.toLowerCase()
-                  ? suggestion
-                  : ""
-              }
+              value={suggestedValue}
               className="pointer-events-none absolute inset-0 w-full truncate border-none bg-transparent text-gray-400 placeholder:text-transparent focus:outline-none focus:ring-0"
             />
             <input
@@ -215,10 +225,6 @@ const KeywordFilter = ({
                   (() => {
                     // Support multiple keyword suggestion if user has space
                     const lastSpaceIdx = keywordQuery.lastIndexOf(" ");
-                    const prefix =
-                      lastSpaceIdx !== -1
-                        ? keywordQuery.slice(0, lastSpaceIdx + 1)
-                        : "";
                     const currentWord =
                       lastSpaceIdx !== -1
                         ? keywordQuery.slice(lastSpaceIdx + 1)
