@@ -1,4 +1,2 @@
-export const DOWNLOAD_URL = process.env.NEXT_PUBLIC_DOWNLOAD_URL || "";
-if (typeof window !== "undefined" && !DOWNLOAD_URL) {
-  console.warn("Warning: Download URL is not set. Downloads may not work.");
-}
+export const DOWNLOAD_URL =
+  "https://s3.ap-southeast-1.amazonaws.com/downloads.hansard.parlimen.gov.my/";

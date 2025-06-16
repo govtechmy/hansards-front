@@ -39,8 +39,8 @@ import NextLink from "next/link";
 import { useState } from "react";
 import CiteButton from "./cite";
 import ShareButton from "./share";
-import { DOWNLOAD_URL } from "@lib/config";
 import {} from "@govtechmy/myds-react/icon";
+import { DOWNLOAD_URL } from "@lib/config";
 
 /**
  * Mesyuarat Dates
@@ -62,21 +62,7 @@ export const MesyuaratDates = ({
   const [copyText, setCopyText] = useState<string>("copy");
   const title = "Hansard Parlimen";
 
-  const {
-    publicRuntimeConfig: { DOWNLOAD_URL },
-  } = useConfig();
-  // const filetypes = ["csv", "pdf"] as const;
   return (
-    // <Table>
-    //   <TableHeader>
-    //     <TableRow>
-    //       <TableHead className="w-1/4">Date</TableHead>
-    //       <TableHead className="w-1/12">Day</TableHead>
-    //       <TableHead className="w-1/12">Share</TableHead>
-    //       <TableHead className="w-1/12">Download</TableHead>
-    //     </TableRow>
-    //   </TableHeader>
-    //   <TableBody>
     <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
       {sitting_list.map((sitting, i) => {
         const { filename, date, is_final } = sitting;
@@ -94,125 +80,6 @@ export const MesyuaratDates = ({
         const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}`;
 
         return (
-          // table view
-          // <TableRow>
-          //   <TableCell>
-          //     <NextLink
-          //       href={hansard_id}
-          //       prefetch={false}
-          //       onClick={onClick}
-          //       className="link flex items-center gap-1.5 font-medium text-foreground"
-          //     >
-          //       <DocumentIcon className="size-5" />
-          //       {new Date(date).toLocaleDateString(i18n.language, {
-          //         year: "numeric",
-          //         month: "short",
-          //         day: "numeric",
-          //       })}
-          //     </NextLink>
-          //   </TableCell>
-          //   <TableCell>
-          //     {new Date(date).toLocaleDateString(i18n.language, {
-          //       weekday: "short",
-          //     })}
-          //   </TableCell>
-          //   <TableCell>
-          //     <div className="flex w-fit items-center gap-1">
-          //       {/* options={[
-          //             {
-          //               label: "Twitter",
-          //               value: `https://www.twitter.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
-          //             },
-          //             {
-          //               label: "Facebook",
-          //               value: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
-          //             },
-          //             {
-          //               label: t("email", { ns: "hansard" }),
-          //               value: `mailto:?subject=${title}&body=${URL}`,
-          //             },
-          //             {
-          //               label: t(copyText, { ns: "common" }),
-          //               value: "copy",
-          //             },
-          //           ]} */}
-          //       <Button variant="default-ghost" iconOnly asChild>
-          //         <Link
-          //           target="_blank"
-          //           href={`https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`}
-          //         >
-          //           <ButtonIcon>
-          //             <FacebookIcon className="size-5" />
-          //           </ButtonIcon>
-          //         </Link>
-          //       </Button>
-          //       <Button variant="default-ghost" iconOnly asChild>
-          //         <Link
-          //           target="_blank"
-          //           href={`https://www.twitter.com/intent/tweet?text=${title}&url=${URL}`}
-          //         >
-          //           <ButtonIcon>
-          //             <XIcon className="size-5" />
-          //           </ButtonIcon>
-          //         </Link>
-          //       </Button>
-          //       <Button variant="default-ghost" asChild>
-          //         <Link
-          //           target="_blank"
-          //           underline="none"
-          //           href={`mailto:?subject=${title}&body=${URL}`}
-          //         >
-          //           <ButtonIcon>
-          //             <EmailIcon className="size-5" />
-          //           </ButtonIcon>
-          //           Email
-          //         </Link>
-          //       </Button>
-          //       <Button
-          //         variant="default-ghost"
-          //         onClick={() => {
-          //           copyClipboard(URL);
-          //           setCopyText("copied");
-          //           setTimeout(() => {
-          //             setCopyText("copy");
-          //           }, 1000);
-          //         }}
-          //       >
-          //         <ButtonIcon>
-          //           <LinkIcon className="size-5" />
-          //         </ButtonIcon>
-          //         Copy link
-          //       </Button>
-          //     </div>
-          //   </TableCell>
-          //   <TableCell align="center">
-          //     <div className="flex items-center gap-1">
-          //       {filetypes.map(filetype => (
-          //         <Button
-          //           variant="default-ghost"
-          //           onClick={() => {
-          //             window.open(
-          //               `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-          //                 filename.startsWith("dr")
-          //                   ? "dewanrakyat"
-          //                   : "dewannegara"
-          //               }/${filename}.${filetype}`,
-          //               "_blank"
-          //             );
-          //             download(filetype);
-          //           }}
-          //         >
-          //           {filetype === "csv" ? (
-          //             <ExcelFileIcon className="size-5" />
-          //           ) : (
-          //             <PdfFileIcon className="size-5" />
-          //           )}
-          //           {filetype.toUpperCase()}
-          //         </Button>
-          //       ))}
-          //     </div>
-          //   </TableCell>
-          // </TableRow>
           <div
             key={i}
             className="flex items-center gap-x-4.5 rounded-lg border bg-background p-3 shadow-button dark:border-zinc-800"
@@ -280,7 +147,13 @@ export const MesyuaratDates = ({
                           key={filetype}
                           onSelect={() => {
                             window.open(
-                              `${DOWNLOAD_URL}${IS_DR ? "dewanrakyat" : IS_KK ? "kamarkhas" : "dewannegara"}/${filename}.${filetype}`,
+                              `${DOWNLOAD_URL}${
+                                filename.startsWith("dr")
+                                  ? "dewanrakyat"
+                                  : filename.startsWith("kk")
+                                    ? "kamarkhas"
+                                    : "dewannegara"
+                              }/${filename}.${filetype}`,
                               "_blank"
                             );
                             download(filetype as "pdf" | "csv");
@@ -325,6 +198,3 @@ export const MesyuaratDates = ({
     // </Table>
   );
 };
-function useConfig(): { publicRuntimeConfig: { DOWNLOAD_URL: any } } {
-  throw new Error("Function not implemented.");
-}
