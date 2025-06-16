@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import KeywordFilter from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
 import { Speaker } from "@lib/types";
+import { get } from "@lib/api";
 
 /**
  * Keyword
@@ -59,6 +60,9 @@ const Keyword = ({
 
   const { q, dewan, tarikh_mula, tarikh_akhir } = query;
   const keyword = q ? String(q) : undefined;
+  const [keywordQuery, setKeywordQuery] = useState(keyword ?? "");
+  const [suggestion, setSuggestion] = useState<string>("");
+
   const house = dewan ? String(dewan) : "";
   const start =
     tarikh_mula !== undefined && !Array.isArray(tarikh_mula)
@@ -80,11 +84,28 @@ const Keyword = ({
     []
   );
 
+  const getAutocomplete = async (query: string) => {
+    try {
+      const response = await get(
+        "api/autocomplete",
+        {
+          q: query,
+        },
+        "app"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching autocomplete:", error);
+      return { suggestions: [], query };
+    }
+  };
+
   const barmeter_data = top_speakers
     ? top_speakers.map(s => {
         const id = Object.keys(s)[0];
-        const speaker = speakers.find(e => String(e.new_author_id) === id)
-          ?.name;
+        const speaker = speakers.find(
+          e => String(e.new_author_id) === id
+        )?.name;
         const total = s[id];
 
         return { x: speaker ?? "", y: total };
@@ -99,15 +120,46 @@ const Keyword = ({
     }
   }, [timeseries]);
 
+  useEffect(() => {
+    const fetchSuggestion = async () => {
+      if (keywordQuery.length > 0) {
+        try {
+          const result = await getAutocomplete(keywordQuery);
+          if (result.suggestions && result.suggestions.length > 0) {
+            setSuggestion(result.suggestions[0]);
+          } else {
+            setSuggestion("");
+          }
+        } catch (error) {
+          console.error("Error fetching autocomplete:", error);
+          setSuggestion("");
+        }
+      } else {
+        setSuggestion("");
+      }
+    };
+
+    const debounceTimeout = setTimeout(fetchSuggestion, 200);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [keywordQuery]);
+
   return (
     <Container className="divide-y divide-border">
       <Section>
         {/* Search for any keywords or phrases! */}
         <h2 className="header text-center">{t("search_keywords")}</h2>
 
-        <KeywordFilter onLoad={() => setLoading(true)} query={query} />
+        <KeywordFilter
+          onLoad={() => setLoading(true)}
+          query={query}
+          keywordQuery={keywordQuery}
+          setKeywordQuery={setKeywordQuery}
+          suggestion={suggestion}
+          setSuggestion={setSuggestion}
+        />
 
-        {/* Time-series of "keyword” in Parliament */}
+        {/* Time-series of "keyword" in Parliament */}
         <div className="relative mt-6 w-full" ref={ref}>
           <h3 className="title mb-3 block leading-7">
             {keyword &&

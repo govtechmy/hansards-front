@@ -10,7 +10,8 @@ import {
   parse,
   subSeconds,
 } from "date-fns";
-import { enGB, ms } from "date-fns/locale";
+import enGB from "date-fns/locale/en-GB/index.js";
+import ms from "date-fns/locale/ms/index.js";
 import { useTranslation } from "next-i18next";
 import { ChangeEventHandler, useState } from "react";
 import {
@@ -171,8 +172,8 @@ const Daterange = ({
             anchor === "right"
               ? "right-0"
               : anchor === "left"
-              ? "left-0"
-              : anchor
+                ? "left-0"
+                : anchor
           )}
         >
           <form className="flex flex-col px-3 pt-3 max-sm:hidden">

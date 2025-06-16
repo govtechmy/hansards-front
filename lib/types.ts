@@ -80,6 +80,7 @@ export type Sitting = {
   download_count: number;
   view_count: number;
   cite_count: number;
+  is_final: boolean;
 };
 
 export type Mesyuarat = Period & {
@@ -116,7 +117,7 @@ export type Speaker = {
   name: string;
   birth_year: number;
   ethnicity: string;
-  sex: string;
+  gender: string;
 };
 
 export type Heading = {
