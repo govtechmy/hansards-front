@@ -62,9 +62,9 @@ export const MesyuaratDates = ({
   const [copyText, setCopyText] = useState<string>("copy");
   const title = "Hansard Parlimen";
 
-  if (typeof window !== "undefined" && !DOWNLOAD_URL) {
-    console.warn("NEXT_PUBLIC_DOWNLOAD_URL is not set!");
-  }
+  const {
+    publicRuntimeConfig: { DOWNLOAD_URL },
+  } = useConfig();
   // const filetypes = ["csv", "pdf"] as const;
   return (
     // <Table>
@@ -279,12 +279,6 @@ export const MesyuaratDates = ({
                         <DropdownItem
                           key={filetype}
                           onSelect={() => {
-                            if (!DOWNLOAD_URL) {
-                              alert(
-                                "Download is currently unavailable. Please contact support."
-                              );
-                              return;
-                            }
                             window.open(
                               `${DOWNLOAD_URL}${IS_DR ? "dewanrakyat" : IS_KK ? "kamarkhas" : "dewannegara"}/${filename}.${filetype}`,
                               "_blank"
@@ -331,3 +325,6 @@ export const MesyuaratDates = ({
     // </Table>
   );
 };
+function useConfig(): { publicRuntimeConfig: { DOWNLOAD_URL: any } } {
+  throw new Error("Function not implemented.");
+}
