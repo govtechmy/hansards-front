@@ -18,8 +18,8 @@ const Layout: FC<LayoutProps> = ({ className, children, stateSelector }) => {
       <Header stateSelector={stateSelector} />
       <div className="flex min-h-screen flex-col bg-background">
         <div className="flex flex-grow flex-col">{children}</div>
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };

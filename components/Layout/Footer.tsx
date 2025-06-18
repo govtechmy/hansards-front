@@ -55,7 +55,7 @@ const FooterLayout = () => {
 
   return (
     <Footer>
-      <FooterSection className="lg:mx-0 lg:max-w-screen-2xl">
+      <FooterSection className="flex w-full flex-col justify-between gap-4 border-none text-sm text-txt-black-500 md:pb-0 md:max-lg:gap-4.5 lg:max-w-screen-2xl lg:flex-row lg:gap-6">
         <SiteInfo>
           <div className="flex items-center gap-x-2.5 whitespace-nowrap font-poppins text-body-md font-semibold text-txt-black-900">
             <FooterLogo

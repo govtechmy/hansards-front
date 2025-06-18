@@ -52,17 +52,13 @@ const CatalogueFolder = forwardRef(
     const end = getShortDate(end_date);
     const dateRange = start === end ? `${start}` : `${start} - ${end}`;
 
-    useImperativeHandle(
-      ref,
-      () => {
-        return {
-          open: () => {
-            setOpen(true);
-          },
-        };
-      },
-      []
-    );
+    useImperativeHandle(ref, () => {
+      return {
+        open: () => {
+          setOpen(true);
+        },
+      };
+    }, []);
 
     const FolderTab = () => (
       <span className="flex items-center gap-x-3">
@@ -96,7 +92,7 @@ const CatalogueFolder = forwardRef(
             height={64}
             alt="Closed Folder"
           />
-          <span className="absolute bottom-3 right-3 flex items-center gap-0.5 rounded-md bg-slate-400 px-1.5 py-0.5 text-white">
+          <span className="absolute bottom-3 right-3 flex items-center gap-0.5 rounded-md bg-slate-800 px-1.5 py-0.5 text-white">
             <BookmarkIcon className="size-3.5" />
             {sitting_list.length}
           </span>

@@ -44,7 +44,7 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-30 flex h-14 justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center">
+      <nav className="sticky top-14 z-20 flex h-14 justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center">
         <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
           {TAB_OPTIONS.map(tab => {
             const isPath = pathname.includes(tab.path);
