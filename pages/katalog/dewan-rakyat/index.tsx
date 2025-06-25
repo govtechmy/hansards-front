@@ -36,7 +36,7 @@ const CatalogueIndexPage: Page = ({
 export const getServerSideProps: GetServerSideProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async () => {
-    const parlimens = [12, 13, 14, 15].map(String);
+    const parlimens = [11, 12, 13, 14, 15].map(String);
     const results = await Promise.allSettled(
       parlimens.map(term =>
         get("api/catalogue/", {
