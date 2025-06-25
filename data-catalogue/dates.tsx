@@ -52,6 +52,8 @@ interface MesyuaratDatesProps {
   sitting_list: Sitting[];
 }
 
+const isPre2008 = (date: string) => new Date(date).getFullYear() < 2008;
+
 export const MesyuaratDates = ({
   onClick,
   sitting_list,
@@ -66,6 +68,7 @@ export const MesyuaratDates = ({
     <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
       {sitting_list.map((sitting, i) => {
         const { filename, date, is_final } = sitting;
+        const is_old = isPre2008(date);
 
         const IS_KK = filename.startsWith("kk");
         const IS_DR = filename.startsWith("dr");
@@ -98,21 +101,34 @@ export const MesyuaratDates = ({
                     &nbsp; {t("draft")}
                   </span>
                 ))}
-              <NextLink
-                href={hansard_id}
-                prefetch={false}
-                onClick={onClick}
-                className="link flex items-center gap-1 font-medium text-foreground"
-              >
-                {new Date(date).toLocaleDateString(i18n.language, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-                {`, ${new Date(date).toLocaleDateString(i18n.language, {
-                  weekday: "long",
-                })}`}
-              </NextLink>
+              {is_old ? (
+                <div className="flex items-center gap-1 font-medium text-foreground">
+                  {new Date(date).toLocaleDateString(i18n.language, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                  {`, ${new Date(date).toLocaleDateString(i18n.language, {
+                    weekday: "long",
+                  })}`}
+                </div>
+              ) : (
+                <NextLink
+                  href={hansard_id}
+                  prefetch={false}
+                  onClick={onClick}
+                  className="link flex items-center gap-1 font-medium text-foreground"
+                >
+                  {new Date(date).toLocaleDateString(i18n.language, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                  {`, ${new Date(date).toLocaleDateString(i18n.language, {
+                    weekday: "long",
+                  })}`}
+                </NextLink>
+              )}
               <div>
                 <div className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-blue-600 dark:text-primary-dark">
                   <CiteButton
@@ -146,7 +162,9 @@ export const MesyuaratDates = ({
                       {["pdf", "csv"].map(filetype => (
                         <DropdownItem
                           key={filetype}
+                          disabled={is_old && filetype === "csv"}
                           onSelect={() => {
+                            if (is_old && filetype === "csv") return;
                             window.open(
                               `${DOWNLOAD_URL}${
                                 filename.startsWith("dr")
