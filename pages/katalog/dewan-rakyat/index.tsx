@@ -7,7 +7,7 @@ import { AnalyticsProvider } from "@lib/contexts/analytics";
 import { withi18n } from "@lib/decorators";
 import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
-import { assertFulfilled } from "@lib/utils";
+import { assertFulfilled, generateRange } from "@lib/utils";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
@@ -36,7 +36,7 @@ const CatalogueIndexPage: Page = ({
 export const getServerSideProps: GetServerSideProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async () => {
-    const parlimens = [11, 12, 13, 14, 15].map(String);
+    const parlimens = generateRange(1, 15);
     const results = await Promise.allSettled(
       parlimens.map(term =>
         get("api/catalogue/", {
