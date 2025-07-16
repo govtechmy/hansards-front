@@ -87,6 +87,11 @@ export const setSearchParams = (
   return "?" + searchParams.toString();
 };
 
+export const generateRange = (start: number, end: number): string[] => {
+  const length = end - start + 1;
+  return Array.from({ length }, (_, i) => String(start + i));
+};
+
 export function isSpeech(speech: Speech | NestedSpeech): speech is Speech {
   const keys = Object.keys(speech);
   return (
