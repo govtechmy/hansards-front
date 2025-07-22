@@ -55,11 +55,7 @@ interface MesyuaratDatesProps {
 const isPre2008 = (date: string) => new Date(date).getFullYear() < 2008;
 const isStaging = process.env.NEXT_PUBLIC_APP_ENV === "staging";
 
-if (!isStaging) {
-  console.log("NEXT_PUBLIC_APP_ENV", process.env.NEXT_PUBLIC_APP_ENV);
-}
-
-alert(process.env.NEXT_PUBLIC_APP_ENV);
+alert("Hi");
 
 export const MesyuaratDates = ({
   onClick,
