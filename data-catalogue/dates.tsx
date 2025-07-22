@@ -53,8 +53,12 @@ interface MesyuaratDatesProps {
 }
 
 const isPre2008 = (date: string) => new Date(date).getFullYear() < 2008;
-const isStaging = process.env.NEXT_PUBLIC_APP_ENV === "staging";
-console.log("isStaging", isStaging);
+const isNotProduction = process.env.NEXT_PUBLIC_APP_ENV !== "production";
+console.log(
+  "isNotProduction",
+  isNotProduction,
+  process.env.NEXT_PUBLIC_APP_ENV
+);
 
 export const MesyuaratDates = ({
   onClick,
@@ -71,7 +75,7 @@ export const MesyuaratDates = ({
       {sitting_list.map((sitting, i) => {
         const { filename, date, is_final } = sitting;
         // If the environment is staging, `is_old` is always false. Otherwise, check if the date is before 2008.
-        const is_old = isStaging ? false : isPre2008(date);
+        const is_old = isNotProduction ? false : isPre2008(date);
         const IS_KK = filename.startsWith("kk");
         const IS_DR = filename.startsWith("dr");
         const hansard_id = `${
