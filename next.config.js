@@ -23,6 +23,7 @@ const nextConfig = {
   swcMinify: true,
   env: {
     NEXT_PUBLIC_DOWNLOAD_URL: process.env.NEXT_PUBLIC_DOWNLOAD_URL,
+    NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
   },
   publicRuntimeConfig: {
     APP_NAME: "hansard.parlimen.gov.my",
