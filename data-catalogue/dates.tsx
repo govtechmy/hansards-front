@@ -54,11 +54,6 @@ interface MesyuaratDatesProps {
 
 const isPre2008 = (date: string) => new Date(date).getFullYear() < 2008;
 const isNotProduction = process.env.NEXT_PUBLIC_APP_ENV !== "production";
-console.log(
-  "isNotProduction",
-  isNotProduction,
-  process.env.NEXT_PUBLIC_APP_ENV
-);
 
 export const MesyuaratDates = ({
   onClick,
@@ -127,7 +122,7 @@ export const MesyuaratDates = ({
                 >
                   {new Date(date).toLocaleDateString(i18n.language, {
                     year: "numeric",
-                    month: "short",
+                    month: "long",
                     day: "numeric",
                   })}
                   {`, ${new Date(date).toLocaleDateString(i18n.language, {
