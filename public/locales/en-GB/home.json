@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "category": "Parliament of Malaysia",
+    "header": "Digital Hansards",
+    "description": "The mission of this site is simple: To give you an easy and fun way to explore what is being said and done in Parliament, so that you can better hold your representatives accountable. Although the official Hansards have always been published promptly after a sitting, we know that reading a PDF isn’t the most accessible way of exercising your right to information and transparency. This site is our attempt to change that - we hope it helps you become a more informed voter!"
+  },
+  "search_keyword": "Search for a keyword",
+  "search_mp": "Search for an MP or party",
+  "search_keywords": "Search for any keywords or phrases!",
+  "search_individual": "Search individual name",
+  "search_individual_mp": "Search for any individual MP!",
+  "search_mps": "Search for any demographic of MPs",
+  "group": "Group",
+  "dewan": "House",
+  "date": "Date",
+  "current_parlimen": "Current Parliament Term",
+  "invalid_date": "Please enter a valid date. The field is incomplete or has an invalid date.",
+  "choose_later_date": "Date must be 11/8/1959 or later.",
+  "today_or_earlier": "Date must be today or earlier.",
+  "all_parties": "All parties",
+  "timeseries_title": "Timeseries of “{{ keyword }}” in {{ house }}",
+  "timeseries_mp": "Timeseries of total words spoken by {{ mp }} in {{ house }}",
+  "timeseries_mps": "Timeseries of total words spoken in {{ house }}",
+  "total_words": "Total words",
+  "words_related": "Words related to {{ keyword }}",
+  "most_spoken_by": "{{ keyword }}: Most spoken by",
+  "most_spoken_words": "{{ name }}'s most spoken words",
+  "start_search": "Start searching above",
+  "excerpts": "{{ count }} Excerpts References",
+  "results_per_page": "Results per page",
+  "load_more": "Load more",
+  "see_all": "Showing {{ count }} of {{ total }} results"
+}

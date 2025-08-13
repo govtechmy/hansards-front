@@ -1,0 +1,14 @@
+{
+  "output": "Hasil",
+  "disclaimer": "*Bukan terminal / konsol sebenar.",
+  "500": {
+    "title": "Oh tidak! Ada sesuatu yang tidak kena.",
+    "description": "Kami mohon maaf atas kejadian ini.",
+    "reason": "Kod ralat: 500 -- Ralat server"
+  },
+  "404": {
+    "title": "Maaf, laman yang anda cari tidak dapat dijumpai.",
+    "description": "Adakah URL anda betul?",
+    "reason": "Kod ralat: 404 -- Laman tidak dijumpai"
+  }
+}

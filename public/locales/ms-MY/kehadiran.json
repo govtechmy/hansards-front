@@ -1,0 +1,20 @@
+{
+  "hero": {
+    "category": "Parlimen Malaysia",
+    "header": "Data Kehadiran",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  },
+  "header": "Adakah wakil rakyat anda rajin hadir ke Parlimen?",
+  "kehadiran": "Kehadiran",
+  "pilih_parlimen": "Pilih Parlimen",
+  "pilih_penggal": "Pilih Penggal",
+  "pilih_mesyuarat": "Pilih Mesyuarat",
+  "all_parlimen": "Semua Parlimen",
+  "all_penggal": "Semua Penggal",
+  "all_mesyuarat": "Semua Mesyuarat",
+  "kehadiran_ind": "Kehadiran Individu",
+  "kehadiran_parti": "Kehadiran Parti",
+  "name": "[Kawasan] Nama",
+  "barmeter_title": "Taburan Kehadiran Mengikut Demografi Utama",
+  "total_seats": "Jumlah Kerusi"
+}

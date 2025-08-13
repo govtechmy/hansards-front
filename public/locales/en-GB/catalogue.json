@@ -1,0 +1,17 @@
+{
+  "hero": {
+    "category": "Parliament of Malaysia",
+    "header": "Hansard Catalogue",
+    "description": "The official report of all Parliamentary debates. Find Members, their contributions, debates, petitions and divisions from published Hansard reports dating back over 60 years. Daily debates from Hansard are published on this website the next working day."
+  },
+  "full_archive": "Full Archive",
+  "cite": "Cite",
+  "share": "Share",
+  "download": "Download",
+  "hide_sidebar": "Hide Sidebar",
+  "show_sidebar": "Show Sidebar",
+  "csv": "Full Dataset (CSV)",
+  "draft": "Draft",
+  "final": "Verified",
+  "no_entries": "No entries found"
+}
