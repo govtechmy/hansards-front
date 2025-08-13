@@ -12,7 +12,7 @@ const COMPONENTS: ComponentTranslations = {
     catalogue: ["final", "draft", "cite", "download", "share"],
   },
   "data-catalogue/hansard/hansard.tsx": {
-    hansard: ["archive", "header", "shares", "cite", "download", "share"],
+    hansard: ["archive", "header", "shares", "cite", "download"],
     enum: ["parlimen", "penggal_full", "mesyuarat_full"],
     common: ["views", "downloads"],
     catalogue: ["download"],
@@ -77,15 +77,7 @@ const COMPONENTS: ComponentTranslations = {
       "clear_all",
       "placeholder.search",
     ],
-    demografi: [
-      "all_ages",
-      "all_ethnicities",
-      "both_genders",
-      "GENDERS_keys",
-      "AGES_keys",
-      "ETHNICITIES_keys",
-    ],
-    party: ["all_parties", "PARTIES_keys"],
+    demografi: ["all_ages", "all_ethnicities", "both_genders"],
   },
   "dashboards/home/keyword/keyword-filter.tsx": {
     home: ["search_keyword", "current_parlimen", "date", "dewan"],
@@ -104,11 +96,7 @@ const COMPONENTS: ComponentTranslations = {
       "gender",
       "age_group",
       "ethnicity",
-      "GENDERS_keys",
-      "AGES_keys",
-      "ETHNICITIES_keys",
     ],
-    party: ["all_parties", "PARTIES_keys"],
   },
   "components/Search/index.tsx": {
     common: ["placeholder.search"],
@@ -126,7 +114,7 @@ const COMPONENTS: ComponentTranslations = {
     error: ["404.title"],
   },
   "data-catalogue/share.tsx": {
-    hansard: ["email", "share", "share_hansard"],
+    hansard: ["email", "shares", "share_hansard"],
     demografi: ["other"],
     common: ["copy", "copied"],
   },
@@ -242,7 +230,6 @@ const COMPONENTS: ComponentTranslations = {
   },
   "dashboards/sejarah/table.tsx": {
     election: ["By-Election"],
-    party: ["dynamic_keys"],
   },
   "dashboards/sejarah/result-badge.tsx": {
     sejarah: ["won", "won_uncontested", "lost", "lost_deposit"],
@@ -256,7 +243,6 @@ const COMPONENTS: ComponentTranslations = {
       "cari_parti",
       "parti.title",
     ],
-    party: ["dynamic_keys"],
     common: ["toast.request_failure", "toast.try_again"],
   },
   "dashboards/sejarah/parlimen.tsx": {
@@ -323,12 +309,7 @@ const COMPONENTS: ComponentTranslations = {
     ],
   },
   "dashboards/sejarah/full-results.tsx": {
-    sejarah: [
-      "election_result",
-      "voting_statistics",
-      "dynamic_keys",
-      "full_result",
-    ],
+    sejarah: ["election_result", "voting_statistics", "full_result"],
     common: ["previous", "next"],
   },
   "dashboards/kehadiran/kehadiran-dropdown.tsx": {
@@ -354,9 +335,6 @@ const COMPONENTS: ComponentTranslations = {
   },
   "components/Section/index.tsx": {
     common: ["data_of"],
-  },
-  "components/PartyFlag/index.tsx": {
-    party: ["dynamic_keys"],
   },
   "components/Modal/StateModal.tsx": {
     common: ["check_out"],
