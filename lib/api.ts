@@ -15,7 +15,7 @@ type BaseURL = "api" | "app" | "api_backend" | string;
 const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const urls: Record<BaseURL, string> = {
     api: process.env.API_URL,
-    api_backend: process.env.NEXT_PUBLIC_API_URL || "",
+    api_backend: process.env.API_URL,
     app: process.env.NEXT_PUBLIC_APP_URL,
     sejarah: process.env.NEXT_PUBLIC_SEJARAH_URL,
   };
