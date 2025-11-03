@@ -1,0 +1,17 @@
+{
+  "hero": {
+    "category": "Parlimen Malaysia",
+    "header": "Katalog Hansard",
+    "description": "Laporan rasmi semua perbahasan Parlimen. Cari Ahli Parlimen, sumbangan, perbahasan, petisyen dan bahagian mereka daripada laporan Hansard yang diterbitkan sejak lebih 60 tahun lalu. Perbahasan harian daripada Hansard diterbitkan di laman web ini pada hari bekerja berikutnya,"
+  },
+  "full_archive": "Arkib Penuh",
+  "cite": "Rujuk",
+  "share": "Kongsi",
+  "download": "Muat turun",
+  "hide_sidebar": "Tutup",
+  "show_sidebar": "Buka",
+  "csv": "Dataset Penuh (CSV)",
+  "draft": "Draf",
+  "final": "Telah disemak",
+  "no_entries": "Tiada entri ditemui"
+}

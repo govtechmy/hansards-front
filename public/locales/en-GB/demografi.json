@@ -1,0 +1,15 @@
+{
+  "gender": "Gender",
+  "both_genders": "Both Genders",
+  "m": "Male",
+  "f": "Female",
+  "ethnicity": "Ethnicity",
+  "all_ethnicities": "All ethnicities",
+  "bumiputera": "Bumiputera",
+  "chinese": "Chinese",
+  "indian": "Indian",
+  "other": "Others",
+  "age": "Age",
+  "age_group": "Age Group",
+  "all_ages": "All ages"
+}

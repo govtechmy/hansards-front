@@ -1,0 +1,20 @@
+{
+  "hero": {
+    "category": "Parliament of Malaysia",
+    "header": "Attendance Data",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  },
+  "header": "Are your representatives diligent in attending the Parliament?",
+  "kehadiran": "Attendance",
+  "pilih_parlimen": "Choose Parliament",
+  "pilih_penggal": "Choose Session",
+  "pilih_mesyuarat": "Choose Meeting",
+  "all_parlimen": "All Parliament",
+  "all_penggal": "All Session",
+  "all_mesyuarat": "All Meeting",
+  "kehadiran_ind": "Individual Attendance",
+  "kehadiran_parti": "Party Attendance",
+  "name": "[Constituency] Candidate",
+  "barmeter_title": "A breakdown of attendance by key demographics",
+  "total_seats": "Total Seats"
+}

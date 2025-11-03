@@ -1,0 +1,67 @@
+{
+  "hero": {
+    "category": "Parlimen Malaysia",
+    "header": "Sejarah Ahli Parlimen",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  },
+  "sejarah_individu": "Sejarah Individu",
+  "sejarah_kawasan": "Sejarah Kawasan",
+  "sejarah_parlimen": "Sejarah Parlimen",
+  "sejarah_parti": "Sejarah Parti",
+  "by_individu": "Mengikut Individu",
+  "by_kawasan": "Mengikut Kawasan",
+  "by_parlimen": "Mengikut Parlimen",
+  "by_parti": "Mengikut Parti",
+  "cari_individu": "Cari nama individu",
+  "cari_kawasan": "Cari kawasan anda",
+  "cari_parti": "Cari nama parti",
+  "individu": {
+    "header_dr": "Terokailah sejarah penuh bagi setiap individu yang pernah berangkat sumpah menjadi ahli $t(common:dewan_rakyat)",
+    "header_dn": "Terokailah sejarah penuh bagi setiap individu yang pernah berangkat sumpah menjadi ahli $t(common:dewan_negara)",
+    "header": "Terokailah sejarah penuh setiap individu yang pernah berangkat sumpah menjadi ahli Parlimen",
+    "title": "Keputusan penuh bagi "
+  },
+  "services": {
+    "header_dr": "Perkhidmatan dalam $t(common:dewan_rakyat)",
+    "header_dn": "Perkhidmatan dalam $t(common:dewan_negara)"
+  },
+  "kawasan": {
+    "header": "Terokailah sejarah penuh bagi kawasan anda",
+    "title": "Keputusan penuh bagi kawasan "
+  },
+  "parlimen": {
+    "header_dr": "Terokailah sejarah penuh $t(common:dewan_rakyat)",
+    "header_dn": "Terokailah sejarah penuh $t(common:dewan_negara)",
+    "header": "Terokailah sejarah setiap parlimen"
+  },
+  "parti": {
+    "header_dr": "Terokailah sejarah penuh bagi setiap parti yang pernah mempunyai wakil di $t(common:dewan_rakyat)",
+    "header_dn": "Terokailah sejarah penuh bagi setiap parti yang pernah mempunyai wakil di $t(common:dewan_negara)",
+    "title": "<strong>: Sejarah penuh</strong> di",
+    "header": "Terokailah sejarah penuh bagi setiap parti yang pernah mempunyai wakil di Parlimen"
+  },
+  "seats_won": "Kerusi Dimenangi",
+  "votes_won": "Undi Didapati",
+  "%_seats": "Kerusi (%)",
+  "%_votes": "Undi (%)",
+  "election": "Pilihan Raya",
+  "seat": "Kawasan",
+  "name": "Nama",
+  "result": "Keputusan",
+  "full_result": "Penuh",
+  "election_result": "Keputusan Pilihan Raya",
+  "voting_statistics": "Statistik Pengundian",
+  "majority": "Majoriti",
+  "voter_turnout": "Keluar Mengundi",
+  "rejected_votes": "Undi Ditolak",
+  "num_voters": "Jumlah Pengundi",
+  "won": "Menang",
+  "won_uncontested": "Menang Tanpa Bertanding",
+  "lost": "Kalah",
+  "lost_deposit": "Hilang Deposit",
+  "pilih_parlimen": "Pilih Parlimen",
+  "start_date": "Tarikh Mula",
+  "end_date": "Tarikh Akhir",
+  "method": "Kaedah",
+  "state": "Negeri"
+}

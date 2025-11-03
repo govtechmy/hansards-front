@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "category": "Parlimen Malaysia",
+    "header": "Hansard Digital",
+    "description": "Misi portal ini adalah mudah: Untuk memberi anda satu cara yang senang dan seronok untuk menerokai apa yang disebut dan dilakukan di Parlimen, supaya anda dapat memastikan akauntabiliti daripada wakil anda. Walaupun Hansard rasmi memang telah diterbitkan sejurus selepas persidangan selama ini, kami faham bahawa membaca PDF bukanlah cara yang paling mudah untuk mendapatkan maklumat. Portal ini adalah usaha kami untuk mengubah kaedah penyampaian penyata rasmi Parlimen - kami berharap ia dapat membantu anda menjadi pengundi dan rakyat yang lebih berilmu!"
+  },
+  "search_keyword": "Cari kata kunci",
+  "search_mp": "Cari Ahli Parlimen atau Parti",
+  "search_keywords": "Carilah kata kunci atau frasa yang anda minat tahu!",
+  "search_individual": "Cari nama individu",
+  "search_individual_mp": "Carilah Ahli Parlimen kawasan anda!",
+  "search_mps": "Cari Ahli Parlimen mengikut demografi",
+  "group": "Kumpulan",
+  "dewan": "Dewan",
+  "date": "Tarikh",
+  "current_parlimen": "Tempoh Parlimen Semasa",
+  "invalid_date": "Sila isikan tarikh yang sah dan selengkapnya.",
+  "choose_later_date": "Sila isikan tarikh 11/8/1959 atau selepasnya.",
+  "today_or_earlier": "Sila isikan tarikh hari ini atau sebelumnya.",
+  "all_parties": "Semua parti",
+  "timeseries_title": "Siri masa “{{ keyword }}” di {{ house }}",
+  "timeseries_mp": "Siri masa jumlah perkataan diungkap oleh {{ mp }}” di {{ house }}",
+  "timeseries_mps": "Siri masa jumlah perkataan diungkap di {{ house }}",
+  "total_words": "Jumlah perkataan",
+  "words_related": "Perkataan berkaitan {{ keyword }}",
+  "most_spoken_by": "{{ keyword }}: Terbanyak diungkap oleh",
+  "most_spoken_words": "Perkataan terbanyak diungkap oleh {{ name }}",
+  "start_search": "Mulakan pencarian di atas",
+  "excerpts": "{{ count }} Rujukan",
+  "results_per_page": "Hasil carian setiap halaman",
+  "load_more": "Tunjuk lagi",
+  "see_all": "{{ count }} daripada {{ total }} rujukan dipaparkan"
+}

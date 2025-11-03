@@ -1,4 +1,5 @@
 const I18NextHttpBackend = require("i18next-http-backend/cjs");
+const path = require("path");
 
 const namespaces = [
   "catalogue",
@@ -21,12 +22,7 @@ const defineConfig = (namespace, autoloadNs) => {
       defaultLocale: "ms-MY",
       locales: ["ms-MY", "en-GB"],
       backend: {
-        loadPath: `${process.env.NEXT_PUBLIC_I18N_URL}/${
-          process.env.NEXT_PUBLIC_APP_ENV === "production"
-            ? "production"
-            : "staging"
-        }/{{lng}}/{{ns}}.json`,
-        crossDomain: true,
+        loadPath: "/locales/{{lng}}/{{ns}}.json",
         allowMultiLoading: true,
       },
     },
@@ -37,7 +33,9 @@ const defineConfig = (namespace, autoloadNs) => {
     preload: ["ms-MY", "en-GB"],
     serializeConfig: false,
     reloadOnPrerender: true,
-    use: [I18NextHttpBackend],
+    // Use HTTP backend only in the browser for dynamic loading; SSR uses FS via localePath
+    use: typeof window === "undefined" ? [] : [I18NextHttpBackend],
+    localePath: path.resolve("./public/locales"),
   };
 };
 

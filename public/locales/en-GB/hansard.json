@@ -1,0 +1,52 @@
+{
+  "summary": {
+    "title": "AI Summary",
+    "button": "AI Summary",
+    "loading": "Loading summary...",
+    "generating": "Generating summary...",
+    "generate": "Generate Summary",
+    "regenerate": "Regenerate",
+    "try_again": "Try Again",
+    "dismiss": "Dismiss",
+    "generated_at": "Generated at",
+    "powered_by": "Powered by AI",
+    "status": {
+      "completed": "Completed",
+      "processing": "Processing",
+      "failed": "Failed",
+      "pending": "Pending"
+    },
+    "no_summary": {
+      "title": "No Summary Available",
+      "description": "This hansard session doesn't have an AI-generated summary yet. Click the button below to generate one."
+    },
+    "processing": {
+      "title": "Generating Summary",
+      "description": "Our AI is analyzing the parliamentary session and creating a comprehensive summary. This may take a few moments."
+    },
+    "failed": {
+      "title": "Summary Generation Failed",
+      "description": "We encountered an error while generating the summary. Please try again."
+    }
+  },
+  "hero": {
+    "category": "Parliament of Malaysia",
+    "header": "Hansard Catalogue",
+    "description": "The official report of all Parliamentary debates. Find Members, their contributions, debates, petitions and divisions from published Hansard reports dating back over 60 years. Daily debates from Hansard are published on this website the next working day."
+  },
+  "full_archive": "Full Archive",
+  "cite": "Cite",
+  "shares": "Share",
+  "download": "Download",
+  "hide_sidebar": "Hide Sidebar",
+  "show_sidebar": "Show Sidebar",
+  "csv": "Full Dataset (CSV)",
+  "draft": "Draft",
+  "final": "Verified",
+  "header": "Hansard Catalogue",
+  "toc": "Table of Contents",
+  "cite_hansard": "Hansard Citation",
+  "share_hansard": "Share Hansard",
+  "archive": "Archive",
+  "email": "Email"
+}

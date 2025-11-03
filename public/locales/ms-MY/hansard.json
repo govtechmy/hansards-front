@@ -1,0 +1,52 @@
+{
+  "summary": {
+    "title": "Ringkasan AI",
+    "button": "Ringkasan AI",
+    "loading": "Memuatkan ringkasan...",
+    "generating": "Menjana ringkasan...",
+    "generate": "Jana Ringkasan",
+    "regenerate": "Jana Semula",
+    "try_again": "Cuba Lagi",
+    "dismiss": "Tutup",
+    "generated_at": "Dijana pada",
+    "powered_by": "Dikuasakan oleh AI",
+    "status": {
+      "completed": "Selesai",
+      "processing": "Memproses",
+      "failed": "Gagal",
+      "pending": "Menunggu"
+    },
+    "no_summary": {
+      "title": "Tiada Ringkasan Tersedia",
+      "description": "Sesi hansard ini belum mempunyai ringkasan yang dijana oleh AI. Klik butang di bawah untuk menjana satu."
+    },
+    "processing": {
+      "title": "Menjana Ringkasan",
+      "description": "AI kami sedang menganalisis sesi parlimen dan mencipta ringkasan yang komprehensif. Ini mungkin mengambil masa beberapa saat."
+    },
+    "failed": {
+      "title": "Penjanaan Ringkasan Gagal",
+      "description": "Kami menghadapi ralat semasa menjana ringkasan. Sila cuba lagi."
+    }
+  },
+  "hero": {
+    "category": "Parlimen Malaysia",
+    "header": "Katalog Hansard",
+    "description": "Laporan rasmi semua perbahasan Parlimen. Cari Ahli, sumbangan mereka, perbahasan, petisyen dan undian daripada laporan Hansard yang diterbitkan sejak lebih 60 tahun. Perbahasan harian daripada Hansard diterbitkan di laman web ini pada hari bekerja berikutnya."
+  },
+  "full_archive": "Arkib Penuh",
+  "cite": "Rujuk",
+  "shares": "Kongsi",
+  "download": "Muat turun",
+  "hide_sidebar": "Tutup",
+  "show_sidebar": "Buka",
+  "csv": "Set Data Penuh (CSV)",
+  "draft": "Draf",
+  "final": "Disahkan",
+  "header": "Katalog Hansard",
+  "toc": "Jadual Kandungan",
+  "cite_hansard": "Rujukan Hansard",
+  "share_hansard": "Kongsi Hansard",
+  "archive": "Arkib",
+  "email": "Email"
+}
