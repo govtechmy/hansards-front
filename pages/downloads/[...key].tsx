@@ -105,9 +105,11 @@ export const getServerSideProps: GetServerSideProps = async ({
       throw new Error(`Failed to fetch object (${fileResp.status})`);
     res.statusCode = 200;
     res.setHeader("Content-Type", mimeFromExt(parsed.ext));
+    // Open PDFs inline in a new tab so user can preview; CSV remains attachment.
+    const dispositionType = parsed.ext === "pdf" ? "inline" : "attachment";
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${parsed.name}.${parsed.ext}"`
+      `${dispositionType}; filename="${parsed.name}.${parsed.ext}"`
     );
     res.setHeader("X-Download-Key", key);
     const reader = fileResp.body.getReader();

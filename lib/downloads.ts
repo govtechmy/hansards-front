@@ -33,7 +33,6 @@ export const generateDownloadLink = (
     const anchor = document.createElement("a");
     anchor.href = path;
     anchor.target = "_blank";
-    anchor.download = `${filename}.${ext}`;
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
