@@ -3,6 +3,7 @@ import { SidebarOpen } from "@data-catalogue/hansard/sidebar";
 import MobileButton from "@data-catalogue/hansard/mobile-button";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
+import { useDownload } from "@hooks/useDownload";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn, numFormat } from "@lib/helpers";
 import { routes } from "@lib/routes";
@@ -115,8 +116,8 @@ const Hansard = ({
         const mod = IS_YDP
           ? "ydp"
           : author === "ANNOTATION" || unspecified_author || !author
-          ? "z"
-          : (author_id ? author_id : names[0].length) % 10;
+            ? "z"
+            : (author_id ? author_id : names[0].length) % 10;
 
         const speaker =
           author !== "ANNOTATION" ? (
@@ -216,16 +217,23 @@ const Hansard = ({
   const dewan_route = IS_KK
     ? routes.KATALOG_KK
     : IS_DR
-    ? routes.KATALOG_DR
-    : routes.KATALOG_DN;
+      ? routes.KATALOG_DR
+      : routes.KATALOG_DN;
 
   const parlimen_link = `${dewan_route}#parlimen-${cycle.term}`;
   const penggal_link = `${parlimen_link}-penggal-${cycle.session}`;
   const mesyuarat_link = `${penggal_link}-mesyuarat-${cycle.meeting}`;
 
+  // Legacy direct URL retained for props expecting a base path; actual downloads now proxy via /downloads.
   const hansard_url = `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
     IS_KK ? "kamarkhas" : IS_DR ? "dewanrakyat" : "dewannegara"
   }/${filename}`;
+
+  // Unified download handler (no old CSV restrictions per current requirement).
+  const { download: handleDownload } = useDownload({
+    filename,
+    analyticsId: hansard_id,
+  });
 
   return (
     <Sidebar
@@ -355,10 +363,7 @@ const Hansard = ({
                 ].map(filetype => (
                   <DropdownItem
                     key={filetype}
-                    onSelect={() => {
-                      window.open(`${hansard_url}.${filetype}`, "_blank");
-                      download(filetype as "pdf" | "csv");
-                    }}
+                    onSelect={() => handleDownload(filetype as "pdf" | "csv")}
                   >
                     {t("download", { context: filetype })}
                   </DropdownItem>
@@ -404,10 +409,7 @@ const Hansard = ({
                   {["pdf", "csv"].map(filetype => (
                     <DropdownItem
                       key={filetype}
-                      onSelect={() => {
-                        window.open(`${hansard_url}.${filetype}`, "_blank");
-                        download(filetype as "pdf" | "csv");
-                      }}
+                      onSelect={() => handleDownload(filetype as "pdf" | "csv")}
                     >
                       {filetype === "pdf" ? (
                         <PdfFileIcon className="size-4" />
