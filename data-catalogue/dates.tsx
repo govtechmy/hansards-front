@@ -40,7 +40,7 @@ import { useState } from "react";
 import CiteButton from "./cite";
 import ShareButton from "./share";
 import {} from "@govtechmy/myds-react/icon";
-import { DOWNLOAD_URL } from "@lib/config";
+import { generateDownloadLink } from "@lib/downloads";
 
 /**
  * Mesyuarat Dates
@@ -166,15 +166,9 @@ export const MesyuaratDates = ({
                           disabled={is_old && filetype === "csv"}
                           onSelect={() => {
                             if (is_old && filetype === "csv") return;
-                            window.open(
-                              `${DOWNLOAD_URL}${
-                                filename.startsWith("dr")
-                                  ? "dewanrakyat"
-                                  : filename.startsWith("kk")
-                                    ? "kamarkhas"
-                                    : "dewannegara"
-                              }/${filename}.${filetype}`,
-                              "_blank"
+                            generateDownloadLink(
+                              filename,
+                              filetype as "pdf" | "csv"
                             );
                             download(filetype as "pdf" | "csv");
                           }}
