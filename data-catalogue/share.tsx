@@ -1,3 +1,4 @@
+"use client";
 import { EnvelopeIcon } from "@heroicons/react/24/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useMediaQuery } from "@hooks/useMediaQuery";
