@@ -37,7 +37,7 @@ export default async function handler(
       "https://api.us-east.tinybird.co/v0/",
       {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${TINYBIRD_API}`,
+        Authorization: `Bearer ${TINYBIRD_API}${POST_TOKEN}`,
       }
     )
       .then(({ data }) => res.status(200).json(data))

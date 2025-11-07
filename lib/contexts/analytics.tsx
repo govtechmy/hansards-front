@@ -51,7 +51,7 @@ export function AnalyticsProvider({
       "app",
       {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.TINYBIRD_API}`,
+        Authorization: `Bearer ${process.env.TINYBIRD_API}${process.env.POST_TOKEN}`,
       }
     )
       .then(

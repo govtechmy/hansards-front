@@ -45,7 +45,7 @@ export async function recordView(req: NextRequest) {
       }),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.TINYBIRD_API}`,
+        Authorization: `Bearer ${process.env.TINYBIRD_API}${process.env.POST_TOKEN}`,
       },
     }
   ).then(res => res.json());
