@@ -15,16 +15,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const {
-    GET_COUNTS,
-    GET_TOKEN,
-    POST_DL,
-    POST_SHARE,
-    POST_TOKEN,
-    TINYBIRD_API,
-  } = process.env;
-  if (!TINYBIRD_API || !POST_TOKEN) {
-    return res.status(400).json({ message: "Tinybird was not configured" });
+  const { GET_COUNTS, GET_TOKEN, POST_DL, POST_SHARE, POST_TOKEN } =
+    process.env;
+  if (!POST_TOKEN) {
+    return res
+      .status(400)
+      .json({ message: "Tinybird POST_TOKEN was not configured" });
   }
 
   if (req.method === "POST") {
@@ -37,7 +33,7 @@ export default async function handler(
       "https://api.us-east.tinybird.co/v0/",
       {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${TINYBIRD_API}${POST_TOKEN}`,
+        Authorization: `Bearer ${POST_TOKEN}`,
       }
     )
       .then(({ data }) => res.status(200).json(data))
@@ -47,7 +43,7 @@ export default async function handler(
       `/pipes/${GET_COUNTS}.json`,
       {
         hansard_id: req.query.id,
-        token: TINYBIRD_API + GET_TOKEN,
+        token: GET_TOKEN,
       },
       "https://api.us-east.tinybird.co/v0/"
     )
