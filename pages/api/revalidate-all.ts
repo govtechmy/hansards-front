@@ -15,14 +15,17 @@ interface RevalidateResponse {
   revalidatedPaths?: string[];
 }
 
+const HANSARD_BASE = [
+  "/hansard/dewan-rakyat",
+  "/hansard/dewan-negara",
+  "/hansard/kamar-khas",
+];
 // List of ISR paths (full paths, including dynamic)
 const ISR_PATHS: string[] = [
   "/katalog/dewan-rakyat",
   "/katalog/dewan-negara",
   "/katalog/kamar-khas",
-  "/hansard/dewan-rakyat",
-  "/hansard/dewan-negara",
-  "/hansard/kamar-khas",
+  ...HANSARD_BASE,
 ];
 const STATIC_PATHS = [
   "/",
@@ -91,7 +94,10 @@ export default async function handler(
     // MODE CUSTOM ROUTES -Revalidate specific routes (dynamic)
     if (routes && routes.length > 0) {
       for (const route of routes) {
-        if (!ISR_PATHS.includes(route)) {
+        if (
+          !ISR_PATHS.includes(route) &&
+          !HANSARD_BASE.some(base => route.startsWith(base))
+        ) {
           console.warn(`Skipping non-ISR route: ${route}`);
           continue;
         }
