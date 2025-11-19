@@ -12,7 +12,6 @@ declare namespace NodeJS {
     CLOUDFLARE_APP_URL: string;
     CLOUDFLARE_ZONE_ID: string;
 
-    TINYBIRD_API: string;
     GET_TOKEN: string;
     POST_TOKEN: string;
     GET_COUNTS: string;
