@@ -23,10 +23,14 @@ export default async function handler(
     // Return the backend's response directly
     return res.status(200).json(response.data);
   } catch (error: any) {
-    // Handle error gracefully
-    return res.status(500).json({
+    // Handle error gracefully - return a special error flag instead of throwing 500
+    // This prevents Vercel error popups and allows client-side redirect handling
+    return res.status(200).json({
+      error: true,
+      errorType: "server_error",
       message: "Failed to fetch autocomplete suggestions",
-      error: error?.message || error,
+      suggestions: [],
+      query: q,
     });
   }
 }

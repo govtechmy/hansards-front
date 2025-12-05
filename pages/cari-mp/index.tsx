@@ -40,88 +40,98 @@ const CariMP: Page = ({
 
 export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
-  async ({ query }) => {
-    const { data: speakers } = await get("api/author/");
+  async ({ query, locale }) => {
+    try {
+      const { data: speakers } = await get("api/author/");
 
-    if (Object.keys(query).length === 0)
+      if (Object.keys(query).length === 0)
+        return {
+          notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
+          props: {
+            meta: {
+              id: "home",
+            },
+            count: 0,
+            excerpts: null,
+            query: query ?? null,
+            speakers,
+            timeseries: {
+              date: Array.from({ length: 365 }, (_, i) => i * 86400000),
+              freq: [],
+            },
+            top_word_freq: null,
+            top_speakers: null,
+          },
+        };
+
+      const {
+        uid,
+        dewan,
+        tarikh_mula,
+        tarikh_akhir,
+        umur,
+        etnik,
+        parti,
+        jantina,
+      } = query;
+
+      const results = await Promise.allSettled([
+        get("api/search/", {
+          uid: uid,
+          house: dewan,
+          window_size: 150,
+          page: 1,
+          start_date: tarikh_mula,
+          end_date: tarikh_akhir,
+          age_group: umur,
+          ethnicity: etnik,
+          party: parti,
+          gender: jantina,
+        }),
+        get("api/search-plot/", {
+          uid: uid,
+          house: dewan,
+          start_date: tarikh_mula,
+          end_date: tarikh_akhir,
+          age_group: umur,
+          ethnicity: etnik,
+          party: parti,
+          gender: jantina,
+        }),
+      ]);
+
+      const [excerpt, data] = results.map(e => {
+        if (e.status === "rejected") return {};
+        else return e.value.data;
+      });
+
       return {
         notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
         props: {
           meta: {
-            id: "home",
+            id: "/cari-mp",
           },
-          count: 0,
-          excerpts: null,
+          count: excerpt.count ?? 0,
+          excerpts: excerpt.results ?? null,
           query: query ?? null,
           speakers,
-          timeseries: {
+          timeseries: data.chart_data ?? {
             date: Array.from({ length: 365 }, (_, i) => i * 86400000),
             freq: [],
           },
-          top_word_freq: null,
-          top_speakers: null,
+          top_word_freq: data.top_word_freq ?? null,
+          top_speakers: data.top_speakers ?? null,
         },
       };
-
-    const {
-      uid,
-      dewan,
-      tarikh_mula,
-      tarikh_akhir,
-      umur,
-      etnik,
-      parti,
-      jantina,
-    } = query;
-
-    const results = await Promise.allSettled([
-      get("api/search/", {
-        uid: uid,
-        house: dewan,
-        window_size: 150,
-        page: 1,
-        start_date: tarikh_mula,
-        end_date: tarikh_akhir,
-        age_group: umur,
-        ethnicity: etnik,
-        party: parti,
-        gender: jantina,
-      }),
-      get("api/search-plot/", {
-        uid: uid,
-        house: dewan,
-        start_date: tarikh_mula,
-        end_date: tarikh_akhir,
-        age_group: umur,
-        ethnicity: etnik,
-        party: parti,
-        gender: jantina,
-      }),
-    ]);
-
-    const [excerpt, data] = results.map(e => {
-      if (e.status === "rejected") return {};
-      else return e.value.data;
-    });
-
-    return {
-      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
-      props: {
-        meta: {
-          id: "/cari-mp",
+    } catch (error) {
+      console.error("API error in cari-mp:", error);
+      return {
+        redirect: {
+          destination: locale === "en-GB" ? "/en-GB/500" : "/500",
+          permanent: false,
         },
-        count: excerpt.count ?? 0,
-        excerpts: excerpt.results ?? null,
-        query: query ?? null,
-        speakers,
-        timeseries: data.chart_data ?? {
-          date: Array.from({ length: 365 }, (_, i) => i * 86400000),
-          freq: [],
-        },
-        top_word_freq: data.top_word_freq ?? null,
-        top_speakers: data.top_speakers ?? null,
-      },
-    };
+      };
+    }
   }
 );
 

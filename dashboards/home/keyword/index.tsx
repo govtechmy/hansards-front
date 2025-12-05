@@ -12,6 +12,7 @@ import { capitalize } from "@lib/utils";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useEffect, useMemo, useRef, useState } from "react";
 import KeywordFilter from "./keyword-filter";
@@ -55,6 +56,7 @@ const Keyword = ({
   top_word_freq,
 }: KeywordProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
+  const router = useRouter();
   const ref = useRef<HTMLDivElement | null>(null);
   const { theme } = useTheme();
 
@@ -93,7 +95,16 @@ const Keyword = ({
         },
         "api"
       );
-      return response.data;
+
+      const data = response.data;
+
+      // Check if the API returned a server error flag
+      if (data.error && data.errorType === "server_error") {
+        router.push(router.locale === "en-GB" ? "/en-GB/500" : "/500");
+        return;
+      }
+
+      return data;
     } catch (error) {
       console.error("Error fetching autocomplete:", error);
       return { suggestions: [], query };
@@ -125,6 +136,10 @@ const Keyword = ({
       if (keywordQuery.length > 0) {
         try {
           const result = await getAutocomplete(keywordQuery);
+
+          // If result is undefined, it means we redirected to 500 page
+          if (!result) return;
+
           if (result.suggestions && result.suggestions.length > 0) {
             setSuggestion(result.suggestions[0]);
           } else {
@@ -142,7 +157,7 @@ const Keyword = ({
     const debounceTimeout = setTimeout(fetchSuggestion, 200);
 
     return () => clearTimeout(debounceTimeout);
-  }, [keywordQuery]);
+  }, [keywordQuery, router]);
 
   return (
     <Container className="divide-y divide-border">
