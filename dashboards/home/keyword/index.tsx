@@ -100,7 +100,7 @@ const Keyword = ({
 
       // Check if the API returned a server error flag
       if (data.error && data.errorType === "server_error") {
-        router.push("/500");
+        router.push(router.locale === "en-GB" ? "/en-GB/500" : "/500");
         return;
       }
 
