@@ -35,7 +35,7 @@ const CatalogueIndexPage: Page = ({
 
 export const getServerSideProps: GetServerSideProps = withi18n(
   ["catalogue", "enum", "hansard"],
-  async () => {
+  async ({ locale }) => {
     const parlimens = generateRange(1, 15);
     const results = await Promise.allSettled(
       parlimens.map(term =>
@@ -58,7 +58,14 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       return res;
     }, {});
 
-    if (Object.keys(archive).length === 0) throw new Error();
+    if (Object.keys(archive).length === 0) {
+      return {
+        redirect: {
+          destination: locale === "en-GB" ? "/en-GB/500" : "/500",
+          permanent: false,
+        },
+      };
+    }
 
     return {
       notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
