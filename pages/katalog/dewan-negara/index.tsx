@@ -8,13 +8,13 @@ import { withi18n } from "@lib/decorators";
 import { routes } from "@lib/routes";
 import { Page } from "@lib/types";
 import { assertFulfilled, generateRange } from "@lib/utils";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const CatalogueIndexPage: Page = ({
   meta,
   archive,
   parlimens,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation("catalogue");
 
   return (
@@ -33,7 +33,7 @@ const CatalogueIndexPage: Page = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = withi18n(
+export const getStaticProps: GetStaticProps = withi18n(
   ["catalogue", "enum", "hansard"],
   async () => {
     const parlimens = generateRange(1, 15);
@@ -62,6 +62,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
 
     return {
       notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      revalidate: 60 * 60 * 24 * 365, // on-demand ISR; large TTL to avoid periodic revalidation
       props: {
         meta: {
           id: routes.KATALOG_DN,
