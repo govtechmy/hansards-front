@@ -18,20 +18,19 @@ export default async function handler(
   res: NextApiResponse<RevalidateData | string>
 ) {
   if (req.headers.authorization !== `Bearer ${process.env.REVALIDATE_TOKEN}`) {
-    return res
-      .status(401)
-      .json({
-        error: "Unauthorized",
-        message: "Invalid bearer token",
-        revalidated: [],
-      });
+    return res.status(401).json({
+      error: "Unauthorized",
+      message: "Invalid bearer token",
+      revalidated: [],
+    });
   }
 
   try {
     const { route }: { route: string } = req.body;
     if (!route) throw new Error("Route(s) missing");
 
-    const routes: string[] = route.split(",");
+    const routes: string[] =
+      route === "katalog_all" ? katalog_routes : route.split(",");
 
     await Promise.all(
       routes.map(async route =>
@@ -48,13 +47,11 @@ export default async function handler(
       revalidated: routes,
     });
   } catch (err: any) {
-    return res
-      .status(400)
-      .json({
-        error: "Revalidation failed",
-        message: err.message,
-        revalidated: [],
-      });
+    return res.status(400).json({
+      error: "Revalidation failed",
+      message: err.message,
+      revalidated: [],
+    });
   }
 }
 
