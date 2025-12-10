@@ -58,6 +58,39 @@ const nextConfig = {
 };
 
 module.exports = () => {
+  // Build-time visibility check for public envs (remove after verification)
+  console.log(
+    "[env-check] NEXT_PUBLIC_APP_URL:",
+    process.env.NEXT_PUBLIC_APP_URL
+  );
+  console.log(
+    "[env-check] NEXT_PUBLIC_APP_ENV:",
+    process.env.NEXT_PUBLIC_APP_ENV
+  );
+  console.log(
+    "[env-check] NEXT_PUBLIC_I18N_URL:",
+    process.env.NEXT_PUBLIC_I18N_URL
+  );
+  console.log(
+    "[env-check] NEXT_PUBLIC_DOWNLOAD_URL:",
+    process.env.NEXT_PUBLIC_DOWNLOAD_URL
+  );
+  console.log(
+    "[env-check] NEXT_PUBLIC_SEJARAH_URL:",
+    process.env.NEXT_PUBLIC_SEJARAH_URL
+  );
+  console.log(
+    "[env-check] NEXT_PUBLIC_TILESERVER_URL:",
+    process.env.NEXT_PUBLIC_TILESERVER_URL
+  );
+  console.log(
+    "[env-check] NEXT_PUBLIC_GA_TAG:",
+    process.env.NEXT_PUBLIC_GA_TAG
+  );
+  console.log(
+    "[env-check] NEXT_PUBLIC_ASSETS_URL:",
+    process.env.NEXT_PUBLIC_ASSETS_URL
+  );
   const plugins = [pwa]; // add analyzer here later
   return plugins.reduce((acc, next) => next(acc), nextConfig);
 };
