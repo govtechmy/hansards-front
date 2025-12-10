@@ -1,0 +1,45 @@
+version: 1
+
+env:
+  # Environment variables expected from Amplify (values set in console)
+  exported-variables:
+    - NEXT_PUBLIC_APP_URL
+    - NEXT_PUBLIC_APP_ENV
+    - NEXT_PUBLIC_I18N_URL
+    - NEXT_PUBLIC_DOWNLOAD_URL
+    - NEXT_PUBLIC_SEJARAH_URL
+    - NEXT_PUBLIC_TILESERVER_URL
+    - NEXT_PUBLIC_GA_TAG
+    - NEXT_PUBLIC_ASSETS_URL
+    - API_URL
+    - API_AUTH_TOKEN
+    - REVALIDATE_TOKEN
+    - AUTH_TOKEN
+    - CLOUDFLARE_APP_URL
+    - CLOUDFLARE_ZONE_ID
+    - GET_TOKEN
+    - POST_TOKEN
+    - GET_COUNTS
+    - POST_VIEW
+    - POST_SHARE
+    - POST_DL
+    - ENABLE_S3_FALLBACK
+    - ANALYZE
+    - NEXT_OUTPUT
+
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - yarn install --frozen-lockfile
+    build:
+      commands:
+        - yarn build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
