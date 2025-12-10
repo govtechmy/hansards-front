@@ -91,6 +91,30 @@ module.exports = () => {
     "[env-check] NEXT_PUBLIC_ASSETS_URL:",
     process.env.NEXT_PUBLIC_ASSETS_URL
   );
+  console.log("[env-check] API_URL:", process.env.API_URL);
+  console.log("[env-check] API_AUTH_TOKEN:", process.env.API_AUTH_TOKEN);
+  console.log("[env-check] REVALIDATE_TOKEN:", process.env.REVALIDATE_TOKEN);
+  console.log("[env-check] AUTH_TOKEN:", process.env.AUTH_TOKEN);
+  console.log(
+    "[env-check] CLOUDFLARE_APP_URL:",
+    process.env.CLOUDFLARE_APP_URL
+  );
+  console.log(
+    "[env-check] CLOUDFLARE_ZONE_ID:",
+    process.env.CLOUDFLARE_ZONE_ID
+  );
+  console.log("[env-check] GET_TOKEN:", process.env.GET_TOKEN);
+  console.log("[env-check] POST_TOKEN:", process.env.POST_TOKEN);
+  console.log("[env-check] GET_COUNTS:", process.env.GET_COUNTS);
+  console.log("[env-check] POST_VIEW:", process.env.POST_VIEW);
+  console.log("[env-check] POST_SHARE:", process.env.POST_SHARE);
+  console.log("[env-check] POST_DL:", process.env.POST_DL);
+  console.log(
+    "[env-check] ENABLE_S3_FALLBACK:",
+    process.env.ENABLE_S3_FALLBACK
+  );
+  console.log("[env-check] ANALYZE:", process.env.ANALYZE);
+  console.log("[env-check] NEXT_OUTPUT:", process.env.NEXT_OUTPUT);
   const plugins = [pwa]; // add analyzer here later
   return plugins.reduce((acc, next) => next(acc), nextConfig);
 };
