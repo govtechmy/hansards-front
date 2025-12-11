@@ -12,6 +12,7 @@ declare namespace NodeJS {
     API_URL: string;
     CLOUDFLARE_APP_URL: string;
     CLOUDFLARE_ZONE_ID: string;
+    ASSETS_URL: string;
 
     GET_TOKEN: string;
     POST_TOKEN: string;
