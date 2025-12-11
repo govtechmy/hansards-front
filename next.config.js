@@ -31,6 +31,7 @@ const nextConfig = {
     META_KEYWORDS: "hansard parlimen malaysia",
     META_DOMAIN: "hansard.parlimen.gov.my",
     DOWNLOAD_URL: process.env.NEXT_PUBLIC_DOWNLOAD_URL,
+    ASSETS_URL: process.env.NEXT_PUBLIC_ASSETS_URL,
     META_URL: process.env.NEXT_PUBLIC_APP_URL,
     META_IMAGE: `${process.env.NEXT_PUBLIC_APP_URL}/static/images/og_{{lang}}.png`,
   },
