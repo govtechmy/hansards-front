@@ -7,7 +7,6 @@ declare namespace NodeJS {
     NEXT_PUBLIC_I18N_URL: string;
     NEXT_PUBLIC_DOWNLOAD_URL: string;
     NEXT_PUBLIC_SEJARAH_URL: string;
-    ASSETS_URL: string;
     API_AUTH_TOKEN: string;
     API_URL: string;
     CLOUDFLARE_APP_URL: string;
@@ -23,7 +22,7 @@ declare namespace NodeJS {
 
     REVALIDATE_TOKEN: string;
     AUTH_TOKEN: string;
-    ANALYZE: boolean;
+    ANALYZE: string;
 
     NEXT_PUBLIC_TILESERVER_URL: string;
     NEXT_PUBLIC_GA_TAG: string;
@@ -41,16 +40,19 @@ declare module "chartjs-plugin-crosshair" {
 
 // canvas2svg mock typings
 declare module "canvas2svg" {
-  export default (width: number, height: number) => any;
-  getSerializedSvg();
+  export default function (width: number, height: number): any;
+  export function getSerializedSvg(): any;
 }
 
 declare module "geojson-bbox" {
   export default function (
-    geojson: GeoJSONObject
-  ): [number, number, number, number] {}
+    geojson: GeoJSON.GeoJsonObject
+  ): [number, number, number, number];
 }
 
 declare module "remarkable-react" {
-  export default any;
+  class RemarkableReactRenderer {
+    constructor(props: any);
+  }
+  export default RemarkableReactRenderer;
 }

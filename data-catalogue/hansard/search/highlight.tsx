@@ -112,7 +112,7 @@ export function highlightKeywordMarkdown(
         );
       },
     },
-  });
+  }) as any;
 
   if (typeof matchData === "string")
     return inline ? md.renderInline(matchData) : md.render(matchData);

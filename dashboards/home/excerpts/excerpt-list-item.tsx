@@ -33,7 +33,7 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
         <mark className="bg-[#DDD6B0] text-black">{children[0]}</mark>
       ),
     },
-  });
+  }) as any;
 
   return (
     <Link

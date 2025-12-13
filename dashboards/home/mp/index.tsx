@@ -14,12 +14,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import MPFilter from "./mp-filter";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { ParsedUrlQuery } from "querystring";
-import {
-  ALL_AGES,
-  ALL_ETHNICITIES,
-  ALL_PARTIES,
-  BOTH_SEXES,
-} from "../filter-options";
+// import { ALL_AGES, ALL_ETHNICITIES, ALL_PARTIES, BOTH_SEXES, } from "../filter-options";
 import Excerpts, { ExcerptsProps } from "../excerpts";
 import { Speaker } from "@lib/types";
 
@@ -94,8 +89,9 @@ const MP = ({
   const barmeter_data = top_speakers
     ? top_speakers.map(s => {
         const id = Object.keys(s)[0];
-        const speaker = speakers.find(e => String(e.new_author_id) === id)
-          ?.name;
+        const speaker = speakers.find(
+          e => String(e.new_author_id) === id
+        )?.name;
         const total = s[id];
 
         return { x: speaker ?? "", y: total };
