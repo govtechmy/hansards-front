@@ -35,7 +35,7 @@ const CatalogueIndexPage: Page = ({
 
 export const getStaticProps: GetStaticProps = withi18n(
   ["catalogue", "enum", "hansard"],
-  async ({ locale }) => {
+  async () => {
     const parlimens = generateRange(1, 15);
     const results = await Promise.allSettled(
       parlimens.map(term =>
@@ -59,12 +59,7 @@ export const getStaticProps: GetStaticProps = withi18n(
     }, {});
 
     if (Object.keys(archive).length === 0) {
-      return {
-        redirect: {
-          destination: locale === "en-GB" ? "/en-GB/500" : "/500",
-          permanent: false,
-        },
-      };
+      return { notFound: true };
     }
 
     return {

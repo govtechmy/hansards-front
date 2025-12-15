@@ -58,7 +58,9 @@ export const getStaticProps: GetStaticProps = withi18n(
       return res;
     }, {});
 
-    if (Object.keys(archive).length === 0) throw new Error();
+    if (Object.keys(archive).length === 0) {
+      return { notFound: true };
+    }
 
     return {
       notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",

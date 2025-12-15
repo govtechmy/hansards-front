@@ -18,7 +18,7 @@ import { Line as LineCanvas } from "react-chartjs-2";
 import { numFormat } from "@lib/helpers";
 import { ChartCrosshairOption } from "@lib/types";
 import { Stats, StatProps } from "./timeseries";
-import { CrosshairPlugin } from "chartjs-plugin-crosshair";
+import * as CrosshairPlugin from "chartjs-plugin-crosshair";
 import { useTheme } from "next-themes";
 import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
 
