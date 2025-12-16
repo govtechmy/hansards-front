@@ -3,6 +3,7 @@ declare namespace NodeJS {
     APP_URL: string;
     APP_ENV: string;
     NEXT_PUBLIC_APP_URL: string;
+    NEXT_PUBLIC_ASSETS_URL: string;
     NEXT_PUBLIC_APP_ENV: string;
     NEXT_PUBLIC_I18N_URL: string;
     NEXT_PUBLIC_DOWNLOAD_URL: string;
