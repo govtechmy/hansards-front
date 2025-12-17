@@ -2,8 +2,8 @@ function requiredServerEnvs(key: string): string {
   const value = process.env[key];
   if (!value) {
     // This should never happen if build-time validation works
-    // throw new Error(`[CLIENT ENV ERROR] Missing ${key}`);
-    console.warn(`[ENV WARNING] Missing client env: ${key}`);
+    // throw new Error(`[SERVER ENV ERROR] Missing ${key}`);
+    console.warn(`[ENV WARNING] Missing server env: ${key}`);
     return "";
   }
   return value;
