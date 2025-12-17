@@ -16,17 +16,18 @@ type BaseURL = "api" | "app" | "api_backend" | string;
  */
 const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const urls: Record<BaseURL, string> = {
-    api: serverEnv.apiUrl,
-    api_backend: serverEnv.apiUrl,
-    app: clientEnv.appUrl,
-    sejarah: clientEnv.sejarahUrl,
+    api: serverEnv.API_URL,
+    api_backend: serverEnv.API_URL,
+    app: clientEnv.NEXT_PUBLIC_APP_URL,
+    sejarah: clientEnv.NEXT_PUBLIC_SEJARAH_URL,
   };
   const BROWSER_RUNTIME = typeof window === "object";
 
+  const authToken = serverEnv.API_AUTH_TOKEN;
   const config: AxiosRequestConfig = {
     baseURL: urls[base] || base,
     headers: {
-      Authorization: !BROWSER_RUNTIME ? `Bearer ${serverEnv.authToken}` : null,
+      Authorization: !BROWSER_RUNTIME ? `Bearer ${authToken}` : null,
       ...headers,
     },
   };

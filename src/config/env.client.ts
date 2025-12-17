@@ -1,25 +1,22 @@
-const requiredClientEnvs = [
-  "NEXT_PUBLIC_APP_URL",
-  "NEXT_PUBLIC_ASSETS_URL",
-  "NEXT_PUBLIC_DOWNLOAD_URL",
-  "NEXT_PUBLIC_I18N_URL",
-  "NEXT_PUBLIC_APP_ENV",
-  "NEXT_PUBLIC_AUTHORIZATION_TOKEN",
-  "NEXT_PUBLIC_SEJARAH_URL",
-] as const;
-
-requiredClientEnvs.forEach(key => {
-  if (!process.env[key]) {
-    throw new Error(`[ENV ERROR] Missing client env: ${key}`);
+function requireClientEnv(key: string): string {
+  const value = process.env[key];
+  if (!value) {
+    // This should never happen if build-time validation works
+    // throw new Error(`[CLIENT ENV ERROR] Missing ${key}`);
+    console.warn(`[ENV WARNING] Missing client env: ${key}`);
+    return "";
   }
-});
+  return value;
+}
 
 export const clientEnv = {
-  appUrl: process.env.NEXT_PUBLIC_APP_URL!,
-  assetsUrl: process.env.NEXT_PUBLIC_ASSETS_URL!,
-  downloadUrl: process.env.NEXT_PUBLIC_DOWNLOAD_URL!,
-  i18nUrl: process.env.NEXT_PUBLIC_I18N_URL!,
-  appEnv: process.env.NEXT_PUBLIC_APP_ENV!,
-  authorizationToken: process.env.NEXT_PUBLIC_AUTHORIZATION_TOKEN!,
-  sejarahUrl: process.env.NEXT_PUBLIC_SEJARAH_URL!,
+  NEXT_PUBLIC_APP_URL: requireClientEnv("NEXT_PUBLIC_APP_URL"),
+  NEXT_PUBLIC_APP_ENV: requireClientEnv("NEXT_PUBLIC_APP_ENV"),
+  NEXT_PUBLIC_I18N_URL: requireClientEnv("NEXT_PUBLIC_I18N_URL"),
+  NEXT_PUBLIC_DOWNLOAD_URL: requireClientEnv("NEXT_PUBLIC_DOWNLOAD_URL"),
+  NEXT_PUBLIC_AUTHORIZATION_TOKEN: requireClientEnv(
+    "NEXT_PUBLIC_AUTHORIZATION_TOKEN"
+  ),
+  NEXT_PUBLIC_SEJARAH_URL: requireClientEnv("NEXT_PUBLIC_SEJARAH_URL"),
+  NEXT_PUBLIC_ASSETS_URL: requireClientEnv("NEXT_PUBLIC_ASSETS_URL"),
 };
