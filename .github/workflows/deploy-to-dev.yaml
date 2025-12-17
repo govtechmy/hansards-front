@@ -45,8 +45,8 @@ jobs:
         run: yarn build
       # Deploy to Amplify
       - name: Deploy to Amplify
-        uses: aws-amplify/amplify-action@v1
-        with:
-          app-id: ${{ secrets.AMPLIFY_APP_ID }}
-          branch-name: ${{ env.ENVIRONMENT }}
-          access-token: ${{ secrets.AMPLIFY_ACCESS_TOKEN }}
+        run: |
+          aws amplify start-job \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name development \
+            --job-type RELEASE
