@@ -46,8 +46,4 @@ jobs:
       # Deploy to Amplify
       - name: Deploy to Amplify
         run: |
-          DEPLOYMENT=$(aws amplify create-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --source-url-type ZIP_UPLOAD)
-          JOB_ID=$(echo $DEPLOYMENT | jq -r '.jobId')
-          ZIP_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
-          curl -X PUT -H "Content-Type: application/zip" --data-binary @app.zip "$ZIP_URL"
-          aws amplify start-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --job-id "$JOB_ID"
+          aws amplify create-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging
