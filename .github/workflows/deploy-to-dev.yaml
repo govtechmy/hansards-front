@@ -40,13 +40,14 @@ jobs:
         run: |
           echo '${{ secrets.DEV_NEXT_API_ENV }}' | jq '.' > next_api_env.json
           jq -r 'to_entries[] | "\(.key)=\(.value)"' next_api_env.json >> $GITHUB_ENV
-      # Build Next.js app
-      - name: Build Next.js (Amplify)
-        run: yarn build
+      # Create ZIP of source code
+      - name: Create ZIP
+        run: zip -r app.zip . -x "*.git*" "*node_modules*"
       # Deploy to Amplify
       - name: Deploy to Amplify
         run: |
-          aws amplify start-job \
-            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
-            --branch-name development \
-            --job-type RELEASE
+          DEPLOYMENT=$(aws amplify create-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --source-url-type ZIP_UPLOAD)
+          JOB_ID=$(echo $DEPLOYMENT | jq -r '.jobId')
+          ZIP_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
+          curl -X PUT -H "Content-Type: application/zip" --data-binary @app.zip "$ZIP_URL"
+          aws amplify start-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --job-id "$JOB_ID"
