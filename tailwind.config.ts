@@ -1,8 +1,12 @@
 import type { Config } from "tailwindcss";
+import colors from "tailwindcss/colors";
+import tailwindCSSAnimate from "tailwindcss-animate";
+import { preset } from "@govtechmy/myds-style";
 
 const config: Config = {
   darkMode: "class",
   content: [
+    "node_modules/@govtechmy/myds-react/dist/**/*.{js,jsx,ts,tsx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,6 +16,7 @@ const config: Config = {
     "./hooks/**/*.{js,ts,jsx,tsx}",
     "./lib/**/*.{js,ts,jsx,tsx}",
   ],
+  presets: [preset],
   theme: {
     extend: {
       backgroundImage: {
@@ -25,7 +30,16 @@ const config: Config = {
         poppins: ["var(--font-poppins)"],
       },
       colors: {
-        primary: "#2563EB", // Blue 600
+        red: colors.red,
+        orange: colors.orange,
+        green: colors.green,
+        cyan: colors.cyan,
+        blue: colors.blue,
+        violet: colors.violet,
+        pink: colors.pink,
+        slate: colors.slate,
+        zinc: colors.zinc,
+        // primary: "#2563EB", // Blue 600
         "primary-dark": "#3E7AFF",
         secondary: "#B49B1A",
         black: "#18181B", // Zinc 900
@@ -82,6 +96,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindCSSAnimate],
 };
 export default config;

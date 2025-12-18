@@ -1,0 +1,14 @@
+{
+  "output": "Output",
+  "disclaimer": "*Not an actual terminal / console.",
+  "500": {
+    "title": "Oops, something went terribly wrong.",
+    "description": "We are sorry for this incident.",
+    "reason": "Error code: 500 -- Server error"
+  },
+  "404": {
+    "title": "Oops, we cannot find the page you're looking for.",
+    "description": "Is your URL incorrect?",
+    "reason": "Error code: 404 -- Page not found"
+  }
+}

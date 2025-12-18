@@ -2,10 +2,17 @@ import { createElement, ReactElement } from "react";
 import { CountryAndStates } from "@lib/constants";
 import DomToImage from "dom-to-image";
 import canvasToSvg from "canvas2svg";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
 import clsx, { ClassValue } from "clsx";
 import { format, parseISO } from "date-fns";
-import { enGB, ms } from "date-fns/locale";
+import enGB from "date-fns/locale/en-GB/index.js";
+import ms from "date-fns/locale/ms/index.js";
+
+const twMerge = extendTailwindMerge({
+  classGroups: {
+    "box-shadow": ["shadow-button", "shadow-floating", "shadow-none"],
+  },
+});
 
 /**
  * Conditional class joiner.

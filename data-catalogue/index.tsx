@@ -1,10 +1,10 @@
-import { Container, Sidebar } from "@components/index";
+import { Container } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import { cn } from "@lib/helpers";
 import { Archive } from "@lib/types";
-import { Fragment, useEffect, useMemo, useRef } from "react";
-import CatalogueFolder, { FolderOpen } from "./folder";
-import { ParsedUrlQuery } from "querystring";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { DrawerOpen } from "./folder";
+import Penggal, { FolderOpen } from "./penggal";
+import dynamic from "next/dynamic";
 
 /**
  * Catalogue Index
@@ -13,33 +13,29 @@ import { ParsedUrlQuery } from "querystring";
 
 interface CatalogueIndexProps {
   archive: Archive;
-  params: ParsedUrlQuery;
+  parlimens: string[];
 }
 
-const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
+const Sidebar = dynamic(() => import("@components/Sidebar"), {
+  loading: () => <div className="h-full w-60" />,
+  ssr: false,
+});
+
+const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
   const { t } = useTranslation(["catalogue", "common", "enum"]);
-  const scrollRef = useRef<Record<string, HTMLElement | null>>({});
+  const drawerRef = useRef<Record<string, DrawerOpen | null>>({});
   const folderRef = useRef<Record<string, FolderOpen | null>>({});
+  const scrollRef = useRef<Record<string, HTMLElement | null>>({});
 
   const classNames = {
     hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
-  };
-  const PARLIMENS = Object.keys(archive).reverse();
-
-  const scrollToPenggal = (selected: string) => {
-    if (scrollRef) {
-      scrollRef.current[selected]?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
   };
 
   const data = useMemo(
     () =>
       Object.keys(archive)
         .reverse()
-        .map((p) => {
+        .map(p => {
           const { start_date, end_date, ...sessions } = archive[p];
           const start = start_date.substring(0, 4);
           const end = end_date.substring(0, 4);
@@ -51,7 +47,7 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
             yearRange,
             penggal: Object.keys(sessions)
               .reverse()
-              .map((s) => {
+              .map(s => {
                 const { start_date, end_date, ...mesyuarat } = sessions[s];
 
                 const start = start_date.substring(0, 4);
@@ -70,115 +66,85 @@ const CatalogueIndex = ({ archive, params }: CatalogueIndexProps) => {
     []
   );
 
+  const [selected, setSelected] = useState<string>("");
+
   useEffect(() => {
-    if (params && params.archive) {
-      const [parlimen, penggal, mesyuarat] = params.archive;
-      const url = `${parlimen}/${penggal}/${mesyuarat}`;
-      if (mesyuarat && folderRef.current) {
-        folderRef.current[url]?.open(url);
-      }
-      if (penggal) {
-        scrollToPenggal(`${parlimen}/${penggal}`);
-      } else {
-        scrollToPenggal(parlimen);
+    const el = scrollRef.current[selected];
+    if (el)
+      el.scrollIntoView({
+        behavior: "smooth",
+      });
+  }, [selected]);
+
+  useEffect(() => {
+    const hash = document.location.hash;
+    const regex = /(parlimen|penggal|mesyuarat)-\d+/g;
+    const levels = hash.match(regex);
+
+    if (levels && levels.length === 3) {
+      const [parlimen, penggal, mesyuarat] = levels;
+      if (mesyuarat) {
+        const id = hash.slice(1);
+        const el = drawerRef.current[id];
+        if (el) el.open();
       }
     }
   }, []);
 
   return (
     <>
-      <Container>
+      <Container className="pl-1.5 pr-3">
         <Sidebar
           data={data}
-          onClick={(selected) => {
-            scrollRef.current[selected]?.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
+          onClick={selected => {
+            window.location.hash = selected;
+            setSelected(selected);
           }}
         >
-          <div className="flex flex-col pl-4.5 sm:pl-8 pt-3 pb-6 lg:pb-8 w-full h-full">
+          <div className="flex h-full w-full flex-col pb-6 pl-4.5 pt-3 sm:pl-8 lg:pb-8">
             {data ? (
-              PARLIMENS.map((_, index) => {
+              parlimens.map((_, index) => {
                 const { id, penggal, yearRange } = data[index];
-                const parlimen_id = `parlimen-${id}/`;
+                const parlimen_id = `parlimen-${id}`;
 
                 return (
-                  <Fragment key={id}>
-                    <div className="flex flex-col">
-                      <div
-                        className="py-3 bg-background flex gap-3 items-center sticky top-28 z-10"
-                        ref={(ref) => (scrollRef.current[parlimen_id] = ref)}
+                  <div key={id} className="flex flex-col">
+                    <div className="sticky top-28 z-20 flex items-center gap-3 bg-background py-3">
+                      <h2
+                        className="header scroll-mt-40 break-all max-sm:line-clamp-1 sm:whitespace-nowrap lg:scroll-mt-28"
+                        id={parlimen_id}
                       >
-                        <h2 className="header flex flex-wrap w-fit sm:whitespace-nowrap">
-                          {t("parlimen", {
-                            ns: "enum",
-                            count: id,
-                            ordinal: true,
-                          })}
-                          {yearRange}
-                        </h2>
-                        <span className={classNames.hr} />
-                      </div>
-
-                      <div className="space-y-8 pt-3 pb-[42px]">
-                        {penggal.map(({ id, mesyuarat, yearRange }) => {
-                          const meetings = mesyuarat;
-                          const MEETINGS = Object.keys(meetings).sort(
-                            (a, b) =>
-                              Date.parse(meetings[a].end_date) -
-                              Date.parse(meetings[b].end_date)
-                          );
-                          const penggal_id = `penggal-${id}`;
-                          return (
-                            <div key={id} className="relative">
-                              <span
-                                className={cn(
-                                  classNames.hr,
-                                  "absolute top-3.5 left-0 -z-10 border-dashed"
-                                )}
-                              />
-                              <h3 className="title flex flex-wrap w-fit sm:whitespace-nowrap bg-background pr-3">
-                                {t("penggal_full", {
-                                  ns: "enum",
-                                  n: id,
-                                })}
-                                {yearRange}
-                              </h3>
-
-                              <div
-                                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-[54px] pt-12 pb-6"
-                                ref={(ref) =>
-                                  (scrollRef.current[
-                                    `${parlimen_id}${penggal_id}`
-                                  ] = ref)
-                                }
-                              >
-                                {MEETINGS.map((id) => {
-                                  return (
-                                    <CatalogueFolder
-                                      ref={(ref) =>
-                                        (folderRef.current[
-                                          `${parlimen_id}${penggal_id}/mesyuarat-${id}`
-                                        ] = ref)
-                                      }
-                                      key={id}
-                                      meeting={meetings[id]}
-                                      meeting_id={id}
-                                    />
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
+                        {t("parlimen", {
+                          ns: "enum",
+                          count: Number(id),
+                          ordinal: true,
                         })}
-                      </div>
+                        {yearRange}
+                      </h2>
+                      <span className={classNames.hr} />
                     </div>
-                  </Fragment>
+
+                    <div className="space-y-8 pb-[42px]">
+                      {penggal.map(penggal => {
+                        const parlimen_penggal = `${parlimen_id}-penggal-${penggal.id}`;
+                        return (
+                          <Penggal
+                            penggal_id={parlimen_penggal}
+                            drawerRef={drawerRef}
+                            scrollRef={scrollRef}
+                            ref={ref =>
+                              (folderRef.current[parlimen_penggal] = ref)
+                            }
+                            {...penggal}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
                 );
               })
             ) : (
-              <p className="text-zinc-500 p-2 pt-16 lg:p-8">
+              <p className="p-2 pt-16 text-zinc-500 lg:p-8">
                 {t("no_entries", { ns: "common" })}.
               </p>
             )}

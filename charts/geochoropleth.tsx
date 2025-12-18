@@ -55,10 +55,12 @@ const GeoChoropleth: FunctionComponent<GeoChoroplethProps> = ({
   onReady,
   _ref,
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { t } = useTranslation();
   const ref = useRef<MapControlRef>(null);
-  const [choromap, setChoromap] = useState<FeatureCollection | undefined>(undefined);
+  const [choromap, setChoromap] = useState<FeatureCollection | undefined>(
+    undefined
+  );
   const [min, max] = minMax(data.values);
 
   const { interpolate } = useColor(color, [min, max]);
@@ -101,7 +103,8 @@ const GeoChoropleth: FunctionComponent<GeoChoroplethProps> = ({
         {/* GeoChoropleth */}
         <>
           {choromap?.features.map(feature => {
-            const value = data?.values[data.labels.indexOf(feature.properties![type])];
+            const value =
+              data?.values[data.labels.indexOf(feature.properties![type])];
 
             return (
               <GeoJSON
@@ -109,7 +112,9 @@ const GeoChoropleth: FunctionComponent<GeoChoroplethProps> = ({
                 data={feature}
                 style={{
                   color: "#0000001A",
-                  fillColor: enableFill ? interpolate(value) : interpolate(0.33, true), // assuming with enableFill
+                  fillColor: enableFill
+                    ? interpolate(value)
+                    : interpolate(0.33, true), // assuming with enableFill
                   fillOpacity: 0.6,
                 }}
                 onEachFeature={(_, layer) => {
@@ -131,9 +136,9 @@ const GeoChoropleth: FunctionComponent<GeoChoroplethProps> = ({
           })}
         </>
         <TileLayer
-          key={theme}
+          key={resolvedTheme}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={`${process.env.NEXT_PUBLIC_TILESERVER_URL}/styles/${theme}/{z}/{x}/{y}.png`}
+          url={`${process.env.NEXT_PUBLIC_TILESERVER_URL}/styles/${resolvedTheme}/{z}/{x}/{y}.png`}
         />
       </MapContainer>
     </div>

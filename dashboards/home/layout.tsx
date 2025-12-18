@@ -4,7 +4,6 @@ import { ChatBubbleLeftRightIcon, UsersIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
 import { routes } from "@lib/routes";
-import { OptionType } from "@lib/types";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
@@ -24,16 +23,16 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
   const { t } = useTranslation("home");
   const { pathname } = useRouter();
 
-  const TAB_OPTIONS: Array<OptionType & { icon: ReactNode }> = [
+  const TAB_OPTIONS = [
     {
       icon: <ChatBubbleLeftRightIcon className="h-4.5 w-4.5" />,
-      label: t("search_keyword"),
-      value: routes.HOME,
+      name: t("search_keyword"),
+      href: [routes.HOME, routes.CARI],
     },
     {
       icon: <UsersIcon className="h-4.5 w-4.5" />,
-      label: t("search_mp"),
-      value: routes.CARI_MP,
+      name: t("search_mp"),
+      href: [routes.CARI_MP],
     },
   ];
 
@@ -47,51 +46,44 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
         description={[t("hero.description")]}
       />
 
-      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-border bg-background justify-start min-[350px]:justify-center lg:static">
+      <nav className="sticky top-14 z-20 flex justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center lg:static">
         <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto">
-          {TAB_OPTIONS.map((tab) => (
-            <div key={tab.value} className="snap-start">
-              <At
-                href={tab.value}
-                scrollTop={false}
-                className="flex h-full min-w-[56px] cursor-pointer items-center justify-center"
-              >
-                <div
-                  className={cn(
-                    pathname === tab.value && "dark:bg-zinc-800",
-                    "relative flex h-full flex-col items-center justify-center p-4"
-                  )}
+          {TAB_OPTIONS.map(tab => {
+            const isPath = tab.href.includes(pathname);
+            return (
+              <div key={tab.name} className="snap-start">
+                <At
+                  href={tab.href[0]}
+                  scrollTop={false}
+                  className="flex h-full min-w-[56px] cursor-pointer items-center justify-center"
                 >
-                  <div className="flex gap-1.5 items-center">
+                  <div
+                    className={cn(
+                      isPath && "bg-bg-black-50 dark:bg-bg-black-200",
+                      "relative flex h-full flex-col items-center justify-center p-4"
+                    )}
+                  >
                     <div
                       className={cn(
-                        pathname === tab.value
-                          ? "text-zinc-900 dark:text-white"
-                          : "text-zinc-500"
+                        "flex items-center gap-1.5",
+                        isPath ? "text-txt-black-900" : "text-txt-black-500"
                       )}
                     >
                       {tab.icon}
+                      <div className="flex items-center gap-2">
+                        <span className="whitespace-nowrap text-base font-medium">
+                          {tab.name}
+                        </span>
+                      </div>
                     </div>
-                    <div
-                      className={cn(
-                        "flex items-center gap-2",
-                        pathname === tab.value
-                          ? "text-zinc-900 dark:text-white"
-                          : "text-zinc-500"
-                      )}
-                    >
-                      <span className="whitespace-nowrap text-base font-medium">
-                        {tab.label}
-                      </span>
-                    </div>
+                    {isPath && (
+                      <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
+                    )}
                   </div>
-                  {pathname === tab.value && (
-                    <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
-                  )}
-                </div>
-              </At>
-            </div>
-          ))}
+                </At>
+              </div>
+            );
+          })}
         </div>
       </nav>
 

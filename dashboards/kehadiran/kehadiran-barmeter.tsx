@@ -13,7 +13,7 @@ const BarMeter = dynamic(() => import("@charts/bar-meter"), {
   ssr: false,
 });
 
-type DemographyKeys = "sex" | "ethnicity" | "age";
+type DemographyKeys = "gender" | "ethnicity" | "age";
 
 export interface KehadiranBarMeterProps {
   barmeter: Record<DemographyKeys, BarMeterData[]>;
@@ -22,17 +22,17 @@ export interface KehadiranBarMeterProps {
 
 const KehadiranBarMeter = ({ barmeter, loading }: KehadiranBarMeterProps) => {
   const { t } = useTranslation(["demografi", "kehadiran"]);
-  const DEMOGRAPHY = ["sex", "ethnicity", "age"] as DemographyKeys[];
+  const DEMOGRAPHY = ["gender", "ethnicity", "age"] as DemographyKeys[];
 
   return (
-    <section className="py-8 lg:py-12 space-y-6">
+    <section className="space-y-6 py-8 lg:py-12">
       <h3 className="title">{t("barmeter_title", { ns: "kehadiran" })}</h3>
 
       {loading ? (
         <Skeleton height="h-[300px]" width="w-auto" />
       ) : (
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          {DEMOGRAPHY.map((k) => {
+          {DEMOGRAPHY.map(k => {
             return (
               <div className="flex flex-col space-y-6" key={k}>
                 <BarMeter
@@ -43,7 +43,7 @@ const KehadiranBarMeter = ({ barmeter, loading }: KehadiranBarMeterProps) => {
                   unit="%"
                   data={barmeter[k]}
                   sort={k === "age" ? undefined : "desc"}
-                  formatX={(key) => k === "age" ? key : t(key)}
+                  formatX={key => (k === "age" ? key : t(key))}
                 />
               </div>
             );

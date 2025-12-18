@@ -18,7 +18,7 @@ import { Line as LineCanvas } from "react-chartjs-2";
 import { numFormat } from "@lib/helpers";
 import { ChartCrosshairOption } from "@lib/types";
 import { Stats, StatProps } from "./timeseries";
-import { CrosshairPlugin } from "chartjs-plugin-crosshair";
+import * as CrosshairPlugin from "chartjs-plugin-crosshair";
 import { useTheme } from "next-themes";
 import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
 
@@ -86,7 +86,7 @@ const Line: FunctionComponent<LineProps> = ({
     Legend
   );
 
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const options: ChartCrosshairOption<"line"> = {
     maintainAspectRatio: false,
@@ -106,7 +106,7 @@ const Line: FunctionComponent<LineProps> = ({
         ? {
             line: {
               width: 0,
-              color: theme === "light" ? "#000" : "#FFF",
+              color: resolvedTheme === "light" ? "#000" : "#FFF",
               dashPattern: [6, 4],
             },
             zoom: {
@@ -153,7 +153,9 @@ const Line: FunctionComponent<LineProps> = ({
           },
           padding: 6,
           callback: (value: string | number) =>
-            (prefixX ?? "") + numFormat(value as number, "compact", precision) + (unitX ?? ""),
+            (prefixX ?? "") +
+            numFormat(value as number, "compact", precision) +
+            (unitX ?? ""),
         },
       },
       y: {
@@ -171,7 +173,9 @@ const Line: FunctionComponent<LineProps> = ({
           },
           padding: 6,
           callback: (value: string | number) =>
-            (prefixY ?? "") + numFormat(value as number, "compact", precision) + (unitY ?? ""),
+            (prefixY ?? "") +
+            numFormat(value as number, "compact", precision) +
+            (unitY ?? ""),
         },
         min: minY,
         max: maxY,
@@ -184,7 +188,9 @@ const Line: FunctionComponent<LineProps> = ({
       {[title, menu, controls, subheader, stats].some(Boolean) && (
         <div className="flex flex-col gap-y-3">
           <ChartHeader title={title} menu={menu} controls={controls} />
-          {subheader && <div className="text-zinc-500 text-sm">{subheader}</div>}
+          {subheader && (
+            <div className="text-sm text-zinc-500">{subheader}</div>
+          )}
           {stats && <Stats data={stats} />}
         </div>
       )}

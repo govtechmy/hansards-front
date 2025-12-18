@@ -33,7 +33,7 @@ export function AnalyticsProvider({
   useEffect(() => {
     get("/api/count", { id }, "app")
       .then(({ data }) => setCounts(data))
-      .catch((e) => console.error(e));
+      .catch(e => console.error(e));
   }, []);
 
   const post_events = (
@@ -51,7 +51,7 @@ export function AnalyticsProvider({
       "app",
       {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.TINYBIRD_API}${process.env.POST_TOKEN}`,
+        Authorization: `Bearer ${process.env.POST_TOKEN}`,
       }
     )
       .then(
@@ -64,10 +64,10 @@ export function AnalyticsProvider({
           else
             get("/api/count", { id }, "app")
               .then(({ data }) => setCounts(data))
-              .catch((e) => console.error(e));
+              .catch(e => console.error(e));
         }
       )
-      .catch((e) => console.error(e));
+      .catch(e => console.error(e));
   };
 
   return (

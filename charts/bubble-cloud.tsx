@@ -9,7 +9,7 @@ interface BubbleCloudProps {
 }
 
 const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const _data = useMemo(() => {
     let chart_data = {
       id: "root",
@@ -48,7 +48,7 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                 fill="#000"
                 stroke="#fff"
                 strokeWidth={
-                  theme === "dark"
+                  resolvedTheme === "dark"
                     ? node.radius > 100
                       ? "1px"
                       : node.radius > 60

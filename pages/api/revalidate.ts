@@ -18,16 +18,19 @@ export default async function handler(
   res: NextApiResponse<RevalidateData | string>
 ) {
   if (req.headers.authorization !== `Bearer ${process.env.REVALIDATE_TOKEN}`) {
-    return res
-      .status(401)
-      .json({ error: "Unauthorized", message: "Invalid bearer token", revalidated: [] });
+    return res.status(401).json({
+      error: "Unauthorized",
+      message: "Invalid bearer token",
+      revalidated: [],
+    });
   }
 
   try {
     const { route }: { route: string } = req.body;
     if (!route) throw new Error("Route(s) missing");
 
-    const routes: string[] = route.split(",");
+    const routes: string[] =
+      route === "katalog_all" ? katalog_routes : route.split(",");
 
     await Promise.all(
       routes.map(async route =>
@@ -39,18 +42,23 @@ export default async function handler(
       )
     );
 
-    return res.json({ message: "Revalidation successful", revalidated: routes });
+    return res.json({
+      message: "Revalidation successful",
+      revalidated: routes,
+    });
   } catch (err: any) {
-    return res
-      .status(400)
-      .json({ error: "Revalidation failed", message: err.message, revalidated: [] });
+    return res.status(400).json({
+      error: "Revalidation failed",
+      message: err.message,
+      revalidated: [],
+    });
   }
 }
 
 function hasValidDate(dateString: string) {
   const regEx = /[12]{1}\d{3}-[01]\d{1}-[0123]\d{1}/;
   const match = dateString.match(regEx);
-  if (!match) return false;  // Invalid format
+  if (!match) return false; // Invalid format
   const d = new Date(match[0]);
   const dNum = d.getTime();
   if (!dNum && dNum !== 0) return false; // NaN value, Invalid date
@@ -61,19 +69,22 @@ function hasValidDate(dateString: string) {
 const validate = (route: string): Promise<string> =>
   new Promise((resolve, reject) => {
     if (katalog_routes.includes(route)) resolve(route);
-    if (hansard_routes.some((h_route) =>
-      route.startsWith(h_route) && hasValidDate(route)
-    )) resolve(route);
-    else reject(`Route does not exist or is not a static page. Route: ${route}`);
+    if (
+      hansard_routes.some(
+        h_route => route.startsWith(h_route) && hasValidDate(route)
+      )
+    )
+      resolve(route);
+    else
+      reject(`Route does not exist or is not a static page. Route: ${route}`);
   });
 
 // Rebuilds the relevant page(s).
 const rebuild = async (res: NextApiResponse, route: string) =>
   new Promise(async (resolve, reject) => {
-    await res.revalidate(route)
-      .then(() =>
-        res.revalidate(`/en-GB/${route}`)
-          .catch(e => reject(e)))
+    await res
+      .revalidate(route)
+      .then(() => res.revalidate(`/en-GB${route}`).catch(e => reject(e)))
       .catch(e => reject(e));
     resolve(true);
   });

@@ -4,9 +4,7 @@ import { capitalize, getDomainWithoutWWW } from "./utils";
 /**
  * Recording views with geo, ua, referer and timestamp data
  **/
-export async function recordView(
-  req: NextRequest,
-) {
+export async function recordView(req: NextRequest) {
   const LOCALHOST_GEO_DATA = {
     city: "Localhost",
     region: "XO",
@@ -14,12 +12,16 @@ export async function recordView(
     latitude: "54.0827",
     longitude: "-121.85",
   };
-  const geo = process.env.VERCEL === "1" ? req.geo : LOCALHOST_GEO_DATA;
+
+  // https://nextjs.org/docs/15/app/api-reference/functions/next-request
+  // ip and geo has been removed in nextjs v15, only valid if it is running on vercel
+  const reqGeo = req as unknown as { geo: typeof LOCALHOST_GEO_DATA };
+  const geo = process.env.VERCEL === "1" ? reqGeo.geo : LOCALHOST_GEO_DATA;
   const ua = userAgent(req);
   const referer = req.headers.get("referer");
 
   return await fetch(
-    `https://api.tinybird.co/v0/events?name=${process.env.POST_VIEW}&wait=true`,
+    `https://api.us-east.tinybird.co/v0/events?name=${process.env.POST_VIEW}&wait=true`,
     {
       method: "POST",
       body: JSON.stringify({
@@ -47,9 +49,8 @@ export async function recordView(
       }),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.TINYBIRD_API}${process.env.POST_TOKEN}`,
+        Authorization: `Bearer ${process.env.POST_TOKEN}`,
       },
-    },
-  )
-    .then((res) => res.json());
+    }
+  ).then(res => res.json());
 }

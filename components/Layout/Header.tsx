@@ -12,7 +12,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <div className="fixed inset-x-0 top-0 z-30 h-14 w-screen border-b dark:border-zinc-800">
+    <div className="sticky inset-x-0 top-0 z-30 h-14 border-b bg-background dark:border-zinc-800">
       <Container
         background="bg-background"
         className="flex items-center gap-4 py-[11px]"
@@ -20,7 +20,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
         <div className="flex w-full items-center gap-1 lg:gap-4">
           <Link href="/">
             <div className="flex items-center gap-2.5">
-              <div className="flex w-8 items-center justify-center">
+              <div className="flex size-8 items-center justify-center">
                 <ParlimenIcon />
               </div>
               <div className="header whitespace-nowrap">Hansard Parlimen</div>
@@ -37,7 +37,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
                     link="/"
                     onClick={close}
                   />
-                  <Nav.Item
+                  {/* <Nav.Item
                     key="/kehadiran"
                     title={t("nav.kehadiran")}
                     link="/kehadiran/dewan-rakyat"
@@ -48,7 +48,7 @@ const Header = ({ stateSelector }: HeaderProps) => {
                     title={t("nav.sejarah")}
                     link="/sejarah/individu"
                     onClick={close}
-                  />
+                  /> */}
                   <Nav.Item
                     key="/katalog"
                     title={t("nav.katalog")}

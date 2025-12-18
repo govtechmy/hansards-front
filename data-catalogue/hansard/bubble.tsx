@@ -1,7 +1,16 @@
 import { cn } from "@lib/helpers";
-import { ReactNode } from "react";
-import ShareButton from "./share";
-import ImageWithFallback from "@components/ImageWithFallback";
+import ShareButton from "../share";
+import { useTranslation } from "react-i18next";
+import { useAnalytics } from "@hooks/useAnalytics";
+import { DownloadIcon, UserIcon } from "@govtechmy/myds-react/icon";
+// import {
+//   Dropdown,
+//   DropdownContent,
+//   DropdownItem,
+//   DropdownTrigger,
+// } from "@govtechmy/myds-react/dropdown";
+import { ComponentProps, memo, ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 /**
  * Speech Bubble
@@ -9,65 +18,178 @@ import ImageWithFallback from "@components/ImageWithFallback";
  */
 
 export type SpeechBubbleProps = {
+  author: string;
   children: ReactNode;
   date: string;
+  filename: string;
   hansard_id: string;
   index: number;
+  is_annotation: boolean;
   isYDP: boolean;
   length: number;
   side: boolean;
-  speaker: ReactNode;
-  speech_id: string;
+  speaker?: ReactNode;
   timeString: string;
-  uid: number;
+  uid: number | null;
 };
 
 const SpeechBubble = ({
+  author,
   children,
   date,
+  // filename,
   hansard_id,
   index,
+  is_annotation,
   isYDP,
   length,
   side,
   speaker,
-  speech_id,
   timeString,
   uid,
 }: SpeechBubbleProps) => {
+  const { t } = useTranslation("catalogue");
+  // const { download } = useAnalytics(hansard_id);
+  // const [downloadOpen, setDownloadOpen] = useState<boolean>(false);
+  const [highlight, setHighlight] = useState<boolean>(false);
+  const [imgValid, setImgValid] = useState<boolean>(false);
+  const [imgUrl, setImgUrl] = useState<string>("");
+
+  const router = useRouter();
+  const asPath = router.asPath;
+
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    const sameId = Number(hash) === index;
+    if (hash && sameId) setHighlight(true);
+
+    // ---------- Image validation logic ----------
+    const url = `${process.env.NEXT_PUBLIC_ASSETS_URL}/img/mp-240/${uid}.jpg`;
+    const img = new Image();
+
+    img.onload = () => {
+      setImgValid(true);
+      setImgUrl(url);
+    };
+    img.onerror = () => {
+      setImgValid(false);
+      setImgUrl("");
+    };
+    img.src = url;
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [asPath, uid, index]);
+
   return (
     <>
-      <div id={`${index}`} key={speech_id} className={cn("s", side && "r")}>
+      <div id={`${index}`} key={index} className={cn("s", side && "r")}>
         {/* Avatar */}
         <div className={cn("w", side && "r")}>
           <div className="a">
-            {/* <ImageWithFallback
-              fallback={
-                <div className="border border-border size-9 rounded-full" />
-              }
-              src={`/static/`}
-              width={36}
-              height={1}
-              alt={``}
-              className="p"
-              priority={index <= 5}
-            /> */}
-            <img alt={`${uid}`} className="p" src={`/mp/${uid}.jpg`} width={36} height={36}/>
+            {uid === null ? (
+              <EmptyMP />
+            ) : (
+              <>
+                {imgValid ? (
+                  <img
+                    src={imgUrl}
+                    width={36}
+                    height={36}
+                    alt={author}
+                    className="p"
+                    fetchPriority={index < 10 ? "high" : "auto"}
+                  />
+                ) : (
+                  <EmptyMP />
+                )}
+              </>
+            )}
           </div>
         </div>
         {/* Bubble */}
         <div
-          className={cn("b", isYDP && "ydp", length <= 222 && "x")}
+          className={cn(
+            "b",
+            isYDP && "ydp",
+            length <= 222 && "x",
+            highlight && "h"
+          )}
         >
           {speaker ? <div className="m">{speaker}</div> : <></>}
-          {children}
+          <div className={cn("c", is_annotation && "d")}>{children}</div>
 
-          <ShareButton date={date} hansard_id={hansard_id} index={`${index}`} />
+          <div
+            className={cn(
+              "ft invisible"
+              // downloadOpen ? "visible translate-x-2" : "invisible"
+            )}
+          >
+            {/* <Dropdown open={downloadOpen} onOpenChange={setDownloadOpen}>
+              <DropdownTrigger className="bt">
+                <DownloadIcon />
+                {t("download", { ns: "catalogue" })}
+              </DropdownTrigger>
+              <DropdownContent>
+                {[
+                  { name: "PDF", type: "pdf" },
+                  { name: t("csv"), type: "csv" },
+                ].map(file => (
+                  <DropdownItem
+                    key={file.type}
+                    onSelect={() => {
+                      window.open(`${filename}.${file.type}`, "_blank");
+                      download(file.type as "pdf" | "csv");
+                    }}
+                  >
+                    {file.name}
+                  </DropdownItem>
+                ))}
+              </DropdownContent>
+            </Dropdown> */}
+            <ShareButton
+              date={date}
+              hansard_id={hansard_id}
+              index={`${index}`}
+            />
+          </div>
           <span className="t">{timeString}</span>
         </div>
       </div>
     </>
   );
 };
+
+const ImageWithFallback = ({ src, ...props }: ComponentProps<"img">) => {
+  const [error, setError] = useState<React.SyntheticEvent<
+    HTMLImageElement,
+    Event
+  > | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setError(null);
+  }, [src]);
+
+  return error ? (
+    <EmptyMP />
+  ) : (
+    <img
+      {...props}
+      src={src}
+      className={cn(props.className, loading && "blur-[2px]")}
+      onLoad={() => setLoading(false)}
+      onError={setError}
+    />
+  );
+};
+
+const EmptyMP = () => (
+  <div className="flex size-9 items-center justify-center rounded-full border border-otl-gray-200">
+    <UserIcon className="size-6 text-txt-black-500" />
+  </div>
+);
 
 export default SpeechBubble;

@@ -20,12 +20,15 @@ export async function middleware(request: NextRequest, ev: NextFetchEvent) {
   if (purpose && purpose.match(/prefetch/i))
     headers.delete("x-middleware-prefetch"); // empty json bugfix (in the browser headers still show, but here it is gone)
 
+  // Always record view (development included)
+  ev.waitUntil(recordView(request));
+
   // Development
   if (process.env.NEXT_PUBLIC_APP_ENV === "development") {
     return NextResponse.next({ request: { headers } });
   }
 
-  ev.waitUntil(recordView(request)); // TODO Prod
+  // ev.waitUntil(recordView(request)); // TODO Prod
 
   // Production
   if (process.env.NEXT_PUBLIC_APP_ENV === "production") {

@@ -21,12 +21,9 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { useData } from "@hooks/useData";
-import { useFilter } from "@hooks/useFilter";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
-import { OptionType } from "@lib/types";
-import { UID_TO_NAME_DR } from "@lib/uid";
-import { format } from "date-fns";
+import { OptionType, Speaker } from "@lib/types";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import {
@@ -34,11 +31,16 @@ import {
   ALL_AGES,
   ALL_ETHNICITIES,
   ALL_PARTIES,
-  BOTH_SEXES,
+  BOTH_GENDERS,
   DEWANS,
   ETHNICITIES,
-  SEXES,
+  GENDERS,
 } from "../filter-options";
+import { useRouter } from "next/router";
+import { setSearchParams } from "@lib/utils";
+import { ParsedUrlQuery } from "querystring";
+import { format } from "date-fns";
+import { useMediaQuery } from "@hooks/useMediaQuery";
 
 /**
  * MP - Filter
@@ -47,66 +49,54 @@ import {
 
 export interface MPFilterProps {
   ind_or_grp: string;
+  speakers: Array<Speaker>;
   onFilter: (e: string) => void;
   onLoad: () => void;
-  uid: string;
-  dewan?: string;
-  party: string;
-  sex: string;
-  age: string;
-  ethnic: string;
-  start?: Date;
-  end?: Date;
+  query: ParsedUrlQuery;
 }
 
 const MPFilter = ({
   ind_or_grp,
+  speakers,
   onFilter,
   onLoad,
-  uid,
-  dewan,
-  party,
-  age,
-  sex,
-  ethnic,
-  start,
-  end,
+  query,
 }: MPFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
 
-  const INDIVIDU_OPTIONS: OptionType[] = Object.keys(UID_TO_NAME_DR).map(
-    (key: string) => {
-      return { label: UID_TO_NAME_DR[key], value: key };
-    }
-  );
+  const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
+    query;
+
+  const INDIVIDU_OPTIONS: OptionType[] = speakers
+    .map(({ name, new_author_id }) => ({
+      label: name,
+      value: String(new_author_id),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const { data, setData } = useData({
-    uid: uid,
+    uid: uid ? String(uid) : "",
     individu_option: uid
       ? INDIVIDU_OPTIONS.find(option => option.value === String(uid))
       : undefined,
-    dewan: dewan ?? "dewan-rakyat",
-    age: age,
-    ethnic: ethnic,
-    party: party,
-    sex: sex,
+    dewan: dewan ? String(dewan) : "dewan-negara",
+    age: umur ? String(umur) : ALL_AGES,
+    etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
+    party: parti ? String(parti) : ALL_PARTIES,
+    gender: gender ? String(gender) : BOTH_GENDERS,
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<
     DateRange | undefined
-  >(start || end ? { from: start, to: end } : undefined);
-
-  const { setFilter } = useFilter({
-    dewan: dewan,
-    uid: uid,
-    tarikh_mula: start ?? "",
-    tarikh_akhir: end ?? "",
-    umur: data.age === ALL_AGES ? "" : data.age,
-    etnik: data.ethnic === ALL_ETHNICITIES ? "" : data.ethnic,
-    parti: data.party === ALL_PARTIES ? "" : data.party,
-    jantina: data.sex === BOTH_SEXES ? "" : data.sex,
-  });
+  >(
+    tarikh_mula || tarikh_akhir
+      ? {
+          from: tarikh_mula ? new Date(String(tarikh_mula)) : undefined,
+          to: tarikh_akhir ? new Date(String(tarikh_akhir)) : undefined,
+        }
+      : undefined
+  );
 
   const INDIVIDU_OR_GROUP: OptionType[] = [
     {
@@ -142,7 +132,7 @@ const MPFilter = ({
     }))
   );
 
-  const SEX_OPTIONS: OptionType[] = SEXES.map((key: string) => ({
+  const GENDER_OPTIONS: OptionType[] = GENDERS.map((key: string) => ({
     label: t(key, { ns: "demografi" }),
     value: key,
   }));
@@ -152,63 +142,30 @@ const MPFilter = ({
     value: key,
   }));
 
-  const handleIndividuSearch = (
-    dewan: string,
-    uid: string,
-    dateRange?: DateRange
-  ) => {
-    onLoad();
-    setFilter("dewan", dewan);
-    setFilter("uid", uid);
-    setFilter("umur", "");
-    setFilter("etnik", "");
-    setFilter("parti", "");
-    setFilter("jantina", "");
-    // setFilter(
-    //   "tarikh_mula",
-    //   dateRange?.from
-    //     ? format(dateRange.from, "yyyy-MM-dd")
-    //     : ""
-    // );
-    // setFilter(
-    //   "tarikh_akhir",
-    //   dateRange?.to
-    //     ? format(dateRange.to, "yyyy-MM-dd")
-    //     : dateRange?.from
-    //       ? format(dateRange.from, "yyyy-MM-dd")
-    //       : ""
-    // );
-  };
+  const isTablet = useMediaQuery("(min-width: 768px)");
+  const router = useRouter();
+  const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
-  const handleGroupSearch = (dewan: string) => {
+  const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
-    setFilter("dewan", dewan);
-    setFilter("uid", "");
-    setFilter("umur", data.age === ALL_AGES ? "" : data.age);
-    setFilter("etnik", data.ethnic === ALL_ETHNICITIES ? "" : data.ethnic);
-    setFilter("parti", data.party === ALL_PARTIES ? "" : data.party);
-    setFilter("jantina", data.sex === BOTH_SEXES ? "" : data.sex);
-    setFilter(
-      "tarikh_mula",
-      selectedDateRange?.from
-        ? format(selectedDateRange.from, "yyyy-MM-dd")
-        : ""
-    );
-    setFilter(
-      "tarikh_akhir",
-      selectedDateRange?.to
-        ? format(selectedDateRange.to, "yyyy-MM-dd")
-        : selectedDateRange?.from
-        ? format(selectedDateRange.from, "yyyy-MM-dd")
-        : ""
-    );
+    router.push(setSearchParams(router.asPath, params));
   };
 
   const handleClear = () => {
+    handleSearch({
+      uid: "",
+      parti: "",
+      umur: "",
+      etnik: "",
+      gender: "",
+      tarikh_akhir: "",
+      tarikh_mula: "",
+    });
+    setSelectedDateRange(undefined);
     setData("party", ALL_PARTIES);
     setData("age", ALL_AGES);
-    setData("ethnic", ALL_ETHNICITIES);
-    setData("sex", BOTH_SEXES);
+    setData("etnik", ALL_ETHNICITIES);
+    setData("gender", BOTH_GENDERS);
   };
 
   const className = {
@@ -227,9 +184,16 @@ const MPFilter = ({
             onValueChange={dewan => {
               setData("dewan", dewan);
               if (ind_or_grp === "individu") {
-                if (uid)
-                  handleIndividuSearch(dewan, data.uid, selectedDateRange);
-              } else if (ind_or_grp === "group") handleGroupSearch(dewan);
+                if (data.uid)
+                  handleSearch({
+                    dewan,
+                    uid: data.uid,
+                  });
+              } else if (ind_or_grp === "group")
+                handleSearch({
+                  dewan,
+                  uid: "",
+                });
             }}
             defaultValue="dewan-rakyat"
           >
@@ -279,26 +243,28 @@ const MPFilter = ({
                   setData("individu_option", selected);
                   if (selected) {
                     setData("uid", selected.value);
-                    handleIndividuSearch(
-                      data.dewan,
-                      selected.value,
-                      selectedDateRange
-                    );
+                    handleSearch({
+                      uid: selected.value,
+                    });
                   }
                 }}
               />
             </div>
-            <div className="hidden justify-center gap-2 sm:flex">
+            <div className="hidden justify-center gap-2 md:flex">
               <Daterange
-                className="text-blue-600 dark:text-primary-dark"
+                className="text-txt-primary"
                 placeholder={t("current_parlimen")}
                 label={t("date", { ns: "home" })}
                 selected={selectedDateRange}
                 onChange={dateRange => {
                   setSelectedDateRange(dateRange);
                   if (data.uid && dateRange && dateRange?.from && dateRange?.to)
-                    handleIndividuSearch(data.dewan, data.uid, dateRange);
+                    handleSearch({
+                      tarikh_akhir: formatDate(dateRange.from),
+                      tarikh_mula: formatDate(dateRange.to),
+                    });
                 }}
+                numberOfMonths={isTablet ? 2 : 1}
               />
               {selectedDateRange && (
                 <Button
@@ -311,10 +277,83 @@ const MPFilter = ({
                 </Button>
               )}
             </div>
+
+            {/* Mobile Drawer */}
+            <Drawer open={open} onOpenChange={setOpen}>
+              <DrawerTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="ml-auto shadow-button md:hidden"
+                  onClick={() => setOpen(true)}
+                >
+                  <span>{t("filters", { ns: "common" })}</span>
+                  <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
+                    2
+                  </span>
+                  <ChevronDownIcon className="-mx-[5px] size-5" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader className="flex justify-between border-b border-slate-200 dark:border-zinc-700">
+                  <span className="font-semibold text-foreground">
+                    {t("filters", { ns: "common" }) + ":"}
+                  </span>
+                  <DrawerClose />
+                </DrawerHeader>
+                <div className="flex flex-col divide-y bg-background px-4 dark:divide-zinc-800">
+                  <div className="space-y-1 py-3">
+                    <Label label={t("dewan", { ns: "home" }) + ":"} />
+                    <Dropdown
+                      options={DEWAN_OPTIONS}
+                      selected={DEWAN_OPTIONS.find(e => e.value === data.dewan)}
+                      onChange={e => setData("dewan", e.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1 py-3">
+                    <Label label={t("date") + ":"} />
+                    <Daterange
+                      className="w-full"
+                      numberOfMonths={1}
+                      placeholder={t("current_parlimen")}
+                      selected={selectedDateRange}
+                      onChange={setSelectedDateRange}
+                    />
+                  </div>
+                </div>
+
+                <DrawerFooter>
+                  <Button
+                    variant="primary"
+                    className="w-full justify-center"
+                    onClick={() => {
+                      setOpen(false);
+                      handleSearch({
+                        uid: data.uid,
+                        dewan: data.dewan,
+                        tarikh_akhir: formatDate(selectedDateRange?.from),
+                        tarikh_mula: formatDate(selectedDateRange?.to),
+                      });
+                    }}
+                  >
+                    {t("filter", { ns: "common" })}
+                  </Button>
+                  <Button
+                    className="btn w-full justify-center px-3 py-1.5"
+                    onClick={() => {
+                      handleClear();
+                      setOpen(false);
+                    }}
+                  >
+                    {t("clear_all", { ns: "common" })}
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           </>
         ) : (
           <div className="space-y-3">
-            <div className="mx-auto flex w-full justify-between rounded-full border border-border py-2 pl-4.5 pr-1.5 sm:w-fit">
+            <div className="mx-auto flex w-full justify-between rounded-full border border-otl-gray-200 py-2 pl-4.5 pr-1.5 sm:w-fit">
               <div className="flex self-center">
                 <Dropdown
                   className={className.dropdown_ind_grp}
@@ -341,9 +380,9 @@ const MPFilter = ({
                 <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
-                  options={SEX_OPTIONS}
-                  selected={SEX_OPTIONS.find(e => e.value === data.sex)}
-                  onChange={e => setData("sex", e.value)}
+                  options={GENDER_OPTIONS}
+                  selected={GENDER_OPTIONS.find(e => e.value === data.gender)}
+                  onChange={e => setData("gender", e.value)}
                 />
                 <Dropdown
                   className={className.dropdown_demo}
@@ -356,13 +395,13 @@ const MPFilter = ({
                   className={className.dropdown_demo}
                   width="w-fit"
                   options={ETNIK_OPTIONS}
-                  selected={ETNIK_OPTIONS.find(e => e.value === data.ethnic)}
-                  onChange={e => setData("ethnic", e.value)}
+                  selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
+                  onChange={e => setData("etnik", e.value)}
                 />
                 {(data.party !== ALL_PARTIES ||
-                  data.sex !== BOTH_SEXES ||
+                  data.gender !== BOTH_GENDERS ||
                   data.age !== ALL_AGES ||
-                  data.ethnic !== ALL_ETHNICITIES) && (
+                  data.etnik !== ALL_ETHNICITIES) && (
                   <Button
                     variant="ghost"
                     className="group flex justify-center rounded-full p-0 sm:-mr-1.5 sm:h-8 sm:w-8"
@@ -376,7 +415,18 @@ const MPFilter = ({
                 <Button
                   variant="primary"
                   className="h-9 rounded-full"
-                  onClick={() => handleGroupSearch(data.dewan)}
+                  onClick={() =>
+                    handleSearch({
+                      uid: "",
+                      dewan: data.dewan,
+                      parti: data.party !== ALL_PARTIES ? data.party : "",
+                      gender: data.gender !== BOTH_GENDERS ? data.gender : "",
+                      umur: data.age !== ALL_AGES ? data.age : "",
+                      etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+                      tarikh_akhir: formatDate(selectedDateRange?.from),
+                      tarikh_mula: formatDate(selectedDateRange?.to),
+                    })
+                  }
                 >
                   <MagnifyingGlassIcon className="size-5 text-white" />
                   {t("placeholder.search", { ns: "common" })}
@@ -477,11 +527,13 @@ const MPFilter = ({
                     </div>
 
                     <div className="w-full space-y-1">
-                      <Label label={t("sex", { ns: "demografi" }) + ":"} />
+                      <Label label={t("gender", { ns: "demografi" }) + ":"} />
                       <Dropdown
-                        options={SEX_OPTIONS}
-                        selected={SEX_OPTIONS.find(e => e.value === data.sex)}
-                        onChange={e => setData("sex", e.value)}
+                        options={GENDER_OPTIONS}
+                        selected={GENDER_OPTIONS.find(
+                          e => e.value === data.gender
+                        )}
+                        onChange={e => setData("gender", e.value)}
                       />
                     </div>
                   </div>
@@ -491,28 +543,38 @@ const MPFilter = ({
                     <Dropdown
                       anchor="left bottom-10"
                       options={ETNIK_OPTIONS}
-                      selected={ETNIK_OPTIONS.find(
-                        e => e.value === data.ethnic
-                      )}
-                      onChange={e => setData("ethnic", e.value)}
+                      selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
+                      onChange={e => setData("etnik", e.value)}
                     />
                   </div>
                 </div>
 
                 <DrawerFooter>
                   <Button
-                    variant={"primary"}
+                    variant="primary"
                     className="w-full justify-center"
                     onClick={() => {
                       setOpen(false);
-                      handleGroupSearch(data.dewan);
+                      handleSearch({
+                        uid: "",
+                        dewan: data.dewan,
+                        parti: data.party !== ALL_PARTIES ? data.party : "",
+                        gender: data.gender !== BOTH_GENDERS ? data.gender : "",
+                        umur: data.age !== ALL_AGES ? data.age : "",
+                        etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+                        tarikh_akhir: formatDate(selectedDateRange?.from),
+                        tarikh_mula: formatDate(selectedDateRange?.to),
+                      });
                     }}
                   >
                     {t("filter", { ns: "common" })}
                   </Button>
                   <Button
                     className="btn w-full justify-center px-3 py-1.5"
-                    onClick={handleClear}
+                    onClick={() => {
+                      handleClear();
+                      setOpen(false);
+                    }}
                   >
                     {t("clear_all", { ns: "common" })}
                   </Button>

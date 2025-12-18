@@ -1,69 +1,119 @@
-import { At, Container } from "@components/index";
 import { useTranslation } from "@hooks/useTranslation";
-import Image from "next/image";
+import {
+  Footer,
+  SiteInfo,
+  FooterSection,
+  SiteLinkGroup,
+  SiteLink,
+  FooterLogo,
+} from "@govtechmy/myds-react/footer";
+import { Link } from "@govtechmy/myds-react/link";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  XIcon,
+  YoutubeIcon,
+} from "@govtechmy/myds-react/icon";
 
-const Footer = () => {
+const FooterLayout = () => {
   const { t } = useTranslation();
-  const styles = {
-    link: "link text-zinc-500 cursor-pointer text-sm hover:text-foreground"
-  }
+
+  const social_media = [
+    {
+      icon: <FacebookIcon />,
+      name: "Facebook",
+      href: "https://www.facebook.com/ParlimenMY/",
+    },
+    { icon: <XIcon />, name: "X", href: "https://x.com/MYParlimen" },
+    {
+      icon: <InstagramIcon />,
+      name: "Instagram",
+      href: "https://www.instagram.com/parlimenmalaysia/",
+    },
+    {
+      icon: <YoutubeIcon />,
+      name: "Youtube",
+      href: "https://www.youtube.com/channel/UCu2I5HXcZudP59E5Ld10K_g",
+    },
+  ];
+
+  const open_source = [
+    {
+      name: "frontend",
+      href: "https://www.github.com/govtechmy/hansards-front",
+    },
+    { name: "backend", href: "https://www.github.com/govtechmy/hansards-back" },
+    {
+      name: "parser",
+      href: "https://www.github.com/govtechmy/hansards-dataproc",
+    },
+    {
+      name: "ui_ux",
+      href: "https://www.figma.com/design/YHg0aC8rHlEaX84ZQ5FwJt/Parliament-Hansards",
+    },
+  ];
 
   return (
-    <Container background="bg-slate-50 dark:bg-zinc-900 border-t border-slate-200 dark:border-zinc-800 max-sm:px-3 pt-12 pb-16 z-10">
-      <div className="flex w-full max-md:flex-col max-md:gap-8 md:justify-between">
-        <div className="flex gap-4">
-          {/* LOGO */}
-          <div className="mt-1 w-12">
-            <Image
-              src="/static/images/jata_logo.png"
-              width={48}
-              height={36}
-              alt="jata negara"
+    <Footer>
+      <FooterSection className="flex w-full flex-col justify-between gap-4 border-none text-sm text-txt-black-500 md:pb-0 md:max-lg:gap-4.5 lg:max-w-screen-2xl lg:flex-row lg:gap-6">
+        <SiteInfo>
+          <div className="flex items-center gap-x-2.5 whitespace-nowrap font-poppins text-body-md font-semibold text-txt-black-900">
+            <FooterLogo
+              logo={
+                <img
+                  src="/static/images/jata-negara.png"
+                  width={36}
+                  height={28}
+                  alt="Jata Negara"
+                />
+              }
             />
+            {t("footer.parlimen")}
           </div>
-          <div>
-            <div className="mb-2 font-bold uppercase">
-              {t("footer.parlimen")}
-            </div>
-            <p className="text-zinc-500 text-sm">
-              © {new Date().getFullYear()} {t("footer.parlimen")}
-            </p>
+          <p className="whitespace-pre-line text-body-sm text-txt-black-700">
+            Bangunan Parlimen,{"\n"}
+            Jalan Parlimen,{"\n"}
+            50680, Kuala Lumpur
+          </p>
+          <p className="text-body-sm font-semibold text-txt-black-900">
+            {t("footer.follow_us")}
+          </p>
+          <div className="flex gap-3">
+            {social_media.map(({ icon, name, href }) => (
+              <Link
+                key={name}
+                newTab
+                href={href}
+                underline="hover"
+                className="hover:text-txt-black-900"
+              >
+                {icon}
+              </Link>
+            ))}
           </div>
-        </div>
-        <div className="flex gap-x-6 lg:gap-x-8 text-sm">
-          {/* OPEN SOURCE CODE */}
-          <div className="flex w-full flex-col gap-y-3 md:w-[200px]">
-            <p className="font-bold">{t("footer.open_source")}</p>
+        </SiteInfo>
 
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.frontend")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.backend")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.parser")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.ui_ux")}
-            </At>
-          </div>
-
-          {/* OPEN SOURCE DATA */}
-          <div className="flex w-full flex-col gap-y-3 md:w-[200px]">
-            <p className="font-bold">{t("footer.open_data")}</p>
-
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.guiding_principles")}
-            </At>
-            <At className={styles.link} scrollTop={false} href="#">
-              {t("footer.terms_of_use")}
-            </At>
-          </div>
-        </div>
-      </div>
-    </Container>
+        {/* <SiteLinkGroup groupTitle={t("footer.open_source")}>
+            {open_source.map(({ name, href }) => (
+              <SiteLink
+                key={name}
+                newTab
+                href={href}
+                underline="hover"
+                className="hover:text-txt-black-900"
+              >
+                {t("footer." + name)}
+              </SiteLink>
+            ))}
+          </SiteLinkGroup> */}
+      </FooterSection>
+      <FooterSection className="flex w-full flex-col justify-between gap-4 border-none text-sm text-txt-black-500 md:pb-0 md:max-lg:gap-4.5 lg:max-w-screen-2xl lg:flex-row lg:gap-6">
+        <p>
+          {t("footer.all_rights_reserved")} © {new Date().getFullYear()}
+        </p>
+      </FooterSection>
+    </Footer>
   );
 };
 
-export default Footer;
+export default FooterLayout;

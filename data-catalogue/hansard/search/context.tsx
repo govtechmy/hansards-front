@@ -1,4 +1,5 @@
 import debounce from "lodash/debounce";
+import { useRouter } from "next/router";
 import {
   useReducer,
   useCallback,
@@ -199,9 +200,44 @@ export const SearchProvider = (props: SearchProviderProps) => {
     [store.searchValue]
   );
 
+  // find matches if `?search=${value}` is present
+  // const param = "search";
+  // const router = useRouter();
+  // const asPath = router.asPath;
+  // const rx = new RegExp("[?&]" + param + "=([^&]+).*$");
+
+  // useEffect(() => {
+  //   const hash = asPath.lastIndexOf("#");
+  //   const url = hash !== -1 ? asPath.slice(0, hash) : asPath;
+  //   const query_str = url.match(rx);
+  //   const searchValue = query_str ? decodeURIComponent(query_str[1]) : "";
+
+  //   if (searchValue)
+  //     dispatch({
+  //       type: IActionTypes.setSearchValue,
+  //       payload: { searchValue },
+  //     });
+  // }, [asPath]);
+
   useEffect(() => {
-    // After calculating all match components, calculate totalCount and activeCount
+    // After calculating all match components, calculate activeCount
     if (store.matchedList.length > 0) {
+      //   const hash = asPath.lastIndexOf("#");
+      //   const url = hash !== -1 ? asPath.slice(0, hash) : asPath;
+      //   const query_str = url.match(rx);
+      //   const searchValue = query_str ? decodeURIComponent(query_str[1]) : "";
+
+      //   if (searchValue && hash > -1) {
+      //     const activeId = `${asPath.slice(hash + 1)}_0`;
+      //     const activeCount = store.matchedList.findIndex(
+      //       match => match.id === activeId
+      //     );
+      //     if (activeCount > -1)
+      //       dispatch({
+      //         type: IActionTypes.setActiveMatch,
+      //         payload: { activeId, activeCount: activeCount + 1 },
+      //       });
+      //   } else
       dispatch({
         type: IActionTypes.setActiveMatch,
         payload: { activeId: store.matchedList[0].id, activeCount: 1 },

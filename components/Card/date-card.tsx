@@ -13,7 +13,7 @@ const DateCard = ({ className, date, size }: DateCardProps) => {
     <>
       <div
         className={cn(
-          "shadow-button p-1.5 h-auto max-sm:max-h-20 flex-col flex justify-center text-center border border-slate-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 select-none",
+          "flex h-fit select-none flex-col justify-center rounded-md border border-otl-gray-200 bg-bg-white p-1.5 text-center shadow-button max-sm:max-h-20",
           {
             "w-[50px] lg:w-[60px]": size == "sm",
             "w-[60px] lg:w-[80px]": size == "lg",
@@ -22,35 +22,28 @@ const DateCard = ({ className, date, size }: DateCardProps) => {
         )}
       >
         <span
-          className={cn(
-            "uppercase text-[#AE2929]",
-            {
-              "text-[10px] leading-[14px] lg:text-xs": size == "sm",
-              "text-xs lg:text-sm lg:font-medium": size == "lg",
-            },
-          )}
+          className={cn("uppercase text-txt-danger", {
+            "text-[10px] leading-[14px] lg:text-xs": size == "sm",
+            "text-xs lg:text-sm lg:font-medium": size == "lg",
+          })}
         >
           {_date[1]}
         </span>
         <span
-          className={cn(
-            "text-zinc-900 dark:text-white",
-            {
-              "text-[16px] leading-5 font-medium lg:text-xl lg:font-semibold": size == "sm",
-              "text-xl lg:text-[32px] lg:leading-tight font-semibold": size == "lg",
-            },
-          )}
+          className={cn("text-txt-black-900", {
+            "text-[16px] font-medium leading-5 lg:text-xl lg:font-semibold":
+              size == "sm",
+            "text-xl font-semibold lg:text-[32px] lg:leading-tight":
+              size == "lg",
+          })}
         >
           {_date[2]}
         </span>
         <span
-          className={cn(
-            "text-dim",
-            {
-              "text-[10px] leading-[14px] lg:text-xs": size == "sm",
-              "text-xs lg:text-sm lg:font-medium": size == "lg",
-            },
-          )}
+          className={cn("text-txt-black-500", {
+            "text-[10px] leading-[14px] lg:text-xs": size == "sm",
+            "text-xs lg:text-sm lg:font-medium": size == "lg",
+          })}
         >
           {_date[3]}
         </span>

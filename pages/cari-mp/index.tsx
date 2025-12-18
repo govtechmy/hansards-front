@@ -15,6 +15,7 @@ const CariMP: Page = ({
   count,
   excerpts,
   query,
+  speakers,
   timeseries,
   top_speakers,
   top_word_freq,
@@ -27,6 +28,7 @@ const CariMP: Page = ({
           count={count}
           excerpts={excerpts}
           query={query}
+          speakers={speakers}
           timeseries={timeseries}
           top_speakers={top_speakers}
           top_word_freq={top_word_freq}
@@ -38,8 +40,10 @@ const CariMP: Page = ({
 
 export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
-  async ({ query }) => {
+  async ({ query, locale }) => {
     try {
+      const { data: speakers } = await get("api/author/");
+
       if (Object.keys(query).length === 0)
         return {
           notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
@@ -50,6 +54,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             count: 0,
             excerpts: null,
             query: query ?? null,
+            speakers,
             timeseries: {
               date: Array.from({ length: 365 }, (_, i) => i * 86400000),
               freq: [],
@@ -81,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           age_group: umur,
           ethnicity: etnik,
           party: parti,
-          sex: jantina,
+          gender: jantina,
         }),
         get("api/search-plot/", {
           uid: uid,
@@ -91,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           age_group: umur,
           ethnicity: etnik,
           party: parti,
-          sex: jantina,
+          gender: jantina,
         }),
       ]);
 
@@ -109,6 +114,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           count: excerpt.count ?? 0,
           excerpts: excerpt.results ?? null,
           query: query ?? null,
+          speakers,
           timeseries: data.chart_data ?? {
             date: Array.from({ length: 365 }, (_, i) => i * 86400000),
             freq: [],
@@ -117,9 +123,14 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           top_speakers: data.top_speakers ?? null,
         },
       };
-    } catch (error: any) {
-      console.error(error.message);
-      return { notFound: true };
+    } catch (error) {
+      console.error("API error in cari-mp:", error);
+      return {
+        redirect: {
+          destination: locale === "en-GB" ? "/en-GB/500" : "/500",
+          permanent: false,
+        },
+      };
     }
   }
 );

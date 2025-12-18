@@ -9,14 +9,16 @@ import { COLOR } from "@lib/constants";
 import { SliderProvider } from "@lib/contexts/slider";
 import { cn } from "@lib/helpers";
 import { capitalize } from "@lib/utils";
-import { UID_TO_NAME_DR } from "@lib/uid";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useEffect, useMemo, useRef, useState } from "react";
 import KeywordFilter from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
+import { Speaker } from "@lib/types";
+import { get } from "@lib/api";
 
 /**
  * Keyword
@@ -38,18 +40,31 @@ const Timeseries = dynamic(() => import("@charts/timeseries"), {
 
 export interface KeywordProps extends ExcerptsProps {
   query: ParsedUrlQuery;
+  speakers: Array<Speaker>;
   timeseries: Record<"date" | "freq", number[]>;
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
 }
 
-const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_freq }: KeywordProps) => {
+const Keyword = ({
+  count,
+  excerpts,
+  query,
+  speakers,
+  timeseries,
+  top_speakers,
+  top_word_freq,
+}: KeywordProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
+  const router = useRouter();
   const ref = useRef<HTMLDivElement | null>(null);
   const { theme } = useTheme();
 
   const { q, dewan, tarikh_mula, tarikh_akhir } = query;
   const keyword = q ? String(q) : undefined;
+  const [keywordQuery, setKeywordQuery] = useState(keyword ?? "");
+  const [suggestion, setSuggestion] = useState<string>("");
+
   const house = dewan ? String(dewan) : "";
   const start =
     tarikh_mula !== undefined && !Array.isArray(tarikh_mula)
@@ -71,6 +86,43 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
     []
   );
 
+  const getAutocomplete = async (query: string) => {
+    try {
+      const response = await get(
+        "autocomplete",
+        {
+          q: query,
+        },
+        "api"
+      );
+
+      const data = response.data;
+
+      // Check if the API returned a server error flag
+      if (data.error && data.errorType === "server_error") {
+        router.push(router.locale === "en-GB" ? "/en-GB/500" : "/500");
+        return;
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching autocomplete:", error);
+      return { suggestions: [], query };
+    }
+  };
+
+  const barmeter_data = top_speakers
+    ? top_speakers.map(s => {
+        const id = Object.keys(s)[0];
+        const speaker = speakers.find(
+          e => String(e.new_author_id) === id
+        )?.name;
+        const total = s[id];
+
+        return { x: speaker ?? "", y: total };
+      })
+    : [];
+
   useEffect(() => {
     setLoading(false);
     setRange([0, timeseries.date.length - 1]);
@@ -79,30 +131,65 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
     }
   }, [timeseries]);
 
+  useEffect(() => {
+    const fetchSuggestion = async () => {
+      if (keywordQuery.length > 0) {
+        try {
+          const result = await getAutocomplete(keywordQuery);
+
+          // If result is undefined, it means we redirected to 500 page
+          if (!result) return;
+
+          if (result.suggestions && result.suggestions.length > 0) {
+            setSuggestion(result.suggestions[0]);
+          } else {
+            setSuggestion("");
+          }
+        } catch (error) {
+          console.error("Error fetching autocomplete:", error);
+          setSuggestion("");
+        }
+      } else {
+        setSuggestion("");
+      }
+    };
+
+    const debounceTimeout = setTimeout(fetchSuggestion, 200);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [keywordQuery, router]);
+
   return (
     <Container className="divide-y divide-border">
       <Section>
         {/* Search for any keywords or phrases! */}
         <h2 className="header text-center">{t("search_keywords")}</h2>
 
-        <KeywordFilter onLoad={() => setLoading(true)} query={query} />
+        <KeywordFilter
+          onLoad={() => setLoading(true)}
+          query={query}
+          keywordQuery={keywordQuery}
+          setKeywordQuery={setKeywordQuery}
+          suggestion={suggestion}
+          setSuggestion={setSuggestion}
+        />
 
-        <div className="w-full relative mt-6" ref={ref}>
-          {/* Time-series of "keyword” in Parliament */}
-          <h3 className="title leading-7 block mb-3">
+        {/* Time-series of "keyword" in Parliament */}
+        <div className="relative mt-6 w-full" ref={ref}>
+          <h3 className="title mb-3 block leading-7">
             {keyword &&
               t("timeseries_title", {
                 keyword: keyword,
-                house: t(house.replace("-", "_"), { ns: "common" })
+                house: t(house.replace("-", "_"), { ns: "common" }),
               })}
           </h3>
           <SliderProvider>
-            {(play) => (
+            {play => (
               <div className="relative">
                 <Timeseries
                   className={cn(
                     !loading && chartEmpty && "opacity-10",
-                    "h-[300px]"
+                    "h-[250px]"
                   )}
                   isLoading={loading}
                   enableAnimation={!play}
@@ -131,11 +218,11 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
                   period={diff > 1095 ? "month" : "day"}
                   value={range}
                   data={timeseries.date}
-                  onChange={(e) => setRange(e)}
+                  onChange={e => setRange(e)}
                 />
                 {!loading && chartEmpty && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-border flex items-center gap-2 rounded-md px-3 py-1.5">
+                    <div className="flex items-center gap-2 rounded-md bg-border px-3 py-1.5">
                       {keyword ? (
                         <>
                           <FaceFrownIcon className="size-6" />
@@ -159,15 +246,15 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
       {count > 0 && (
         <>
           <Excerpts count={count} excerpts={excerpts} query={query} />
+          {/* Words related to {{ keyword }} */}
           {top_word_freq && (
-            <section className="py-8 lg:py-12 space-y-6 lg:space-y-8">
-              {/* Words related to {{ keyword }} */}
+            <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
                 {t("words_related", { keyword: `"${query.q}"` })}
               </h3>
 
               <BubbleCloud
-                className="w-full h-[350px] sm:h-[900px]"
+                className="h-[350px] w-full sm:h-[700px]"
                 data={Object.entries(top_word_freq).map(([word, freq]) => ({
                   id: word,
                   value: freq,
@@ -175,9 +262,9 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
               />
             </section>
           )}
+          {/* "{{ keyword }}": Most spoken by */}
           {top_speakers && (
-            <section className="py-8 lg:py-12 space-y-6 lg:space-y-8">
-              {/* "{{ keyword }}": Most spoken by */}
+            <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
                 {t("most_spoken_by", {
                   keyword: `"${capitalize(String(query.q))}"`,
@@ -185,12 +272,9 @@ const Keyword = ({ count, excerpts, query, timeseries, top_speakers, top_word_fr
               </h3>
 
               <BarMeter
-                className="max-w-screen-sm mx-auto"
+                className="mx-auto max-w-screen-sm"
                 layout="horizontal"
-                data={top_speakers.map((s) => ({
-                  x: UID_TO_NAME_DR[Object.keys(s)[0]] ?? Object.keys(s)[0],
-                  y: Object.values(s)[0],
-                }))}
+                data={barmeter_data}
                 relative
                 precision={0}
               />

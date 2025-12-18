@@ -1,0 +1,15 @@
+{
+  "gender": "Jantina",
+  "both_genders": "Kedua-dua jantina",
+  "m": "Lelaki",
+  "f": "Perempuan",
+  "ethnicity": "Etnik",
+  "all_ethnicities": "Semua etnik",
+  "bumiputera": "Bumiputera",
+  "chinese": "Cina",
+  "indian": "India",
+  "other": "Lain-lain",
+  "age": "Umur",
+  "age_group": "Kumpulan Umur",
+  "all_ages": "Semua umur"
+}
