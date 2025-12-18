@@ -52,14 +52,36 @@ const SpeechBubble = ({
   // const { download } = useAnalytics(hansard_id);
   // const [downloadOpen, setDownloadOpen] = useState<boolean>(false);
   const [highlight, setHighlight] = useState<boolean>(false);
+  const [imgValid, setImgValid] = useState<boolean>(false);
+  const [imgUrl, setImgUrl] = useState<string>("");
 
   const router = useRouter();
   const asPath = router.asPath;
+
   useEffect(() => {
     const hash = window.location.hash.slice(1);
     const sameId = Number(hash) === index;
     if (hash && sameId) setHighlight(true);
-  }, [asPath]);
+
+    // ---------- Image validation logic ----------
+    const url = `${process.env.NEXT_PUBLIC_ASSETS_URL}/img/mp-240/${uid}.jpg`;
+    const img = new Image();
+
+    img.onload = () => {
+      setImgValid(true);
+      setImgUrl(url);
+    };
+    img.onerror = () => {
+      setImgValid(false);
+      setImgUrl("");
+    };
+    img.src = url;
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [asPath, uid, index]);
 
   return (
     <>
@@ -70,14 +92,20 @@ const SpeechBubble = ({
             {uid === null ? (
               <EmptyMP />
             ) : (
-              <img
-                src={`${process.env.NEXT_PUBLIC_ASSETS_URL}/img/mp-240/${uid}.jpg`}
-                width={36}
-                height={36}
-                alt={author}
-                className="p"
-                fetchPriority={index < 10 ? "high" : "auto"}
-              />
+              <>
+                {imgValid ? (
+                  <img
+                    src={imgUrl}
+                    width={36}
+                    height={36}
+                    alt={author}
+                    className="p"
+                    fetchPriority={index < 10 ? "high" : "auto"}
+                  />
+                ) : (
+                  <EmptyMP />
+                )}
+              </>
             )}
           </div>
         </div>
