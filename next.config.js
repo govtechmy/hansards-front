@@ -18,23 +18,10 @@ const pwa = require("next-pwa")({
  * */
 const nextConfig = {
   i18n,
-  output: process.env.NEXT_OUTPUT,
+  output: "standalone", // REQUIRED for Amplify
   reactStrictMode: true,
   swcMinify: true,
-  env: {
-    NEXT_PUBLIC_DOWNLOAD_URL: process.env.NEXT_PUBLIC_DOWNLOAD_URL,
-  },
-  publicRuntimeConfig: {
-    APP_NAME: "hansard.parlimen.gov.my",
-    META_AUTHOR: "Parliament of Malaysia",
-    META_THEME: "B49B1A",
-    META_KEYWORDS: "hansard parlimen malaysia",
-    META_DOMAIN: "hansard.parlimen.gov.my",
-    DOWNLOAD_URL: process.env.NEXT_PUBLIC_DOWNLOAD_URL,
-    ASSETS_URL: process.env.NEXT_PUBLIC_ASSETS_URL,
-    META_URL: process.env.NEXT_PUBLIC_APP_URL,
-    META_IMAGE: `${process.env.NEXT_PUBLIC_APP_URL}/static/images/og_{{lang}}.png`,
-  },
+
   webpack: config => {
     config.module.rules.push({
       test: /components|hooks\/index.ts/i,
@@ -42,6 +29,7 @@ const nextConfig = {
     });
     return config;
   },
+
   async redirects() {
     return [
       {
@@ -57,6 +45,8 @@ const nextConfig = {
     ];
   },
 };
+
+module.exports = analyzer(pwa(nextConfig));
 
 module.exports = () => {
   // Build-time visibility check for public envs (remove after verification)

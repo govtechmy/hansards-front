@@ -1,7 +1,7 @@
 import NextHead from "next/head";
 import { FunctionComponent } from "react";
 import { useTranslation } from "next-i18next";
-import useConfig from "next/config";
+import { appConfig } from "src/config/app.config";
 
 interface MetadataProps {
   title?: string | null;
@@ -9,19 +9,20 @@ interface MetadataProps {
   keywords?: string;
 }
 
-const Metadata: FunctionComponent<MetadataProps> = ({ title, description, keywords = "" }) => {
+const Metadata: FunctionComponent<MetadataProps> = ({
+  title,
+  description,
+  keywords = "",
+}) => {
   const { t, i18n } = useTranslation();
-  const {
-    publicRuntimeConfig: {
-      APP_NAME,
-      META_AUTHOR,
-      META_THEME,
-      META_DOMAIN,
-      META_URL,
-      META_IMAGE,
-      META_KEYWORDS,
-    },
-  } = useConfig();
+
+  const APP_NAME = appConfig.appName;
+  const META_IMAGE = appConfig.meta.image;
+  const META_AUTHOR = appConfig.meta.author;
+  const META_THEME = appConfig.meta.theme;
+  const META_DOMAIN = appConfig.meta.domain;
+  const META_URL = appConfig.meta.url;
+  const META_KEYWORDS = appConfig.meta.keywords;
 
   const META = {
     title: title ? title.concat(" | ", APP_NAME) : APP_NAME,
