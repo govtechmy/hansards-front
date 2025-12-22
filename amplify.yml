@@ -9,12 +9,9 @@ frontend:
       commands:
         - yarn build
   artifacts:
-    baseDirectory: /
+    baseDirectory: .next/standalone
     files:
-      - ".next/standalone/**/*"
-      - "public/**/*"
-      - "next.config.js"
-      - "package.json"
+      - "**/*"
   cache:
     paths:
       - node_modules/**/*

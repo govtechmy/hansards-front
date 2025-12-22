@@ -51,19 +51,3 @@ jobs:
           ZIP_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
           curl -X PUT -H "Content-Type: application/zip" --data-binary @app.zip "$ZIP_URL"
           aws amplify start-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --job-id "$JOB_ID"
-      # Wait for deployment to complete
-      - name: Wait for deployment
-        run: |
-          while true; do
-            STATUS=$(aws amplify get-job --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --job-id "$JOB_ID" | jq -r '.job.summary.status')
-            if [ "$STATUS" = "SUCCEED" ]; then
-              echo "Deployment succeeded"
-              break
-            elif [ "$STATUS" = "FAILED" ]; then
-              echo "Deployment failed"
-              exit 1
-            else
-              echo "Deployment status: $STATUS, waiting..."
-              sleep 30
-            fi
-          done
