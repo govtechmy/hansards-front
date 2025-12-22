@@ -4,6 +4,25 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "ANALYZE=$ANALYZE" >> .env
+        - echo "API_AUTH_TOKEN=$API_AUTH_TOKEN" >> .env
+        - echo "API_URL=$API_URL" >> .env
+        - echo "AUTH_TOKEN=$AUTH_TOKEN" >> .env
+        - echo "GET_COUNTS=$GET_COUNTS" >> .env
+        - echo "GET_TOKEN=$GET_TOKEN" >> .env
+        - echo "POST_DL=$POST_DL" >> .env
+        - echo "POST_SHARE=$POST_SHARE" >> .env
+        - echo "POST_TOKEN=$POST_TOKEN" >> .env
+        - echo "POST_VIEW=$POST_VIEW" >> .env
+        - echo "REVALIDATE_TOKEN=$REVALIDATE_TOKEN" >> .env
+        - echo "TINYBIRD_API=$TINYBIRD_API" >> .env
+        - echo "NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV" >> .env
+        - echo "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" >> .env
+        - echo "NEXT_PUBLIC_ASSETS_URL=$NEXT_PUBLIC_ASSETS_URL" >> .env
+        - echo "NEXT_PUBLIC_AUTHORIZATION_TOKEN=$NEXT_PUBLIC_AUTHORIZATION_TOKEN" >> .env
+        - echo "NEXT_PUBLIC_DOWNLOAD_URL=$NEXT_PUBLIC_DOWNLOAD_URL" >> .env
+        - echo "NEXT_PUBLIC_I18N_URL=$NEXT_PUBLIC_I18N_URL" >> .env
+        - echo "NEXT_PUBLIC_SEJARAH_URL=$NEXT_PUBLIC_SEJARAH_URL" >> .env
         - yarn install --frozen-lockfile
     build:
       commands:
