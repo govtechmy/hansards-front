@@ -18,7 +18,6 @@ const pwa = require("next-pwa")({
  * */
 const nextConfig = {
   i18n,
-  output: "standalone", // REQUIRED for Amplify
   reactStrictMode: true,
   swcMinify: true,
 

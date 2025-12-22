@@ -9,7 +9,7 @@ frontend:
       commands:
         - yarn build
   artifacts:
-    baseDirectory: .next/standalone
+    baseDirectory: .next
     files:
       - "**/*"
   cache:
