@@ -1,4 +1,5 @@
 import { useTranslation } from "@hooks/useTranslation";
+import Image from "next/image";
 import {
   Footer,
   SiteInfo,
@@ -60,7 +61,7 @@ const FooterLayout = () => {
           <div className="flex items-center gap-x-2.5 whitespace-nowrap font-poppins text-body-md font-semibold text-txt-black-900">
             <FooterLogo
               logo={
-                <img
+                <Image
                   src="/static/images/jata-negara.png"
                   width={36}
                   height={28}

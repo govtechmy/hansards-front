@@ -9,45 +9,48 @@ on:
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-#       # Setup Node.js
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
-#           cache: "yarn"
-#       # Configure AWS Credentials
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v4
-#         with:
-#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-#           aws-region: ap-southeast-1
-#       # Install dependencies
-#       - name: Install dependencies
-#         run: yarn install --frozen-lockfile
-#       # Load NEXT_PUBLIC envs from Secret JSON
-#       - name: Load NEXT_PUBLIC envs from JSON secret
-#         run: |
-#           echo '${{ secrets.DEV_NEXT_PUBLIC_ENV }}' | jq '.' > next_public_env.json
-#           jq -r 'to_entries[] | "\(.key)=\(.value)"' next_public_env.json >> $GITHUB_ENV
-#       # Load server-only API envs from Secret JSON
-#       - name: Load NEXT_API envs from JSON secret
-#         run: |
-#           echo '${{ secrets.DEV_NEXT_API_ENV }}' | jq '.' > next_api_env.json
-#           jq -r 'to_entries[] | "\(.key)=\(.value)"' next_api_env.json >> $GITHUB_ENV
-#       # Create ZIP of source code
-#       - name: Create ZIP
-#         run: zip -r app.zip . -x "*.git*" "*node_modules*"
-#       # Deploy to Amplify
-#       - name: Deploy to Amplify
-#         run: |
-#           DEPLOYMENT=$(aws amplify create-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging)
-#           JOB_ID=$(echo $DEPLOYMENT | jq -r '.jobId')
-#           ZIP_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
-#           curl -X PUT -H "Content-Type: application/zip" --data-binary @app.zip "$ZIP_URL"
-#           aws amplify start-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --job-id "$JOB_ID"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Deployment steps are defined in amplify.yml"
+
+      # - name: Checkout code
+      #   uses: actions/checkout@v4
+      # # Setup Node.js
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 20
+      #     cache: "yarn"
+      # # Configure AWS Credentials
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+      #     aws-region: ap-southeast-1
+      # # Install dependencies
+      # - name: Install dependencies
+      #   run: yarn install --frozen-lockfile
+      # # Load NEXT_PUBLIC envs from Secret JSON
+      # - name: Load NEXT_PUBLIC envs from JSON secret
+      #   run: |
+      #     echo '${{ secrets.DEV_NEXT_PUBLIC_ENV }}' | jq '.' > next_public_env.json
+      #     jq -r 'to_entries[] | "\(.key)=\(.value)"' next_public_env.json >> $GITHUB_ENV
+      # # Load server-only API envs from Secret JSON
+      # - name: Load NEXT_API envs from JSON secret
+      #   run: |
+      #     echo '${{ secrets.DEV_NEXT_API_ENV }}' | jq '.' > next_api_env.json
+      #     jq -r 'to_entries[] | "\(.key)=\(.value)"' next_api_env.json >> $GITHUB_ENV
+      # # Create ZIP of source code
+      # - name: Create ZIP
+      #   run: zip -r app.zip . -x "*.git*" "*node_modules*"
+      # # Deploy to Amplify
+      # - name: Deploy to Amplify
+      #   run: |
+      #     DEPLOYMENT=$(aws amplify create-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging)
+      #     JOB_ID=$(echo $DEPLOYMENT | jq -r '.jobId')
+      #     ZIP_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
+      #     curl -X PUT -H "Content-Type: application/zip" --data-binary @app.zip "$ZIP_URL"
+      #     aws amplify start-deployment --app-id ${{ secrets.AMPLIFY_APP_ID }} --branch-name staging --job-id "$JOB_ID"

@@ -58,10 +58,6 @@ module.exports = () => {
     process.env.NEXT_PUBLIC_APP_ENV
   );
   console.log(
-    "[env-check] NEXT_PUBLIC_I18N_URL:",
-    process.env.NEXT_PUBLIC_I18N_URL
-  );
-  console.log(
     "[env-check] NEXT_PUBLIC_DOWNLOAD_URL:",
     process.env.NEXT_PUBLIC_DOWNLOAD_URL
   );

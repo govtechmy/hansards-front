@@ -21,7 +21,6 @@ frontend:
         - echo "NEXT_PUBLIC_ASSETS_URL=$NEXT_PUBLIC_ASSETS_URL" >> .env
         - echo "NEXT_PUBLIC_AUTHORIZATION_TOKEN=$NEXT_PUBLIC_AUTHORIZATION_TOKEN" >> .env
         - echo "NEXT_PUBLIC_DOWNLOAD_URL=$NEXT_PUBLIC_DOWNLOAD_URL" >> .env
-        - echo "NEXT_PUBLIC_I18N_URL=$NEXT_PUBLIC_I18N_URL" >> .env
         - echo "NEXT_PUBLIC_SEJARAH_URL=$NEXT_PUBLIC_SEJARAH_URL" >> .env
         - yarn install --frozen-lockfile
     build:

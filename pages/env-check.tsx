@@ -6,7 +6,6 @@ type EnvStatus = { key: string; isSet: boolean; length?: number };
 const PUBLIC_KEYS = [
   "NEXT_PUBLIC_APP_URL",
   "NEXT_PUBLIC_APP_ENV",
-  "NEXT_PUBLIC_I18N_URL",
   "NEXT_PUBLIC_DOWNLOAD_URL",
   "NEXT_PUBLIC_SEJARAH_URL",
   "NEXT_PUBLIC_TILESERVER_URL",

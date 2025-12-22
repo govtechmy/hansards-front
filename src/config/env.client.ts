@@ -12,7 +12,6 @@ function requireClientEnv(key: string): string {
 export const clientEnv = {
   NEXT_PUBLIC_APP_URL: requireClientEnv("NEXT_PUBLIC_APP_URL"),
   NEXT_PUBLIC_APP_ENV: requireClientEnv("NEXT_PUBLIC_APP_ENV"),
-  NEXT_PUBLIC_I18N_URL: requireClientEnv("NEXT_PUBLIC_I18N_URL"),
   NEXT_PUBLIC_DOWNLOAD_URL: requireClientEnv("NEXT_PUBLIC_DOWNLOAD_URL"),
   NEXT_PUBLIC_AUTHORIZATION_TOKEN: requireClientEnv(
     "NEXT_PUBLIC_AUTHORIZATION_TOKEN"

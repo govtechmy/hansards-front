@@ -4,7 +4,7 @@ module.exports = {
     "prettier",
     // "eslint:recommended",
     // "plugin:@typescript-eslint/recommended",
-    'plugin:@next/next/recommended'
+    "plugin:@next/next/recommended",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
@@ -14,4 +14,12 @@ module.exports = {
     "@next/next/no-html-link-for-pages": "off",
     "import/no-anonymous-default-export": "off",
   },
+  overrides: [
+    {
+      files: ["**/*.tsx"],
+      rules: {
+        "react-refresh/only-export-components": "off",
+      },
+    },
+  ],
 };
