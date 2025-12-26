@@ -35,6 +35,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
     () =>
       Object.keys(archive)
         .reverse()
+        .filter(p => archive[p] && archive[p].start_date && archive[p].end_date)
         .map(p => {
           const { start_date, end_date, ...sessions } = archive[p];
           const start = start_date.substring(0, 4);
@@ -47,6 +48,10 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
             yearRange,
             penggal: Object.keys(sessions)
               .reverse()
+              .filter(
+                s =>
+                  sessions[s] && sessions[s].start_date && sessions[s].end_date
+              )
               .map(s => {
                 const { start_date, end_date, ...mesyuarat } = sessions[s];
 
@@ -63,7 +68,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
               }),
           };
         }),
-    []
+    [archive]
   );
 
   const [selected, setSelected] = useState<string>("");
@@ -102,9 +107,9 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
           }}
         >
           <div className="flex h-full w-full flex-col pb-6 pl-4.5 pt-3 sm:pl-8 lg:pb-8">
-            {data ? (
-              parlimens.map((_, index) => {
-                const { id, penggal, yearRange } = data[index];
+            {data && data.length > 0 ? (
+              data.map(item => {
+                const { id, penggal, yearRange } = item;
                 const parlimen_id = `parlimen-${id}`;
 
                 return (
