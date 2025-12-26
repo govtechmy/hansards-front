@@ -19,7 +19,6 @@ const pwa = require("next-pwa")({
 const nextConfig = {
   i18n,
   reactStrictMode: true,
-  swcMinify: true,
 
   webpack: config => {
     config.module.rules.push({
