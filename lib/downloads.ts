@@ -32,14 +32,5 @@ export const generateDownloadLink = (
   ext: "pdf" | "csv"
 ): void => {
   const path = buildDownloadPath(filename, ext);
-  try {
-    const anchor = document.createElement("a");
-    anchor.href = path;
-    anchor.target = "_blank";
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-  } catch (_err) {
-    // Swallow errors silently; caller may choose to add its own handling.
-  }
+  window.open(path, "_blank");
 };
