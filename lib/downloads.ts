@@ -1,3 +1,5 @@
+import { appConfig } from "src/config/app.config";
+
 /**
  * Download utilities for building internal proxy paths.
  * These helpers keep filename/prefix logic in one place.
@@ -17,7 +19,8 @@ export const getHansardPrefix = (
 export const buildDownloadPath = (
   filename: string,
   ext: "pdf" | "csv"
-): string => `/downloads/${getHansardPrefix(filename)}/${filename}.${ext}`;
+): string =>
+  `${appConfig.downloadUrl}/${getHansardPrefix(filename)}/${filename}.${ext}`;
 
 /**
  * Trigger a download using the internal proxy route. Falls back to window.open.
