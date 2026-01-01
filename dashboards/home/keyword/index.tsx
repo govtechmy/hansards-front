@@ -88,14 +88,7 @@ const Keyword = ({
 
   const getAutocomplete = async (query: string) => {
     try {
-      const response = await get(
-        "autocomplete",
-        {
-          q: query,
-        },
-        "api"
-      );
-
+      const response = await get("/api/autocomplete", { q: query }, "app");
       const data = response.data;
 
       // Check if the API returned a server error flag

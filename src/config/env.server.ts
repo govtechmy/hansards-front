@@ -1,24 +1,13 @@
-function requiredServerEnvs(key: string): string {
-  const value = process.env[key];
-  if (!value) {
-    // This should never happen if build-time validation works
-    // throw new Error(`[SERVER ENV ERROR] Missing ${key}`);
-    console.warn(`[ENV WARNING] Missing server env: ${key}`);
-    return "";
-  }
-  return value;
-}
-
 export const serverEnv = {
-  API_URL: requiredServerEnvs("API_URL"),
-  REVALIDATE_TOKEN: requiredServerEnvs("REVALIDATE_TOKEN"),
-  AUTH_TOKEN: requiredServerEnvs("AUTH_TOKEN"),
-  TINYBIRD_API: requiredServerEnvs("TINYBIRD_API"),
-  POST_TOKEN: requiredServerEnvs("POST_TOKEN"),
-  GET_TOKEN: requiredServerEnvs("GET_TOKEN"),
-  GET_COUNTS: requiredServerEnvs("GET_COUNTS"),
-  POST_VIEW: requiredServerEnvs("POST_VIEW"),
-  POST_SHARE: requiredServerEnvs("POST_SHARE"),
-  POST_DL: requiredServerEnvs("POST_DL"),
-  API_AUTH_TOKEN: requiredServerEnvs("API_AUTH_TOKEN"),
+  API_URL: process.env.API_URL,
+  REVALIDATE_TOKEN: process.env.REVALIDATE_TOKEN,
+  AUTH_TOKEN: process.env.AUTH_TOKEN,
+  TINYBIRD_API: process.env.TINYBIRD_API,
+  POST_TOKEN: process.env.POST_TOKEN,
+  GET_TOKEN: process.env.GET_TOKEN,
+  GET_COUNTS: process.env.GET_COUNTS,
+  POST_VIEW: process.env.POST_VIEW,
+  POST_SHARE: process.env.POST_SHARE,
+  POST_DL: process.env.POST_DL,
+  API_AUTH_TOKEN: process.env.API_AUTH_TOKEN,
 };

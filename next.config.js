@@ -10,6 +10,7 @@ const pwa = require("next-pwa")({
   dest: "public",
   register: true,
   skipWaiting: true,
+  buildExcludes: [/dynamic-css-manifest\.json$/],
 });
 
 /**

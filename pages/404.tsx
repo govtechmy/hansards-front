@@ -25,7 +25,9 @@ const Error404: Page = () => {
           <div>
             {["Page not found", "页面未找到", "பக்கம் காணப்படவில்லை"].map(
               error => (
-                <p className="text-lg text-txt-black-700">{error}</p>
+                <p key={error} className="text-lg text-txt-black-700">
+                  {error}
+                </p>
               )
             )}
           </div>
