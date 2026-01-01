@@ -109,7 +109,7 @@ export default function CiteDialogDrawer({
           const html = "text/html";
 
           return (
-            <SummaryListRow className="max-sm:block">
+            <SummaryListRow key={label} className="max-sm:block">
               <SummaryListTerm className="min-w-fit max-sm:pt-4.5">
                 {label}
               </SummaryListTerm>

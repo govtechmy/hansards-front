@@ -15,7 +15,6 @@ frontend:
         - echo "POST_TOKEN=$POST_TOKEN" >> .env
         - echo "POST_VIEW=$POST_VIEW" >> .env
         - echo "REVALIDATE_TOKEN=$REVALIDATE_TOKEN" >> .env
-        - echo "TINYBIRD_API=$TINYBIRD_API" >> .env
         - echo "NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV" >> .env
         - echo "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" >> .env
         - echo "NEXT_PUBLIC_ASSETS_URL=$NEXT_PUBLIC_ASSETS_URL" >> .env

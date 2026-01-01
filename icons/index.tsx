@@ -62,8 +62,8 @@ export const OpenFolderIcon = (props: ComponentProps<"svg">) => {
           y2="14.0106"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.494792" stop-color="#D6E0EC" />
-          <stop offset="1" stop-color="#F0F6FE" />
+          <stop offset="0.494792" stopColor="#D6E0EC" />
+          <stop offset="1" stopColor="#F0F6FE" />
         </linearGradient>
       </defs>
     </svg>

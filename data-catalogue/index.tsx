@@ -134,6 +134,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
                         const parlimen_penggal = `${parlimen_id}-penggal-${penggal.id}`;
                         return (
                           <Penggal
+                            key={penggal.id}
                             penggal_id={parlimen_penggal}
                             drawerRef={drawerRef}
                             scrollRef={scrollRef}

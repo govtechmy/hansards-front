@@ -100,6 +100,7 @@ export const ShareDialogDrawer = ({
               {SHARE_OPTIONS.map(s => {
                 return (
                   <Link
+                    key={s.name}
                     target="_blank"
                     href={s.link}
                     onClick={share}

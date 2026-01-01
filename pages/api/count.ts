@@ -17,6 +17,7 @@ export default async function handler(
 ) {
   const { GET_COUNTS, GET_TOKEN, POST_DL, POST_SHARE, POST_TOKEN } =
     process.env;
+
   if (!POST_TOKEN) {
     return res
       .status(400)

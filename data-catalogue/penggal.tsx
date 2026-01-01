@@ -42,25 +42,23 @@ const CataloguePenggal = forwardRef(
     }: PenggalProps,
     ref: ForwardedRef<FolderOpen>
   ) => {
-    const meetings = Object.keys(mesyuarat).sort(
-      (a, b) =>
-        Date.parse(mesyuarat[a].end_date) - Date.parse(mesyuarat[b].end_date)
-    );
+    const meetings = Object.keys(mesyuarat)
+      .filter(id => Number(id) >= 0)
+      .sort(
+        (a, b) =>
+          Date.parse(mesyuarat[a].end_date) - Date.parse(mesyuarat[b].end_date)
+      );
     const { t } = useTranslation("enum");
 
     const [penggalIndex, setPenggalIndex] = useState(-1);
 
-    useImperativeHandle(
-      ref,
-      () => {
-        return {
-          open: (index: number) => {
-            setPenggalIndex(index);
-          },
-        };
-      },
-      []
-    );
+    useImperativeHandle(ref, () => {
+      return {
+        open: (index: number) => {
+          setPenggalIndex(index);
+        },
+      };
+    }, []);
 
     return (
       <div>
@@ -88,22 +86,17 @@ const CataloguePenggal = forwardRef(
               <span className="hidden h-0.5 w-full border border-dashed border-otl-gray-200 sm:block" />
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-[54px] pb-6 pt-12 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-              {meetings.map(id => {
-                if (Number(id) >= 0)
-                  return (
-                    <CatalogueFolder
-                      key={id}
-                      ref={ref =>
-                        (drawerRef.current[`${penggal_id}-mesyuarat-${id}`] =
-                          ref)
-                      }
-                      onOpen={() => setPenggalIndex(Number(id))}
-                      meeting={mesyuarat[id]}
-                      meeting_id={id}
-                    />
-                  );
-                return <></>;
-              })}
+              {meetings.map(id => (
+                <CatalogueFolder
+                  key={id}
+                  ref={ref =>
+                    (drawerRef.current[`${penggal_id}-mesyuarat-${id}`] = ref)
+                  }
+                  onOpen={() => setPenggalIndex(Number(id))}
+                  meeting={mesyuarat[id]}
+                  meeting_id={id}
+                />
+              ))}
             </div>
           </>
         )}
