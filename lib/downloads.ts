@@ -20,7 +20,7 @@ export const buildDownloadPath = (
   filename: string,
   ext: "pdf" | "csv"
 ): string =>
-  `${appConfig.downloadUrl}/${getHansardPrefix(filename)}/${filename}.${ext}`;
+  `${appConfig.downloadUrl}${getHansardPrefix(filename)}/${filename}.${ext}`;
 
 /**
  * Trigger a download using the internal proxy route. Falls back to window.open.
