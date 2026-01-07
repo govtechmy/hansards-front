@@ -277,8 +277,8 @@ const KeywordFilter = ({
                 gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                 umur: data.age !== ALL_AGES ? data.age : "",
                 etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                tarikh_akhir: formatDate(selectedDateRange?.from),
-                tarikh_mula: formatDate(selectedDateRange?.to),
+                tarikh_mula: formatDate(selectedDateRange?.from),
+                tarikh_akhir: formatDate(selectedDateRange?.to),
               })
             }
           >
@@ -493,8 +493,8 @@ const KeywordFilter = ({
                   gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
                   etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                  tarikh_akhir: formatDate(selectedDateRange?.from),
-                  tarikh_mula: formatDate(selectedDateRange?.to),
+                  tarikh_mula: formatDate(selectedDateRange?.from),
+                  tarikh_akhir: formatDate(selectedDateRange?.to),
                 });
               }}
             >
