@@ -301,8 +301,8 @@ const KeywordFilter = ({
             setSelectedDateRange(dateRange);
             if (keywordQuery && dateRange && dateRange.from && dateRange.to)
               handleSearch({
-                tarikh_akhir: formatDate(dateRange.from),
-                tarikh_mula: formatDate(dateRange.to),
+                tarikh_mula: formatDate(dateRange.from),
+                tarikh_akhir: formatDate(dateRange.to),
               });
           }}
         />
