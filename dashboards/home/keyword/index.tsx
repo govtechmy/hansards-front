@@ -105,15 +105,17 @@ const Keyword = ({
   };
 
   const barmeter_data = top_speakers
-    ? top_speakers.map(s => {
-        const id = Object.keys(s)[0];
-        const speaker = speakers.find(
-          e => String(e.new_author_id) === id
-        )?.name;
-        const total = s[id];
+    ? top_speakers
+        .map(s => {
+          const id = Object.keys(s)[0];
+          const speaker = speakers.find(
+            e => String(e.new_author_id) === id
+          )?.name;
+          const total = s[id];
 
-        return { x: speaker ?? "", y: total };
-      })
+          return { x: speaker ?? "", y: total };
+        })
+        .filter(item => item.x !== "")
     : [];
 
   useEffect(() => {
