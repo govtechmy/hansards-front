@@ -269,7 +269,7 @@ const KeywordFilter = ({
             variant="primary"
             className="size-9 justify-center rounded-full max-sm:p-1.5 sm:w-fit"
             disabled={!keywordQuery}
-            onClick={() =>
+            onClick={() => {
               handleSearch({
                 dewan: data.dewan,
                 q: keywordQuery,
@@ -279,8 +279,8 @@ const KeywordFilter = ({
                 etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                 tarikh_mula: formatDate(selectedDateRange?.from),
                 tarikh_akhir: formatDate(selectedDateRange?.to),
-              })
-            }
+              });
+            }}
           >
             <MagnifyingGlassIcon className="size-5 text-white" />
             <span className="hidden sm:block">
@@ -322,7 +322,7 @@ const KeywordFilter = ({
             setData("party", e.value);
             if (keywordQuery)
               handleSearch({
-                parti: e.value,
+                parti: e.value !== ALL_PARTIES ? e.value : "",
               });
           }}
         />
@@ -336,7 +336,7 @@ const KeywordFilter = ({
             setData("gender", e.value);
             if (keywordQuery)
               handleSearch({
-                gender: e.value,
+                gender: e.value !== BOTH_GENDERS ? e.value : "",
               });
           }}
         />
@@ -350,7 +350,7 @@ const KeywordFilter = ({
             setData("age", e.value);
             if (keywordQuery)
               handleSearch({
-                umur: e.value,
+                umur: e.value !== ALL_AGES ? e.value : "",
               });
           }}
         />
@@ -364,7 +364,7 @@ const KeywordFilter = ({
             setData("etnik", e.value);
             if (keywordQuery)
               handleSearch({
-                etnik: e.value,
+                etnik: e.value !== ALL_ETHNICITIES ? e.value : "",
               });
           }}
         />
