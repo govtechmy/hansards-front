@@ -64,23 +64,28 @@ const SpeechBubble = ({
     if (hash && sameId) setHighlight(true);
 
     // ---------- Image validation logic ----------
-    const url = `${process.env.NEXT_PUBLIC_ASSETS_URL}/img/mp-240/${uid}.jpg`;
-    const img = new Image();
+    if (uid) {
+      const url = `${process.env.NEXT_PUBLIC_ASSETS_URL}/img/mp-240/${uid}.jpg`;
+      const img = new Image();
 
-    img.onload = () => {
-      setImgValid(true);
-      setImgUrl(url);
-    };
-    img.onerror = () => {
+      img.onload = () => {
+        setImgValid(true);
+        setImgUrl(url);
+      };
+      img.onerror = () => {
+        setImgValid(false);
+        setImgUrl("");
+      };
+      img.src = url;
+
+      return () => {
+        img.onload = null;
+        img.onerror = null;
+      };
+    } else {
       setImgValid(false);
       setImgUrl("");
-    };
-    img.src = url;
-
-    return () => {
-      img.onload = null;
-      img.onerror = null;
-    };
+    }
   }, [asPath, uid, index]);
 
   return (
