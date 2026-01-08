@@ -82,9 +82,6 @@ const SpeechBubble = ({
         img.onload = null;
         img.onerror = null;
       };
-    } else {
-      setImgValid(false);
-      setImgUrl("");
     }
   }, [asPath, uid, index]);
 
