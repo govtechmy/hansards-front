@@ -114,7 +114,7 @@ const Keyword = ({
           const id = Object.keys(s)[0];
           const speaker = speakers.find(
             e => String(e.new_author_id) === id
-          )!.name;
+          )?.name;
 
           return {
             x: speaker,
