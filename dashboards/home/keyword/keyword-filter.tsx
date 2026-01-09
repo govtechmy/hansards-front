@@ -69,7 +69,7 @@ const KeywordFilter = ({
   const [open, setOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
+  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
     query;
 
   const { data, setData } = useData({
@@ -77,7 +77,7 @@ const KeywordFilter = ({
     age: umur ? String(umur) : ALL_AGES,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
     party: parti ? String(parti) : ALL_PARTIES,
-    gender: gender ? String(gender) : BOTH_GENDERS,
+    gender: jantina ? String(jantina) : BOTH_GENDERS,
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<
@@ -158,7 +158,7 @@ const KeywordFilter = ({
         parti: "",
         umur: "",
         etnik: "",
-        gender: "",
+        jantina: "",
         tarikh_akhir: "",
         tarikh_mula: "",
       });
@@ -274,7 +274,7 @@ const KeywordFilter = ({
                 dewan: data.dewan,
                 q: keywordQuery,
                 parti: data.party !== ALL_PARTIES ? data.party : "",
-                gender: data.gender !== BOTH_GENDERS ? data.gender : "",
+                jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                 umur: data.age !== ALL_AGES ? data.age : "",
                 etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                 tarikh_mula: formatDate(selectedDateRange?.from),
@@ -336,7 +336,7 @@ const KeywordFilter = ({
             setData("gender", e.value);
             if (keywordQuery)
               handleSearch({
-                gender: e.value !== BOTH_GENDERS ? e.value : "",
+                jantina: e.value !== BOTH_GENDERS ? e.value : "",
               });
           }}
         />
@@ -490,7 +490,7 @@ const KeywordFilter = ({
                 handleSearch({
                   dewan: data.dewan,
                   parti: data.party !== ALL_PARTIES ? data.party : "",
-                  gender: data.gender !== BOTH_GENDERS ? data.gender : "",
+                  jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
                   etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                   tarikh_mula: formatDate(selectedDateRange?.from),
