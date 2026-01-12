@@ -1,11 +1,11 @@
-name: Deploy to dev
+name: Deploy to prod
 env:
   IMAGE: hansards-front
-  ENVIRONMENT: development
+  ENVIRONMENT: production
 on:
   push:
     branches:
-      - staging
+      - main
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
