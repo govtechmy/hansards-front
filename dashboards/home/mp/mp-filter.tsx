@@ -220,6 +220,17 @@ const MPFilter = ({
     [data]
   );
 
+  const handleClearDateRange = () => {
+    // If date exists in the current query, remove it while keeping other filters
+    if (router.query.tarikh_mula || router.query.tarikh_akhir) {
+      handleSearch({
+        tarikh_akhir: "",
+        tarikh_mula: "",
+      });
+    }
+    setSelectedDateRange(undefined);
+  };
+
   const className = {
     dropdown_ind_grp:
       "link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit",
@@ -319,7 +330,7 @@ const MPFilter = ({
                 <Button
                   variant="ghost"
                   className="w-fit justify-center"
-                  onClick={() => setSelectedDateRange(undefined)}
+                  onClick={handleClearDateRange}
                 >
                   <XMarkIcon className="size-4.5" />
                   {t("clear", { ns: "common" })}
@@ -484,7 +495,7 @@ const MPFilter = ({
                 <Button
                   variant="ghost"
                   className="w-fit justify-center"
-                  onClick={() => setSelectedDateRange(undefined)}
+                  onClick={handleClearDateRange}
                 >
                   <XMarkIcon className="size-4.5" />
                   {t("clear", { ns: "common" })}
