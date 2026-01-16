@@ -131,7 +131,6 @@ const ComboBox = <T extends unknown>({
       </div>
       <div className="absolute left-0 top-[54px] z-10 w-full">
         <ul
-          key={inputValue}
           {...getMenuProps({ ref: listRef })}
           className={cn(
             "relative max-h-60 max-w-full overflow-y-auto rounded-md border border-border bg-background text-sm shadow-floating",
@@ -139,25 +138,16 @@ const ComboBox = <T extends unknown>({
           )}
         >
           {loading ? (
-            <li
-              key="loading"
-              className="flex cursor-default select-none items-center gap-2 px-4 py-2 text-zinc-500"
-            >
+            <li className="flex cursor-default select-none items-center gap-2 px-4 py-2 text-zinc-500">
               <Spinner loading={loading} /> {t("placeholder.loading")}
             </li>
           ) : items.length === 0 && inputValue !== "" ? (
-            <li
-              key="no-results"
-              className="cursor-default select-none px-4 py-2 text-zinc-500"
-            >
+            <li className="cursor-default select-none px-4 py-2 text-zinc-500">
               {t("placeholder.no_results")}
             </li>
           ) : items.length > 100 ? (
             <>
-              <li
-                key="total-size"
-                style={{ height: rowVirtualizer.totalSize }}
-              />
+              <li style={{ height: rowVirtualizer.totalSize }} />
               {rowVirtualizer.virtualItems.map(virtualRow => (
                 <ComboOption<T>
                   key={`vc-${virtualRow.index}`}
