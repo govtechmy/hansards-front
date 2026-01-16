@@ -72,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         umur,
         etnik,
         parti,
-        jantina,
+        gender,
       } = query;
 
       const results = await Promise.allSettled([
@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           age_group: umur,
           ethnicity: etnik,
           party: parti,
-          sex: jantina,
+          sex: gender,
         }),
         get("api/search-plot/", {
           uid: uid,
@@ -96,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           age_group: umur,
           ethnicity: etnik,
           party: parti,
-          sex: jantina,
+          sex: gender,
         }),
       ]);
 

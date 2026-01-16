@@ -65,7 +65,7 @@ const MPFilter = ({
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
 
-  const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
+  const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
     query;
 
   const INDIVIDU_OPTIONS: OptionType[] = useMemo(
@@ -88,7 +88,7 @@ const MPFilter = ({
     age: umur ? String(umur) : ALL_AGES,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
     party: parti ? String(parti) : ALL_PARTIES,
-    gender: jantina ? String(jantina) : BOTH_GENDERS,
+    gender: gender ? String(gender) : BOTH_GENDERS,
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<
@@ -186,7 +186,7 @@ const MPFilter = ({
       parti: "",
       umur: "",
       etnik: "",
-      jantina: "",
+      gender: "",
       tarikh_mula: "",
       tarikh_akhir: "",
     });
@@ -202,7 +202,7 @@ const MPFilter = ({
       uid: ind_or_grp === "individu" ? data.uid : "",
       dewan: data.dewan,
       parti: data.party !== ALL_PARTIES ? data.party : "",
-      jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
+      gender: data.gender !== BOTH_GENDERS ? data.gender : "",
       umur: data.age !== ALL_AGES ? data.age : "",
       etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
       tarikh_mula: formatDate(selectedDateRange?.from),
