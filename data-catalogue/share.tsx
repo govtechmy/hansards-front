@@ -17,6 +17,7 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -93,6 +94,9 @@ export const ShareDialogDrawer = ({
       <DialogBody className="sm:max-w-xl">
         <DialogHeader border>
           <DialogTitle>{t("share_hansard")}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {t("share_hansard")}
+          </DialogDescription>
         </DialogHeader>
         <DialogContent className="pb-6">
           <div className="flex flex-col gap-6">
@@ -133,7 +137,7 @@ export const ShareDialogDrawer = ({
               </Button>
             </div>
             <div className="flex flex-col items-end gap-3">
-              <Input value={URL} className="w-full" />
+              <Input value={URL} className="w-full" readOnly />
 
               <Button
                 variant={copyText === "copy" ? "primary-fill" : "primary-ghost"}
