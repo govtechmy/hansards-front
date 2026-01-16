@@ -115,9 +115,12 @@ const Keyword = ({
 
         if (!speaker?.name) return null;
 
+        const rawValue = Number(s[id]);
+        const safeValue = Number.isFinite(rawValue) ? rawValue : 0;
+
         return {
           x: speaker.name,
-          y: Number(s[id]),
+          y: safeValue,
         };
       })
       .filter((item): item is { x: string; y: number } => item !== null);
@@ -151,7 +154,7 @@ const Keyword = ({
       }
     };
 
-    const debounceTimeout = setTimeout(fetchSuggestion, 300);
+    const debounceTimeout = setTimeout(fetchSuggestion, 200);
 
     return () => clearTimeout(debounceTimeout);
   }, [keywordQuery]);
