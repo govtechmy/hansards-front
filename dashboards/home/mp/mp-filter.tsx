@@ -256,6 +256,7 @@ const MPFilter = ({
                     setData("uid", selected.value);
                     handleSearch({
                       uid: selected.value,
+                      dewan: data.dewan,
                     });
                   }
                 }}
@@ -271,8 +272,8 @@ const MPFilter = ({
                   setSelectedDateRange(dateRange);
                   if (data.uid && dateRange && dateRange?.from && dateRange?.to)
                     handleSearch({
-                      tarikh_akhir: formatDate(dateRange.from),
-                      tarikh_mula: formatDate(dateRange.to),
+                      tarikh_mula: formatDate(dateRange.from),
+                      tarikh_akhir: formatDate(dateRange.to),
                     });
                 }}
                 numberOfMonths={isTablet ? 2 : 1}
@@ -342,8 +343,8 @@ const MPFilter = ({
                       handleSearch({
                         uid: data.uid,
                         dewan: data.dewan,
-                        tarikh_akhir: formatDate(selectedDateRange?.from),
-                        tarikh_mula: formatDate(selectedDateRange?.to),
+                        tarikh_mula: formatDate(selectedDateRange?.from),
+                        tarikh_akhir: formatDate(selectedDateRange?.to),
                       });
                     }}
                   >
@@ -371,7 +372,10 @@ const MPFilter = ({
                   width="w-fit"
                   options={INDIVIDU_OR_GROUP}
                   selected={INDIVIDU_OR_GROUP.find(e => e.value === ind_or_grp)}
-                  onChange={(e: { value: string }) => onFilter(e.value)}
+                  onChange={(e: { value: string }) => {
+                    onFilter(e.value);
+                    handleClear();
+                  }}
                 />
               </div>
               <div className="hidden gap-x-1 px-2.5 md:flex">
@@ -434,8 +438,8 @@ const MPFilter = ({
                       gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                       umur: data.age !== ALL_AGES ? data.age : "",
                       etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                      tarikh_akhir: formatDate(selectedDateRange?.from),
-                      tarikh_mula: formatDate(selectedDateRange?.to),
+                      tarikh_mula: formatDate(selectedDateRange?.from),
+                      tarikh_akhir: formatDate(selectedDateRange?.to),
                     })
                   }
                 >
@@ -573,8 +577,8 @@ const MPFilter = ({
                         gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                         umur: data.age !== ALL_AGES ? data.age : "",
                         etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                        tarikh_akhir: formatDate(selectedDateRange?.from),
-                        tarikh_mula: formatDate(selectedDateRange?.to),
+                        tarikh_mula: formatDate(selectedDateRange?.from),
+                        tarikh_akhir: formatDate(selectedDateRange?.to),
                       });
                     }}
                   >
