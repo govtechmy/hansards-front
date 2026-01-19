@@ -74,27 +74,29 @@ const MP = ({
     !hasQuery || mp ? "individu" : "group"
   );
   const IS_INDIVIDU = ind_or_grp === "individu";
-  const defaultTimeseries = useMemo(
-    () => ({
-      date: Array.from({ length: 365 }, (_, i) => i * 86400000),
-      freq: [],
-    }),
-    []
-  );
-  const [useDefaultDesign, setUseDefaultDesign] = useState(false);
-  const activeTimeseries = useDefaultDesign ? defaultTimeseries : timeseries;
+
+  type Timeseries = {
+    date: number[];
+    freq: number[];
+  };
+  const defaultTimeseries: Timeseries = {
+    date: Array.from({ length: 365 }, (_, i) => i * 86400000),
+    freq: [],
+  };
+  const [timeseriesState, setTimeseriesState] =
+    useState<Timeseries>(defaultTimeseries);
+
   const [range, setRange] = useState<number[]>([
     0,
-    activeTimeseries.date.length > 0 ? activeTimeseries.date.length - 1 : 0,
+    defaultTimeseries.date.length > 0 ? defaultTimeseries.date.length - 1 : 0,
   ]);
-  const { coordinate } = useSlice(activeTimeseries, range as [number, number]);
+  const { coordinate } = useSlice(defaultTimeseries, range as [number, number]);
+
   const chartEmpty =
     coordinate.freq.length === 0 ||
     (mp && !IS_INDIVIDU) ||
     (!mp && IS_INDIVIDU);
   const dummyFreq = Array.from({ length: 365 }, () => Math.random() * 25 + 25);
-  const shouldShowLiveData =
-    hasQuery && ((mp && IS_INDIVIDU) || (!mp && !IS_INDIVIDU));
 
   const barmeter_data = top_speakers
     ? top_speakers.map(s => {
@@ -108,15 +110,6 @@ const MP = ({
       })
     : [];
 
-  const handleModeChange = (mode: string) => {
-    setIndOrGrp(prev => {
-      if (prev !== mode) {
-        setUseDefaultDesign(true);
-      }
-      return mode;
-    });
-  };
-
   useEffect(() => {
     setLoading(false);
     if (hasQuery && ref && ref.current) {
@@ -125,18 +118,12 @@ const MP = ({
   }, [timeseries, hasQuery]);
 
   useEffect(() => {
-    setRange(
-      activeTimeseries.date.length > 0
-        ? [0, activeTimeseries.date.length - 1]
-        : [0, 0]
-    );
-  }, [activeTimeseries]);
-
-  useEffect(() => {
-    if (shouldShowLiveData && useDefaultDesign) {
-      setUseDefaultDesign(false);
+    if (!timeseries) {
+      return;
     }
-  }, [shouldShowLiveData, useDefaultDesign]);
+    setTimeseriesState(timeseries);
+    setRange([0, timeseriesState.date.length - 1]);
+  }, [timeseries]);
 
   return (
     <Container className="divide-y divide-border">
@@ -151,7 +138,11 @@ const MP = ({
           onLoad={() => setLoading(true)}
           ind_or_grp={ind_or_grp}
           speakers={speakers}
-          onFilter={handleModeChange}
+          onFilter={mode => {
+            setIndOrGrp(mode);
+            setTimeseriesState(defaultTimeseries);
+            setRange([0, defaultTimeseries.date.length - 1]);
+          }}
           query={query}
         />
 
@@ -209,7 +200,7 @@ const MP = ({
                   type="range"
                   period={diff > 1095 ? "month" : "day"}
                   value={range}
-                  data={activeTimeseries.date}
+                  data={timeseriesState.date}
                   onChange={e => setRange(e)}
                 />
                 {!loading && chartEmpty && (
