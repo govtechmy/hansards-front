@@ -189,7 +189,7 @@ const MPFilter = ({
     <>
       <div className="space-y-6 pb-3 sm:pt-6">
         {/* Dewan Selector */}
-        <div className="mx-auto hidden w-fit rounded-full border border-border bg-background p-1 sm:block">
+        <div className="mx-auto hidden w-fit rounded-full border border-border bg-background p-1 md:block">
           <Tabs
             value={data.dewan}
             onValueChange={dewan => {
@@ -221,7 +221,7 @@ const MPFilter = ({
         {/* Search Bar */}
         {ind_or_grp === "individu" ? (
           <>
-            <div className="mx-auto w-full sm:w-[500px]">
+            <div className="mx-auto w-full md:w-[500px]">
               <ComboBox
                 placeholder={t("search_individual")}
                 options={INDIVIDU_OPTIONS}
@@ -365,7 +365,7 @@ const MPFilter = ({
           </>
         ) : (
           <div className="space-y-3">
-            <div className="mx-auto flex w-full justify-between rounded-full border border-otl-gray-200 py-2 pl-4.5 pr-1.5 sm:w-fit">
+            <div className="mx-auto flex w-full justify-between rounded-full border border-otl-gray-200 py-2 pl-4.5 pr-1.5 md:w-fit">
               <div className="flex self-center">
                 <Dropdown
                   className={className.dropdown_ind_grp}
