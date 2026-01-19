@@ -92,7 +92,10 @@ const MP = ({
     coordinate.freq.length === 0 ||
     (mp && !IS_INDIVIDU) ||
     (!mp && IS_INDIVIDU);
-  const dummyFreq = Array.from({ length: 365 }, () => Math.random() * 25 + 25);
+  const dummyFreq = useMemo(
+    () => Array.from({ length: 365 }, () => Math.random() * 25 + 25),
+    []
+  );
   const shouldShowLiveData =
     hasQuery && ((mp && IS_INDIVIDU) || (!mp && !IS_INDIVIDU));
 
