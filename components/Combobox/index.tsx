@@ -176,6 +176,7 @@ const ComboBox = <T extends unknown>({
           ) : (
             items.map((item, i) => (
               <ComboOption<T>
+                key={`cb-${item.value}`}
                 option={item}
                 total={options.length}
                 format={format}
