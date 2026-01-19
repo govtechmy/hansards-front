@@ -73,7 +73,6 @@ export const MesyuaratDates = ({
     const hansard_id = `${
       IS_KK ? routes.HANSARD_KK : IS_DR ? routes.HANSARD_DR : routes.HANSARD_DN
     }/${date}`;
-    const { download: trackDownload } = useAnalytics(hansard_id);
     const { download: handleDownload } = useDownload({
       filename,
       analyticsId: hansard_id,
@@ -160,7 +159,6 @@ export const MesyuaratDates = ({
                       onSelect={() => {
                         if (is_old && filetype === "csv") return;
                         handleDownload(filetype as "pdf" | "csv");
-                        trackDownload(filetype as "pdf" | "csv");
                       }}
                     >
                       {filetype === "pdf" ? (

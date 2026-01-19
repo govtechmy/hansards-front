@@ -67,14 +67,15 @@ const Keyword = ({
 
   const house = dewan ? String(dewan) : "";
   const start =
-    tarikh_mula !== undefined && !Array.isArray(tarikh_mula)
+    tarikh_mula && !Array.isArray(tarikh_mula)
       ? parseISO(tarikh_mula)
       : undefined;
   const end =
-    tarikh_akhir !== undefined && !Array.isArray(tarikh_akhir)
+    tarikh_akhir && !Array.isArray(tarikh_akhir)
       ? parseISO(tarikh_akhir)
       : undefined;
-  const diff = start && end ? differenceInCalendarDays(start, end) : 0;
+  const diff =
+    start && end ? Math.abs(differenceInCalendarDays(start, end)) : 0;
 
   const [loading, setLoading] = useState<boolean>(false);
   const [range, setRange] = useState<number[]>([0, timeseries.date.length - 1]);
@@ -92,9 +93,9 @@ const Keyword = ({
       const data = response.data;
 
       // Check if the API returned a server error flag
-      if (data.error && data.errorType === "server_error") {
-        router.push(router.locale === "en-GB" ? "/en-GB/500" : "/500");
-        return;
+      if (data?.error && data?.errorType === "server_error") {
+        await router.push(router.locale === "en-GB" ? "/en-GB/500" : "/500");
+        return null;
       }
 
       return data;
@@ -104,17 +105,26 @@ const Keyword = ({
     }
   };
 
-  const barmeter_data = top_speakers
-    ? top_speakers.map(s => {
-        const id = Object.keys(s)[0];
-        const speaker = speakers.find(
-          e => String(e.new_author_id) === id
-        )?.name;
-        const total = s[id];
+  const barmeter_data = useMemo(() => {
+    if (!top_speakers) return [];
 
-        return { x: speaker ?? "", y: total };
+    return top_speakers
+      .map(s => {
+        const id = Object.keys(s)[0];
+        const speaker = speakers.find(e => String(e.new_author_id) === id);
+
+        if (!speaker?.name) return null;
+
+        const rawValue = Number(s[id]);
+        const safeValue = Number.isFinite(rawValue) ? rawValue : 0;
+
+        return {
+          x: speaker.name,
+          y: safeValue,
+        };
       })
-    : [];
+      .filter((item): item is { x: string; y: number } => item !== null);
+  }, [top_speakers, speakers]);
 
   useEffect(() => {
     setLoading(false);
@@ -125,24 +135,21 @@ const Keyword = ({
   }, [timeseries]);
 
   useEffect(() => {
+    if (!keywordQuery) {
+      setSuggestion("");
+      return;
+    }
+
     const fetchSuggestion = async () => {
-      if (keywordQuery.length > 0) {
-        try {
-          const result = await getAutocomplete(keywordQuery);
+      try {
+        const result = await getAutocomplete(keywordQuery);
 
-          // If result is undefined, it means we redirected to 500 page
-          if (!result) return;
+        // If result is undefined, it means we redirected to 500 page
+        if (!result) return;
 
-          if (result.suggestions && result.suggestions.length > 0) {
-            setSuggestion(result.suggestions[0]);
-          } else {
-            setSuggestion("");
-          }
-        } catch (error) {
-          console.error("Error fetching autocomplete:", error);
-          setSuggestion("");
-        }
-      } else {
+        setSuggestion(result.suggestions?.[0] ?? "");
+      } catch (error) {
+        console.error("Error fetching autocomplete:", error);
         setSuggestion("");
       }
     };
@@ -150,7 +157,7 @@ const Keyword = ({
     const debounceTimeout = setTimeout(fetchSuggestion, 200);
 
     return () => clearTimeout(debounceTimeout);
-  }, [keywordQuery, router]);
+  }, [keywordQuery]);
 
   return (
     <Container className="divide-y divide-border">

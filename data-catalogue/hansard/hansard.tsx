@@ -156,7 +156,7 @@ const Hansard = ({
           );
 
         return (
-          <>
+          <div key={i}>
             {index === 0 || timeChanged ? (
               <time className="t">{time}</time>
             ) : (
@@ -184,7 +184,7 @@ const Hansard = ({
                 {highlightKeywordMarkdown(speech, speech_id)}
               </SpeechBubble>
             )}
-          </>
+          </div>
         );
       } else {
         const heading = Object.keys(s)[0];
