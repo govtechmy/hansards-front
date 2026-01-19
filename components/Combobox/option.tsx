@@ -39,7 +39,7 @@ function ComboOptionInner<T>(
 ) {
   return (
     <li
-      key={index}
+      key={`cop-${index}`}
       ref={ref}
       role="option"
       aria-selected={isSelected}
@@ -79,7 +79,7 @@ function ComboOptionInner<T>(
         )}
         {isSelected && (
           <span className="absolute inset-y-0 right-0 flex items-center">
-            <CheckCircleIcon className="h-4 w-4 text-primary dark:text-secondary" />
+            <CheckCircleIcon className="text-primary h-4 w-4 dark:text-secondary" />
           </span>
         )}
       </div>
