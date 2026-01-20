@@ -47,6 +47,12 @@ export const getStaticProps: GetStaticProps = withi18n(
     );
 
     const fulfilledResults = results.filter(assertFulfilled);
+    if (
+      fulfilledResults.length !== results.length ||
+      fulfilledResults.length === 0
+    ) {
+      throw new Error("Failed to fetch catalogue data for kamar-khas");
+    }
     const data = fulfilledResults.map(e => e.value.data.catalogue_list);
 
     const archive = data.reduce((res, curr) => {
