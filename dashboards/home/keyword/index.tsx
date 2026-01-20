@@ -100,7 +100,7 @@ const Keyword = ({
 
       return data;
     } catch (error) {
-      console.error("Error fetching autocomplete:", error);
+      console.error("Error fetching autocomplete:", JSON.stringify(error));
       return { suggestions: [], query };
     }
   };
@@ -149,7 +149,7 @@ const Keyword = ({
 
         setSuggestion(result.suggestions?.[0] ?? "");
       } catch (error) {
-        console.error("Error fetching autocomplete:", error);
+        console.error("Error fetching autocomplete:", JSON.stringify(error));
         setSuggestion("");
       }
     };

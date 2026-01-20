@@ -135,7 +135,12 @@ export default function CiteDialogDrawer({
 
                     navigator.clipboard
                       .write([clipboardItem])
-                      .catch(e => console.error(e));
+                      .catch(e =>
+                        console.error(
+                          "Clipboard write failed:",
+                          JSON.stringify(e)
+                        )
+                      );
                   }}
                 >
                   <CopyIcon className="size-5" />

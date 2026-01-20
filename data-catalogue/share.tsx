@@ -128,7 +128,9 @@ export const ShareDialogDrawer = ({
                         text: title,
                         url: URL,
                       })
-                      .catch(error => console.error("Error sharing", error));
+                      .catch(error =>
+                        console.error("Error sharing", JSON.stringify(error))
+                      );
                   }
                 }}
               >

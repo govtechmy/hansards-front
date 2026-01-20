@@ -80,8 +80,11 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             ) ?? [],
         },
       };
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error) {
+      console.error(
+        "Sejarah Kawasan getServerSideProps error:",
+        JSON.stringify(error)
+      );
       return { notFound: true };
     }
   }
