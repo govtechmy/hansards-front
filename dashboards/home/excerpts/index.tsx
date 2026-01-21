@@ -7,16 +7,17 @@ import { ParsedUrlQuery } from "querystring";
 import { Dewan } from "@lib/types";
 import groupBy from "lodash/groupBy";
 import Link from "next/link";
+
+import Paginator from "@components/Paginator";
+import { setSearchParams } from "@lib/utils";
+import { useRouter } from "next/router";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@govtechmy/myds-react/select";
-import Paginator from "@components/Paginator";
-import { setSearchParams } from "@lib/utils";
-import { useRouter } from "next/router";
+} from "@components/MydsSelectFix/MydsSelectFix";
 // import { Tag } from "@govtechmy/myds-react/tag";
 // import { DewanNegaraIcon } from "@icons/dewan/dewan-negara";
 // import { DewanRakyatIcon } from "@icons/dewan/dewan-rakyat";

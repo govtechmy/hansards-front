@@ -153,7 +153,10 @@ const SejarahParti = ({ parti, params }: SejarahPartiProps) => {
             t("toast.request_failure", { ns: "common" }),
             t("toast.try_again", { ns: "common" })
           );
-          console.error(e);
+          console.error(
+            "Sejarah Parti fetchFullResult error:",
+            JSON.stringify(e)
+          );
         });
     });
   };

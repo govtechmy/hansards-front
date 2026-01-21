@@ -33,7 +33,9 @@ export function AnalyticsProvider({
   useEffect(() => {
     get("/api/count", { id }, "app")
       .then(({ data }) => setCounts(data))
-      .catch(e => console.error(e));
+      .catch(e =>
+        console.error("Error fetching analytics counts:", JSON.stringify(e))
+      );
   }, []);
 
   const post_events = (
@@ -64,10 +66,17 @@ export function AnalyticsProvider({
           else
             get("/api/count", { id }, "app")
               .then(({ data }) => setCounts(data))
-              .catch(e => console.error(e));
+              .catch(e =>
+                console.error(
+                  "Error fetching analytics counts:",
+                  JSON.stringify(e)
+                )
+              );
         }
       )
-      .catch(e => console.error(e));
+      .catch(e =>
+        console.error("Error posting analytics event:", JSON.stringify(e))
+      );
   };
 
   return (
