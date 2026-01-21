@@ -154,7 +154,7 @@ const ComboBox = <T extends unknown>({
               {rowVirtualizer.virtualItems.map(virtualRow => (
                 <ComboOption<T>
                   option={items[virtualRow.index]}
-                  key={virtualRow.index}
+                  key={items[virtualRow.index].value}
                   total={options.length}
                   format={format}
                   icon={icon}
@@ -180,7 +180,7 @@ const ComboBox = <T extends unknown>({
             items.map((item, i) => (
               <ComboOption<T>
                 option={item}
-                key={i}
+                key={item.value}
                 total={options.length}
                 format={format}
                 icon={icon}

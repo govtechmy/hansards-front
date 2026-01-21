@@ -24,7 +24,7 @@ import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType, Speaker } from "@lib/types";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -68,16 +68,12 @@ const MPFilter = ({
   const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
     query;
 
-  const INDIVIDU_OPTIONS: OptionType[] = useMemo(
-    () =>
-      speakers
-        .map(({ name, new_author_id }) => ({
-          label: name,
-          value: String(new_author_id),
-        }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
-    [speakers]
-  );
+  const INDIVIDU_OPTIONS: OptionType[] = speakers
+    .map(({ name, new_author_id }) => ({
+      label: name,
+      value: String(new_author_id),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const { data, setData } = useData({
     uid: uid ? String(uid) : "",
@@ -101,101 +97,75 @@ const MPFilter = ({
     };
   });
 
-  const INDIVIDU_OR_GROUP: OptionType[] = useMemo(
-    () => [
-      {
-        label: t("individu", { ns: "common" }),
-        value: "individu",
-      },
-      {
-        label: t("group", { ns: "home" }),
-        value: "group",
-      },
-    ],
-    [t]
+  const INDIVIDU_OR_GROUP: OptionType[] = [
+    {
+      label: t("individu", { ns: "common" }),
+      value: "individu",
+    },
+    {
+      label: t("group", { ns: "home" }),
+      value: "group",
+    },
+  ];
+
+  const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
+    label: t(key.replace("-", "_"), { ns: "common" }),
+    value: key,
+  }));
+
+  const PARTY_OPTIONS: OptionType[] = [
+    { label: t(ALL_PARTIES), value: ALL_PARTIES },
+  ].concat(
+    PARTIES.map((key: string) => ({
+      label: t(key, { ns: "party" }),
+      value: key,
+    }))
   );
 
-  const DEWAN_OPTIONS: OptionType[] = useMemo(
-    () =>
-      DEWANS.map((key: string) => ({
-        label: t(key.replace("-", "_"), { ns: "common" }),
-        value: key,
-      })),
-    [t]
+  const AGE_OPTIONS: OptionType[] = [
+    { label: t(ALL_AGES, { ns: "demografi" }), value: ALL_AGES },
+  ].concat(
+    AGES.map((key: string) => ({
+      label: key + (key === "70" ? "+" : ""),
+      value: key,
+    }))
   );
 
-  const PARTY_OPTIONS: OptionType[] = useMemo(
-    () => [
-      { label: t(ALL_PARTIES), value: ALL_PARTIES },
-      ...PARTIES.map((key: string) => ({
-        label: t(key, { ns: "party" }),
-        value: key,
-      })),
-    ],
-    [t]
-  );
+  const GENDER_OPTIONS: OptionType[] = GENDERS.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
-  const AGE_OPTIONS: OptionType[] = useMemo(
-    () => [
-      { label: t(ALL_AGES, { ns: "demografi" }), value: ALL_AGES },
-      ...AGES.map((key: string) => ({
-        label: key + (key === "70" ? "+" : ""),
-        value: key,
-      })),
-    ],
-    [t]
-  );
-
-  const GENDER_OPTIONS: OptionType[] = useMemo(
-    () =>
-      GENDERS.map((key: string) => ({
-        label: t(key, { ns: "demografi" }),
-        value: key,
-      })),
-    [t]
-  );
-
-  const ETNIK_OPTIONS: OptionType[] = useMemo(
-    () =>
-      ETHNICITIES.map((key: string) => ({
-        label: t(key, { ns: "demografi" }),
-        value: key,
-      })),
-    [t]
-  );
+  const ETNIK_OPTIONS: OptionType[] = ETHNICITIES.map((key: string) => ({
+    label: t(key, { ns: "demografi" }),
+    value: key,
+  }));
 
   const isTablet = useMediaQuery("(min-width: 768px)");
   const router = useRouter();
+  const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
-  const formatDate = useCallback(
-    (date?: Date) => (date ? format(date, "yyyy-MM-dd") : ""),
-    []
-  );
+  const handleSearch = (params: Record<string, string | null>) => {
+    onLoad();
+    router.push(setSearchParams(router.asPath, params));
+  };
 
-  const handleSearch = useCallback(
-    (params: Record<string, string | null>) => {
-      onLoad();
-      router.push(setSearchParams(router.asPath, params));
-    },
-    [onLoad, router]
-  );
-
-  const handleClear = useCallback(() => {
+  const handleClear = () => {
     handleSearch({
       uid: "",
       parti: "",
       umur: "",
       etnik: "",
       gender: "",
-      tarikh_mula: "",
       tarikh_akhir: "",
+      tarikh_mula: "",
     });
     setSelectedDateRange(undefined);
     setData("party", ALL_PARTIES);
     setData("age", ALL_AGES);
     setData("etnik", ALL_ETHNICITIES);
     setData("gender", BOTH_GENDERS);
-  }, [handleSearch, setData]);
+  };
 
   const getFilterParams = useCallback(
     () => ({
@@ -209,15 +179,6 @@ const MPFilter = ({
       tarikh_akhir: formatDate(selectedDateRange?.to),
     }),
     [ind_or_grp, data, selectedDateRange, formatDate]
-  );
-
-  const hasActiveFilters = useMemo(
-    () =>
-      data.party !== ALL_PARTIES ||
-      data.gender !== BOTH_GENDERS ||
-      data.age !== ALL_AGES ||
-      data.etnik !== ALL_ETHNICITIES,
-    [data]
   );
 
   const handleClearDateRange = () => {
@@ -460,7 +421,10 @@ const MPFilter = ({
                   selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
                   onChange={e => setData("etnik", e.value)}
                 />
-                {hasActiveFilters && (
+                {(data.party !== ALL_PARTIES ||
+                  data.gender !== BOTH_GENDERS ||
+                  data.age !== ALL_AGES ||
+                  data.etnik !== ALL_ETHNICITIES) && (
                   <Button
                     variant="ghost"
                     className="group flex justify-center rounded-full p-0 sm:-mr-1.5 sm:h-8 sm:w-8"
