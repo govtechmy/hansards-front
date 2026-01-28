@@ -24,7 +24,7 @@ import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType, Speaker } from "@lib/types";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -89,14 +89,13 @@ const MPFilter = ({
 
   const [selectedDateRange, setSelectedDateRange] = useState<
     DateRange | undefined
-  >(
-    tarikh_mula || tarikh_akhir
-      ? {
-          from: tarikh_mula ? new Date(String(tarikh_mula)) : undefined,
-          to: tarikh_akhir ? new Date(String(tarikh_akhir)) : undefined,
-        }
-      : undefined
-  );
+  >(() => {
+    if (!tarikh_mula && !tarikh_akhir) return undefined;
+    return {
+      from: tarikh_mula ? new Date(String(tarikh_mula)) : undefined,
+      to: tarikh_akhir ? new Date(String(tarikh_akhir)) : undefined,
+    };
+  });
 
   const INDIVIDU_OR_GROUP: OptionType[] = [
     {
@@ -168,6 +167,20 @@ const MPFilter = ({
     setData("gender", BOTH_GENDERS);
   };
 
+  const getFilterParams = useCallback(
+    () => ({
+      uid: ind_or_grp === "individu" ? data.uid : "",
+      dewan: data.dewan,
+      parti: data.party !== ALL_PARTIES ? data.party : "",
+      gender: data.gender !== BOTH_GENDERS ? data.gender : "",
+      umur: data.age !== ALL_AGES ? data.age : "",
+      etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+      tarikh_mula: formatDate(selectedDateRange?.from),
+      tarikh_akhir: formatDate(selectedDateRange?.to),
+    }),
+    [ind_or_grp, data, selectedDateRange, formatDate]
+  );
+
   const handleClearDateRange = () => {
     // If date exists in the current query, remove it while keeping other filters
     if (router.query.tarikh_mula || router.query.tarikh_akhir) {
@@ -194,17 +207,11 @@ const MPFilter = ({
             value={data.dewan}
             onValueChange={dewan => {
               setData("dewan", dewan);
-              if (ind_or_grp === "individu") {
-                if (data.uid)
-                  handleSearch({
-                    dewan,
-                    uid: data.uid,
-                  });
-              } else if (ind_or_grp === "group")
-                handleSearch({
-                  dewan,
-                  uid: "",
-                });
+              if (ind_or_grp === "individu" && data.uid) {
+                handleSearch({ dewan, uid: data.uid });
+              } else if (ind_or_grp === "group") {
+                handleSearch({ dewan, uid: "" });
+              }
             }}
             defaultValue="dewan-rakyat"
           >
@@ -225,11 +232,13 @@ const MPFilter = ({
               <ComboBox
                 placeholder={t("search_individual")}
                 options={INDIVIDU_OPTIONS}
-                selected={INDIVIDU_OPTIONS.find(e =>
+                selected={
                   data.individu_option
-                    ? e.value === data.individu_option.value
+                    ? INDIVIDU_OPTIONS.find(
+                        e => e.value === data.individu_option?.value
+                      )
                     : undefined
-                )}
+                }
                 dropdown={
                   <div className="flex self-center pl-4.5">
                     <Dropdown
@@ -270,11 +279,12 @@ const MPFilter = ({
                 selected={selectedDateRange}
                 onChange={dateRange => {
                   setSelectedDateRange(dateRange);
-                  if (data.uid && dateRange && dateRange?.from && dateRange?.to)
+                  if (data.uid && dateRange?.from && dateRange?.to) {
                     handleSearch({
                       tarikh_mula: formatDate(dateRange.from),
                       tarikh_akhir: formatDate(dateRange.to),
                     });
+                  }
                 }}
                 numberOfMonths={isTablet ? 2 : 1}
               />
@@ -383,11 +393,13 @@ const MPFilter = ({
                   className={className.dropdown_demo}
                   width="w-fit"
                   enableFlag
-                  flag={party => {
-                    if (party === ALL_PARTIES) return <></>;
-                    else
-                      return <PartyFlag party={party} children={() => true} />;
-                  }}
+                  flag={party =>
+                    party === ALL_PARTIES ? (
+                      <></>
+                    ) : (
+                      <PartyFlag party={party} children={() => true} />
+                    )
+                  }
                   options={PARTY_OPTIONS}
                   selected={PARTY_OPTIONS.find(e => e.value === data.party)}
                   onChange={e => setData("party", e.value)}
@@ -430,18 +442,7 @@ const MPFilter = ({
                 <Button
                   variant="primary"
                   className="h-9 rounded-full"
-                  onClick={() =>
-                    handleSearch({
-                      uid: "",
-                      dewan: data.dewan,
-                      parti: data.party !== ALL_PARTIES ? data.party : "",
-                      gender: data.gender !== BOTH_GENDERS ? data.gender : "",
-                      umur: data.age !== ALL_AGES ? data.age : "",
-                      etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                      tarikh_mula: formatDate(selectedDateRange?.from),
-                      tarikh_akhir: formatDate(selectedDateRange?.to),
-                    })
-                  }
+                  onClick={() => handleSearch(getFilterParams())}
                 >
                   <MagnifyingGlassIcon className="size-5 text-white" />
                   {t("placeholder.search", { ns: "common" })}
@@ -517,13 +518,13 @@ const MPFilter = ({
                     <Label label={t("party", { ns: "common" }) + ":"} />
                     <Dropdown
                       enableFlag
-                      flag={party => {
-                        if (party === ALL_PARTIES) return <></>;
-                        else
-                          return (
-                            <PartyFlag party={party} children={() => true} />
-                          );
-                      }}
+                      flag={party =>
+                        party === ALL_PARTIES ? (
+                          <></>
+                        ) : (
+                          <PartyFlag party={party} children={() => true} />
+                        )
+                      }
                       anchor="left"
                       options={PARTY_OPTIONS}
                       selected={PARTY_OPTIONS.find(e => e.value === data.party)}
@@ -570,16 +571,7 @@ const MPFilter = ({
                     className="w-full justify-center"
                     onClick={() => {
                       setOpen(false);
-                      handleSearch({
-                        uid: "",
-                        dewan: data.dewan,
-                        parti: data.party !== ALL_PARTIES ? data.party : "",
-                        gender: data.gender !== BOTH_GENDERS ? data.gender : "",
-                        umur: data.age !== ALL_AGES ? data.age : "",
-                        etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                        tarikh_mula: formatDate(selectedDateRange?.from),
-                        tarikh_akhir: formatDate(selectedDateRange?.to),
-                      });
+                      handleSearch(getFilterParams());
                     }}
                   >
                     {t("filter", { ns: "common" })}
