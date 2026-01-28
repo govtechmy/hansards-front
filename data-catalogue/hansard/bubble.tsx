@@ -95,7 +95,7 @@ const SpeechBubble = ({
               <EmptyMP />
             ) : (
               <>
-                {imgValid ? (
+                {/* {imgValid ? (
                   <img
                     src={imgUrl}
                     width={36}
@@ -104,9 +104,9 @@ const SpeechBubble = ({
                     className="p"
                     fetchPriority={index < 10 ? "high" : "auto"}
                   />
-                ) : (
-                  <EmptyMP />
-                )}
+                ) : ( */}
+                <EmptyMP />
+                {/* )} */}
               </>
             )}
           </div>
