@@ -114,8 +114,11 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           dr_individu: seats.data,
         },
       };
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error) {
+      console.error(
+        "Sejarah Parlimen getServerSideProps error:",
+        JSON.stringify(error)
+      );
       return { notFound: true };
     }
   }

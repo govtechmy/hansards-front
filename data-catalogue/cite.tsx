@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -134,7 +135,12 @@ export default function CiteDialogDrawer({
 
                     navigator.clipboard
                       .write([clipboardItem])
-                      .catch(e => console.error(e));
+                      .catch(e =>
+                        console.error(
+                          "Clipboard write failed:",
+                          JSON.stringify(e)
+                        )
+                      );
                   }}
                 >
                   <CopyIcon className="size-5" />
@@ -155,6 +161,9 @@ export default function CiteDialogDrawer({
         <DialogBody className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>{t("cite_hansard")}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t("cite_hansard")}
+            </DialogDescription>
           </DialogHeader>
           <DialogContent className="pb-6 pt-0">
             <CiteButton />

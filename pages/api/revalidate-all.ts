@@ -123,7 +123,7 @@ export default async function handler(
         } else {
           const err = r.reason;
           const msg = err instanceof Error ? err.message : String(err);
-          console.error(`Failed to revalidate ${path}:`, err);
+          console.error(`Failed to revalidate ${path}:`, JSON.stringify(err));
           failed.push({ path, error: msg });
         }
       });
@@ -200,7 +200,7 @@ export default async function handler(
       success: false,
     });
   } catch (err) {
-    console.error("Revalidation failed:", err);
+    console.error("Revalidation failed:", JSON.stringify(err));
     return res.status(500).json({
       message: err instanceof Error ? err.message : "Revalidation failed",
       success: false,

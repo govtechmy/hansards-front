@@ -38,8 +38,8 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
   const { cache } = useCache();
 
   const KAWASAN_OPTIONS: Array<OptionType> = dropdown
-    .filter((e) => e.type !== "dun")
-    .map((key) => ({
+    .filter(e => e.type !== "dun")
+    .map(key => ({
       label: key.seat_name,
       value: slugify(key.seat_name),
     }));
@@ -47,7 +47,7 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
   const DEFAULT_KAWASAN = "padang-besar-perlis";
   const KAWASAN_OPTION = useMemo(() => {
     return KAWASAN_OPTIONS.find(
-      (e) => e.value === (params.name ?? DEFAULT_KAWASAN)
+      e => e.value === (params.name ?? DEFAULT_KAWASAN)
     );
   }, [params]);
 
@@ -76,7 +76,7 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
     { key: "name", id: "name", header: t("name") },
     { key: "majority", id: "majority", header: t("majority") },
     {
-      key: (item) => item,
+      key: item => item,
       id: "full_result",
       header: "",
       cell: ({ row, getValue }) => {
@@ -111,7 +111,7 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
     seat: string
   ): Promise<Result<BaseResult[]>> => {
     const identifier = `${election}_${seat}`;
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (cache.has(identifier)) return resolve(cache.get(identifier));
       get(
         "/explorer",
@@ -149,12 +149,15 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
           cache.set(identifier, result);
           resolve(result);
         })
-        .catch((e) => {
+        .catch(e => {
           toast.error(
             t("toast.request_failure", { ns: "common" }),
             t("toast.try_again", { ns: "common" })
           );
-          console.error(e);
+          console.error(
+            "Sejarah Kawasan fetchFullResult error:",
+            JSON.stringify(e)
+          );
         });
     });
   };
@@ -165,22 +168,19 @@ const SejarahKawasan = ({ dropdown, kawasan, params }: SejarahKawasanProps) => {
 
   return (
     <>
-      <Container className="xl:px-0 py-8 lg:py-12 xl:grid xl:grid-cols-12">
+      <Container className="py-8 lg:py-12 xl:grid xl:grid-cols-12 xl:px-0">
         <div className="xl:col-span-10 xl:col-start-2">
           <h2 className="header text-center">{t("kawasan.header")}</h2>
           <div className="mx-auto w-full py-6 sm:w-[500px]">
             <ComboBox
               placeholder={t("cari_kawasan")}
               options={KAWASAN_OPTIONS}
-              selected={
-                KAWASAN_OPTIONS.find(
-                  (e) =>
-                    data.kawasan_option
-                      ? e.value === data.kawasan_option.value
-                      : undefined
-                )
-              }
-              onChange={(selected) => {
+              selected={KAWASAN_OPTIONS.find(e =>
+                data.kawasan_option
+                  ? e.value === data.kawasan_option.value
+                  : undefined
+              )}
+              onChange={selected => {
                 setData("kawasan_option", selected);
                 if (selected) {
                   setData("loading", true);

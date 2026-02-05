@@ -147,12 +147,10 @@ const ComboBox = <T extends unknown>({
             </li>
           ) : items.length > 100 ? (
             <>
-              <li
-                key="total-size"
-                style={{ height: rowVirtualizer.totalSize }}
-              />
+              <li style={{ height: rowVirtualizer.totalSize }} />
               {rowVirtualizer.virtualItems.map(virtualRow => (
                 <ComboOption<T>
+                  key={`vc-${virtualRow.index}`}
                   option={items[virtualRow.index]}
                   total={options.length}
                   format={format}
@@ -178,6 +176,7 @@ const ComboBox = <T extends unknown>({
           ) : (
             items.map((item, i) => (
               <ComboOption<T>
+                key={`cb-${item.value}`}
                 option={item}
                 total={options.length}
                 format={format}

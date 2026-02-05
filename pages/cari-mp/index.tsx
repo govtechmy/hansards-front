@@ -124,7 +124,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         },
       };
     } catch (error) {
-      console.error("API error in cari-mp:", error);
+      console.error("API error in cari-mp:", JSON.stringify(error));
       return {
         redirect: {
           destination: locale === "en-GB" ? "/en-GB/500" : "/500",

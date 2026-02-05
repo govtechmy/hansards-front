@@ -88,8 +88,11 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
         },
       };
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e) {
+      console.error(
+        "Sejarah Individu getServerSideProps error:",
+        JSON.stringify(e)
+      );
       return { notFound: true };
     }
   }

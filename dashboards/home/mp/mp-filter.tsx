@@ -168,6 +168,17 @@ const MPFilter = ({
     setData("gender", BOTH_GENDERS);
   };
 
+  const handleClearDateRange = () => {
+    // If date exists in the current query, remove it while keeping other filters
+    if (router.query.tarikh_mula || router.query.tarikh_akhir) {
+      handleSearch({
+        tarikh_akhir: "",
+        tarikh_mula: "",
+      });
+    }
+    setSelectedDateRange(undefined);
+  };
+
   const className = {
     dropdown_ind_grp:
       "link p-0 border-none shadow-none active:bg-inherit active:dark:bg-inherit hover:bg-inherit hover:dark:bg-inherit",
@@ -178,7 +189,7 @@ const MPFilter = ({
     <>
       <div className="space-y-6 pb-3 sm:pt-6">
         {/* Dewan Selector */}
-        <div className="mx-auto hidden w-fit rounded-full border border-border bg-background p-1 sm:block">
+        <div className="mx-auto hidden w-fit rounded-full border border-border bg-background p-1 md:block">
           <Tabs
             value={data.dewan}
             onValueChange={dewan => {
@@ -210,7 +221,7 @@ const MPFilter = ({
         {/* Search Bar */}
         {ind_or_grp === "individu" ? (
           <>
-            <div className="mx-auto w-full sm:w-[500px]">
+            <div className="mx-auto w-full md:w-[500px]">
               <ComboBox
                 placeholder={t("search_individual")}
                 options={INDIVIDU_OPTIONS}
@@ -245,6 +256,7 @@ const MPFilter = ({
                     setData("uid", selected.value);
                     handleSearch({
                       uid: selected.value,
+                      dewan: data.dewan,
                     });
                   }
                 }}
@@ -260,8 +272,8 @@ const MPFilter = ({
                   setSelectedDateRange(dateRange);
                   if (data.uid && dateRange && dateRange?.from && dateRange?.to)
                     handleSearch({
-                      tarikh_akhir: formatDate(dateRange.from),
-                      tarikh_mula: formatDate(dateRange.to),
+                      tarikh_mula: formatDate(dateRange.from),
+                      tarikh_akhir: formatDate(dateRange.to),
                     });
                 }}
                 numberOfMonths={isTablet ? 2 : 1}
@@ -270,7 +282,7 @@ const MPFilter = ({
                 <Button
                   variant="ghost"
                   className="w-fit justify-center"
-                  onClick={() => setSelectedDateRange(undefined)}
+                  onClick={handleClearDateRange}
                 >
                   <XMarkIcon className="size-4.5" />
                   {t("clear", { ns: "common" })}
@@ -331,8 +343,8 @@ const MPFilter = ({
                       handleSearch({
                         uid: data.uid,
                         dewan: data.dewan,
-                        tarikh_akhir: formatDate(selectedDateRange?.from),
-                        tarikh_mula: formatDate(selectedDateRange?.to),
+                        tarikh_mula: formatDate(selectedDateRange?.from),
+                        tarikh_akhir: formatDate(selectedDateRange?.to),
                       });
                     }}
                   >
@@ -353,14 +365,17 @@ const MPFilter = ({
           </>
         ) : (
           <div className="space-y-3">
-            <div className="mx-auto flex w-full justify-between rounded-full border border-otl-gray-200 py-2 pl-4.5 pr-1.5 sm:w-fit">
+            <div className="mx-auto flex w-full justify-between rounded-full border border-otl-gray-200 py-2 pl-4.5 pr-1.5 md:w-fit">
               <div className="flex self-center">
                 <Dropdown
                   className={className.dropdown_ind_grp}
                   width="w-fit"
                   options={INDIVIDU_OR_GROUP}
                   selected={INDIVIDU_OR_GROUP.find(e => e.value === ind_or_grp)}
-                  onChange={(e: { value: string }) => onFilter(e.value)}
+                  onChange={(e: { value: string }) => {
+                    onFilter(e.value);
+                    handleClear();
+                  }}
                 />
               </div>
               <div className="hidden gap-x-1 px-2.5 md:flex">
@@ -423,8 +438,8 @@ const MPFilter = ({
                       gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                       umur: data.age !== ALL_AGES ? data.age : "",
                       etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                      tarikh_akhir: formatDate(selectedDateRange?.from),
-                      tarikh_mula: formatDate(selectedDateRange?.to),
+                      tarikh_mula: formatDate(selectedDateRange?.from),
+                      tarikh_akhir: formatDate(selectedDateRange?.to),
                     })
                   }
                 >
@@ -447,7 +462,7 @@ const MPFilter = ({
                 <Button
                   variant="ghost"
                   className="w-fit justify-center"
-                  onClick={() => setSelectedDateRange(undefined)}
+                  onClick={handleClearDateRange}
                 >
                   <XMarkIcon className="size-4.5" />
                   {t("clear", { ns: "common" })}
@@ -562,8 +577,8 @@ const MPFilter = ({
                         gender: data.gender !== BOTH_GENDERS ? data.gender : "",
                         umur: data.age !== ALL_AGES ? data.age : "",
                         etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                        tarikh_akhir: formatDate(selectedDateRange?.from),
-                        tarikh_mula: formatDate(selectedDateRange?.to),
+                        tarikh_mula: formatDate(selectedDateRange?.from),
+                        tarikh_akhir: formatDate(selectedDateRange?.to),
                       });
                     }}
                   >

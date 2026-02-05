@@ -39,15 +39,11 @@ const HansardSidebar = forwardRef(
     const [showSidebar, setSidebar] = useState<boolean>(true);
     const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
 
-    useImperativeHandle(
-      ref,
-      () => {
-        return {
-          open: () => setMobileSidebar(true),
-        };
-      },
-      []
-    );
+    useImperativeHandle(ref, () => {
+      return {
+        open: () => setMobileSidebar(true),
+      };
+    }, []);
 
     const styles = {
       active: "bg-bg-hover font-medium text-foreground",
@@ -190,7 +186,7 @@ const HansardSidebar = forwardRef(
                   !showSidebar &&
                     `absolute origin-top-left -rotate-90 text-txt-black-500 ${
                       i18n.language === "en-GB"
-                        ? "translate-y-28"
+                        ? "translate-y-[205px]"
                         : "translate-y-36"
                     }`
                 )}
