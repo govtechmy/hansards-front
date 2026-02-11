@@ -54,6 +54,7 @@ export const ShareDialogDrawer = ({
     index ? `#${index}` : ""
   }`;
   const encodedUrl = encodeURIComponent(URL);
+  const encodedTitle = encodeURIComponent(title);
 
   const SHARE_OPTIONS = [
     {
@@ -64,12 +65,12 @@ export const ShareDialogDrawer = ({
     {
       name: "Facebook",
       icon: FacebookIcon,
-      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&t=${title}`,
+      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&t=${encodedTitle}`,
     },
     {
       name: "X",
       icon: XIcon,
-      link: `https://www.x.com/intent/tweet?text=${title}&url=${encodedUrl}&hashtags=hansard`,
+      link: `https://www.x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}&hashtags=hansard`,
     },
     {
       name: t("email"),
