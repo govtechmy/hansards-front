@@ -48,8 +48,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
 
       <nav className="sticky top-14 z-20 flex justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center lg:static">
         <div
-          className="/* 1. Make scrollbar transparent and
-          overlay */ flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto
+          className="flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto
           [&::-webkit-scrollbar-thumb]:rounded-full
           [&::-webkit-scrollbar-thumb]:bg-gray-400/40
           [&::-webkit-scrollbar-track]:bg-transparent 
