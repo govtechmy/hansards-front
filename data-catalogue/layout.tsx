@@ -45,11 +45,17 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
       />
 
       <nav className="sticky top-14 z-20 flex h-14 justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center">
-        <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
+        <div
+          className="flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb]:bg-gray-400/45
+          [&::-webkit-scrollbar-track]:bg-transparent 
+          [&::-webkit-scrollbar]:h-1"
+        >
           {TAB_OPTIONS.map(tab => {
             const isPath = pathname.includes(tab.path);
             return (
-              <div key={tab.path} className="snap-start">
+              <div key={tab.path} className="shrink-0 snap-start">
                 <At
                   href={tab.path}
                   scrollTop={false}
@@ -58,7 +64,7 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
                   <div
                     className={cn(
                       isPath && "bg-bg-black-50 dark:bg-bg-black-200",
-                      "relative flex h-full flex-col items-center justify-center p-4"
+                      "relative flex h-full flex-col items-center justify-center p-4.5"
                     )}
                   >
                     <div className="flex items-center gap-2">
@@ -80,7 +86,7 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
                       </div>
                     </div>
                     {isPath && (
-                      <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
+                      <div className="absolute top-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
                     )}
                   </div>
                 </At>
