@@ -53,22 +53,24 @@ export const ShareDialogDrawer = ({
   const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}${
     index ? `#${index}` : ""
   }`;
+  const encodedUrl = encodeURIComponent(URL);
+  const encodedTitle = encodeURIComponent(title);
 
   const SHARE_OPTIONS = [
     {
       name: "WhatsApp",
       icon: WhatsappIcon,
-      link: `https://api.whatsapp.com/send/?text=${URL}`,
+      link: `https://api.whatsapp.com/send/?text=${encodedUrl}`,
     },
     {
       name: "Facebook",
       icon: FacebookIcon,
-      link: `https://www.facebook.com/sharer/sharer.php?u=${URL}&t=${title}`,
+      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&t=${encodedTitle}`,
     },
     {
       name: "X",
       icon: XIcon,
-      link: `https://www.x.com/intent/tweet?text=${title}&url=${URL}&hashtags=hansard`,
+      link: `https://www.x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}&hashtags=hansard`,
     },
     {
       name: t("email"),
