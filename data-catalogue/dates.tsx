@@ -197,7 +197,7 @@ export const MesyuaratDates = ({
   };
 
   return (
-    <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="mx-auto grid w-full grid-cols-1 gap-4 max-md:overflow-auto max-md:p-4 md:grid-cols-2 lg:grid-cols-3">
       {sitting_list.map((sitting, i) => (
         <MesyuaratDateRow sitting={sitting} key={i} />
       ))}
