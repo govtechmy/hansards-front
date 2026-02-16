@@ -47,11 +47,17 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
       />
 
       <nav className="sticky top-14 z-20 flex justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center lg:static">
-        <div className="hide-scrollbar flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto">
+        <div
+          className="flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb]:bg-gray-400/40
+          [&::-webkit-scrollbar-track]:bg-transparent 
+          [&::-webkit-scrollbar]:h-1"
+        >
           {TAB_OPTIONS.map(tab => {
             const isPath = tab.href.includes(pathname);
             return (
-              <div key={tab.name} className="snap-start">
+              <div key={tab.name} className="shrink-0 snap-start">
                 <At
                   href={tab.href[0]}
                   scrollTop={false}
@@ -60,7 +66,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
                   <div
                     className={cn(
                       isPath && "bg-bg-black-50 dark:bg-bg-black-200",
-                      "relative flex h-full flex-col items-center justify-center p-4"
+                      "relative flex h-full flex-col items-center justify-center p-4.5"
                     )}
                   >
                     <div
@@ -77,7 +83,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
                       </div>
                     </div>
                     {isPath && (
-                      <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
+                      <div className="absolute top-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-secondary" />
                     )}
                   </div>
                 </At>
