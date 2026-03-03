@@ -1,6 +1,7 @@
 {
   "gender": "Gender",
   "both_genders": "Both Genders",
+  "both_genders2": "Both Genders",
   "m": "Male",
   "f": "Female",
   "ethnicity": "Ethnicity",
@@ -11,5 +12,6 @@
   "other": "Others",
   "age": "Age",
   "age_group": "Age Group",
-  "all_ages": "All ages"
+  "all_ages": "All ages",
+  "all_ages2": "All ages"
 }

@@ -1,6 +1,7 @@
 {
   "gender": "Jantina",
   "both_genders": "Semua",
+  "both_genders2": "Semua Jantina",
   "m": "Lelaki",
   "f": "Perempuan",
   "ethnicity": "Etnik",
@@ -11,5 +12,6 @@
   "other": "Lain-lain",
   "age": "Umur",
   "age_group": "Kumpulan Umur",
-  "all_ages": "Semua umur"
+  "all_ages": "Semua",
+  "all_ages2": "Semua Umur"
 }

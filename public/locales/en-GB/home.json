@@ -18,6 +18,7 @@
   "choose_later_date": "Date must be 11/8/1959 or later.",
   "today_or_earlier": "Date must be today or earlier.",
   "all_parties": "All parties",
+  "all_parties2": "All parties",
   "timeseries_title": "Timeseries of “{{ keyword }}” in {{ house }}",
   "timeseries_mp": "Timeseries of total words spoken by {{ mp }} in {{ house }}",
   "timeseries_mps": "Timeseries of total words spoken in {{ house }}",

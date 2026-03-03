@@ -97,7 +97,7 @@ const KeywordFilter = ({
   }));
 
   const PARTY_OPTIONS: OptionType[] = [
-    { label: t(ALL_PARTIES), value: ALL_PARTIES },
+    { label: t(ALL_PARTIES, { ns: "home" }), value: ALL_PARTIES },
   ].concat(
     PARTIES.map((key: string) => ({
       label: t(key, { ns: "party" }),
