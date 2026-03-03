@@ -354,7 +354,7 @@ const KeywordFilter = ({
               });
           }}
         />
-        <Dropdown
+        {/* <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
@@ -367,7 +367,7 @@ const KeywordFilter = ({
                 etnik: e.value !== ALL_ETHNICITIES ? e.value : "",
               });
           }}
-        />
+        /> */}
 
         {(selectedDateRange ||
           data.party !== ALL_PARTIES ||
