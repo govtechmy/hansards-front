@@ -406,13 +406,13 @@ const MPFilter = ({
                   selected={AGE_OPTIONS.find(e => e.value === data.age)}
                   onChange={e => setData("age", e.value)}
                 />
-                <Dropdown
+                {/* <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
                   options={ETNIK_OPTIONS}
                   selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
                   onChange={e => setData("etnik", e.value)}
-                />
+                /> */}
                 {(data.party !== ALL_PARTIES ||
                   data.gender !== BOTH_GENDERS ||
                   data.age !== ALL_AGES ||
