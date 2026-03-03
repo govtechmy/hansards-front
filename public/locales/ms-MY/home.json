@@ -17,7 +17,7 @@
   "invalid_date": "Sila isikan tarikh yang sah dan selengkapnya.",
   "choose_later_date": "Sila isikan tarikh 11/8/1959 atau selepasnya.",
   "today_or_earlier": "Sila isikan tarikh hari ini atau sebelumnya.",
-  "all_parties": "Semua parti",
+  "all_parties": "Semua",
   "timeseries_title": "Siri masa “{{ keyword }}” di {{ house }}",
   "timeseries_mp": "Siri masa jumlah perkataan diungkap oleh {{ mp }}” di {{ house }}",
   "timeseries_mps": "Siri masa jumlah perkataan diungkap di {{ house }}",
