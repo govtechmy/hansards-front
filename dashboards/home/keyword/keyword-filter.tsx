@@ -97,7 +97,7 @@ const KeywordFilter = ({
   }));
 
   const PARTY_OPTIONS: OptionType[] = [
-    { label: t(ALL_PARTIES), value: ALL_PARTIES },
+    { label: t(ALL_PARTIES, { ns: "home" }), value: ALL_PARTIES },
   ].concat(
     PARTIES.map((key: string) => ({
       label: t(key, { ns: "party" }),
@@ -354,7 +354,7 @@ const KeywordFilter = ({
               });
           }}
         />
-        <Dropdown
+        {/* <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
@@ -367,7 +367,7 @@ const KeywordFilter = ({
                 etnik: e.value !== ALL_ETHNICITIES ? e.value : "",
               });
           }}
-        />
+        /> */}
 
         {(selectedDateRange ||
           data.party !== ALL_PARTIES ||

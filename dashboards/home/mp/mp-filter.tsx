@@ -28,13 +28,12 @@ import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
-  ALL_AGES,
+  ALL_AGES2,
   ALL_ETHNICITIES,
-  ALL_PARTIES,
-  BOTH_GENDERS,
+  ALL_PARTIES2,
+  BOTH_GENDERS2,
   DEWANS,
   ETHNICITIES,
-  GENDERS,
 } from "../filter-options";
 import { useRouter } from "next/router";
 import { setSearchParams } from "@lib/utils";
@@ -64,6 +63,7 @@ const MPFilter = ({
 }: MPFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
+  const GENDERS = [BOTH_GENDERS2, "m", "f"];
 
   const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
     query;
@@ -81,10 +81,10 @@ const MPFilter = ({
       ? INDIVIDU_OPTIONS.find(option => option.value === String(uid))
       : undefined,
     dewan: dewan ? String(dewan) : "dewan-negara",
-    age: umur ? String(umur) : ALL_AGES,
+    age: umur ? String(umur) : ALL_AGES2,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
-    party: parti ? String(parti) : ALL_PARTIES,
-    gender: gender ? String(gender) : BOTH_GENDERS,
+    party: parti ? String(parti) : ALL_PARTIES2,
+    gender: gender ? String(gender) : BOTH_GENDERS2,
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<
@@ -115,7 +115,7 @@ const MPFilter = ({
   }));
 
   const PARTY_OPTIONS: OptionType[] = [
-    { label: t(ALL_PARTIES), value: ALL_PARTIES },
+    { label: t(ALL_PARTIES2, { ns: "home" }), value: ALL_PARTIES2 },
   ].concat(
     PARTIES.map((key: string) => ({
       label: t(key, { ns: "party" }),
@@ -124,7 +124,7 @@ const MPFilter = ({
   );
 
   const AGE_OPTIONS: OptionType[] = [
-    { label: t(ALL_AGES, { ns: "demografi" }), value: ALL_AGES },
+    { label: t(ALL_AGES2, { ns: "demografi" }), value: ALL_AGES2 },
   ].concat(
     AGES.map((key: string) => ({
       label: key + (key === "70" ? "+" : ""),
@@ -162,10 +162,10 @@ const MPFilter = ({
       tarikh_mula: "",
     });
     setSelectedDateRange(undefined);
-    setData("party", ALL_PARTIES);
-    setData("age", ALL_AGES);
+    setData("party", ALL_PARTIES2);
+    setData("age", ALL_AGES2);
     setData("etnik", ALL_ETHNICITIES);
-    setData("gender", BOTH_GENDERS);
+    setData("gender", BOTH_GENDERS2);
   };
 
   const handleClearDateRange = () => {
@@ -384,7 +384,7 @@ const MPFilter = ({
                   width="w-fit"
                   enableFlag
                   flag={party => {
-                    if (party === ALL_PARTIES) return <></>;
+                    if (party === ALL_PARTIES2) return <></>;
                     else
                       return <PartyFlag party={party} children={() => true} />;
                   }}
@@ -406,16 +406,16 @@ const MPFilter = ({
                   selected={AGE_OPTIONS.find(e => e.value === data.age)}
                   onChange={e => setData("age", e.value)}
                 />
-                <Dropdown
+                {/* <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
                   options={ETNIK_OPTIONS}
                   selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
                   onChange={e => setData("etnik", e.value)}
-                />
-                {(data.party !== ALL_PARTIES ||
-                  data.gender !== BOTH_GENDERS ||
-                  data.age !== ALL_AGES ||
+                /> */}
+                {(data.party !== ALL_PARTIES2 ||
+                  data.gender !== BOTH_GENDERS2 ||
+                  data.age !== ALL_AGES2 ||
                   data.etnik !== ALL_ETHNICITIES) && (
                   <Button
                     variant="ghost"
@@ -434,9 +434,9 @@ const MPFilter = ({
                     handleSearch({
                       uid: "",
                       dewan: data.dewan,
-                      parti: data.party !== ALL_PARTIES ? data.party : "",
-                      gender: data.gender !== BOTH_GENDERS ? data.gender : "",
-                      umur: data.age !== ALL_AGES ? data.age : "",
+                      parti: data.party !== ALL_PARTIES2 ? data.party : "",
+                      gender: data.gender !== BOTH_GENDERS2 ? data.gender : "",
+                      umur: data.age !== ALL_AGES2 ? data.age : "",
                       etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                       tarikh_mula: formatDate(selectedDateRange?.from),
                       tarikh_akhir: formatDate(selectedDateRange?.to),
@@ -518,7 +518,7 @@ const MPFilter = ({
                     <Dropdown
                       enableFlag
                       flag={party => {
-                        if (party === ALL_PARTIES) return <></>;
+                        if (party === ALL_PARTIES2) return <></>;
                         else
                           return (
                             <PartyFlag party={party} children={() => true} />
@@ -573,9 +573,10 @@ const MPFilter = ({
                       handleSearch({
                         uid: "",
                         dewan: data.dewan,
-                        parti: data.party !== ALL_PARTIES ? data.party : "",
-                        gender: data.gender !== BOTH_GENDERS ? data.gender : "",
-                        umur: data.age !== ALL_AGES ? data.age : "",
+                        parti: data.party !== ALL_PARTIES2 ? data.party : "",
+                        gender:
+                          data.gender !== BOTH_GENDERS2 ? data.gender : "",
+                        umur: data.age !== ALL_AGES2 ? data.age : "",
                         etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                         tarikh_mula: formatDate(selectedDateRange?.from),
                         tarikh_akhir: formatDate(selectedDateRange?.to),
