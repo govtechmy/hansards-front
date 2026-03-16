@@ -22,9 +22,4 @@ export const PARTIES = [
   "AMANAH",
   "WARISAN",
   "MUDA",
-  // "BN",
-  // "PH",
-  // "PN",
-  // "GPS",
-  // "GRS",
 ];
