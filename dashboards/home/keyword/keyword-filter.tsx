@@ -368,7 +368,6 @@ const KeywordFilter = ({
               });
           }}
         /> */}
-
         {(selectedDateRange ||
           data.party !== ALL_PARTIES ||
           data.gender !== BOTH_GENDERS ||

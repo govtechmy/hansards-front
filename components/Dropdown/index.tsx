@@ -20,6 +20,12 @@ import {
   useState,
   useRef,
 } from "react";
+import {
+  Callout,
+  CalloutAction,
+  CalloutContent,
+  CalloutTitle,
+} from "@components/Callout";
 
 type CommonProps = {
   className?: string;
@@ -268,14 +274,28 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               ref={optionsRef}
               className={cn(
                 "absolute z-20 mt-1 min-w-full rounded-md bg-background text-foreground shadow-floating",
-                "max-h-60 overflow-auto",
+                sublabel === "Age Group" || sublabel === "Kumpulan Umur"
+                  ? "w-[320px]"
+                  : "",
+                "overflow-auto",
                 anchor === "right"
                   ? "right-0"
                   : anchor === "left"
-                  ? "left-0"
-                  : anchor
+                    ? "left-0"
+                    : anchor
               )}
             >
+              {sublabel &&
+                (sublabel === "Age Group" || sublabel === "Kumpulan Umur") && (
+                  <div className="p-1">
+                    <Callout>
+                      <CalloutTitle>{t("disclaimer.title")}</CalloutTitle>
+                      <CalloutContent>
+                        '{sublabel}' {t("disclaimer.description")}
+                      </CalloutContent>
+                    </Callout>
+                  </div>
+                )}
               {/* Description - optional*/}
               {description && (
                 <p className="px-3 pb-1 pt-2 text-xs text-zinc-500">
