@@ -273,7 +273,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
             <Listbox.Options
               ref={optionsRef}
               className={cn(
-                "absolute z-20 mt-1 min-w-full rounded-md bg-background text-foreground shadow-floating",
+                "absolute z-20 mt-1 max-h-60 min-w-full rounded-md bg-background text-foreground shadow-floating",
                 sublabel === "Age Group" || sublabel === "Kumpulan Umur"
                   ? "w-[320px]"
                   : "",
