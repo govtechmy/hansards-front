@@ -344,6 +344,7 @@ const KeywordFilter = ({
           sublabel={t("age_group", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
+          showDisclaimer
           options={AGE_OPTIONS}
           selected={AGE_OPTIONS.find(e => e.value === data.age)}
           onChange={e => {
@@ -450,6 +451,7 @@ const KeywordFilter = ({
                 <Dropdown
                   width="w-full"
                   anchor="left bottom-10"
+                  showDisclaimer
                   options={AGE_OPTIONS}
                   selected={AGE_OPTIONS.find(e => e.value === data.age)}
                   onChange={e => setData("age", e.value)}

@@ -20,12 +20,7 @@ import {
   useState,
   useRef,
 } from "react";
-import {
-  Callout,
-  CalloutAction,
-  CalloutContent,
-  CalloutTitle,
-} from "@components/Callout";
+import { Callout, CalloutContent, CalloutTitle } from "@components/Callout";
 
 type CommonProps = {
   className?: string;
@@ -41,6 +36,7 @@ type CommonProps = {
   enableFlag?: boolean;
   flag?: (value: string) => ReactNode;
   enableClear?: boolean;
+  showDisclaimer?: boolean;
 };
 
 type ConditionalProps =
@@ -80,6 +76,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   enableFlag = false,
   flag,
   enableClear = false,
+  showDisclaimer = false,
 }) => {
   const [search, setSearch] = useState<string>("");
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -273,11 +270,8 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
             <Listbox.Options
               ref={optionsRef}
               className={cn(
-                "absolute z-20 mt-1 max-h-60 min-w-full rounded-md bg-background text-foreground shadow-floating",
-                sublabel === "Age Group" || sublabel === "Kumpulan Umur"
-                  ? "w-[320px]"
-                  : "",
-                "overflow-auto",
+                "absolute z-20 mt-1 max-h-60 min-w-full overflow-auto rounded-md bg-background text-foreground shadow-floating",
+                showDisclaimer && "w-[320px]",
                 anchor === "right"
                   ? "right-0"
                   : anchor === "left"
@@ -285,17 +279,16 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
                     : anchor
               )}
             >
-              {sublabel &&
-                (sublabel === "Age Group" || sublabel === "Kumpulan Umur") && (
-                  <div className="p-1">
-                    <Callout>
-                      <CalloutTitle>{t("disclaimer.title")}</CalloutTitle>
-                      <CalloutContent>
-                        '{sublabel}' {t("disclaimer.description")}
-                      </CalloutContent>
-                    </Callout>
-                  </div>
-                )}
+              {showDisclaimer && (
+                <div className="p-1">
+                  <Callout>
+                    <CalloutTitle>{t("disclaimer.title")}</CalloutTitle>
+                    <CalloutContent>
+                      {t("disclaimer.description", { sublabel })}
+                    </CalloutContent>
+                  </Callout>
+                </div>
+              )}
               {/* Description - optional*/}
               {description && (
                 <p className="px-3 pb-1 pt-2 text-xs text-zinc-500">
