@@ -79,7 +79,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
 
       const results = await Promise.allSettled([
         get("api/search-mp-doc/", {
-          uid,
+          uid: uid,
           house: dewan,
           window_size: 150,
           page: page ?? 1,
@@ -92,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           gender: jantina,
         }),
         get("api/search-plot/", {
-          uid,
+          uid: uid,
           house: dewan,
           start_date: tarikh_mula,
           end_date: tarikh_akhir,
