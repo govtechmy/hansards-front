@@ -107,8 +107,6 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         if (e.status === "rejected") return {};
         else return e.value.data;
       });
-      console.log("api/search-mp-doc/ response:", excerpt);
-      console.log("api/search-plot/ response:", data);
 
       return {
         notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
