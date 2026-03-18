@@ -73,14 +73,17 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         etnik,
         parti,
         jantina,
+        page,
+        page_size,
       } = query;
 
       const results = await Promise.allSettled([
-        get("api/search/", {
-          uid: uid,
+        get("api/search-mp-doc/", {
+          uid,
           house: dewan,
           window_size: 150,
-          page: 1,
+          page: page ?? 1,
+          page_size: page_size ?? 10,
           start_date: tarikh_mula,
           end_date: tarikh_akhir,
           age_group: umur,
@@ -89,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           gender: jantina,
         }),
         get("api/search-plot/", {
-          uid: uid,
+          uid,
           house: dewan,
           start_date: tarikh_mula,
           end_date: tarikh_akhir,
@@ -104,6 +107,8 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         if (e.status === "rejected") return {};
         else return e.value.data;
       });
+      console.log("api/search-mp-doc/ response:", excerpt);
+      console.log("api/search-plot/ response:", data);
 
       return {
         notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
