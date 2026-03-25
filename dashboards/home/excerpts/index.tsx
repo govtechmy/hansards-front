@@ -78,12 +78,13 @@ const Excerpts = ({
     },
   };
 
+  const HOUSE_TO_DEWAN: Record<number, string> = {
+    0: "dewan-rakyat",
+    1: "dewan-negara",
+    2: "kamar-khas",
+  };
+
   if (variant === "compact") {
-    const HOUSE_TO_DEWAN: Record<number, string> = {
-      0: "dewan-rakyat",
-      1: "dewan-negara",
-      2: "kamar-khas",
-    };
     const flatExcerpts = (excerpts ?? []) as FlatSitting[];
 
     return (
@@ -206,7 +207,8 @@ const Excerpts = ({
             {Object.keys(excerptsByDate).map(date => {
               const excerpt = excerptsByDate[date];
               const sitting = excerpt[0].sitting;
-
+              const dewanKey =
+                HOUSE_TO_DEWAN[sitting.house ?? 0] ?? (dewan as string);
               return (
                 <li
                   key={date}
@@ -214,7 +216,7 @@ const Excerpts = ({
                 >
                   <div className="top-16 flex shrink-0 items-center lg:sticky lg:h-24 lg:max-w-md">
                     <Link
-                      href={`hansard/${dewan}/${sitting.date}?search=${q}`}
+                      href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
                       className="group flex items-center gap-3 sm:gap-4.5"
                     >
                       <DateCard date={date} size="sm" />
@@ -265,6 +267,18 @@ const Excerpts = ({
                             n: sitting.meeting,
                           })}`}
                         </p>
+                        {dewanKey && DEWAN_TAG[dewanKey] && (
+                          <div>
+                            <Tag
+                              variant={DEWAN_TAG[dewanKey].variant}
+                              className={DEWAN_TAG[dewanKey].className}
+                              mode="pill"
+                              size="small"
+                            >
+                              {DEWAN_TAG[dewanKey].label}
+                            </Tag>
+                          </div>
+                        )}
                       </div>
                     </Link>
                   </div>
