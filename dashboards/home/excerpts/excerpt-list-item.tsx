@@ -36,9 +36,20 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
     },
   }) as any;
 
+  const HOUSE_TO_DEWAN: Record<number, string> = {
+    0: "dewan-rakyat",
+    1: "dewan-negara",
+    2: "kamar-khas",
+  };
+
+  const houseDewan =
+    sitting.house !== undefined
+      ? HOUSE_TO_DEWAN[sitting.house]
+      : HOUSE_TO_DEWAN[0];
+
   return (
     <Link
-      href={`hansard/${dewan}/${sitting.date}?q=${encodeURIComponent(keyword)}#${index}`}
+      href={`hansard/${houseDewan}/${sitting.date}?q=${encodeURIComponent(keyword)}#${index}`}
       prefetch={false}
       className="group p-3 first:rounded-t-xl last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 sm:p-4"
     >
