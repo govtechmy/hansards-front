@@ -12,6 +12,7 @@ export type Excerpt = {
     term: number;
     session: number;
     meeting: number;
+    house?: number;
   };
 };
 

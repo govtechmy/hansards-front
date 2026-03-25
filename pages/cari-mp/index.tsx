@@ -73,14 +73,17 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         etnik,
         parti,
         jantina,
+        page,
+        page_size,
       } = query;
 
       const results = await Promise.allSettled([
-        get("api/search/", {
+        get("api/search-mp-doc/", {
           uid: uid,
           house: dewan,
           window_size: 150,
-          page: 1,
+          page: page ?? 1,
+          page_size: page_size ?? 10,
           start_date: tarikh_mula,
           end_date: tarikh_akhir,
           age_group: umur,
