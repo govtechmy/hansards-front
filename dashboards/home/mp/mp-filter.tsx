@@ -379,7 +379,16 @@ const MPFilter = ({
                 />
               </div>
               <div className="hidden gap-x-1 px-2.5 md:flex">
-                <Dropdown
+                {/*
+                    TODO: Party filter is temporarily disabled due to a requirement conflict.
+                    The filter cannot be applied uniformly across all parliamentary sittings
+                    because Dewan Negara senators are not affiliated with political parties,
+                    making party-based filtering inapplicable for that chamber. A chamber-aware
+                    implementation (i.e. showing the party filter only when Dewan Rakyat or
+                    Kamar Khas is selected, and hiding it for Dewan Negara) is needed before
+                    re-enabling this.
+                */}
+                {/* <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
                   enableFlag
@@ -391,7 +400,7 @@ const MPFilter = ({
                   options={PARTY_OPTIONS}
                   selected={PARTY_OPTIONS.find(e => e.value === data.party)}
                   onChange={e => setData("party", e.value)}
-                />
+                /> */}
                 <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
