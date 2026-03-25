@@ -80,7 +80,7 @@ const MPFilter = ({
     individu_option: uid
       ? INDIVIDU_OPTIONS.find(option => option.value === String(uid))
       : undefined,
-    dewan: dewan ? String(dewan) : "dewan-negara",
+    dewan: dewan ? String(dewan) : "semua",
     age: umur ? String(umur) : ALL_AGES2,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
     party: parti ? String(parti) : ALL_PARTIES2,

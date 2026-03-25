@@ -1,4 +1,4 @@
-export const DEWANS = ["dewan-negara", "dewan-rakyat", "kamar-khas"];
+export const DEWANS = ["semua", "dewan-negara", "dewan-rakyat", "kamar-khas"];
 
 export const ALL_PARTIES = "all_parties";
 export const ALL_PARTIES2 = "all_parties2";
