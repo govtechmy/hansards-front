@@ -307,7 +307,7 @@ const KeywordFilter = ({
           }}
         />
 
-        <Dropdown
+        {/* <Dropdown
           sublabel={t("party", { ns: "common" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
@@ -325,7 +325,7 @@ const KeywordFilter = ({
                 parti: e.value !== ALL_PARTIES ? e.value : "",
               });
           }}
-        />
+        /> */}
         <Dropdown
           sublabel={t("gender", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
