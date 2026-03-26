@@ -20,6 +20,7 @@
   "all_parties": "All parties",
   "all_parties2": "All parties",
   "timeseries_title": "Timeseries of “{{ keyword }}” in {{ house }}",
+  "all_timeseries_title": "Timeseries of “{{ keyword }}” for all parliamentary sittings",
   "timeseries_mp": "Timeseries of total words spoken by {{ mp }} in {{ house }}",
   "timeseries_mps": "Timeseries of total words spoken in {{ house }}",
   "total_words": "Total words",

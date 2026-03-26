@@ -242,7 +242,18 @@ const MP = ({
 
       {count > 0 && ((mp && IS_INDIVIDU) || (!mp && !IS_INDIVIDU)) && (
         <>
-          <Excerpts count={count} excerpts={excerpts} query={query} />
+          <Excerpts
+            variant="compact"
+            name={
+              IS_INDIVIDU
+                ? (speakers.find(e => String(e.new_author_id) === uid)?.name ??
+                  "")
+                : ""
+            }
+            count={count}
+            excerpts={excerpts}
+            query={query}
+          />
           {/* "{{ name }}"'s most spoken words */}
           {top_word_freq && (
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
@@ -256,7 +267,6 @@ const MP = ({
                     : "",
                 })}
               </h3>
-
               <BubbleCloud
                 className="h-[350px] w-full sm:h-[700px]"
                 data={Object.entries(top_word_freq).map(([word, freq]) => ({

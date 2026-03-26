@@ -73,7 +73,7 @@ const KeywordFilter = ({
     query;
 
   const { data, setData } = useData({
-    dewan: dewan ? String(dewan) : "dewan-negara",
+    dewan: dewan ? String(dewan) : "semua",
     age: umur ? String(umur) : ALL_AGES,
     etnik: etnik ? String(etnik) : ALL_ETHNICITIES,
     party: parti ? String(parti) : ALL_PARTIES,
@@ -307,7 +307,7 @@ const KeywordFilter = ({
           }}
         />
 
-        <Dropdown
+        {/* <Dropdown
           sublabel={t("party", { ns: "common" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
@@ -325,7 +325,7 @@ const KeywordFilter = ({
                 parti: e.value !== ALL_PARTIES ? e.value : "",
               });
           }}
-        />
+        /> */}
         <Dropdown
           sublabel={t("gender", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"

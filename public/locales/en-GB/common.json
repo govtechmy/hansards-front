@@ -3,6 +3,7 @@
     "name": "hansard.parlimen.gov.my",
     "description": "An easy and fun way to explore what is being said and done in Parliament, so that you can better hold your representatives accountable."
   },
+  "semua": "All",
   "dewan_rakyat": "House of Representatives",
   "dewan_negara": "Senate",
   "kamar_khas": "Special Chambers",

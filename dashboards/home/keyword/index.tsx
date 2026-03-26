@@ -178,7 +178,14 @@ const Keyword = ({
         <div className="relative mt-6 w-full" ref={ref}>
           <h3 className="title mb-3 block leading-7">
             {keyword &&
+              house !== "semua" &&
               t("timeseries_title", {
+                keyword: keyword,
+                house: t(house.replace("-", "_"), { ns: "common" }),
+              })}
+
+            {house === "semua" &&
+              t("all_timeseries_title", {
                 keyword: keyword,
                 house: t(house.replace("-", "_"), { ns: "common" }),
               })}
