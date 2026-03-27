@@ -411,6 +411,7 @@ const MPFilter = ({
                 <Dropdown
                   className={className.dropdown_demo}
                   width="w-fit"
+                  showDisclaimer
                   options={AGE_OPTIONS}
                   selected={AGE_OPTIONS.find(e => e.value === data.age)}
                   onChange={e => setData("age", e.value)}
@@ -544,6 +545,7 @@ const MPFilter = ({
                       <Label label={t("age", { ns: "demografi" }) + ":"} />
                       <Dropdown
                         anchor="left bottom-10"
+                        showDisclaimer
                         options={AGE_OPTIONS}
                         selected={AGE_OPTIONS.find(e => e.value === data.age)}
                         onChange={e => setData("age", e.value)}

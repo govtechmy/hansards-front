@@ -88,5 +88,9 @@
     "form_submission_failure": "Oops! Unable to process form submission",
     "try_again": "Please try again later",
     "reach_support": "Please check again or reach out to support for assistance"
+  },
+  "disclaimer": {
+    "title": "Disclaimer",
+    "description": "refers to the current age of the Member of Parliament, and not the age when the speech was recorded."
   }
 }
