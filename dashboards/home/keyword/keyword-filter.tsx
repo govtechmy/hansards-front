@@ -54,7 +54,7 @@ export interface KeywordFilterProps {
   setKeywordQuery: Dispatch<SetStateAction<string>>;
   suggestion: string;
   setSuggestion: Dispatch<SetStateAction<string>>;
-  dewan_counts: Record<string, number>;
+  dewan_counts?: Record<string, number>;
 }
 
 const KeywordFilter = ({
@@ -192,11 +192,12 @@ const KeywordFilter = ({
                   className="gap-1"
                 >
                   {dewan.label}
-                  {keywordQuery && dewan_counts[dewan.value] !== undefined && (
-                    <span className="rounded-full bg-secondary px-1 text-xs text-white">
-                      {dewan_counts[dewan.value]}
-                    </span>
-                  )}
+                  {keywordQuery &&
+                    dewan_counts?.[dewan.value] !== undefined && (
+                      <span className="rounded-full bg-secondary px-1 text-xs text-white">
+                        {dewan_counts[dewan.value]}
+                      </span>
+                    )}
                 </TabsTrigger>
               ))}
             </TabsList>
