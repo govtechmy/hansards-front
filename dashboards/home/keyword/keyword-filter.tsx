@@ -13,6 +13,14 @@ import {
   Label,
   PartyFlag,
 } from "@components/index";
+import {
+  Select,
+  SelectContent,
+  SelectHeader,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/MydsSelectFix/MydsSelectFix";
 import { Tabs, TabsList, TabsTrigger } from "@components/Tabs";
 import {
   ChevronDownIcon,
@@ -42,6 +50,62 @@ import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
 
+// hardcode first later fetch from backend
+const PARLIMEN_SESSIONS: OptionType[] = [
+  {
+    label: "Semua",
+    value: "1964-01-01_2027-01-01",
+  },
+  {
+    label: "Penggal Kedua Mesyuarat Khas (13 Mac - 12 Apr 2026)",
+    value: "2026-03-13_2026-04-12",
+  },
+  {
+    label: "Penggal Kedua Mesyuarat Kedua (19 Feb - 12 Mac 2026)",
+    value: "2026-02-19_2026-03-12",
+  },
+  {
+    label: "Penggal Kedua Mesyuarat Pertama (17 Nov - 19 Dis 2025)",
+    value: "2025-11-17_2025-12-19",
+  },
+  {
+    label: "Penggal Pertama Mesyuarat Ketiga (14 Jul - 18 Sep 2025)",
+    value: "2025-07-14_2025-09-18",
+  },
+  {
+    label: "Penggal Pertama Mesyuarat Kedua (10 Mac - 10 Apr 2025)",
+    value: "2025-03-10_2025-04-10",
+  },
+  {
+    label: "Penggal Pertama Mesyuarat Pertama (10 Feb - 6 Mac 2025)",
+    value: "2025-02-10_2025-03-06",
+  },
+  {
+    label: "Penggal Keempat Mesyuarat Ketiga (18 Nov - 19 Dis 2024)",
+    value: "2024-11-18_2024-12-19",
+  },
+  {
+    label: "Penggal Keempat Mesyuarat Kedua (15 Jul - 12 Sep 2024)",
+    value: "2024-07-15_2024-09-12",
+  },
+  {
+    label: "Penggal Keempat Mesyuarat Pertama (26 Feb - 18 Apr 2024)",
+    value: "2024-02-26_2024-04-18",
+  },
+  {
+    label: "Penggal Ketiga Mesyuarat Ketiga (24 Jul - 14 Sep 2023)",
+    value: "2023-07-24_2023-09-14",
+  },
+  {
+    label: "Penggal Ketiga Mesyuarat Kedua (13 Mac - 6 Apr 2023)",
+    value: "2023-03-13_2023-04-06",
+  },
+  {
+    label: "Penggal Ketiga Mesyuarat Pertama (19 Dis 2022 - 25 Jan 2023)",
+    value: "2022-12-19_2023-01-25",
+  },
+];
+
 /**
  * Keyword - Filter
  * @overview Status: In-development
@@ -68,6 +132,8 @@ const KeywordFilter = ({
 }: KeywordFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
+  const [selectedSession, setSelectedSession] = useState<string>("");
+  const [sessionSearch, setSessionSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
@@ -303,6 +369,53 @@ const KeywordFilter = ({
 
       {/* Desktop Bar */}
       <div className="hidden flex-wrap justify-center gap-2 sm:flex">
+        <Select
+          size="small"
+          variant="outline"
+          value={selectedSession}
+          onValueChange={(value: string) => {
+            setSelectedSession(value);
+            setSessionSearch("");
+            if (keywordQuery) {
+              const [from, to] = value.split("_");
+              handleSearch({ tarikh_mula: from, tarikh_akhir: to });
+            }
+          }}
+        >
+          <SelectTrigger className="text-blue-600 dark:text-primary-dark">
+            <SelectValue placeholder={t("current_parlimen")}>
+              {(val: string | string[]) =>
+                val && !Array.isArray(val) && val !== ""
+                  ? PARLIMEN_SESSIONS.find(s => s.value === val)?.label
+                  : t("current_parlimen")
+              }
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent className="w-[320px]">
+            <SelectHeader>
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <input
+                  autoFocus
+                  value={sessionSearch}
+                  onChange={e => setSessionSearch(e.target.value)}
+                  onKeyDown={e => e.stopPropagation()}
+                  placeholder={t("placeholder.search", { ns: "common" })}
+                  className="w-full rounded border border-zinc-200 py-1.5 pl-7 pr-3 text-xs outline-none focus:border-blue-400 dark:border-zinc-700 dark:bg-zinc-800"
+                />
+              </div>
+            </SelectHeader>
+            {PARLIMEN_SESSIONS.filter(s =>
+              (s.label as string)
+                .toLowerCase()
+                .includes(sessionSearch.toLowerCase())
+            ).map(session => (
+              <SelectItem key={session.value} value={session.value}>
+                {session.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Daterange
           className="text-blue-600"
           placeholder={t("current_parlimen")}
