@@ -118,8 +118,9 @@ export const getServerSideProps: GetServerSideProps = withi18n(
 
     const dewan_counts: Record<string, number> = {};
     for (const [k, v] of Object.entries(rawHouseCounts)) {
-      if (typeof v === "number" && isFinite(v)) {
-        dewan_counts[k.replace(/_/g, "-")] = v;
+      const key = k.replace(/_/g, "-");
+      if (key !== "semua" && typeof v === "number" && isFinite(v)) {
+        dewan_counts[key] = v;
       }
     }
 

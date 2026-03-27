@@ -193,9 +193,9 @@ const KeywordFilter = ({
                 >
                   {dewan.label}
                   {keywordQuery && dewan_counts[dewan.value] !== undefined && (
-                    <div className="rounded-full bg-secondary px-1 text-white">
+                    <span className="rounded-full bg-secondary px-1 text-xs text-white">
                       {dewan_counts[dewan.value]}
-                    </div>
+                    </span>
                   )}
                 </TabsTrigger>
               ))}
