@@ -40,6 +40,7 @@ const Timeseries = dynamic(() => import("@charts/timeseries"), {
 
 export interface KeywordProps extends ExcerptsProps {
   query: ParsedUrlQuery;
+  dewan_counts: Record<string, number>;
   speakers: Array<Speaker>;
   timeseries: Record<"date" | "freq", number[]>;
   top_speakers?: Array<Record<string, number>>;
@@ -48,6 +49,7 @@ export interface KeywordProps extends ExcerptsProps {
 
 const Keyword = ({
   count,
+  dewan_counts,
   excerpts,
   query,
   speakers,
@@ -172,6 +174,7 @@ const Keyword = ({
           setKeywordQuery={setKeywordQuery}
           suggestion={suggestion}
           setSuggestion={setSuggestion}
+          dewan_counts={dewan_counts}
         />
 
         {/* Time-series of "keyword" in Parliament */}
