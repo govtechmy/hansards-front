@@ -24,7 +24,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -40,7 +40,6 @@ import { setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-import { get } from "@lib/api";
 import { Dispatch, SetStateAction } from "react";
 
 /**
@@ -55,6 +54,7 @@ export interface KeywordFilterProps {
   setKeywordQuery: Dispatch<SetStateAction<string>>;
   suggestion: string;
   setSuggestion: Dispatch<SetStateAction<string>>;
+  dewan_counts: Record<string, number>;
 }
 
 const KeywordFilter = ({
@@ -64,6 +64,7 @@ const KeywordFilter = ({
   setKeywordQuery,
   suggestion,
   setSuggestion,
+  dewan_counts,
 }: KeywordFilterProps) => {
   const { t } = useTranslation(["home", "common", "demografi", "party"]);
   const [open, setOpen] = useState<boolean>(false);
@@ -185,8 +186,17 @@ const KeywordFilter = ({
           >
             <TabsList className="flex-nowrap">
               {DEWAN_OPTIONS.map(dewan => (
-                <TabsTrigger key={dewan.value} value={dewan.value}>
+                <TabsTrigger
+                  key={dewan.value}
+                  value={dewan.value}
+                  className="gap-1"
+                >
                   {dewan.label}
+                  {keywordQuery && dewan_counts[dewan.value] !== undefined && (
+                    <div className="rounded-full bg-secondary px-1 text-white">
+                      {dewan_counts[dewan.value]}
+                    </div>
+                  )}
                 </TabsTrigger>
               ))}
             </TabsList>
