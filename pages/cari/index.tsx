@@ -150,7 +150,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         },
         top_word_freq: data.top_word_freq ?? null,
         top_speakers: data.top_speakers ?? null,
-        takwim: takwim ?? null,
+        takwim: Array.isArray(takwim) ? takwim : null,
       },
     };
   }
