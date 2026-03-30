@@ -39,6 +39,7 @@
   "filters": "Tapisan",
   "placeholder": {
     "search": "Cari",
+    "search_session": "Carian Penggal",
     "state": "Pilih negeri",
     "no_results": "Tiada hasil carian",
     "loading": "Memuatkan..."

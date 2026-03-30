@@ -47,6 +47,7 @@ export type ChartCrosshairOption<T extends keyof ChartTypeRegistry> =
 
 export type OptionType = {
   label: string;
+  label2?: string;
   value: string;
 };
 
