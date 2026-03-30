@@ -50,34 +50,41 @@ import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
 
-const MALAY_MONTHS = [
-  "Jan",
-  "Feb",
-  "Mac",
-  "Apr",
-  "Mei",
-  "Jun",
-  "Jul",
-  "Ogos",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Dis",
-];
+const MONTHS: Record<string, string[]> = {
+  "ms-MY": [
+    "Jan",
+    "Feb",
+    "Mac",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Ogos",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Dis",
+  ],
+  "en-GB": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+};
 
-const MALAY_ORDINALS = [
-  "Pertama",
-  "Kedua",
-  "Ketiga",
-  "Keempat",
-  "Kelima",
-  "Keenam",
-  "Ketujuh",
-];
-
-const formatMalayDate = (dateStr: string): string => {
+const formatDate = (dateStr: string, locale: string): string => {
   const [year, month, day] = dateStr.split("-").map(Number);
-  return `${day} ${MALAY_MONTHS[month - 1]} ${year}`;
+  const months = MONTHS[locale] ?? MONTHS["ms-MY"];
+  return `${day} ${months[month - 1]} ${year}`;
 };
 
 type TakwimSession = { session: number; start_date: string; end_date: string };
@@ -91,7 +98,9 @@ type TakwimTerm = {
 export type { TakwimSession, TakwimTerm };
 
 const buildParlimenSessions = (
-  takwim: TakwimTerm[] | null | undefined
+  takwim: TakwimTerm[] | null | undefined,
+  t: (key: string, options?: object) => string,
+  locale: string
 ): OptionType[] => {
   const terms = takwim ?? [];
   const startDate =
@@ -109,7 +118,7 @@ const buildParlimenSessions = (
         )
       : "2027-01-01";
   const SEMUA_OPTION: OptionType = {
-    label: "Semua",
+    label: t("semua", { ns: "common" }),
     value: `${startDate}_${endDate}`,
   };
 
@@ -120,8 +129,8 @@ const buildParlimenSessions = (
       .reverse()
       .flatMap(term =>
         [...term.sessions].reverse().map(session => ({
-          label: `PARLIMEN ${term.term} | Penggal ${MALAY_ORDINALS[session.session - 1] ?? session.session}`,
-          label2: `${formatMalayDate(session.start_date)} - ${formatMalayDate(session.end_date)}`,
+          label: `PARLIMEN ${term.term} | ${t("penggal_full", { ns: "enum", n: session.session })}`,
+          label2: `${formatDate(session.start_date, locale)} - ${formatDate(session.end_date, locale)}`,
           value: `${session.start_date}_${session.end_date}`,
         }))
       ),
@@ -154,14 +163,20 @@ const KeywordFilter = ({
   dewan_counts,
   takwim,
 }: KeywordFilterProps) => {
-  const PARLIMEN_SESSIONS = buildParlimenSessions(takwim);
-  const { t } = useTranslation(["home", "common", "demografi", "party"]);
+  const { t, i18n } = useTranslation([
+    "home",
+    "common",
+    "demografi",
+    "party",
+    "enum",
+  ]);
+  const PARLIMEN_SESSIONS = buildParlimenSessions(takwim, t, i18n.language);
   const [open, setOpen] = useState<boolean>(false);
   const [selectedSession, setSelectedSession] = useState<string>("");
   const [sessionSearch, setSessionSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
+  const { dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
     query;
 
   const { data, setData } = useData({
@@ -218,7 +233,7 @@ const KeywordFilter = ({
 
   const router = useRouter();
 
-  const { suggestedValue, currentWord } = useMemo(() => {
+  const { suggestedValue } = useMemo(() => {
     if (!suggestion || !keywordQuery)
       return { suggestedValue: "", currentWord: "" };
 
