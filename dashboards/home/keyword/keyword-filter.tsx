@@ -32,7 +32,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -49,6 +49,7 @@ import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
+import { flushSync } from "react-dom";
 
 const MONTHS: Record<string, string[]> = {
   "ms-MY": [
@@ -175,6 +176,7 @@ const KeywordFilter = ({
   const [selectedSession, setSelectedSession] = useState<string>("");
   const [sessionSearch, setSessionSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const sessionSearchRef = useRef<HTMLInputElement | null>(null);
 
   const { dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
     query;
@@ -251,6 +253,12 @@ const KeywordFilter = ({
 
     return { suggestedValue: "", currentWord };
   }, [suggestion, keywordQuery]);
+
+  const filteredSessions = useMemo(() => {
+    return PARLIMEN_SESSIONS.filter(s =>
+      (s.label as string).toLowerCase().includes(sessionSearch.toLowerCase())
+    );
+  }, [sessionSearch]);
 
   const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
@@ -432,14 +440,40 @@ const KeywordFilter = ({
               }
             </SelectValue>
           </SelectTrigger>
-          <SelectContent className="w-[320px]">
+          <SelectContent className="">
             <SelectHeader>
-              <div className="relative">
+              <div
+                className="relative"
+                onMouseDown={e => {
+                  e.stopPropagation();
+                }}
+                onClick={e => {
+                  e.stopPropagation();
+                }}
+              >
                 <input
+                  ref={sessionSearchRef}
                   autoFocus
                   value={sessionSearch}
-                  onChange={e => setSessionSearch(e.target.value)}
-                  onKeyDown={e => e.stopPropagation()}
+                  onChange={e => {
+                    const cursorPosition = e.target.selectionStart;
+                    flushSync(() => {
+                      setSessionSearch(e.target.value);
+                    });
+                    // Restore focus and cursor position immediately after state update
+                    if (sessionSearchRef.current) {
+                      sessionSearchRef.current.focus();
+                      if (cursorPosition !== null) {
+                        sessionSearchRef.current.setSelectionRange(
+                          cursorPosition,
+                          cursorPosition
+                        );
+                      }
+                    }
+                  }}
+                  onKeyDown={e => {
+                    e.stopPropagation();
+                  }}
                   placeholder={t("placeholder.search_session", {
                     ns: "common",
                   })}
@@ -449,11 +483,7 @@ const KeywordFilter = ({
                 <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
               </div>
             </SelectHeader>
-            {PARLIMEN_SESSIONS.filter(s =>
-              (s.label as string)
-                .toLowerCase()
-                .includes(sessionSearch.toLowerCase())
-            ).map(session => (
+            {filteredSessions.map(session => (
               <SelectItem key={session.value} value={session.value}>
                 <span className="flex flex-col">
                   <span>{session.label}</span>
