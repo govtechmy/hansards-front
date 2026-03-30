@@ -22,6 +22,7 @@ const Home: Page = ({
   timeseries,
   top_word_freq,
   top_speakers,
+  takwim,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
@@ -39,6 +40,7 @@ const Home: Page = ({
             timeseries={timeseries}
             top_word_freq={top_word_freq}
             top_speakers={top_speakers}
+            takwim={takwim}
           />
         </HomeLayout>
       )}
@@ -104,9 +106,12 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         party: parti,
         sex: jantina,
       }),
+      get(
+        `api/sitting/list?house=dewan-rakyat&house=dewan-negara&house=kamar-khas`
+      ),
     ]);
 
-    const [excerpt, data, speakers, counter] = results.map(e => {
+    const [excerpt, data, speakers, counter, takwim] = results.map(e => {
       if (e.status === "rejected") return {};
       else return e.value.data;
     });
@@ -145,6 +150,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         },
         top_word_freq: data.top_word_freq ?? null,
         top_speakers: data.top_speakers ?? null,
+        takwim: takwim ?? null,
       },
     };
   }
