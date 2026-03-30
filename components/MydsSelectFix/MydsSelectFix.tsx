@@ -381,9 +381,9 @@ const SelectContent: React.ForwardRefExoticComponent<
               position === "popper" &&
                 "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
               "[&::-webkit-scrollbar]:!block [&::-webkit-scrollbar]:w-2",
-              "[&::-webkit-scrollbar-thumb]:!bg-black-400 [&::-webkit-scrollbar-thumb]:rounded",
+              "[&::-webkit-scrollbar-thumb]:!bg-bg-black-400 [&::-webkit-scrollbar-thumb]:rounded",
               "[&::-webkit-scrollbar-track]:bg-transparent",
-              "![scrollbar-color:theme(colors.black-400)_transparent] ![scrollbar-width:thin]"
+              "![scrollbar-color:theme(colors.bg-black-400)_transparent] ![scrollbar-width:thin]"
             )}
           >
             {bodyChildren}
