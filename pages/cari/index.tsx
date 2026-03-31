@@ -15,12 +15,14 @@ import { NextResponse } from "next/server";
 
 const Home: Page = ({
   count,
+  dewan_counts,
   excerpts,
   query,
   speakers,
   timeseries,
   top_word_freq,
   top_speakers,
+  takwim,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
@@ -31,12 +33,14 @@ const Home: Page = ({
         <HomeLayout>
           <SearchKeyword
             count={count}
+            dewan_counts={dewan_counts}
             excerpts={excerpts}
             query={query}
             speakers={speakers}
             timeseries={timeseries}
             top_word_freq={top_word_freq}
             top_speakers={top_speakers}
+            takwim={takwim}
           />
         </HomeLayout>
       )}
@@ -93,12 +97,42 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         sex: jantina,
       }),
       get("api/author/"),
+      get("api/search/counter", {
+        q: q,
+        start_date: tarikh_mula,
+        end_date: tarikh_akhir,
+        age_group: umur,
+        ethnicity: etnik,
+        party: parti,
+        sex: jantina,
+      }),
+      get(
+        `api/sitting/list?house=dewan-rakyat&house=dewan-negara&house=kamar-khas`
+      ),
     ]);
 
-    const [excerpt, data, speakers] = results.map(e => {
+    const [excerpt, data, speakers, counter, takwim] = results.map(e => {
       if (e.status === "rejected") return {};
       else return e.value.data;
     });
+
+    const rawHouseCounts =
+      counter && typeof counter === "object" && counter.house_counts
+        ? counter.house_counts
+        : {};
+
+    const dewan_counts: Record<string, number> = {};
+    for (const [k, v] of Object.entries(rawHouseCounts)) {
+      const key = k.replace(/_/g, "-");
+      if (key !== "semua" && typeof v === "number" && isFinite(v)) {
+        dewan_counts[key] = v;
+      }
+    }
+
+    dewan_counts["semua"] = Object.values(dewan_counts).reduce<number>(
+      (sum, v) => sum + v,
+      0
+    );
 
     return {
       props: {
@@ -106,6 +140,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           id: "/cari",
         },
         count: excerpt.count ?? 0,
+        dewan_counts,
         excerpts: excerpt.results ?? null,
         query: query ?? null,
         speakers,
@@ -115,6 +150,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         },
         top_word_freq: data.top_word_freq ?? null,
         top_speakers: data.top_speakers ?? null,
+        takwim: Array.isArray(takwim) ? takwim : null,
       },
     };
   }

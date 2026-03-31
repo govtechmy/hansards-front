@@ -39,6 +39,7 @@
   "filters": "Tapisan",
   "placeholder": {
     "search": "Cari",
+    "search_session": "Carian Penggal",
     "state": "Pilih negeri",
     "no_results": "Tiada hasil carian",
     "loading": "Memuatkan..."
@@ -87,5 +88,9 @@
     "form_submission_failure": "Alamak, gagal untuk proses borang anda.",
     "try_again": "Sila cuba kembali sebentar lagi",
     "reach_support": "Sila semak kembali atau hubungi pihak kami untuk bantuan"
+  },
+  "disclaimer": {
+    "title": "Penafian",
+    "description": "merujuk kepada umur semasa Ahli Parlimen, dan bukannya umur ketika ucapan direkodkan."
   }
 }

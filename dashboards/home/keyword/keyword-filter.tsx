@@ -13,6 +13,14 @@ import {
   Label,
   PartyFlag,
 } from "@components/index";
+import {
+  Select,
+  SelectContent,
+  SelectHeader,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/MydsSelectFix/MydsSelectFix";
 import { Tabs, TabsList, TabsTrigger } from "@components/Tabs";
 import {
   ChevronDownIcon,
@@ -24,7 +32,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -40,8 +48,95 @@ import { setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-import { get } from "@lib/api";
 import { Dispatch, SetStateAction } from "react";
+import { flushSync } from "react-dom";
+
+const MONTHS: Record<string, string[]> = {
+  "ms-MY": [
+    "Jan",
+    "Feb",
+    "Mac",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Ogos",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Dis",
+  ],
+  "en-GB": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+};
+
+const formatDate = (dateStr: string, locale: string): string => {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const months = MONTHS[locale] ?? MONTHS["ms-MY"];
+  return `${day} ${months[month - 1]} ${year}`;
+};
+
+type TakwimSession = { session: number; start_date: string; end_date: string };
+type TakwimTerm = {
+  term: number;
+  start_date: string;
+  end_date: string;
+  sessions: TakwimSession[];
+};
+
+export type { TakwimSession, TakwimTerm };
+
+const buildParlimenSessions = (
+  takwim: TakwimTerm[] | null | undefined,
+  t: (key: string, options?: object) => string,
+  locale: string
+): OptionType[] => {
+  const terms = takwim ?? [];
+  const startDate =
+    terms.length > 0
+      ? terms.reduce(
+          (min, t) => (t.start_date < min ? t.start_date : min),
+          terms[0].start_date
+        )
+      : "1959-09-11";
+  const endDate =
+    terms.length > 0
+      ? terms.reduce(
+          (max, t) => (t.end_date > max ? t.end_date : max),
+          terms[0].end_date
+        )
+      : "2027-01-01";
+  const SEMUA_OPTION: OptionType = {
+    label: t("semua", { ns: "common" }),
+    value: `${startDate}_${endDate}`,
+  };
+
+  return [
+    SEMUA_OPTION,
+    ...terms
+      .slice()
+      .reverse()
+      .flatMap(term =>
+        [...term.sessions].reverse().map(session => ({
+          label: `PARLIMEN ${term.term} | ${t("penggal_full", { ns: "enum", n: session.session })}`,
+          label2: `${formatDate(session.start_date, locale)} - ${formatDate(session.end_date, locale)}`,
+          value: `${session.start_date}_${session.end_date}`,
+        }))
+      ),
+  ];
+};
 
 /**
  * Keyword - Filter
@@ -55,6 +150,8 @@ export interface KeywordFilterProps {
   setKeywordQuery: Dispatch<SetStateAction<string>>;
   suggestion: string;
   setSuggestion: Dispatch<SetStateAction<string>>;
+  dewan_counts?: Record<string, number>;
+  takwim?: TakwimTerm[] | null;
 }
 
 const KeywordFilter = ({
@@ -64,12 +161,24 @@ const KeywordFilter = ({
   setKeywordQuery,
   suggestion,
   setSuggestion,
+  dewan_counts,
+  takwim,
 }: KeywordFilterProps) => {
-  const { t } = useTranslation(["home", "common", "demografi", "party"]);
+  const { t, i18n } = useTranslation([
+    "home",
+    "common",
+    "demografi",
+    "party",
+    "enum",
+  ]);
+  const PARLIMEN_SESSIONS = buildParlimenSessions(takwim, t, i18n.language);
   const [open, setOpen] = useState<boolean>(false);
+  const [selectedSession, setSelectedSession] = useState<string>("");
+  const [sessionSearch, setSessionSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const sessionSearchRef = useRef<HTMLInputElement | null>(null);
 
-  const { q, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
+  const { dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
     query;
 
   const { data, setData } = useData({
@@ -126,7 +235,7 @@ const KeywordFilter = ({
 
   const router = useRouter();
 
-  const { suggestedValue, currentWord } = useMemo(() => {
+  const { suggestedValue } = useMemo(() => {
     if (!suggestion || !keywordQuery)
       return { suggestedValue: "", currentWord: "" };
 
@@ -144,6 +253,12 @@ const KeywordFilter = ({
 
     return { suggestedValue: "", currentWord };
   }, [suggestion, keywordQuery]);
+
+  const filteredSessions = useMemo(() => {
+    return PARLIMEN_SESSIONS.filter(s =>
+      (s.label as string).toLowerCase().includes(sessionSearch.toLowerCase())
+    );
+  }, [sessionSearch]);
 
   const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
@@ -185,8 +300,18 @@ const KeywordFilter = ({
           >
             <TabsList className="flex-nowrap">
               {DEWAN_OPTIONS.map(dewan => (
-                <TabsTrigger key={dewan.value} value={dewan.value}>
+                <TabsTrigger
+                  key={dewan.value}
+                  value={dewan.value}
+                  className="gap-1"
+                >
                   {dewan.label}
+                  {keywordQuery &&
+                    dewan_counts?.[dewan.value] !== undefined && (
+                      <span className="rounded-full bg-secondary px-1 text-xs text-white">
+                        {dewan_counts[dewan.value]}
+                      </span>
+                    )}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -292,6 +417,86 @@ const KeywordFilter = ({
 
       {/* Desktop Bar */}
       <div className="hidden flex-wrap justify-center gap-2 sm:flex">
+        <Select
+          size="small"
+          variant="outline"
+          value={selectedSession}
+          onValueChange={(value: string) => {
+            setSelectedSession(value);
+            setSessionSearch("");
+            const [from, to] = value.split("_");
+            setSelectedDateRange({ from: new Date(from), to: new Date(to) });
+            if (keywordQuery) {
+              handleSearch({ tarikh_mula: from, tarikh_akhir: to });
+            }
+          }}
+        >
+          <SelectTrigger className="text-blue-600 dark:text-primary-dark">
+            <SelectValue placeholder={t("current_parlimen")}>
+              {(val: string | string[]) =>
+                val && !Array.isArray(val) && val !== ""
+                  ? PARLIMEN_SESSIONS.find(s => s.value === val)?.label
+                  : t("current_parlimen")
+              }
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent className="">
+            <SelectHeader>
+              <div
+                className="relative"
+                onMouseDown={e => {
+                  e.stopPropagation();
+                }}
+                onClick={e => {
+                  e.stopPropagation();
+                }}
+              >
+                <input
+                  ref={sessionSearchRef}
+                  autoFocus
+                  value={sessionSearch}
+                  onChange={e => {
+                    const cursorPosition = e.target.selectionStart;
+                    flushSync(() => {
+                      setSessionSearch(e.target.value);
+                    });
+                    // Restore focus and cursor position immediately after state update
+                    if (sessionSearchRef.current) {
+                      sessionSearchRef.current.focus();
+                      if (cursorPosition !== null) {
+                        sessionSearchRef.current.setSelectionRange(
+                          cursorPosition,
+                          cursorPosition
+                        );
+                      }
+                    }
+                  }}
+                  onKeyDown={e => {
+                    e.stopPropagation();
+                  }}
+                  placeholder={t("placeholder.search_session", {
+                    ns: "common",
+                  })}
+                  className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-400 dark:border-zinc-700 dark:bg-zinc-800"
+                />
+
+                <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              </div>
+            </SelectHeader>
+            {filteredSessions.map(session => (
+              <SelectItem key={session.value} value={session.value}>
+                <span className="flex flex-col">
+                  <span>{session.label}</span>
+                  {session.label2 && (
+                    <span className="text-xs text-zinc-400">
+                      {session.label2}
+                    </span>
+                  )}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Daterange
           className="text-blue-600"
           placeholder={t("current_parlimen")}
@@ -344,6 +549,7 @@ const KeywordFilter = ({
           sublabel={t("age_group", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
+          showDisclaimer
           options={AGE_OPTIONS}
           selected={AGE_OPTIONS.find(e => e.value === data.age)}
           onChange={e => {
@@ -368,7 +574,6 @@ const KeywordFilter = ({
               });
           }}
         /> */}
-
         {(selectedDateRange ||
           data.party !== ALL_PARTIES ||
           data.gender !== BOTH_GENDERS ||
@@ -451,6 +656,7 @@ const KeywordFilter = ({
                 <Dropdown
                   width="w-full"
                   anchor="left bottom-10"
+                  showDisclaimer
                   options={AGE_OPTIONS}
                   selected={AGE_OPTIONS.find(e => e.value === data.age)}
                   onChange={e => setData("age", e.value)}

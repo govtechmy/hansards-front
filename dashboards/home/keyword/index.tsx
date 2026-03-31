@@ -15,7 +15,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useEffect, useMemo, useRef, useState } from "react";
-import KeywordFilter from "./keyword-filter";
+import KeywordFilter, { TakwimTerm } from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
 import { Speaker } from "@lib/types";
 import { get } from "@lib/api";
@@ -40,20 +40,24 @@ const Timeseries = dynamic(() => import("@charts/timeseries"), {
 
 export interface KeywordProps extends ExcerptsProps {
   query: ParsedUrlQuery;
+  dewan_counts: Record<string, number>;
   speakers: Array<Speaker>;
   timeseries: Record<"date" | "freq", number[]>;
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
+  takwim?: TakwimTerm[] | null;
 }
 
 const Keyword = ({
   count,
+  dewan_counts,
   excerpts,
   query,
   speakers,
   timeseries,
   top_speakers,
   top_word_freq,
+  takwim,
 }: KeywordProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
   const router = useRouter();
@@ -172,6 +176,8 @@ const Keyword = ({
           setKeywordQuery={setKeywordQuery}
           suggestion={suggestion}
           setSuggestion={setSuggestion}
+          dewan_counts={dewan_counts}
+          takwim={takwim}
         />
 
         {/* Time-series of "keyword" in Parliament */}
