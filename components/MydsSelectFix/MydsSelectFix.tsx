@@ -464,7 +464,7 @@ const SelectItem: React.ForwardRefExoticComponent<
             <SelectPrimitive.ItemIndicator>
               <CheckCircleFillIcon
                 data-size={rootProps.size}
-                className="size-5 text-primary-600 data-[size=small]:size-4"
+                className="size-5 text-primary-600 data-[size=small]:size-4 [.select-item-black_&]:text-foreground"
               />
             </SelectPrimitive.ItemIndicator>
           </span>

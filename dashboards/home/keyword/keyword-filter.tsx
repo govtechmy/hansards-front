@@ -88,6 +88,8 @@ const formatDate = (dateStr: string, locale: string): string => {
   return `${day} ${months[month - 1]} ${year}`;
 };
 
+const HeroChevronDown = () => <ChevronDownIcon className={"w-5"} />;
+
 type TakwimSession = { session: number; start_date: string; end_date: string };
 type TakwimTerm = {
   term: number;
@@ -130,7 +132,7 @@ const buildParlimenSessions = (
       .reverse()
       .flatMap(term =>
         [...term.sessions].reverse().map(session => ({
-          label: `PARLIMEN ${term.term} | ${t("penggal_full", { ns: "enum", n: session.session })}`,
+          label: `${t("parlimen_full", { ns: "enum", n: term.term })} | ${t("penggal_full", { ns: "enum", n: session.session })}`,
           label2: `${formatDate(session.start_date, locale)} - ${formatDate(session.end_date, locale)}`,
           value: `${session.start_date}_${session.end_date}`,
         }))
@@ -171,12 +173,17 @@ const KeywordFilter = ({
     "party",
     "enum",
   ]);
-  const PARLIMEN_SESSIONS = buildParlimenSessions(takwim, t, i18n.language);
+  const PARLIMEN_SESSIONS = useMemo(
+    () => buildParlimenSessions(takwim, t, i18n.language),
+    [takwim, i18n.language]
+  );
   const [open, setOpen] = useState<boolean>(false);
   const [selectedSession, setSelectedSession] = useState<string>("");
   const [sessionSearch, setSessionSearch] = useState<string>("");
+  const [sessionSearchMobile, setSessionSearchMobile] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const sessionSearchRef = useRef<HTMLInputElement | null>(null);
+  const sessionSearchMobileRef = useRef<HTMLInputElement | null>(null);
 
   const { dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, jantina } =
     query;
@@ -258,7 +265,15 @@ const KeywordFilter = ({
     return PARLIMEN_SESSIONS.filter(s =>
       (s.label as string).toLowerCase().includes(sessionSearch.toLowerCase())
     );
-  }, [sessionSearch]);
+  }, [sessionSearch, PARLIMEN_SESSIONS]);
+
+  const filteredSessionsMobile = useMemo(() => {
+    return PARLIMEN_SESSIONS.filter(s =>
+      (s.label as string)
+        .toLowerCase()
+        .includes(sessionSearchMobile.toLowerCase())
+    );
+  }, [sessionSearchMobile, PARLIMEN_SESSIONS]);
 
   const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
@@ -431,16 +446,32 @@ const KeywordFilter = ({
             }
           }}
         >
-          <SelectTrigger className="text-blue-600 dark:text-primary-dark">
-            <SelectValue placeholder={t("current_parlimen")}>
+          <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
+            <Label
+              label={t("parliament_calendar", { ns: "demografi" }) + ":"}
+            />
+            <SelectValue
+              placeholder={
+                <span className="text-blue-600 dark:text-primary-dark">
+                  {t("current_parlimen")}
+                </span>
+              }
+              icon={HeroChevronDown}
+            >
               {(val: string | string[]) =>
-                val && !Array.isArray(val) && val !== ""
-                  ? PARLIMEN_SESSIONS.find(s => s.value === val)?.label
-                  : t("current_parlimen")
+                val && !Array.isArray(val) && val !== "" ? (
+                  <span className="text-blue-600 dark:text-primary-dark">
+                    {PARLIMEN_SESSIONS.find(s => s.value === val)?.label}
+                  </span>
+                ) : (
+                  <span className="text-blue-600 dark:text-primary-dark">
+                    {t("current_parlimen")}
+                  </span>
+                )
               }
             </SelectValue>
           </SelectTrigger>
-          <SelectContent className="">
+          <SelectContent className="select-item-black">
             <SelectHeader>
               <div
                 className="relative"
@@ -477,9 +508,8 @@ const KeywordFilter = ({
                   placeholder={t("placeholder.search_session", {
                     ns: "common",
                   })}
-                  className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-400 dark:border-zinc-700 dark:bg-zinc-800"
+                  className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0"
                 />
-
                 <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
               </div>
             </SelectHeader>
@@ -615,6 +645,87 @@ const KeywordFilter = ({
             </DrawerClose>
           </DrawerHeader>
           <div className="flex flex-col divide-y divide-border bg-background px-4">
+            <div className="space-y-1 py-3">
+              <Label
+                label={t("parliament_calendar", { ns: "demografi" }) + ":"}
+              />
+              <Select
+                size="small"
+                variant="outline"
+                value={selectedSession}
+                onValueChange={(value: string) => {
+                  setSelectedSession(value);
+                  setSessionSearchMobile("");
+                  const [from, to] = value.split("_");
+                  setSelectedDateRange({
+                    from: new Date(from),
+                    to: new Date(to),
+                  });
+                }}
+              >
+                <SelectTrigger className="w-full justify-between text-foreground">
+                  <SelectValue
+                    placeholder={t("current_parlimen")}
+                    icon={HeroChevronDown}
+                  >
+                    {(val: string | string[]) =>
+                      val && !Array.isArray(val) && val !== ""
+                        ? PARLIMEN_SESSIONS.find(s => s.value === val)?.label
+                        : t("current_parlimen")
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="select-item-black">
+                  <SelectHeader>
+                    <div
+                      className="relative"
+                      onMouseDown={e => e.stopPropagation()}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <input
+                        ref={sessionSearchMobileRef}
+                        autoFocus
+                        value={sessionSearchMobile}
+                        onChange={e => {
+                          const cursorPosition = e.target.selectionStart;
+                          flushSync(() => {
+                            setSessionSearchMobile(e.target.value);
+                          });
+                          if (sessionSearchMobileRef.current) {
+                            sessionSearchMobileRef.current.focus();
+                            if (cursorPosition !== null) {
+                              sessionSearchMobileRef.current.setSelectionRange(
+                                cursorPosition,
+                                cursorPosition
+                              );
+                            }
+                          }
+                        }}
+                        onKeyDown={e => e.stopPropagation()}
+                        placeholder={t("placeholder.search_session", {
+                          ns: "common",
+                        })}
+                        className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-800"
+                      />
+                      <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                    </div>
+                  </SelectHeader>
+                  {filteredSessionsMobile.map(session => (
+                    <SelectItem key={session.value} value={session.value}>
+                      <span className="flex flex-col">
+                        <span>{session.label}</span>
+                        {session.label2 && (
+                          <span className="text-xs text-zinc-400">
+                            {session.label2}
+                          </span>
+                        )}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-1 py-3">
               <Label label={t("dewan", { ns: "home" }) + ":"} />
               <Dropdown
