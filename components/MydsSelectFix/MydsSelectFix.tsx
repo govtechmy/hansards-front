@@ -381,7 +381,7 @@ const SelectContent: React.ForwardRefExoticComponent<
               position === "popper" &&
                 "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
               "[&::-webkit-scrollbar]:!block [&::-webkit-scrollbar]:w-2",
-              "[&::-webkit-scrollbar-thumb]:!bg-bg-black-400 [&::-webkit-scrollbar-thumb]:rounded",
+              "[&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:!bg-bg-black-400",
               "[&::-webkit-scrollbar-track]:bg-transparent",
               "![scrollbar-color:theme(colors.bg-black-400)_transparent] ![scrollbar-width:thin]"
             )}
@@ -464,7 +464,7 @@ const SelectItem: React.ForwardRefExoticComponent<
             <SelectPrimitive.ItemIndicator>
               <CheckCircleFillIcon
                 data-size={rootProps.size}
-                className="size-5 text-primary-600 data-[size=small]:size-4"
+                className="size-5 text-primary-600 data-[size=small]:size-4 [.select-item-black_&]:text-foreground"
               />
             </SelectPrimitive.ItemIndicator>
           </span>
