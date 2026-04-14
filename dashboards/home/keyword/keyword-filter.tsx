@@ -298,6 +298,7 @@ const KeywordFilter = ({
     setData("age", ALL_AGES);
     setData("etnik", ALL_ETHNICITIES);
     setData("gender", BOTH_GENDERS);
+    setSelectedSession("");
   };
 
   return (
@@ -452,8 +453,8 @@ const KeywordFilter = ({
             />
             <SelectValue
               placeholder={
-                <span className="text-blue-600 dark:text-primary-dark">
-                  {t("current_parlimen")}
+                <span className="font-medium text-blue-600 dark:text-primary-dark">
+                  {t("semua", { ns: "common" })}
                 </span>
               }
               icon={HeroChevronDown}
@@ -529,7 +530,7 @@ const KeywordFilter = ({
         </Select>
         <Daterange
           className="text-blue-600"
-          placeholder={t("current_parlimen")}
+          placeholder={t("semua", { ns: "common" })}
           label={t("date", { ns: "home" })}
           selected={selectedDateRange}
           onChange={dateRange => {
@@ -629,9 +630,9 @@ const KeywordFilter = ({
             onClick={() => setOpen(true)}
           >
             <span>{t("filters", { ns: "common" })}</span>
-            <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
-              6
-            </span>
+            {/* <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
+              7
+            </span> */}
             <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
           </Button>
         </DrawerTrigger>
@@ -747,20 +748,6 @@ const KeywordFilter = ({
               />
             </div>
 
-            <div className="space-y-1 py-3">
-              <Label label={t("party", { ns: "common" }) + ":"} />
-              <Dropdown
-                width="w-full"
-                enableFlag
-                flag={party => {
-                  if (party === ALL_PARTIES) return <></>;
-                  else return <PartyFlag party={party} children={() => true} />;
-                }}
-                options={PARTY_OPTIONS}
-                selected={PARTY_OPTIONS.find(e => e.value === data.party)}
-                onChange={e => setData("party", e.value)}
-              />
-            </div>
             <div className="grid grid-cols-2 gap-x-3 py-3">
               <div className="space-y-1">
                 <Label label={t("age", { ns: "demografi" }) + ":"} />
@@ -783,17 +770,6 @@ const KeywordFilter = ({
                   onChange={e => setData("gender", e.value)}
                 />
               </div>
-            </div>
-
-            <div className="space-y-1 py-3">
-              <Label label={t("ethnicity", { ns: "demografi" }) + ":"} />
-              <Dropdown
-                width="w-full"
-                anchor="bottom-10"
-                options={ETNIK_OPTIONS}
-                selected={ETNIK_OPTIONS.find(e => e.value === data.etnik)}
-                onChange={e => setData("etnik", e.value)}
-              />
             </div>
           </div>
 
