@@ -32,7 +32,14 @@ import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
-import { useRef, useState, useMemo } from "react";
+import {
+  useRef,
+  useState,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+  type SVGProps,
+} from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -48,7 +55,6 @@ import { setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-import { Dispatch, SetStateAction, type SVGProps } from "react";
 import { flushSync } from "react-dom";
 
 const MONTHS: Record<string, string[]> = {
@@ -784,10 +790,10 @@ const KeywordFilter = ({
                 onLoad();
                 handleSearch({
                   dewan: data.dewan,
-                  parti: "",
+                  parti: data.party !== ALL_PARTIES ? data.party : "",
                   jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
-                  etnik: "",
+                  etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                   tarikh_mula: formatDate(selectedDateRange?.from),
                   tarikh_akhir: formatDate(selectedDateRange?.to),
                 });
