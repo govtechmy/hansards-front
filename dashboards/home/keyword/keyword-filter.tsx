@@ -88,7 +88,9 @@ const formatDate = (dateStr: string, locale: string): string => {
   return `${day} ${months[month - 1]} ${year}`;
 };
 
-const HeroChevronDown = () => <ChevronDownIcon className={"w-5"} />;
+const HeroChevronDown = ({ className }: React.SVGProps<SVGSVGElement>) => (
+  <ChevronDownIcon className={className ?? "w-5"} />
+);
 
 type TakwimSession = { session: number; start_date: string; end_date: string };
 type TakwimTerm = {
@@ -175,7 +177,7 @@ const KeywordFilter = ({
   ]);
   const PARLIMEN_SESSIONS = useMemo(
     () => buildParlimenSessions(takwim, t, i18n.language),
-    [takwim, i18n.language]
+    [takwim, t, i18n.language]
   );
   const [open, setOpen] = useState<boolean>(false);
   const [selectedSession, setSelectedSession] = useState<string>("");
@@ -666,13 +668,13 @@ const KeywordFilter = ({
               >
                 <SelectTrigger className="w-full justify-between text-foreground">
                   <SelectValue
-                    placeholder={t("current_parlimen")}
+                    placeholder={t("semua", { ns: "common" })}
                     icon={HeroChevronDown}
                   >
                     {(val: string | string[]) =>
                       val && !Array.isArray(val) && val !== ""
                         ? PARLIMEN_SESSIONS.find(s => s.value === val)?.label
-                        : t("current_parlimen")
+                        : t("semua", { ns: "common" })
                     }
                   </SelectValue>
                 </SelectTrigger>
