@@ -468,7 +468,7 @@ const KeywordFilter = ({
                   </span>
                 ) : (
                   <span className="text-blue-600 dark:text-primary-dark">
-                    {t("current_parlimen")}
+                    {t("semua", { ns: "common" })}
                   </span>
                 )
               }
@@ -511,7 +511,7 @@ const KeywordFilter = ({
                   placeholder={t("placeholder.search_session", {
                     ns: "common",
                   })}
-                  className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0"
+                  className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
                 />
                 <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
               </div>
@@ -632,9 +632,6 @@ const KeywordFilter = ({
             onClick={() => setOpen(true)}
           >
             <span>{t("filters", { ns: "common" })}</span>
-            {/* <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
-              7
-            </span> */}
             <ChevronDownIcon className="-mx-[5px] h-5 w-5" />
           </Button>
         </DrawerTrigger>
@@ -784,10 +781,8 @@ const KeywordFilter = ({
                 onLoad();
                 handleSearch({
                   dewan: data.dewan,
-                  parti: data.party !== ALL_PARTIES ? data.party : "",
                   jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
-                  etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                   tarikh_mula: formatDate(selectedDateRange?.from),
                   tarikh_akhir: formatDate(selectedDateRange?.to),
                 });
