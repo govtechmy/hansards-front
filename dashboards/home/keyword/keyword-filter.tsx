@@ -48,7 +48,7 @@ import { setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, type SVGProps } from "react";
 import { flushSync } from "react-dom";
 
 const MONTHS: Record<string, string[]> = {
@@ -88,7 +88,7 @@ const formatDate = (dateStr: string, locale: string): string => {
   return `${day} ${months[month - 1]} ${year}`;
 };
 
-const HeroChevronDown = ({ className }: React.SVGProps<SVGSVGElement>) => (
+const HeroChevronDown = ({ className }: SVGProps<SVGSVGElement>) => (
   <ChevronDownIcon className={className ?? "w-5"} />
 );
 
@@ -741,9 +741,12 @@ const KeywordFilter = ({
               <Daterange
                 className="w-full"
                 numberOfMonths={1}
-                placeholder={t("current_parlimen")}
+                placeholder={t("semua", { ns: "common" })}
                 selected={selectedDateRange}
-                onChange={setSelectedDateRange}
+                onChange={dateRange => {
+                  setSelectedDateRange(dateRange);
+                  setSelectedSession("");
+                }}
               />
             </div>
 
@@ -781,10 +784,10 @@ const KeywordFilter = ({
                 onLoad();
                 handleSearch({
                   dewan: data.dewan,
-                  parti: data.party !== ALL_PARTIES ? data.party : "",
+                  parti: "",
                   jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
-                  etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+                  etnik: "",
                   tarikh_mula: formatDate(selectedDateRange?.from),
                   tarikh_akhir: formatDate(selectedDateRange?.to),
                 });
