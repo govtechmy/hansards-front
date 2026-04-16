@@ -177,7 +177,7 @@ const KeywordFilter = ({
   ]);
   const PARLIMEN_SESSIONS = useMemo(
     () => buildParlimenSessions(takwim, t, i18n.language),
-    [takwim, t, i18n.language]
+    [takwim, i18n.language]
   );
   const [open, setOpen] = useState<boolean>(false);
   const [selectedSession, setSelectedSession] = useState<string>("");
@@ -450,9 +450,9 @@ const KeywordFilter = ({
           }}
         >
           <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
-            <Label
-              label={t("parliament_calendar", { ns: "demografi" }) + ":"}
-            />
+            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+              {t("parliament_calendar", { ns: "demografi" }) + ":"}
+            </span>
             <SelectValue
               placeholder={
                 <span className="font-medium text-blue-600 dark:text-primary-dark">
@@ -781,8 +781,10 @@ const KeywordFilter = ({
                 onLoad();
                 handleSearch({
                   dewan: data.dewan,
+                  parti: data.party !== ALL_PARTIES ? data.party : "",
                   jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
+                  etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
                   tarikh_mula: formatDate(selectedDateRange?.from),
                   tarikh_akhir: formatDate(selectedDateRange?.to),
                 });
