@@ -344,6 +344,12 @@ const KeywordFilter = ({
                     handleSearch({
                       dewan: data.dewan,
                       q: keywordQuery,
+                      parti: data.party !== ALL_PARTIES ? data.party : "",
+                      jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
+                      umur: data.age !== ALL_AGES ? data.age : "",
+                      etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+                      tarikh_mula: formatDate(selectedDateRange?.from),
+                      tarikh_akhir: formatDate(selectedDateRange?.to),
                     });
                   } else if (
                     (e.key === "Tab" ||
@@ -419,7 +425,6 @@ const KeywordFilter = ({
           </div>
           {isFocused && !keywordQuery && (
             <div className="shadow-md absolute left-0 right-0 top-[22px] z-0 rounded-b-xl border border-t-0 border-otl-gray-200 bg-background px-4 py-3">
-              {/* <div className="absolute left-0 right-0 top-[20px] z-50 h-[40px] border-x border-t-otl-gray-200"></div> */}
               <div className="flex flex-col gap-2">
                 <p className="pt-8 font-body text-body-sm font-[550] text-txt-black-700">
                   {t("search_tips")}
