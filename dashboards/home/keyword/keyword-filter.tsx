@@ -173,6 +173,7 @@ const KeywordFilter = ({
   ]);
   const PARLIMEN_SESSIONS = buildParlimenSessions(takwim, t, i18n.language);
   const [open, setOpen] = useState<boolean>(false);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
   const [selectedSession, setSelectedSession] = useState<string>("");
   const [sessionSearch, setSessionSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -319,99 +320,124 @@ const KeywordFilter = ({
         </div>
 
         {/* Search Bar */}
-        <div className="mx-auto flex h-[50px] w-full select-none items-center gap-2.5 rounded-full border border-border bg-background py-3 pl-4.5 pr-1.5 hover:border-border-hover sm:w-[500px]">
-          <div className="relative flex-grow">
-            <input
-              readOnly
-              tabIndex={-1}
-              value={suggestedValue}
-              className="pointer-events-none absolute inset-0 w-full truncate border-none bg-transparent text-gray-400 placeholder:text-transparent focus:outline-none focus:ring-0"
-            />
-            <input
-              required
-              spellCheck="false"
-              type="text"
-              value={keywordQuery}
-              onChange={e => {
-                setKeywordQuery(e.target.value);
-              }}
-              onKeyDown={e => {
-                if (e.key === "Enter") {
-                  handleSearch({
-                    dewan: data.dewan,
-                    q: keywordQuery,
-                  });
-                } else if (
-                  (e.key === "Tab" ||
-                    (e.key === "ArrowRight" &&
-                      e.currentTarget.selectionStart ===
-                        keywordQuery.length)) &&
-                  suggestion &&
-                  (() => {
-                    // Support multiple keyword suggestion if user has space
+        <div className="relative z-10 mx-auto w-full sm:w-[500px]">
+          <div className="relative z-10 flex h-[50px] w-full select-none items-center gap-2.5 rounded-full border border-border bg-background py-3 pl-4.5 pr-1.5 hover:border-border-hover">
+            <div className="relative flex-grow">
+              <input
+                readOnly
+                tabIndex={-1}
+                value={suggestedValue}
+                className="pointer-events-none absolute inset-0 w-full truncate border-none bg-transparent text-gray-400 placeholder:text-transparent focus:outline-none focus:ring-0"
+              />
+              <input
+                required
+                spellCheck="false"
+                type="text"
+                value={keywordQuery}
+                onChange={e => {
+                  setKeywordQuery(e.target.value);
+                }}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    handleSearch({
+                      dewan: data.dewan,
+                      q: keywordQuery,
+                    });
+                  } else if (
+                    (e.key === "Tab" ||
+                      (e.key === "ArrowRight" &&
+                        e.currentTarget.selectionStart ===
+                          keywordQuery.length)) &&
+                    suggestion &&
+                    (() => {
+                      // Support multiple keyword suggestion if user has space
+                      const lastSpaceIdx = keywordQuery.lastIndexOf(" ");
+                      const currentWord =
+                        lastSpaceIdx !== -1
+                          ? keywordQuery.slice(lastSpaceIdx + 1)
+                          : keywordQuery;
+                      return (
+                        suggestion
+                          .toLowerCase()
+                          .startsWith(currentWord.toLowerCase()) &&
+                        suggestion.toLowerCase() !== currentWord.toLowerCase()
+                      );
+                    })()
+                  ) {
+                    e.preventDefault();
+                    // Complete only the last word with suggestion
                     const lastSpaceIdx = keywordQuery.lastIndexOf(" ");
-                    const currentWord =
+                    const prefix =
                       lastSpaceIdx !== -1
-                        ? keywordQuery.slice(lastSpaceIdx + 1)
-                        : keywordQuery;
-                    return (
-                      suggestion
-                        .toLowerCase()
-                        .startsWith(currentWord.toLowerCase()) &&
-                      suggestion.toLowerCase() !== currentWord.toLowerCase()
-                    );
-                  })()
-                ) {
-                  e.preventDefault();
-                  // Complete only the last word with suggestion
-                  const lastSpaceIdx = keywordQuery.lastIndexOf(" ");
-                  const prefix =
-                    lastSpaceIdx !== -1
-                      ? keywordQuery.slice(0, lastSpaceIdx + 1)
-                      : "";
-                  setKeywordQuery(prefix + suggestion);
-                  setSuggestion("");
-                }
-              }}
-              placeholder={t("search_keyword")}
-              className="relative w-full truncate border-none bg-transparent focus:outline-none focus:ring-0"
-              ref={inputRef}
-            />
-          </div>
-          {keywordQuery && (
+                        ? keywordQuery.slice(0, lastSpaceIdx + 1)
+                        : "";
+                    setKeywordQuery(prefix + suggestion);
+                    setSuggestion("");
+                  }
+                }}
+                placeholder={t("search_keyword")}
+                className="relative w-full truncate border-none bg-transparent focus:outline-none focus:ring-0"
+                ref={inputRef}
+              />
+            </div>
+            {keywordQuery && (
+              <Button
+                variant="ghost"
+                className="group flex justify-center rounded-full p-0 sm:-mx-1.5 sm:h-8 sm:w-8"
+                onClick={() => {
+                  setKeywordQuery("");
+                  inputRef.current && inputRef.current.focus();
+                }}
+              >
+                <XMarkIcon className="h-5 w-5 text-zinc-500 group-hover:text-foreground" />
+              </Button>
+            )}
             <Button
-              variant="ghost"
-              className="group flex justify-center rounded-full p-0 sm:-mx-1.5 sm:h-8 sm:w-8"
+              variant="primary"
+              className="size-9 justify-center rounded-full max-sm:p-1.5 sm:w-fit"
+              disabled={!keywordQuery}
               onClick={() => {
-                setKeywordQuery("");
-                inputRef.current && inputRef.current.focus();
+                handleSearch({
+                  dewan: data.dewan,
+                  q: keywordQuery,
+                  parti: data.party !== ALL_PARTIES ? data.party : "",
+                  jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
+                  umur: data.age !== ALL_AGES ? data.age : "",
+                  etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
+                  tarikh_mula: formatDate(selectedDateRange?.from),
+                  tarikh_akhir: formatDate(selectedDateRange?.to),
+                });
               }}
             >
-              <XMarkIcon className="h-5 w-5 text-zinc-500 group-hover:text-foreground" />
+              <MagnifyingGlassIcon className="size-5 text-white" />
+              <span className="hidden sm:block">
+                {t("placeholder.search", { ns: "common" })}
+              </span>
             </Button>
+          </div>
+          {isFocused && !keywordQuery && (
+            <div className="shadow-md absolute left-0 right-0 top-[22px] z-0 rounded-b-xl border border-t-0 border-otl-gray-200 bg-background px-4 py-3">
+              {/* <div className="absolute left-0 right-0 top-[20px] z-50 h-[40px] border-x border-t-otl-gray-200"></div> */}
+              <div className="flex flex-col gap-2">
+                <p className="pt-8 font-body text-body-sm font-[550] text-txt-black-700">
+                  {t("search_tips")}
+                </p>
+                <div className="flex flex-col gap-1.5 text-body-sm text-txt-black-500">
+                  <p className="">
+                    {t("search_tip_keyword")} <b>minyak</b>
+                  </p>
+                  <p className="">
+                    {t("search_tip_exact")} <b>"minyak subsidi"</b>
+                  </p>
+                  <p className="">
+                    {t("search_tip_mp")} <b>minyak subsidi:Ali</b>
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
-          <Button
-            variant="primary"
-            className="size-9 justify-center rounded-full max-sm:p-1.5 sm:w-fit"
-            disabled={!keywordQuery}
-            onClick={() => {
-              handleSearch({
-                dewan: data.dewan,
-                q: keywordQuery,
-                parti: data.party !== ALL_PARTIES ? data.party : "",
-                jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
-                umur: data.age !== ALL_AGES ? data.age : "",
-                etnik: data.etnik !== ALL_ETHNICITIES ? data.etnik : "",
-                tarikh_mula: formatDate(selectedDateRange?.from),
-                tarikh_akhir: formatDate(selectedDateRange?.to),
-              });
-            }}
-          >
-            <MagnifyingGlassIcon className="size-5 text-white" />
-            <span className="hidden sm:block">
-              {t("placeholder.search", { ns: "common" })}
-            </span>
-          </Button>
         </div>
       </div>
 

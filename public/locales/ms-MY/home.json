@@ -31,5 +31,9 @@
   "excerpts": "{{ count }} Rujukan",
   "results_per_page": "Hasil carian setiap halaman",
   "load_more": "Tunjuk lagi",
-  "see_all": "{{ count }} daripada {{ total }} rujukan dipaparkan"
+  "see_all": "{{ count }} daripada {{ total }} rujukan dipaparkan",
+  "search_tips": "Tips membuat carian",
+  "search_tip_keyword": "Carian kata kunci, contohnya",
+  "search_tip_exact": "Carian kata kunci secara tepat, contohnya",
+  "search_tip_mp": "Carian kata kunci dengan MP, contohnya"
 }
