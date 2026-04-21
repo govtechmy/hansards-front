@@ -220,10 +220,10 @@ const MPFilter = ({
       label: t("individu", { ns: "common" }),
       value: "individu",
     },
-    {
-      label: t("group", { ns: "home" }),
-      value: "group",
-    },
+    // {
+    //   label: t("group", { ns: "home" }),
+    //   value: "group",
+    // },
   ];
 
   const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
@@ -362,26 +362,28 @@ const MPFilter = ({
                     ? e.value === data.individu_option.value
                     : undefined
                 )}
-                dropdown={
-                  <div className="flex self-center pl-4.5">
-                    <Dropdown
-                      className={className.dropdown_ind_grp}
-                      width="w-fit"
-                      options={INDIVIDU_OR_GROUP}
-                      selected={INDIVIDU_OR_GROUP.find(
-                        e => e.value === ind_or_grp
-                      )}
-                      onChange={(e: { value: string }) => {
-                        onFilter(e.value);
-                        if (e.value === "individu") handleClear();
-                        else if (e.value === "group") {
-                          setData("uid", "");
-                          setData("individu_option", undefined);
-                        }
-                      }}
-                    />
-                  </div>
-                }
+                magnifyingTrue={false}
+                classNameInput="!pl-4"
+                // dropdown={
+                //   <div className="flex self-center pl-4.5">
+                //     <Dropdown
+                //       className={className.dropdown_ind_grp}
+                //       width="w-fit"
+                //       options={INDIVIDU_OR_GROUP}
+                //       selected={INDIVIDU_OR_GROUP.find(
+                //         e => e.value === ind_or_grp
+                //       )}
+                //       onChange={(e: { value: string }) => {
+                //         onFilter(e.value);
+                //         if (e.value === "individu") handleClear();
+                //         else if (e.value === "group") {
+                //           setData("uid", "");
+                //           setData("individu_option", undefined);
+                //         }
+                //       }}
+                //     />
+                //   </div>
+                // }
                 onChange={selected => {
                   setData("individu_option", selected);
                   if (selected) {
@@ -517,9 +519,9 @@ const MPFilter = ({
                   onClick={() => setOpen(true)}
                 >
                   <span>{t("filters", { ns: "common" })}</span>
-                  <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
+                  {/* <span className="w-4.5 rounded-md bg-blue-600 text-center leading-5 text-white dark:bg-primary-dark">
                     2
-                  </span>
+                  </span> */}
                   <ChevronDownIcon className="-mx-[5px] size-5" />
                 </Button>
               </DrawerTrigger>
@@ -671,7 +673,7 @@ const MPFilter = ({
           <div className="space-y-3">
             <div className="mx-auto flex w-full justify-between rounded-full border border-otl-gray-200 py-2 pl-4.5 pr-1.5 md:w-fit">
               <div className="flex self-center">
-                <Dropdown
+                {/* <Dropdown
                   className={className.dropdown_ind_grp}
                   width="w-fit"
                   options={INDIVIDU_OR_GROUP}
@@ -680,7 +682,7 @@ const MPFilter = ({
                     onFilter(e.value);
                     handleClear();
                   }}
-                />
+                /> */}
               </div>
               <div className="hidden gap-x-1 px-2.5 md:flex">
                 {/*
