@@ -312,7 +312,7 @@ const KeywordFilter = ({
 
   return (
     <>
-      <div className="space-y-6 pb-3 sm:pt-6">
+      <div className="space-y-6 pb-6 sm:pt-6">
         {/* Dewan Selector */}
         <div className="mx-auto hidden w-fit rounded-full border border-slate-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-900 sm:block">
           <Tabs

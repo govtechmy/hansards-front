@@ -14,6 +14,14 @@ import {
   Label,
   PartyFlag,
 } from "@components/index";
+import {
+  Select,
+  SelectContent,
+  SelectHeader,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/MydsSelectFix/MydsSelectFix";
 import { Tabs, TabsList, TabsTrigger } from "@components/Tabs";
 import {
   ChevronDownIcon,
@@ -24,7 +32,7 @@ import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
 import { OptionType, Speaker } from "@lib/types";
-import { useState } from "react";
+import { useMemo, useRef, useState, type SVGProps } from "react";
 import { DateRange } from "react-day-picker";
 import {
   AGES,
@@ -40,6 +48,98 @@ import { setSearchParams } from "@lib/utils";
 import { ParsedUrlQuery } from "querystring";
 import { format } from "date-fns";
 import { useMediaQuery } from "@hooks/useMediaQuery";
+import { flushSync } from "react-dom";
+
+type TakwimSession = { session: number; start_date: string; end_date: string };
+type TakwimTerm = {
+  term: number;
+  start_date: string;
+  end_date: string;
+  sessions: TakwimSession[];
+};
+
+export type { TakwimTerm };
+
+const MONTHS: Record<string, string[]> = {
+  "ms-MY": [
+    "Jan",
+    "Feb",
+    "Mac",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Ogos",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Dis",
+  ],
+  "en-GB": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+};
+
+const formatDateStr = (dateStr: string, locale: string): string => {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const months = MONTHS[locale] ?? MONTHS["ms-MY"];
+  return `${day} ${months[month - 1]} ${year}`;
+};
+
+const buildParlimenSessions = (
+  takwim: TakwimTerm[] | null | undefined,
+  t: (key: string, options?: object) => string,
+  locale: string
+): OptionType[] => {
+  const terms = takwim ?? [];
+  const startDate =
+    terms.length > 0
+      ? terms.reduce(
+          (min, t) => (t.start_date < min ? t.start_date : min),
+          terms[0].start_date
+        )
+      : "1959-09-11";
+  const endDate =
+    terms.length > 0
+      ? terms.reduce(
+          (max, t) => (t.end_date > max ? t.end_date : max),
+          terms[0].end_date
+        )
+      : "2027-01-01";
+  const SEMUA_OPTION: OptionType = {
+    label: t("semua", { ns: "common" }),
+    value: `${startDate}_${endDate}`,
+  };
+
+  return [
+    SEMUA_OPTION,
+    ...terms
+      .slice()
+      .reverse()
+      .flatMap(term =>
+        [...term.sessions].reverse().map(session => ({
+          label: `${t("parlimen_full", { ns: "enum", n: term.term })} | ${t("penggal_full", { ns: "enum", n: session.session })}`,
+          label2: `${formatDateStr(session.start_date, locale)} - ${formatDateStr(session.end_date, locale)}`,
+          value: `${session.start_date}_${session.end_date}`,
+        }))
+      ),
+  ];
+};
+
+const HeroChevronDown = ({ className }: SVGProps<SVGSVGElement>) => (
+  <ChevronDownIcon className={className ?? "w-5"} />
+);
 
 /**
  * MP - Filter
@@ -52,6 +152,7 @@ export interface MPFilterProps {
   onFilter: (e: string) => void;
   onLoad: () => void;
   query: ParsedUrlQuery;
+  takwim?: TakwimTerm[] | null;
 }
 
 const MPFilter = ({
@@ -60,10 +161,26 @@ const MPFilter = ({
   onFilter,
   onLoad,
   query,
+  takwim,
 }: MPFilterProps) => {
-  const { t } = useTranslation(["home", "common", "demografi", "party"]);
+  const { t, i18n } = useTranslation([
+    "home",
+    "common",
+    "demografi",
+    "party",
+    "enum",
+  ]);
   const [open, setOpen] = useState<boolean>(false);
   const GENDERS = [BOTH_GENDERS2, "m", "f"];
+  const PARLIMEN_SESSIONS = useMemo(
+    () => buildParlimenSessions(takwim, t, i18n.language),
+    [takwim, i18n.language]
+  );
+  const [selectedSession, setSelectedSession] = useState<string>("");
+  const [sessionSearch, setSessionSearch] = useState<string>("");
+  const [sessionSearchMobile, setSessionSearchMobile] = useState<string>("");
+  const sessionSearchRef = useRef<HTMLInputElement | null>(null);
+  const sessionSearchMobileRef = useRef<HTMLInputElement | null>(null);
 
   const { uid, dewan, tarikh_mula, tarikh_akhir, umur, etnik, parti, gender } =
     query;
@@ -146,6 +263,20 @@ const MPFilter = ({
   const router = useRouter();
   const formatDate = (date?: Date) => (!date ? "" : format(date, "yyyy-MM-dd"));
 
+  const filteredSessions = useMemo(() => {
+    return PARLIMEN_SESSIONS.filter(s =>
+      (s.label as string).toLowerCase().includes(sessionSearch.toLowerCase())
+    );
+  }, [sessionSearch, PARLIMEN_SESSIONS]);
+
+  const filteredSessionsMobile = useMemo(() => {
+    return PARLIMEN_SESSIONS.filter(s =>
+      (s.label as string)
+        .toLowerCase()
+        .includes(sessionSearchMobile.toLowerCase())
+    );
+  }, [sessionSearchMobile, PARLIMEN_SESSIONS]);
+
   const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
     router.push(setSearchParams(router.asPath, params));
@@ -162,6 +293,7 @@ const MPFilter = ({
       tarikh_mula: "",
     });
     setSelectedDateRange(undefined);
+    setSelectedSession("");
     setData("party", ALL_PARTIES2);
     setData("age", ALL_AGES2);
     setData("etnik", ALL_ETHNICITIES);
@@ -263,13 +395,99 @@ const MPFilter = ({
               />
             </div>
             <div className="hidden justify-center gap-2 md:flex">
+              <Select
+                size="small"
+                variant="outline"
+                value={selectedSession}
+                onValueChange={(value: string) => {
+                  setSelectedSession(value);
+                  setSessionSearch("");
+                  const [from, to] = value.split("_");
+                  const newRange = { from: new Date(from), to: new Date(to) };
+                  setSelectedDateRange(newRange);
+                  if (data.uid)
+                    handleSearch({ tarikh_mula: from, tarikh_akhir: to });
+                }}
+              >
+                <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
+                  <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {t("parliament_calendar", { ns: "demografi" }) + ":"}
+                  </span>
+                  <SelectValue
+                    placeholder={
+                      <span className="font-medium text-blue-600 dark:text-primary-dark">
+                        {t("semua", { ns: "common" })}
+                      </span>
+                    }
+                    icon={HeroChevronDown}
+                  >
+                    {(val: string | string[]) =>
+                      val && !Array.isArray(val) && val !== "" ? (
+                        <span className="text-blue-600 dark:text-primary-dark">
+                          {PARLIMEN_SESSIONS.find(s => s.value === val)?.label}
+                        </span>
+                      ) : (
+                        <span className="text-blue-600 dark:text-primary-dark">
+                          {t("semua", { ns: "common" })}
+                        </span>
+                      )
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="select-item-black">
+                  <SelectHeader>
+                    <div
+                      className="relative"
+                      onMouseDown={e => e.stopPropagation()}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <input
+                        ref={sessionSearchRef}
+                        autoFocus
+                        value={sessionSearch}
+                        onChange={e => {
+                          const cursorPosition = e.target.selectionStart;
+                          flushSync(() => setSessionSearch(e.target.value));
+                          if (sessionSearchRef.current) {
+                            sessionSearchRef.current.focus();
+                            if (cursorPosition !== null)
+                              sessionSearchRef.current.setSelectionRange(
+                                cursorPosition,
+                                cursorPosition
+                              );
+                          }
+                        }}
+                        onKeyDown={e => e.stopPropagation()}
+                        placeholder={t("placeholder.search_session", {
+                          ns: "common",
+                        })}
+                        className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                      />
+                      <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                    </div>
+                  </SelectHeader>
+                  {filteredSessions.map(session => (
+                    <SelectItem key={session.value} value={session.value}>
+                      <span className="flex flex-col">
+                        <span>{session.label}</span>
+                        {session.label2 && (
+                          <span className="text-xs text-zinc-400">
+                            {session.label2}
+                          </span>
+                        )}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Daterange
                 className="text-txt-primary"
-                placeholder={t("current_parlimen")}
+                placeholder={t("semua", { ns: "common" })}
                 label={t("date", { ns: "home" })}
                 selected={selectedDateRange}
                 onChange={dateRange => {
                   setSelectedDateRange(dateRange);
+                  setSelectedSession("");
                   if (data.uid && dateRange && dateRange?.from && dateRange?.to)
                     handleSearch({
                       tarikh_mula: formatDate(dateRange.from),
@@ -314,6 +532,89 @@ const MPFilter = ({
                 </DrawerHeader>
                 <div className="flex flex-col divide-y bg-background px-4 dark:divide-zinc-800">
                   <div className="space-y-1 py-3">
+                    <Label
+                      label={
+                        t("parliament_calendar", { ns: "demografi" }) + ":"
+                      }
+                    />
+                    <Select
+                      size="small"
+                      variant="outline"
+                      value={selectedSession}
+                      onValueChange={(value: string) => {
+                        setSelectedSession(value);
+                        setSessionSearchMobile("");
+                        const [from, to] = value.split("_");
+                        setSelectedDateRange({
+                          from: new Date(from),
+                          to: new Date(to),
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="w-full justify-between text-foreground">
+                        <SelectValue
+                          placeholder={t("semua", { ns: "common" })}
+                          icon={HeroChevronDown}
+                        >
+                          {(val: string | string[]) =>
+                            val && !Array.isArray(val) && val !== ""
+                              ? PARLIMEN_SESSIONS.find(s => s.value === val)
+                                  ?.label
+                              : t("semua", { ns: "common" })
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="select-item-black">
+                        <SelectHeader>
+                          <div
+                            className="relative"
+                            onMouseDown={e => e.stopPropagation()}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <input
+                              ref={sessionSearchMobileRef}
+                              autoFocus
+                              value={sessionSearchMobile}
+                              onChange={e => {
+                                const cursorPosition = e.target.selectionStart;
+                                flushSync(() =>
+                                  setSessionSearchMobile(e.target.value)
+                                );
+                                if (sessionSearchMobileRef.current) {
+                                  sessionSearchMobileRef.current.focus();
+                                  if (cursorPosition !== null)
+                                    sessionSearchMobileRef.current.setSelectionRange(
+                                      cursorPosition,
+                                      cursorPosition
+                                    );
+                                }
+                              }}
+                              onKeyDown={e => e.stopPropagation()}
+                              placeholder={t("placeholder.search_session", {
+                                ns: "common",
+                              })}
+                              className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-800"
+                            />
+                            <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                          </div>
+                        </SelectHeader>
+                        {filteredSessionsMobile.map(session => (
+                          <SelectItem key={session.value} value={session.value}>
+                            <span className="flex flex-col">
+                              <span>{session.label}</span>
+                              {session.label2 && (
+                                <span className="text-xs text-zinc-400">
+                                  {session.label2}
+                                </span>
+                              )}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1 py-3">
                     <Label label={t("dewan", { ns: "home" }) + ":"} />
                     <Dropdown
                       options={DEWAN_OPTIONS}
@@ -327,9 +628,12 @@ const MPFilter = ({
                     <Daterange
                       className="w-full"
                       numberOfMonths={1}
-                      placeholder={t("current_parlimen")}
+                      placeholder={t("semua", { ns: "common" })}
                       selected={selectedDateRange}
-                      onChange={setSelectedDateRange}
+                      onChange={dateRange => {
+                        setSelectedDateRange(dateRange);
+                        setSelectedSession("");
+                      }}
                     />
                   </div>
                 </div>
@@ -460,12 +764,100 @@ const MPFilter = ({
             </div>
 
             <div className="hidden flex-wrap justify-center gap-2 md:flex">
+              <Select
+                size="small"
+                variant="outline"
+                value={selectedSession}
+                onValueChange={(value: string) => {
+                  setSelectedSession(value);
+                  setSessionSearch("");
+                  const [from, to] = value.split("_");
+                  setSelectedDateRange({
+                    from: new Date(from),
+                    to: new Date(to),
+                  });
+                }}
+              >
+                <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
+                  <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {t("parliament_calendar", { ns: "demografi" }) + ":"}
+                  </span>
+                  <SelectValue
+                    placeholder={
+                      <span className="font-medium text-blue-600 dark:text-primary-dark">
+                        {t("semua", { ns: "common" })}
+                      </span>
+                    }
+                    icon={HeroChevronDown}
+                  >
+                    {(val: string | string[]) =>
+                      val && !Array.isArray(val) && val !== "" ? (
+                        <span className="text-blue-600 dark:text-primary-dark">
+                          {PARLIMEN_SESSIONS.find(s => s.value === val)?.label}
+                        </span>
+                      ) : (
+                        <span className="text-blue-600 dark:text-primary-dark">
+                          {t("semua", { ns: "common" })}
+                        </span>
+                      )
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="select-item-black">
+                  <SelectHeader>
+                    <div
+                      className="relative"
+                      onMouseDown={e => e.stopPropagation()}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <input
+                        ref={sessionSearchRef}
+                        autoFocus
+                        value={sessionSearch}
+                        onChange={e => {
+                          const cursorPosition = e.target.selectionStart;
+                          flushSync(() => setSessionSearch(e.target.value));
+                          if (sessionSearchRef.current) {
+                            sessionSearchRef.current.focus();
+                            if (cursorPosition !== null)
+                              sessionSearchRef.current.setSelectionRange(
+                                cursorPosition,
+                                cursorPosition
+                              );
+                          }
+                        }}
+                        onKeyDown={e => e.stopPropagation()}
+                        placeholder={t("placeholder.search_session", {
+                          ns: "common",
+                        })}
+                        className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                      />
+                      <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                    </div>
+                  </SelectHeader>
+                  {filteredSessions.map(session => (
+                    <SelectItem key={session.value} value={session.value}>
+                      <span className="flex flex-col">
+                        <span>{session.label}</span>
+                        {session.label2 && (
+                          <span className="text-xs text-zinc-400">
+                            {session.label2}
+                          </span>
+                        )}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Daterange
                 className="text-blue-600 dark:text-primary-dark"
-                placeholder={t("current_parlimen")}
+                placeholder={t("semua", { ns: "common" })}
                 label={t("date", { ns: "home" })}
                 selected={selectedDateRange}
-                onChange={setSelectedDateRange}
+                onChange={dateRange => {
+                  setSelectedDateRange(dateRange);
+                  setSelectedSession("");
+                }}
               />
 
               {selectedDateRange && (
@@ -504,6 +896,89 @@ const MPFilter = ({
                 </DrawerHeader>
                 <div className="flex flex-col divide-y bg-background px-4 dark:divide-zinc-800">
                   <div className="space-y-1 py-3">
+                    <Label
+                      label={
+                        t("parliament_calendar", { ns: "demografi" }) + ":"
+                      }
+                    />
+                    <Select
+                      size="small"
+                      variant="outline"
+                      value={selectedSession}
+                      onValueChange={(value: string) => {
+                        setSelectedSession(value);
+                        setSessionSearchMobile("");
+                        const [from, to] = value.split("_");
+                        setSelectedDateRange({
+                          from: new Date(from),
+                          to: new Date(to),
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="w-full justify-between text-foreground">
+                        <SelectValue
+                          placeholder={t("semua", { ns: "common" })}
+                          icon={HeroChevronDown}
+                        >
+                          {(val: string | string[]) =>
+                            val && !Array.isArray(val) && val !== ""
+                              ? PARLIMEN_SESSIONS.find(s => s.value === val)
+                                  ?.label
+                              : t("semua", { ns: "common" })
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="select-item-black">
+                        <SelectHeader>
+                          <div
+                            className="relative"
+                            onMouseDown={e => e.stopPropagation()}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <input
+                              ref={sessionSearchMobileRef}
+                              autoFocus
+                              value={sessionSearchMobile}
+                              onChange={e => {
+                                const cursorPosition = e.target.selectionStart;
+                                flushSync(() =>
+                                  setSessionSearchMobile(e.target.value)
+                                );
+                                if (sessionSearchMobileRef.current) {
+                                  sessionSearchMobileRef.current.focus();
+                                  if (cursorPosition !== null)
+                                    sessionSearchMobileRef.current.setSelectionRange(
+                                      cursorPosition,
+                                      cursorPosition
+                                    );
+                                }
+                              }}
+                              onKeyDown={e => e.stopPropagation()}
+                              placeholder={t("placeholder.search_session", {
+                                ns: "common",
+                              })}
+                              className="w-full rounded border border-zinc-200 py-1.5 pl-2 pr-7 text-xs outline-none focus:border-blue-600 focus:ring-0 dark:border-zinc-700 dark:bg-zinc-800"
+                            />
+                            <MagnifyingGlassIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                          </div>
+                        </SelectHeader>
+                        {filteredSessionsMobile.map(session => (
+                          <SelectItem key={session.value} value={session.value}>
+                            <span className="flex flex-col">
+                              <span>{session.label}</span>
+                              {session.label2 && (
+                                <span className="text-xs text-zinc-400">
+                                  {session.label2}
+                                </span>
+                              )}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1 py-3">
                     <Label label={t("dewan", { ns: "home" }) + ":"} />
                     <Dropdown
                       options={DEWAN_OPTIONS}
@@ -517,9 +992,12 @@ const MPFilter = ({
                     <Daterange
                       className="w-full"
                       numberOfMonths={1}
-                      placeholder={t("current_parlimen")}
+                      placeholder={t("semua", { ns: "common" })}
                       selected={selectedDateRange}
-                      onChange={setSelectedDateRange}
+                      onChange={dateRange => {
+                        setSelectedDateRange(dateRange);
+                        setSelectedSession("");
+                      }}
                     />
                   </div>
 
