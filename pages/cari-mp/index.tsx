@@ -19,6 +19,7 @@ const CariMP: Page = ({
   timeseries,
   top_speakers,
   top_word_freq,
+  takwim,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
@@ -32,6 +33,7 @@ const CariMP: Page = ({
           timeseries={timeseries}
           top_speakers={top_speakers}
           top_word_freq={top_word_freq}
+          takwim={takwim}
         />
       </HomeLayout>
     </>
@@ -43,6 +45,10 @@ export const getServerSideProps: GetServerSideProps = withi18n(
   async ({ query, locale }) => {
     try {
       const { data: speakers } = await get("api/author/");
+
+      const takwimResult = await get(
+        `api/sitting/list?house=dewan-rakyat&house=dewan-negara&house=kamar-khas`
+      ).catch(() => null);
 
       if (Object.keys(query).length === 0)
         return {
@@ -61,6 +67,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
             },
             top_word_freq: null,
             top_speakers: null,
+            takwim: takwimResult?.data ?? null,
           },
         };
 
@@ -124,6 +131,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           },
           top_word_freq: data.top_word_freq ?? null,
           top_speakers: data.top_speakers ?? null,
+          takwim: takwimResult?.data ?? null,
         },
       };
     } catch (error) {
