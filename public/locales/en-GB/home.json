@@ -31,5 +31,9 @@
   "excerpts": "{{ count }} Excerpts References",
   "results_per_page": "Results per page",
   "load_more": "Load more",
-  "see_all": "Showing {{ count }} of {{ total }} results"
+  "see_all": "Showing {{ count }} of {{ total }} results",
+  "search_tips": "Search tips",
+  "search_tip_keyword": "Keyword search, e.g.",
+  "search_tip_exact": "Exact keyword search, e.g.",
+  "search_tip_mp": "Keyword search with MP, e.g."
 }

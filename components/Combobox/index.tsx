@@ -18,6 +18,8 @@ type ComboBoxProps<T> = Pick<ComboOptionProps<T>, "format" | "icon"> & {
   config?: MatchSorterOptions<ComboOptionProp<T>>;
   className?: string;
   dropdown?: ReactNode;
+  magnifyingTrue?: boolean;
+  classNameInput?: string;
 };
 
 const ComboBox = <T extends unknown>({
@@ -32,6 +34,8 @@ const ComboBox = <T extends unknown>({
   config = { keys: ["label"] },
   className,
   dropdown,
+  magnifyingTrue = true,
+  classNameInput,
 }: ComboBoxProps<T>) => {
   const { t } = useTranslation();
   const [items, setItems] = useState(options);
@@ -91,9 +95,9 @@ const ComboBox = <T extends unknown>({
             <span className="z-10 ml-4 flex h-auto max-h-8 w-8 shrink-0 justify-center self-center">
               {icon && selectedItem && inputValue ? (
                 icon(selectedItem.value)
-              ) : (
+              ) : magnifyingTrue ? (
                 <MagnifyingGlassIcon className="h-5 w-5 text-zinc-900 dark:text-zinc-500" />
-              )}
+              ) : null}
             </span>
           )}
           <input
@@ -103,6 +107,7 @@ const ComboBox = <T extends unknown>({
             type="text"
             className={cn(
               "h-12 w-full truncate border-none bg-background py-3 pr-9 focus:outline-none focus:ring-0",
+              classNameInput,
               dropdown
                 ? "rounded-r-full pl-2.5"
                 : "absolute left-0 top-0 rounded-full pl-14"
