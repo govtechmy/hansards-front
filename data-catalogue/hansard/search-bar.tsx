@@ -20,14 +20,14 @@ export default function HansardSearchBar() {
   const { searchValue, activeCount, totalCount } = useContext(SearchContext);
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
 
-  // Initialize query from URL 'q' parameter
+  // Initialize query from URL 'search' or 'q' parameter
   useEffect(() => {
     if (router.isReady) {
-      const q = router.query.q;
+      const q = router.query.search ?? router.query.q;
       setQuery(q ? String(q) : "");
       if (q) onSearchChange(String(q));
     }
-  }, [router.isReady, router.query.q]);
+  }, [router.isReady, router.query.search, router.query.q]);
 
   // adds `?search={value} to URL`
   // const param = "search";
