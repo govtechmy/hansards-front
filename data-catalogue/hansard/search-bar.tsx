@@ -21,11 +21,13 @@ export default function HansardSearchBar() {
   const { onSearchChange, onPrev, onNext } = useContext(SearchEventContext);
 
   // Initialize query from URL 'q' parameter
+  // Extract only the keyword (before ':') for better UX
   useEffect(() => {
     if (router.isReady) {
-      const q = router.query.q;
-      setQuery(q ? String(q) : "");
-      if (q) onSearchChange(String(q));
+      const rawQ = router.query.q;
+      const keyword = rawQ ? String(rawQ).split(":")[0].trim() : "";
+      setQuery(keyword);
+      if (keyword) onSearchChange(keyword);
     }
   }, [router.isReady, router.query.q]);
 
