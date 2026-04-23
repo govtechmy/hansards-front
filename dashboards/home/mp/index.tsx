@@ -11,7 +11,7 @@ import { cn } from "@lib/helpers";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
-import MPFilter from "./mp-filter";
+import MPFilter, { TakwimTerm } from "./mp-filter";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { ParsedUrlQuery } from "querystring";
 // import { ALL_AGES, ALL_ETHNICITIES, ALL_PARTIES, BOTH_SEXES, } from "../filter-options";
@@ -42,6 +42,7 @@ export interface MPProps extends ExcerptsProps {
   timeseries: Record<"date" | "freq", number[]>;
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
+  takwim?: TakwimTerm[] | null;
 }
 
 const MP = ({
@@ -52,6 +53,7 @@ const MP = ({
   timeseries,
   top_speakers,
   top_word_freq,
+  takwim,
 }: MPProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -156,6 +158,7 @@ const MP = ({
           speakers={speakers}
           onFilter={handleModeChange}
           query={query}
+          takwim={takwim}
         />
 
         <div className="relative mt-6 w-full" ref={ref}>
