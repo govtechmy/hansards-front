@@ -121,7 +121,9 @@ const SpeechBubble = ({
           )}
         >
           {speaker ? <div className="m">{speaker}</div> : <></>}
-          <div className={cn("c", is_annotation && "d")}>{children}</div>
+          <div className={cn("c text-justify", is_annotation && "d")}>
+            {children}
+          </div>
 
           <div
             className={cn(

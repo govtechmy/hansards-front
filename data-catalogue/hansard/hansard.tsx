@@ -202,7 +202,7 @@ const Hansard = ({
               <div
                 className="scroll-mt-40 lg:scroll-mt-24"
                 ref={ref => (scrollRef.current[sidebar_id] = ref)}
-              />
+              ></div>
               {highlightKeyword(heading, `${i}`)}
             </div>
             {recurSpeech(s[heading], sidebar_id)}
