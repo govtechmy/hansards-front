@@ -55,6 +55,7 @@ interface HansardProps {
   filename: string;
   speeches: Speeches;
   hansard_id: string;
+  is_final?: boolean;
 }
 
 const Hansard = ({
@@ -63,6 +64,7 @@ const Hansard = ({
   filename,
   speeches,
   hansard_id,
+  is_final,
 }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
@@ -76,7 +78,11 @@ const Hansard = ({
 
   let curr_timestamp = 0;
 
-  const recurSpeech = (speeches: Speeches, prev_id?: string): ReactNode => {
+  const recurSpeech = (
+    speeches: Speeches,
+    prev_id?: string,
+    is_final?: boolean
+  ): ReactNode => {
     let curr_author_id = 0;
     let curr_dir = false;
 
@@ -180,6 +186,7 @@ const Hansard = ({
                 side={curr_dir}
                 uid={author_id}
                 author={author}
+                is_final={is_final}
               >
                 {highlightKeywordMarkdown(speech, speech_id)}
               </SpeechBubble>
@@ -205,7 +212,7 @@ const Hansard = ({
               ></div>
               {highlightKeyword(heading, `${i}`)}
             </div>
-            {recurSpeech(s[heading], sidebar_id)}
+            {recurSpeech(s[heading], sidebar_id, is_final)}
           </div>
         );
       }
@@ -297,6 +304,20 @@ const Hansard = ({
                       context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
                     })}
                   </h1>
+                  <h2 className="text-txt-black-500">
+                    <span>
+                      {IS_KK
+                        ? t("enum:kamar-khas")
+                        : IS_DR
+                          ? t("enum:dewan-rakyat")
+                          : t("enum:dewan-negara")}
+                    </span>
+                    <span>
+                      {is_final !== undefined && (
+                        <> • {is_final ? t("final") : t("draft")}</>
+                      )}
+                    </span>
+                  </h2>
                   {views >= 0 || shares >= 0 || downloads >= 0 ? (
                     <p
                       className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-txt-black-500"
@@ -320,7 +341,7 @@ const Hansard = ({
                       )}`}</span>
                     </p>
                   ) : (
-                    <div className="h-5 w-full" />
+                    <div className="h-1 w-full" />
                   )}
                 </div>
               </div>
@@ -444,7 +465,7 @@ const Hansard = ({
             )}
           >
             <MobileButton onClick={handleClick} />
-            {recurSpeech(speeches)}
+            {recurSpeech(speeches, undefined, is_final)}
           </div>
         </div>
       )}

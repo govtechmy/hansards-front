@@ -39,6 +39,7 @@ const HansardPage: Page = ({
             date={date}
             filename={filename}
             speeches={speeches}
+            is_final={undefined}
           />
         </SearchProvider>
       </AnalyticsProvider>
@@ -66,6 +67,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         date: date,
         filename: data.meta.filename,
         speeches: data.speeches,
+        is_final: data.meta.is_final,
       },
     };
   }

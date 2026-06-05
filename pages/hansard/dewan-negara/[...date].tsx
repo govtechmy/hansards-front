@@ -16,6 +16,7 @@ const HansardPage: Page = ({
   date,
   filename,
   speeches,
+  is_final,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation("hansard");
 
@@ -40,6 +41,7 @@ const HansardPage: Page = ({
             date={date}
             filename={filename}
             speeches={speeches}
+            is_final={is_final}
           />
         </SearchProvider>
       </AnalyticsProvider>
@@ -67,6 +69,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         date: date,
         filename: data.meta.filename,
         speeches: data.speeches,
+        is_final: data.meta.is_final,
       },
     };
   }

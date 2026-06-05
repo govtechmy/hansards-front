@@ -31,6 +31,7 @@ export type SpeechBubbleProps = {
   speaker?: ReactNode;
   timeString: string;
   uid: number | null;
+  is_final?: boolean;
 };
 
 const SpeechBubble = ({
@@ -47,6 +48,7 @@ const SpeechBubble = ({
   speaker,
   timeString,
   uid,
+  is_final,
 }: SpeechBubbleProps) => {
   const { t } = useTranslation("catalogue");
   // const { download } = useAnalytics(hansard_id);
@@ -124,7 +126,6 @@ const SpeechBubble = ({
           <div className={cn("c text-justify", is_annotation && "d")}>
             {children}
           </div>
-
           <div
             className={cn(
               "ft invisible"
@@ -159,7 +160,12 @@ const SpeechBubble = ({
               index={`${index}`}
             />
           </div>
-          <span className="t">{timeString}</span>
+          <span className="t" suppressHydrationWarning>
+            {is_final !== undefined && (
+              <>{is_final ? t("final") : t("draft")} • </>
+            )}
+            {timeString}
+          </span>
         </div>
       </div>
     </>
