@@ -28,16 +28,15 @@ const Header = ({ stateSelector }: HeaderProps) => {
           </Link>
 
           <Nav stateSelector={stateSelector}>
-            {close =>
-              process.env.NEXT_PUBLIC_APP_ENV !== "production" && (
-                <>
-                  <Nav.Item
-                    key="/"
-                    title={t("nav.home")}
-                    link="/"
-                    onClick={close}
-                  />
-                  {/* <Nav.Item
+            {close => (
+              <>
+                <Nav.Item
+                  key="/"
+                  title={t("nav.home")}
+                  link="/"
+                  onClick={close}
+                />
+                {/* <Nav.Item
                     key="/kehadiran"
                     title={t("nav.kehadiran")}
                     link="/kehadiran/dewan-rakyat"
@@ -49,15 +48,14 @@ const Header = ({ stateSelector }: HeaderProps) => {
                     link="/sejarah/individu"
                     onClick={close}
                   /> */}
-                  <Nav.Item
-                    key="/katalog"
-                    title={t("nav.katalog")}
-                    link="/katalog/dewan-rakyat"
-                    onClick={close}
-                  />
-                </>
-              )
-            }
+                <Nav.Item
+                  key="/katalog"
+                  title={t("nav.katalog")}
+                  link="/katalog/dewan-rakyat"
+                  onClick={close}
+                />
+              </>
+            )}
           </Nav>
         </div>
       </Container>

@@ -1,12 +1,13 @@
 {
   "hero": {
     "category": "Parliament of Malaysia",
-    "header": "Digital Hansards",
-    "description": "The mission of this site is simple: To give you an easy and fun way to explore what is being said and done in Parliament, so that you can better hold your representatives accountable. Although the official Hansards have always been published promptly after a sitting, we know that reading a PDF isn’t the most accessible way of exercising your right to information and transparency. This site is our attempt to change that - we hope it helps you become a more informed voter!"
+    "header": "Digital Hansard",
+    "description": "The Digital Hansard Portal makes it easier for you to access official records of parliamentary debates through a more user-friendly platform. Search, read, and explore speeches and discussions in Parliament in a more detailed, simple, and fast way. With just one search, you can access records from the Senate, the House of Representatives, and the Special Chamber. Information is now at your fingertips.\n\n With Digital Hansard, the public can follow national developments, understand the issues being discussed, and gain a clearer understanding of the roles and views of their elected representatives.",
+    "catchphrase": "Digital Hansard - parliamentary information at your fingertips."
   },
   "search_keyword": "Search for a keyword",
   "search_mp": "Search for an MP speech time series",
-  "search_keywords": "Search for any keywords or phrases!",
+  "search_keywords": "Search for any keywords or phrases",
   "search_individual": "Search individual name",
   "search_individual_mp": "Search for MP and explore their speech count based on the timeline",
   "search_mps": "Search for any demographic of MPs",

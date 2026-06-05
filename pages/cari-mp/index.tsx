@@ -52,7 +52,6 @@ export const getServerSideProps: GetServerSideProps = withi18n(
 
       if (Object.keys(query).length === 0)
         return {
-          notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
           props: {
             meta: {
               id: "home",
@@ -116,7 +115,6 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       });
 
       return {
-        notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
         props: {
           meta: {
             id: "/cari-mp",

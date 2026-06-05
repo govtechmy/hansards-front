@@ -12,6 +12,7 @@ type ConditionalHeroProps =
       category?: never;
       header?: never;
       description?: never;
+      catchphrase?: never;
       action?: never;
       last_updated?: never;
     }
@@ -22,6 +23,7 @@ type HeroDefault = {
   category?: [text: string, className?: string];
   header?: [text: string, className?: string];
   description?: [text: string, className?: string] | ReactNode;
+  catchphrase?: [text: string, className?: string];
   action?: ReactNode;
   last_updated?: string | number;
 };
@@ -38,6 +40,7 @@ const Hero: FunctionComponent<HeroProps> = ({
   category,
   header,
   description,
+  catchphrase,
   action,
   last_updated,
 }) => {
@@ -104,6 +107,18 @@ const Hero: FunctionComponent<HeroProps> = ({
                     </p>
                   ) : (
                     description
+                  )}
+
+                  {catchphrase && (
+                    <p
+                      className={cn(
+                        "font-semibold text-txt-black-500 max-xl:max-w-prose xl:w-2/3",
+                        catchphrase[1]
+                      )}
+                      data-testid="hero-catchphrase"
+                    >
+                      {catchphrase[0]}
+                    </p>
                   )}
 
                   {counts.views >= 0 ? (

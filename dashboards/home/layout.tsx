@@ -44,6 +44,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
         category={[t("hero.category"), "text-secondary"]}
         header={[t("hero.header")]}
         description={[t("hero.description")]}
+        catchphrase={[t("hero.catchphrase")]}
       />
 
       <nav className="sticky top-14 z-20 flex justify-start overflow-hidden border-b border-b-border bg-background min-[350px]:justify-center lg:static">

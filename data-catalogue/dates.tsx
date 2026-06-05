@@ -53,9 +53,6 @@ interface MesyuaratDatesProps {
   sitting_list: Sitting[];
 }
 
-const isPre2008 = (date: string) => new Date(date).getFullYear() < 2008;
-const isNotProduction = process.env.NEXT_PUBLIC_APP_ENV !== "production";
-
 export const MesyuaratDates = ({
   onClick,
   sitting_list,
@@ -77,7 +74,7 @@ export const MesyuaratDates = ({
       filename,
       analyticsId: hansard_id,
     });
-    const is_old = isNotProduction ? false : isPre2008(date);
+
     return (
       <div className="flex items-center gap-x-4.5 rounded-lg border bg-background p-3 shadow-button dark:border-zinc-800">
         <DateCard date={date} size="sm" />
@@ -94,18 +91,7 @@ export const MesyuaratDates = ({
                 &nbsp; {t("draft")}
               </span>
             ))}
-          {is_old ? (
-            <div className="flex items-center gap-1 font-medium text-foreground">
-              {new Date(date).toLocaleDateString(i18n.language, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-              {`, ${new Date(date).toLocaleDateString(i18n.language, {
-                weekday: "long",
-              })}`}
-            </div>
-          ) : (
+          {
             <NextLink
               href={hansard_id}
               prefetch={false}
@@ -121,7 +107,7 @@ export const MesyuaratDates = ({
                 weekday: "long",
               })}`}
             </NextLink>
-          )}
+          }
           <div>
             <div className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-blue-600 dark:text-primary-dark">
               <CiteButton
@@ -155,11 +141,7 @@ export const MesyuaratDates = ({
                   {["pdf", "csv"].map(filetype => (
                     <DropdownItem
                       key={filetype}
-                      disabled={is_old && filetype === "csv"}
-                      onSelect={() => {
-                        if (is_old && filetype === "csv") return;
-                        handleDownload(filetype as "pdf" | "csv");
-                      }}
+                      onSelect={() => handleDownload(filetype as "pdf" | "csv")}
                     >
                       {filetype === "pdf" ? (
                         <PdfFileIcon className="size-4" />

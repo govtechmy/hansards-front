@@ -65,7 +65,6 @@ export const getStaticProps: GetStaticProps = withi18n(
     }, {});
 
     return {
-      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
       revalidate: 60 * 60 * 24 * 365, // on-demand ISR; large TTL to avoid periodic revalidation
       props: {
         meta: {

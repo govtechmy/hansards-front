@@ -58,13 +58,12 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       term:
         term === "all"
           ? null
-          : term ?? Object.keys(dropdown.catalogue_list).reverse()[0],
+          : (term ?? Object.keys(dropdown.catalogue_list).reverse()[0]),
       session: session === "all" ? null : session,
       meeting: meeting === "all" ? null : meeting,
     });
 
     return {
-      notFound: process.env.NEXT_PUBLIC_APP_ENV === "production",
       props: {
         meta: {
           id: routes.KEHADIRAN_DN,

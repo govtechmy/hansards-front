@@ -17,6 +17,7 @@ const ComingSoon = () => {
         category={[t("hero.category"), "text-secondary"]}
         header={[t("hero.header")]}
         description={[t("hero.description")]}
+        catchphrase={[t("hero.catchphrase")]}
       />
       <div className="flex h-[400px] items-center justify-center">
         <div className="flex items-center gap-1.5 rounded-md bg-slate-200 px-3 py-1.5 dark:bg-zinc-800">

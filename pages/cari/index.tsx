@@ -27,23 +27,19 @@ const Home: Page = ({
   return (
     <>
       <Metadata keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament" />
-      {process.env.NEXT_PUBLIC_APP_ENV === "production" ? (
-        <ComingSoon />
-      ) : (
-        <HomeLayout>
-          <SearchKeyword
-            count={count}
-            dewan_counts={dewan_counts}
-            excerpts={excerpts}
-            query={query}
-            speakers={speakers}
-            timeseries={timeseries}
-            top_word_freq={top_word_freq}
-            top_speakers={top_speakers}
-            takwim={takwim}
-          />
-        </HomeLayout>
-      )}
+      <HomeLayout>
+        <SearchKeyword
+          count={count}
+          dewan_counts={dewan_counts}
+          excerpts={excerpts}
+          query={query}
+          speakers={speakers}
+          timeseries={timeseries}
+          top_word_freq={top_word_freq}
+          top_speakers={top_speakers}
+          takwim={takwim}
+        />
+      </HomeLayout>
     </>
   );
 };

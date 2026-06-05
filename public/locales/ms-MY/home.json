@@ -2,11 +2,12 @@
   "hero": {
     "category": "Parlimen Malaysia",
     "header": "Hansard Digital",
-    "description": "Misi portal ini adalah mudah: Untuk memberi anda satu cara yang senang dan seronok untuk menerokai apa yang disebut dan dilakukan di Parlimen, supaya anda dapat memastikan akauntabiliti daripada wakil anda. Walaupun Hansard rasmi memang telah diterbitkan sejurus selepas persidangan selama ini, kami faham bahawa membaca PDF bukanlah cara yang paling mudah untuk mendapatkan maklumat. Portal ini adalah usaha kami untuk mengubah kaedah penyampaian penyata rasmi Parlimen - kami berharap ia dapat membantu anda menjadi pengundi dan rakyat yang lebih berilmu!"
+    "description": "Portal Hansard Digital memudahkan anda mengakses rekod rasmi perbahasan Parlimen melalui platform yang lebih mesra pengguna. Cari, baca dan terokai ucapan serta perbincangan di Parlimen dengan lebih terperinci, mudah dan pantas. Dengan hanya satu carian, anda boleh mengekses rekod Dewan Negara, Dewan Rakyat dan Kamar Khas. Pencarian maklumat kini di hujung jari anda.\n\n Dengan Hansard Digital, rakyat dapat mengikuti perkembangan negara, memahami isu-isu yang dibincangkan serta mengenali peranan dan pandangan wakil rakyat dengan lebih jelas.",
+    "catchphrase": "Hansard Digital - maklumat Parlimen di hujung jari anda."
   },
   "search_keyword": "Cari kata kunci",
   "search_mp": "Cari Siri Masa Ucapan Ahli Parlimen",
-  "search_keywords": "Carilah kata kunci atau frasa yang anda minat tahu!",
+  "search_keywords": "Cari kata kunci atau frasa",
   "search_individual": "Cari nama individu",
   "search_individual_mp": "Cari ahli Parlimen dan semak jumlah ucapan berdasarkan garis masa ",
   "search_mps": "Cari Ahli Parlimen mengikut demografi",
