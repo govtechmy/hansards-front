@@ -1,5 +1,5 @@
 export const appConfig = {
-  appName: "hansard.parlimen.gov.my",
+  appName: "Digital Hansard - Parliament of Malaysia",
   meta: {
     author: "Parliament of Malaysia",
     theme: "B49B1A",

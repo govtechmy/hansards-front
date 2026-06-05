@@ -26,7 +26,7 @@ const Home: Page = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
-      <Metadata keywords="hansards.parlimen.gov.my data malaysia hansards parlimen parliament" />
+      <Metadata keywords="hansard.parlimen.gov.my data malaysia hansards parlimen parliament" />
       <HomeLayout>
         <SearchKeyword
           count={count}
