@@ -1,7 +1,6 @@
 import { DateCard, Hero } from "@components/index";
 import { SidebarOpen } from "@data-catalogue/hansard/sidebar";
 import MobileButton from "@data-catalogue/hansard/mobile-button";
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useDownload } from "@hooks/useDownload";
 import { useTranslation } from "@hooks/useTranslation";
@@ -24,6 +23,8 @@ import {
   OptionsVerticalIcon,
   PdfFileIcon,
   ShareIcon,
+  CheckCircleFillIcon,
+  DocumentFilledIcon,
 } from "@govtechmy/myds-react/icon";
 import {
   Dropdown,
@@ -38,6 +39,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@govtechmy/myds-react/breadcrumb";
+import { Tag } from "@components/Tag";
 
 /**
  * Hansard
@@ -73,10 +75,35 @@ const Hansard = ({
     if (sidebarRef.current) sidebarRef.current.open();
   }
 
-  const { counts, download } = useAnalytics(hansard_id);
-  const { downloads, shares, views } = counts;
+  const { counts } = useAnalytics(hansard_id);
+  const { download, share, view } = counts;
 
   let curr_timestamp = 0;
+
+  const DEWAN_TAG: Record<
+    string,
+    {
+      variant: "primary" | "warning" | "success";
+      className: string;
+      label: string;
+    }
+  > = {
+    "dewan-rakyat": {
+      variant: "primary",
+      className: "!text-body-xs font-normal text-[#2563EB]",
+      label: t("enum:dewan-rakyat"),
+    },
+    "dewan-negara": {
+      variant: "warning",
+      className: "border-[#A1620733] !text-body-xs font-normal text-[#A16207]",
+      label: t("enum:dewan-negara"),
+    },
+    "kamar-khas": {
+      variant: "success",
+      className: "border-[#15803D33] !text-body-xs font-normal text-[#15803D]",
+      label: t("enum:kamar-khas"),
+    },
+  };
 
   const recurSpeech = (
     speeches: Speeches,
@@ -221,6 +248,14 @@ const Hansard = ({
 
   const IS_DR = cycle.house === 0;
   const IS_KK = cycle.house === 2;
+
+  const HOUSE_TO_DEWAN: Record<number, string> = {
+    0: "dewan-rakyat",
+    1: "dewan-negara",
+    2: "kamar-khas",
+  };
+  const dewanKey = HOUSE_TO_DEWAN[cycle.house];
+
   const dewan_route = IS_KK
     ? routes.KATALOG_KK
     : IS_DR
@@ -295,7 +330,7 @@ const Hansard = ({
 
               <div className="flex items-center justify-between gap-3 lg:gap-6">
                 <DateCard size="lg" date={date} />
-                <div className="flex w-[calc(100%-78px)] flex-col justify-center gap-y-3">
+                <div className="flex w-[calc(100%-78px)] flex-col justify-center gap-y-1">
                   <h1
                     className="text-3xl font-bold leading-[38px] text-txt-black-900"
                     data-testid="hero-header"
@@ -304,39 +339,50 @@ const Hansard = ({
                       context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
                     })}
                   </h1>
-                  <h2 className="text-txt-black-500">
-                    <span>
-                      {IS_KK
-                        ? t("enum:kamar-khas")
-                        : IS_DR
-                          ? t("enum:dewan-rakyat")
-                          : t("enum:dewan-negara")}
-                    </span>
-                    <span>
-                      {is_final !== undefined && (
-                        <> • {is_final ? t("final") : t("draft")}</>
-                      )}
-                    </span>
-                  </h2>
-                  {views >= 0 || shares >= 0 || downloads >= 0 ? (
+                  <div className="flex items-center gap-x-2">
+                    <div>
+                      <Tag
+                        variant={DEWAN_TAG[dewanKey].variant}
+                        className={DEWAN_TAG[dewanKey].className}
+                        mode="pill"
+                        size="small"
+                      >
+                        {DEWAN_TAG[dewanKey].label}
+                      </Tag>
+                    </div>
+
+                    {is_final !== undefined &&
+                      (is_final ? (
+                        <span className="me-2 inline-flex w-fit items-center rounded-sm border border-green-500 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-700 dark:bg-opacity-20 dark:text-green-300">
+                          <CheckCircleFillIcon className="size-4" />
+                          &nbsp; {t("final")}
+                        </span>
+                      ) : (
+                        <span className="me-2 inline-flex w-fit items-center rounded-sm border border-orange-500 bg-orange-100 bg-opacity-40 px-2.5 py-0.5 text-xs font-medium text-orange-900 dark:bg-orange-500 dark:bg-opacity-10 dark:text-orange-200">
+                          <DocumentFilledIcon className="size-4" />
+                          &nbsp; {t("draft")}
+                        </span>
+                      ))}
+                  </div>
+                  {view >= 0 || share >= 0 || download >= 0 ? (
                     <p
                       className="flex flex-wrap items-center gap-1.5 whitespace-nowrap text-sm text-txt-black-500"
                       data-testid="hero-views"
                     >
-                      <span>{`${numFormat(views, "compact")} ${t("views", {
+                      <span>{`${numFormat(view, "compact")} ${t("views", {
                         ns: "common",
-                        count: views,
+                        count: view,
                       })}`}</span>
                       •
-                      <span>{`${numFormat(shares, "compact")} ${t("shares", {
-                        count: shares,
+                      <span>{`${numFormat(share, "compact")} ${t("shares", {
+                        count: share,
                       })}`}</span>
                       •
-                      <span>{`${numFormat(downloads, "compact")} ${t(
+                      <span>{`${numFormat(download, "compact")} ${t(
                         "downloads",
                         {
                           ns: "common",
-                          count: downloads,
+                          count: download,
                         }
                       )}`}</span>
                     </p>

@@ -36,7 +36,7 @@ export function AnalyticsProvider({
       .catch(e =>
         console.error("Error fetching analytics counts:", JSON.stringify(e))
       );
-  }, []);
+  }, [id]);
 
   const post_events = (
     event: string,
@@ -62,8 +62,9 @@ export function AnalyticsProvider({
         }: {
           data: { successful_rows: number; quarantined_rows: number };
         }) => {
-          if (data.quarantined_rows > 0) console.error("Row quarantined");
-          else
+          if (data.quarantined_rows > 0) {
+            console.error("Row quarantined");
+          } else {
             get("/api/count", { id }, "app")
               .then(({ data }) => setCounts(data))
               .catch(e =>
@@ -72,6 +73,7 @@ export function AnalyticsProvider({
                   JSON.stringify(e)
                 )
               );
+          }
         }
       )
       .catch(e =>
