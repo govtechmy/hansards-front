@@ -7,12 +7,20 @@ interface MetadataProps {
   title?: string | null;
   description?: string | null;
   keywords?: string;
+  ogUrl?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
 }
 
 const Metadata: FunctionComponent<MetadataProps> = ({
   title,
   description,
   keywords = "",
+  ogUrl,
+  ogTitle,
+  ogDescription,
+  ogImage,
 }) => {
   const { t, i18n } = useTranslation();
 
@@ -34,6 +42,11 @@ const Metadata: FunctionComponent<MetadataProps> = ({
     domain: META_DOMAIN,
     url: META_URL,
     image: META_IMAGE.replace("{{lang}}", i18n.language),
+    ogUrl: ogUrl || META_URL,
+    ogTitle: ogTitle || (title ? title.concat(" | ", APP_NAME) : APP_NAME),
+    ogDescription:
+      ogDescription || (description ? description : t("site.description")),
+    ogImage: ogImage || META_IMAGE.replace("{{lang}}", i18n.language),
   };
 
   return (
@@ -46,19 +59,19 @@ const Metadata: FunctionComponent<MetadataProps> = ({
       <meta name="theme-color" content={META.themeColor} />
 
       {/* <!-- Facebook Meta Tags --> */}
-      <meta property="og:url" content={META.url} />
+      <meta property="og:url" content={META.ogUrl} />
       <meta property="og:type" content="website" />
-      <meta property="og:title" content={META.title} />
-      <meta property="og:description" content={META.description} />
-      <meta property="og:image" content={META.image} />
+      <meta property="og:title" content={META.ogTitle} />
+      <meta property="og:description" content={META.ogDescription} />
+      <meta property="og:image" content={META.ogImage} />
 
       {/* <!-- Twitter Meta Tags --> */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:domain" content={META.domain} />
-      <meta property="twitter:url" content={META.url} />
-      <meta name="twitter:title" content={META.title} />
-      <meta name="twitter:description" content={META.description} />
-      <meta name="twitter:image" content={META.image} />
+      <meta property="twitter:url" content={META.ogUrl} />
+      <meta name="twitter:title" content={META.ogTitle} />
+      <meta name="twitter:description" content={META.ogDescription} />
+      <meta name="twitter:image" content={META.ogImage} />
     </NextHead>
   );
 };

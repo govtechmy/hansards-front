@@ -18,15 +18,34 @@ const HansardPage: Page = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation("hansard");
 
+  const DEWAN_LABELS: Record<string, string> = {
+    "dewan-rakyat": t("enum:dewan-rakyat"),
+    "dewan-negara": t("enum:dewan-negara"),
+    "kamar-khas": t("enum:kamar-khas"),
+  };
+
+  const heroHeader = t("enum:header");
+  const houseKey = meta.id.match(
+    /\/(dewan-rakyat|dewan-negara|kamar-khas)(?:\/|$)/
+  )?.[1];
+  const dewanLabel = houseKey ? DEWAN_LABELS[houseKey] : "";
+  const title = `${heroHeader}`;
+  const description = `${dewanLabel ?? ""}, ${date ?? ""}`;
+
+  const pageTitle = title;
+  const ogUrl = `${process.env.NEXT_PUBLIC_APP_URL}${meta.id}`;
+  const ogDescription = description;
+
   return (
     <>
       <AnalyticsProvider id={meta.id}>
         <Metadata
-          title={date.concat(
-            ` ${t("header", { context: `${filename}`.slice(0, 2) })}`
-          )}
+          title={pageTitle}
           description={meta.id}
           keywords={""}
+          ogUrl={ogUrl}
+          ogTitle={pageTitle}
+          ogDescription={ogDescription}
         />
         <SearchProvider
           value={{

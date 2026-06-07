@@ -49,10 +49,21 @@ export const ShareDialogDrawer = ({
 
   const [copyText, setCopyText] = useState<string>("copy");
   const { share } = useAnalytics(hansard_id);
-  const title = "Hansard Parlimen";
-  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}${
-    index ? `#${index}` : ""
-  }`;
+
+  const DEWAN_LABELS: Record<string, string> = {
+    "dewan-rakyat": t("enum:dewan-rakyat"),
+    "dewan-negara": t("enum:dewan-negara"),
+    "kamar-khas": t("enum:kamar-khas"),
+  };
+
+  const heroHeader = t("enum:header");
+  const houseKey = hansard_id.match(
+    /\/(dewan-rakyat|dewan-negara|kamar-khas)(?:\/|$)/
+  )?.[1];
+  const dewanLabel = houseKey ? DEWAN_LABELS[houseKey] : "";
+  const title = `${heroHeader}, ${dewanLabel ?? ""}, ${date ?? ""}`;
+  const URL = `${process.env.NEXT_PUBLIC_APP_URL}${hansard_id}${index ? `#${index}` : ""}`;
+
   const encodedUrl = encodeURIComponent(URL);
   const encodedTitle = encodeURIComponent(title);
 
@@ -60,12 +71,12 @@ export const ShareDialogDrawer = ({
     {
       name: "WhatsApp",
       icon: WhatsappIcon,
-      link: `https://api.whatsapp.com/send/?text=${encodedUrl}`,
+      link: `https://api.whatsapp.com/send/?text=${encodedTitle}%20${encodedUrl}`,
     },
     {
       name: "Facebook",
       icon: FacebookIcon,
-      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&t=${encodedTitle}`,
+      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
     },
     {
       name: "X",
@@ -75,7 +86,7 @@ export const ShareDialogDrawer = ({
     {
       name: t("email"),
       icon: EnvelopeIcon,
-      link: `mailto:?subject=${title}&body=${URL}`,
+      link: `mailto:?subject=${encodedTitle}&body=${encodedUrl}`,
     },
   ];
 
