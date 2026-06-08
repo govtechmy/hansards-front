@@ -43,7 +43,7 @@ export default async function handler(
     return await get(
       `/pipes/${GET_COUNTS}.json`,
       {
-        hansard_id: req.query.id,
+        id: req.query.id,
         token: GET_TOKEN,
       },
       "https://api.us-east.tinybird.co/v0/"
