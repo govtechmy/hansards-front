@@ -84,7 +84,7 @@ const rebuild = async (res: NextApiResponse, route: string) =>
   new Promise(async (resolve, reject) => {
     await res
       .revalidate(route)
-      .then(() => res.revalidate(`/en-GB${route}`).catch(e => reject(e)))
+      .then(() => res.revalidate(`/ms-MY${route}`).catch(e => reject(e)))
       .catch(e => reject(e));
     resolve(true);
   });

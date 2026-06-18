@@ -49,9 +49,9 @@ function secureCompare(a: string, b: string): boolean {
 
 function localeVariants(path: string): string[] {
   const variants: string[] = [path];
-  // Add en-GB prefixed variant for i18n handling
-  if (!path.startsWith("/en-GB")) {
-    variants.push(`/en-GB${path}`);
+  // Add ms-MY prefixed variant for i18n handling
+  if (!path.startsWith("/ms-MY")) {
+    variants.push(`/ms-MY${path}`);
   }
   return variants;
 }

@@ -21,10 +21,11 @@ const defineConfig = (namespace, autoloadNs) => {
     i18n: {
       defaultLocale: "ms-MY",
       locales: ["ms-MY", "en-GB"],
-      backend: {
-        loadPath: "/locales/{{lng}}/{{ns}}.json",
-        allowMultiLoading: true,
-      },
+      localeDetection: false,
+      // backend: {
+      //   loadPath: "/locales/{{lng}}/{{ns}}.json",
+      //   allowMultiLoading: true,
+      // },
     },
     debug: false,
     ns: namespace,
