@@ -65,7 +65,7 @@ export const getStaticProps: GetStaticProps = withi18n(
     }, {});
 
     return {
-      revalidate: 60 * 60 * 24 * 365, // on-demand ISR; large TTL to avoid periodic revalidation
+      revalidate: 60 * 60 * 8, // on-demand ISR; 8 hours
       props: {
         meta: {
           id: routes.KATALOG_DR,
