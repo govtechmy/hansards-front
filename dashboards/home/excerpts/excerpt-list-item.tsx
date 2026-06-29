@@ -3,6 +3,16 @@ import Link from "next/link";
 import { Remarkable } from "remarkable";
 import RemarkableReactRenderer from "remarkable-react";
 
+// Legacy behavior reference (kept intentionally):
+// const stripMarkdownEmphasis = (input: string) =>
+//   input.replaceAll("*", "").replaceAll("**", "");
+const stripMarkdownEmphasis = (input: string) =>
+  input
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/_([^_]+)_/g, "$1");
+
 export type Excerpt = {
   index: number;
   speaker: string;
@@ -27,6 +37,7 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
   // const [name, title] = speaker.split("[");
 
   const md = new Remarkable();
+  md.inline.ruler.disable(["emphasis"]);
   md.inline.ruler.enable(["mark"]);
   md.renderer = new RemarkableReactRenderer({
     components: {
@@ -56,7 +67,10 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
       <div className="relative flex h-full flex-col gap-1">
         <p className="line-clamp-1 text-body-sm font-medium">{speaker}</p>
         <div className="line-clamp-2 text-body-xs text-txt-black-700 sm:text-body-sm">
-          {md.render(trimmed_speech)}
+          {md.render(stripMarkdownEmphasis(trimmed_speech))}
+          {/* Legacy behavior reference (kept intentionally):
+              md.render(trimmed_speech)
+          */}
         </div>
       </div>
     </Link>

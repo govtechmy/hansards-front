@@ -5,6 +5,16 @@ import { Remarkable } from "remarkable";
 import RemarkableReactRenderer from "remarkable-react";
 import { cn } from "@lib/helpers";
 
+// Legacy behavior reference (kept intentionally):
+// const stripMarkdownEmphasis = (input: string) =>
+//   input.replaceAll("*", "").replaceAll("**", "");
+const stripMarkdownEmphasis = (input: string) =>
+  input
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/_([^_]+)_/g, "$1");
+
 export function highlightKeyword(text: string, id: string) {
   const { activeId, searchValue } = useContext(SearchContext);
   const { onUpdateMatchList } = useContext(SearchEventContext);
@@ -67,16 +77,27 @@ export function highlightKeywordMarkdown(
   const { searchValue } = useContext(SearchContext);
   const { onUpdateMatchList } = useContext(SearchEventContext);
 
+  const normalizedText = useMemo(() => stripMarkdownEmphasis(text), [text]);
+
   const matchData = useMemo(
     () =>
       searchValue && searchValue.length > 1
-        ? getMatchText(
-            searchValue.trim(),
-            text.replaceAll("*", "").replaceAll("**", "") // omit asterisk to allow matching during search
-          )
-        : text,
-    [searchValue, text]
+        ? getMatchText(searchValue.trim(), normalizedText)
+        : normalizedText,
+    [searchValue, normalizedText]
   );
+
+  // Legacy behavior reference (kept intentionally):
+  // const matchData = useMemo(
+  //   () =>
+  //     searchValue && searchValue.length > 1
+  //       ? getMatchText(
+  //           searchValue.trim(),
+  //           text.replaceAll("*", "").replaceAll("**", "")
+  //         )
+  //       : text,
+  //   [searchValue, text]
+  // );
 
   useEffect(() => {
     if (typeof matchData === "object") {
@@ -89,6 +110,7 @@ export function highlightKeywordMarkdown(
   }, [matchData]);
 
   const md = new Remarkable();
+  md.inline.ruler.disable(["emphasis"]);
   md.inline.ruler.enable(["mark"]);
   md.renderer = new RemarkableReactRenderer({
     components: {
