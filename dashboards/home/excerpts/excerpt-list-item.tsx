@@ -1,17 +1,8 @@
 import { Dewan } from "@lib/types";
+import { stripMarkdownEmphasis } from "@lib/markdown";
 import Link from "next/link";
 import { Remarkable } from "remarkable";
 import RemarkableReactRenderer from "remarkable-react";
-
-// Legacy behavior reference (kept intentionally):
-// const stripMarkdownEmphasis = (input: string) =>
-//   input.replaceAll("*", "").replaceAll("**", "");
-const stripMarkdownEmphasis = (input: string) =>
-  input
-    .replace(/\*\*([^*]+)\*\*/g, "$1")
-    .replace(/\*([^*]+)\*/g, "$1")
-    .replace(/__([^_]+)__/g, "$1")
-    .replace(/_([^_]+)_/g, "$1");
 
 export type Excerpt = {
   index: number;
@@ -68,7 +59,7 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
         <p className="line-clamp-1 text-body-sm font-medium">{speaker}</p>
         <div className="line-clamp-2 text-body-xs text-txt-black-700 sm:text-body-sm">
           {md.render(stripMarkdownEmphasis(trimmed_speech))}
-          {/* Legacy behavior reference (kept intentionally):
+          {/* old code
               md.render(trimmed_speech)
           */}
         </div>

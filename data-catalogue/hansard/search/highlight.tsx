@@ -4,16 +4,7 @@ import { getMatchText } from "./match-text";
 import { Remarkable } from "remarkable";
 import RemarkableReactRenderer from "remarkable-react";
 import { cn } from "@lib/helpers";
-
-// Legacy behavior reference (kept intentionally):
-// const stripMarkdownEmphasis = (input: string) =>
-//   input.replaceAll("*", "").replaceAll("**", "");
-const stripMarkdownEmphasis = (input: string) =>
-  input
-    .replace(/\*\*([^*]+)\*\*/g, "$1")
-    .replace(/\*([^*]+)\*/g, "$1")
-    .replace(/__([^_]+)__/g, "$1")
-    .replace(/_([^_]+)_/g, "$1");
+import { stripMarkdownEmphasis } from "@lib/markdown";
 
 export function highlightKeyword(text: string, id: string) {
   const { activeId, searchValue } = useContext(SearchContext);
@@ -87,7 +78,7 @@ export function highlightKeywordMarkdown(
     [searchValue, normalizedText]
   );
 
-  // Legacy behavior reference (kept intentionally):
+  // old code
   // const matchData = useMemo(
   //   () =>
   //     searchValue && searchValue.length > 1
