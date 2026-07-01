@@ -40,6 +40,7 @@ const ComboBox = <T extends unknown>({
         const bRank = b.rank === rankings.CONTAINS ? rankings.EQUAL : b.rank;
 
         if (aRank !== bRank) return bRank - aRank;
+        if (a.rank !== b.rank) return b.rank - a.rank;
 
         return String(a.rankedValue).localeCompare(String(b.rankedValue));
       }),
