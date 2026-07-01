@@ -1,5 +1,4 @@
 import { Dewan } from "@lib/types";
-import { stripMarkdownEmphasis } from "@lib/markdown";
 import Link from "next/link";
 import { Remarkable } from "remarkable";
 import RemarkableReactRenderer from "remarkable-react";
@@ -28,7 +27,6 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
   // const [name, title] = speaker.split("[");
 
   const md = new Remarkable();
-  md.inline.ruler.disable(["emphasis"]);
   md.inline.ruler.enable(["mark"]);
   md.renderer = new RemarkableReactRenderer({
     components: {
@@ -58,10 +56,7 @@ const ExcerptListItem = ({ dewan, excerpt, keyword }: ExcerptListItemProps) => {
       <div className="relative flex h-full flex-col gap-1">
         <p className="line-clamp-1 text-body-sm font-medium">{speaker}</p>
         <div className="line-clamp-2 text-body-xs text-txt-black-700 sm:text-body-sm">
-          {md.render(stripMarkdownEmphasis(trimmed_speech))}
-          {/* old code
-              md.render(trimmed_speech)
-          */}
+          {md.render(trimmed_speech)}
         </div>
       </div>
     </Link>
