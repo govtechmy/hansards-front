@@ -4,7 +4,6 @@ import { getMatchText } from "./match-text";
 import { Remarkable } from "remarkable";
 import RemarkableReactRenderer from "remarkable-react";
 import { cn } from "@lib/helpers";
-import { stripMarkdownEmphasis } from "@lib/markdown";
 
 export function highlightKeyword(text: string, id: string) {
   const { activeId, searchValue } = useContext(SearchContext);
@@ -68,27 +67,16 @@ export function highlightKeywordMarkdown(
   const { searchValue } = useContext(SearchContext);
   const { onUpdateMatchList } = useContext(SearchEventContext);
 
-  const normalizedText = useMemo(() => stripMarkdownEmphasis(text), [text]);
-
   const matchData = useMemo(
     () =>
       searchValue && searchValue.length > 1
-        ? getMatchText(searchValue.trim(), normalizedText)
-        : normalizedText,
-    [searchValue, normalizedText]
+        ? getMatchText(
+            searchValue.trim(),
+            text.replaceAll("*", "").replaceAll("**", "") // omit asterisk to allow matching during search
+          )
+        : text,
+    [searchValue, text]
   );
-
-  // old code
-  // const matchData = useMemo(
-  //   () =>
-  //     searchValue && searchValue.length > 1
-  //       ? getMatchText(
-  //           searchValue.trim(),
-  //           text.replaceAll("*", "").replaceAll("**", "")
-  //         )
-  //       : text,
-  //   [searchValue, text]
-  // );
 
   useEffect(() => {
     if (typeof matchData === "object") {
@@ -101,7 +89,6 @@ export function highlightKeywordMarkdown(
   }, [matchData]);
 
   const md = new Remarkable();
-  md.inline.ruler.disable(["emphasis"]);
   md.inline.ruler.enable(["mark"]);
   md.renderer = new RemarkableReactRenderer({
     components: {
