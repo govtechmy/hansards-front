@@ -4,7 +4,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { useCombobox } from "downshift";
-import { matchSorter, MatchSorterOptions } from "match-sorter";
+import { matchSorter, MatchSorterOptions, rankings } from "match-sorter";
 import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
 import { useVirtual } from "react-virtual";
 
@@ -31,7 +31,20 @@ const ComboBox = <T extends unknown>({
   placeholder,
   icon,
   loading = false,
-  config = { keys: ["label"] },
+  config = {
+    keys: ["label"],
+    threshold: rankings.MATCHES,
+    sorter: matchedItems =>
+      matchedItems.sort((a, b) => {
+        const aRank = a.rank === rankings.CONTAINS ? rankings.EQUAL : a.rank;
+        const bRank = b.rank === rankings.CONTAINS ? rankings.EQUAL : b.rank;
+
+        if (aRank !== bRank) return bRank - aRank;
+        if (a.rank !== b.rank) return b.rank - a.rank;
+
+        return String(a.rankedValue).localeCompare(String(b.rankedValue));
+      }),
+  },
   className,
   dropdown,
   magnifyingTrue = true,

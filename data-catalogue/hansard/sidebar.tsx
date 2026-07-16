@@ -187,7 +187,7 @@ const HansardSidebar = forwardRef(
                     `absolute origin-top-left -rotate-90 text-txt-black-500 ${
                       i18n.language === "en-GB"
                         ? "translate-y-[205px]"
-                        : "translate-y-36"
+                        : "translate-y-[210px]"
                     }`
                 )}
               >
