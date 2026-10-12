@@ -16,11 +16,36 @@ export type Excerpt = {
   };
 };
 
-// Helper function to escape special regex characters
 function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return value.replace(/[.*+?^${}()|[\]\\\/-]/g, "\\$&");
 }
-// Helper function to merge exact phrase marks
+
+function normalizeExactText(value: string, stripMarkSyntax = false) {
+  return (stripMarkSyntax ? value.replace(/==/g, "") : value)
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\s*([^\p{L}\p{N}\s])\s*/gu, "$1")
+    .toLowerCase();
+}
+
+function markedWordPattern(word: string) {
+  const parts = word.split(/([^\p{L}\p{N}]+)/u).filter(Boolean);
+  const wholeWord = `==\\s*${escapeRegExp(word)}\\s*==`;
+
+  if (parts.length === 1) return wholeWord;
+
+  const splitWord = parts
+    .map(part => {
+      const isPunctuation = /^[^\p{L}\p{N}]+$/u.test(part);
+      return isPunctuation
+        ? `\\s*${escapeRegExp(part)}\\s*`
+        : `==\\s*${escapeRegExp(part)}\\s*==`;
+    })
+    .join("");
+
+  return `(?:${wholeWord}|${splitWord})`;
+}
+
 function mergeExactPhraseMarks(text: string, keyword: string) {
   const words = keyword.split(/\s+/).filter(Boolean);
   if (words.length < 2) return text;
@@ -28,12 +53,12 @@ function mergeExactPhraseMarks(text: string, keyword: string) {
   const escapedWords = words.map(escapeRegExp);
   const completeMark = `==\\s*${escapedWords.join("\\s+")}\\s*==`;
   const splitMarks = escapedWords
-    .map(word => `==\\s*${word}\\s*==`)
+    .map((_, index) => markedWordPattern(words[index]))
     .join("\\s+");
   const phraseMarks = new RegExp(`(?:${completeMark}|${splitMarks})`, "gi");
 
   return text.replace(phraseMarks, match => {
-    const phrase = match.replace(/==/g, " ").replace(/\s+/g, " ").trim();
+    const phrase = normalizeExactText(match, true);
     return `==${phrase}==`;
   });
 }
@@ -52,10 +77,9 @@ const ExcerptListItem = ({
   isExactMatch = false,
 }: ExcerptListItemProps) => {
   const { index, sitting, speaker, trimmed_speech } = excerpt;
-  const exactKeyword = keyword
-    .trim()
-    .replace(/^"(.*)"$/, "$1")
-    .toLowerCase();
+  const exactKeyword = normalizeExactText(
+    keyword.trim().replace(/^"(.*)"$/, "$1")
+  );
   // If it's an exact match, merge the exact phrase marks in the speech
   const speech = isExactMatch
     ? mergeExactPhraseMarks(trimmed_speech, exactKeyword)
@@ -67,7 +91,7 @@ const ExcerptListItem = ({
   md.renderer = new RemarkableReactRenderer({
     components: {
       mark: ({ children }: { children: string[] }) => {
-        const markedText = children.join("").trim().toLowerCase();
+        const markedText = normalizeExactText(children.join(""));
 
         if (isExactMatch && markedText !== exactKeyword) {
           return <>{children}</>;
