@@ -66,6 +66,8 @@ const Keyword = ({
 
   const { q, dewan, tarikh_mula, tarikh_akhir } = query;
   const keyword = q ? String(q) : undefined;
+  // Check if the keyword is an exact match (enclosed in double quotes)
+  const isExactMatch = typeof q === "string" && /^\".+\"$/.test(q.trim());
   const [keywordQuery, setKeywordQuery] = useState(keyword ?? "");
   const [suggestion, setSuggestion] = useState<string>("");
 
@@ -258,7 +260,13 @@ const Keyword = ({
 
       {count > 0 && (
         <>
-          <Excerpts count={count} excerpts={excerpts} query={query} />
+          {/* Excerpts document based on the keyword */}
+          <Excerpts
+            count={count}
+            excerpts={excerpts}
+            query={query}
+            isExactMatch={isExactMatch}
+          />
           {/* Words related to {{ keyword }} */}
           {top_word_freq && (
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">

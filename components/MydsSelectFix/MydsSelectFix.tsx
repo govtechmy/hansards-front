@@ -468,7 +468,9 @@ const SelectItem: React.ForwardRefExoticComponent<
               />
             </SelectPrimitive.ItemIndicator>
           </span>
-          <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+          <SelectPrimitive.ItemText className="text-inherit">
+            {children}
+          </SelectPrimitive.ItemText>
         </SelectPrimitive.Item>
       </SelectXPad>
     );

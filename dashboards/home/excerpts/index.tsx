@@ -30,6 +30,7 @@ export interface ExcerptsProps {
   name?: string;
   query: ParsedUrlQuery;
   variant?: "compact" | "default";
+  isExactMatch?: boolean;
 }
 
 interface FlatSitting {
@@ -46,6 +47,7 @@ const Excerpts = ({
   name,
   query,
   variant = "default",
+  isExactMatch = false,
 }: ExcerptsProps) => {
   const { t, i18n } = useTranslation(["enum", "home"]);
   const { q, dewan, page, page_size } = query;
@@ -237,23 +239,23 @@ const Excerpts = ({
                         </p>
                         <div>
                           {/* <Tag
-                        size="medium"
-                        variant="default"
-                        mode="pill"
-                        className="border-[#134960]/20 bg-[#134960]/10 text-[#134960]"
-                      >
-                        <DewanRakyatIcon className="size-5" />
-                        {t("dewan_rakyat")}
-                      </Tag>
-                      <Tag
-                        size="medium"
-                        variant="default"
-                        mode="pill"
-                        className="border-[#66222A]/20 bg-[#66222A]/10 text-[#66222A]"
-                      >
-                        <DewanNegaraIcon className="size-5" />
-                        {t("dewan_negara")}
-                      </Tag> */}
+                          size="medium"
+                          variant="default"
+                          mode="pill"
+                          className="border-[#134960]/20 bg-[#134960]/10 text-[#134960]"
+                          >
+                            <DewanRakyatIcon className="size-5" />
+                            {t("dewan_rakyat")}
+                          </Tag>
+                          <Tag
+                            size="medium"
+                            variant="default"
+                            mode="pill"
+                            className="border-[#66222A]/20 bg-[#66222A]/10 text-[#66222A]"
+                          >
+                          <DewanNegaraIcon className="size-5" />
+                          {t("dewan_negara")}
+                        </Tag> */}
                         </div>
                         <p className="flex gap-1 text-body-xs text-txt-black-700 sm:text-body-sm">
                           {`${t("parlimen", {
@@ -291,6 +293,7 @@ const Excerpts = ({
                           dewan={(dewan ?? "dewan-rakyat") as Dewan}
                           excerpt={excerpt}
                           keyword={String(q)}
+                          isExactMatch={isExactMatch}
                         />
                       ))}
                   </div>
@@ -299,6 +302,7 @@ const Excerpts = ({
             })}
           </ul>
 
+          {/* Paginator */}
           <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
             <div className="flex items-center gap-3">
               <span className="text-dim-500 whitespace-nowrap text-sm">
