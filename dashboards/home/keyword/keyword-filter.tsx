@@ -615,7 +615,8 @@ const KeywordFilter = ({
               });
           }}
         />
-        <Dropdown
+        {/* Temporary disabled age filter */}
+        {/* <Dropdown
           sublabel={t("age_group", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
@@ -629,7 +630,7 @@ const KeywordFilter = ({
                 umur: e.value !== ALL_AGES ? e.value : "",
               });
           }}
-        />
+        /> */}
         {/* <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
