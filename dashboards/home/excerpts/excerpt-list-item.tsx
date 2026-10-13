@@ -90,7 +90,7 @@ const ExcerptListItem = ({
     <Link
       href={`hansard/${houseDewan}/${sitting.date}?q=${encodeURIComponent(exactKeyword)}#${index}`}
       prefetch={false}
-      className="group p-3 first:rounded-t-xl last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 sm:p-4"
+      className="group p-3 first:rounded-t-xl last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-zinc-700/50 sm:p-4"
     >
       <div className="relative flex h-full flex-col gap-1">
         <p className="line-clamp-1 text-body-sm font-medium">{speaker}</p>
