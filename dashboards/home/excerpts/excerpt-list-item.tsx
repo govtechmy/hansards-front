@@ -17,50 +17,32 @@ export type Excerpt = {
 };
 
 function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\\/-]/g, "\\$&");
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function normalizeExactText(value: string, stripMarkSyntax = false) {
-  return (stripMarkSyntax ? value.replace(/==/g, "") : value)
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\s*([^\p{L}\p{N}\s])\s*/gu, "$1")
-    .toLowerCase();
-}
+function markExactPhrase(text: string, keyword: string) {
+  const source = text.replace(/==/g, "").replace(/\*/g, "");
+  if (!/[\p{L}\p{N}]/u.test(keyword)) return source;
 
-function markedWordPattern(word: string) {
-  const parts = word.split(/([^\p{L}\p{N}]+)/u).filter(Boolean);
-  const wholeWord = `==\\s*${escapeRegExp(word)}\\s*==`;
-
-  if (parts.length === 1) return wholeWord;
-
-  const splitWord = parts
+  const phrasePattern = keyword
+    .split(/(\s+|[^\p{L}\p{N}\s]+)/u)
+    .filter(Boolean)
     .map(part => {
-      const isPunctuation = /^[^\p{L}\p{N}]+$/u.test(part);
-      return isPunctuation
-        ? `\\s*${escapeRegExp(part)}\\s*`
-        : `==\\s*${escapeRegExp(part)}\\s*==`;
+      if (/^\s+$/u.test(part)) return "[ \\t]+";
+      if (/^[^\p{L}\p{N}\s]+$/u.test(part)) {
+        return `[ \\t]*${escapeRegExp(part)}[ \\t]*`;
+      }
+      return escapeRegExp(part);
     })
     .join("");
-
-  return `(?:${wholeWord}|${splitWord})`;
-}
-
-function mergeExactPhraseMarks(text: string, keyword: string) {
-  const words = keyword.split(/\s+/).filter(Boolean);
-  if (words.length < 2) return text;
-
-  const escapedWords = words.map(escapeRegExp);
-  const completeMark = `==\\s*${escapedWords.join("\\s+")}\\s*==`;
-  const splitMarks = escapedWords
-    .map((_, index) => markedWordPattern(words[index]))
-    .join("\\s+");
-  const phraseMarks = new RegExp(`(?:${completeMark}|${splitMarks})`, "gi");
-
-  return text.replace(phraseMarks, match => {
-    const phrase = normalizeExactText(match, true);
-    return `==${phrase}==`;
-  });
+  const exactPhrase = new RegExp(
+    `(^|[^\\p{L}\\p{N}])(${phrasePattern})(?![\\p{L}\\p{N}])`,
+    "giu"
+  );
+  return source.replace(
+    exactPhrase,
+    (_match, prefix: string, phrase: string) => `${prefix}==${phrase}==`
+  );
 }
 
 interface ExcerptListItemProps {
@@ -77,12 +59,9 @@ const ExcerptListItem = ({
   isExactMatch = false,
 }: ExcerptListItemProps) => {
   const { index, sitting, speaker, trimmed_speech } = excerpt;
-  const exactKeyword = normalizeExactText(
-    keyword.trim().replace(/^"(.*)"$/, "$1")
-  );
-  // If it's an exact match, merge the exact phrase marks in the speech
+  const exactKeyword = keyword.trim().replace(/^"(.*)"$/, "$1");
   const speech = isExactMatch
-    ? mergeExactPhraseMarks(trimmed_speech, exactKeyword)
+    ? markExactPhrase(trimmed_speech, exactKeyword)
     : trimmed_speech;
   // const [name, title] = speaker.split("[");
 
@@ -91,12 +70,6 @@ const ExcerptListItem = ({
   md.renderer = new RemarkableReactRenderer({
     components: {
       mark: ({ children }: { children: string[] }) => {
-        const markedText = normalizeExactText(children.join(""));
-
-        if (isExactMatch && markedText !== exactKeyword) {
-          return <>{children}</>;
-        }
-
         return <mark className="bg-[#DDD6B0] text-black">{children}</mark>;
       },
     },
@@ -115,7 +88,7 @@ const ExcerptListItem = ({
 
   return (
     <Link
-      href={`hansard/${houseDewan}/${sitting.date}?q=${encodeURIComponent(keyword)}#${index}`}
+      href={`hansard/${houseDewan}/${sitting.date}?q=${encodeURIComponent(exactKeyword)}#${index}`}
       prefetch={false}
       className="group p-3 first:rounded-t-xl last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 sm:p-4"
     >
