@@ -284,7 +284,7 @@ const Excerpts = ({
                       </div>
                     </Link>
                   </div>
-                  <div className="flex max-h-fit w-full flex-col divide-y divide-otl-gray-200 rounded-xl border border-otl-gray-200">
+                  <div className="flex max-h-fit w-full flex-col divide-y divide-otl-gray-200 rounded-xl border border-otl-gray-200 dark:divide-zinc-700 dark:border-zinc-700">
                     {excerpt
                       .sort((a, b) => a.index - b.index)
                       .map((excerpt, i) => (

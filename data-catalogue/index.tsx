@@ -28,7 +28,7 @@ const CatalogueIndex = ({ archive, parlimens }: CatalogueIndexProps) => {
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
 
   const classNames = {
-    hr: "hidden sm:block border border-slate-200 dark:border-zinc-800 w-full h-0.5",
+    hr: "hidden sm:block border border-slate-200 dark:border-zinc-700 w-full h-0.5",
   };
 
   const data = useMemo(
