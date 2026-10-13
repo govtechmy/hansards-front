@@ -26,6 +26,8 @@
   "timeseries_mps": "Timeseries of total words spoken in {{ house }}",
   "total_words": "Total words",
   "words_related": "Words related to {{ keyword }}",
+  "disclaimer_title": "Disclaimer",
+  "disclaimer_bubble": "The word index displayed is automatically generated based on the frequency of word usage to assist users in identifying subjects referred to by Members during parliamentary debates. This index is provided solely as a reference and search aid and should not be regarded as an official summary or a comprehensive representation of the content of a Member's debate. To obtain the full context and ensure an accurate interpretation of any debate, speech, or proceeding, users should refer to the complete Hansard transcript, which serves as the official record of Parliamentary proceedings.",
   "most_spoken_by": "{{ keyword }}: Most spoken by",
   "most_spoken_words": "{{ name }}'s most spoken words",
   "start_search": "Start searching above",
