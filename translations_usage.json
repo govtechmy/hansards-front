@@ -3,7 +3,7 @@
     "catalogue": ["final", "draft", "cite", "download", "share"]
   },
   "data-catalogue/hansard/hansard.tsx": {
-    "hansard": ["archive", "header", "shares", "cite", "download", "share"],
+    "hansard": ["archive", "header", "share", "cite", "download"],
     "enum": ["parlimen", "penggal_full", "mesyuarat_full"],
     "common": ["views", "downloads"],
     "catalogue": ["download"]
@@ -135,7 +135,7 @@
     "common": ["no_entries"]
   },
   "data-catalogue/hansard/bubble.tsx": {
-    "catalogue": ["download", "csv"]
+    "catalogue": ["draft", "final", "pdf_page"]
   },
   "data-catalogue/folder-open.tsx": {
     "enum": ["penggal_full", "mesyuarat_full"]
