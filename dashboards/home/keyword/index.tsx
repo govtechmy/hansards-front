@@ -19,6 +19,11 @@ import KeywordFilter, { TakwimTerm } from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
 import { Speaker } from "@lib/types";
 import { get } from "@lib/api";
+import {
+  Callout,
+  CalloutContent,
+  CalloutTitle,
+} from "@govtechmy/myds-react/callout";
 
 /**
  * Keyword
@@ -273,6 +278,13 @@ const Keyword = ({
               <h3 className="header text-center">
                 {t("words_related", { keyword: `"${query.q}"` })}
               </h3>
+
+              <Callout variant="info" className="p-4">
+                <CalloutTitle>{t("disclaimer_title")}</CalloutTitle>
+                <CalloutContent className="mr-2 pb-2">
+                  {t("disclaimer_bubble")}
+                </CalloutContent>
+              </Callout>
 
               <BubbleCloud
                 className="h-[350px] w-full sm:h-[700px]"

@@ -51,6 +51,8 @@ const COMPONENTS: ComponentTranslations = {
       "timeseries_title",
       "start_search",
       "words_related",
+      "disclaimer_title",
+      "disclaimer_bubble",
       "most_spoken_by",
     ],
     common: ["placeholder.no_results"],

@@ -26,6 +26,8 @@
   "timeseries_mps": "Siri masa jumlah perkataan diungkap di {{ house }}",
   "total_words": "Jumlah perkataan",
   "words_related": "Perkataan berkaitan {{ keyword }}",
+  "disclaimer_title": "Penafian",
+  "disclaimer_bubble": "Indeks perkataan yang dipaparkan dijana secara automatik berdasarkan kekerapan penggunaan perkataan bagi membantu pengguna mengenal pasti perkara yang disebut oleh Ahli semasa perbahasan Parlimen. Indeks ini disediakan semata-mata sebagai kemudahan rujukan dan panduan pencarian, dan tidak boleh dianggap sebagai ringkasan rasmi atau gambaran menyeluruh terhadap kandungan perbahasan seseorang Ahli. Bagi mendapatkan konteks yang lengkap serta memastikan tafsiran yang tepat terhadap sesuatu perbahasan, ucapan atau prosiding, pengguna hendaklah merujuk kepada transkrip Hansard yang lengkap, yang merupakan rekod rasmi prosiding Parlimen.",
   "most_spoken_by": "{{ keyword }}: Terbanyak diungkap oleh",
   "most_spoken_words": "Perkataan terbanyak diungkap oleh {{ name }}",
   "start_search": "Mulakan pencarian di atas",
