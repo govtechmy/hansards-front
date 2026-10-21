@@ -30,6 +30,10 @@ export type SpeechBubbleProps = {
   side: boolean;
   speaker?: ReactNode;
   timeString: string;
+  pdf_page_start: number;
+  pdf_page_end: number;
+  source_page_start: number;
+  source_page_end: number;
   uid: number | null;
   is_final?: boolean;
 };
@@ -47,6 +51,10 @@ const SpeechBubble = ({
   side,
   speaker,
   timeString,
+  pdf_page_start,
+  pdf_page_end,
+  source_page_start,
+  source_page_end,
   uid,
   is_final,
 }: SpeechBubbleProps) => {
@@ -128,7 +136,7 @@ const SpeechBubble = ({
           </div>
           <div
             className={cn(
-              "ft invisible"
+              "ft invisible mb-4 h-4"
               // downloadOpen ? "visible translate-x-2" : "invisible"
             )}
           >
@@ -165,6 +173,16 @@ const SpeechBubble = ({
               <>{is_final ? t("final") : t("draft")} • </>
             )}
             {timeString}
+            {pdf_page_start != null && (
+              <>
+                {" • "}
+                {t("pdf_page", { page: pdf_page_start })}
+                {pdf_page_end != null && pdf_page_end !== pdf_page_start && (
+                  <> - {pdf_page_end}</>
+                )}
+                {/* <>=</>{pdf_page_end} */}
+              </>
+            )}
           </span>
         </div>
       </div>

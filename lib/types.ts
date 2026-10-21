@@ -108,6 +108,10 @@ export type Speech = {
   is_annotation: boolean;
   index: number;
   avatar: string;
+  pdf_page_start: number;
+  pdf_page_end: number;
+  source_page_start: number;
+  source_page_end: number;
 };
 
 export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };

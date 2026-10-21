@@ -13,5 +13,6 @@
   "csv": "Dataset Penuh (CSV)",
   "draft": "Draf",
   "final": "Telah disemak",
+  "pdf_page": "Muka Surat {{page}}",
   "no_entries": "Tiada entri ditemui"
 }

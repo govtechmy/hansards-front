@@ -12,7 +12,7 @@ const COMPONENTS: ComponentTranslations = {
     catalogue: ["final", "draft", "cite", "download", "share"],
   },
   "data-catalogue/hansard/hansard.tsx": {
-    hansard: ["archive", "header", "shares", "cite", "download"],
+    hansard: ["archive", "header", "share", "cite", "download"],
     enum: ["parlimen", "penggal_full", "mesyuarat_full"],
     common: ["views", "downloads"],
     catalogue: ["download"],
@@ -116,7 +116,7 @@ const COMPONENTS: ComponentTranslations = {
     error: ["404.title"],
   },
   "data-catalogue/share.tsx": {
-    hansard: ["email", "shares", "share_hansard"],
+    hansard: ["email", "share", "share_hansard"],
     demografi: ["other"],
     common: ["copy", "copied"],
   },
@@ -132,7 +132,7 @@ const COMPONENTS: ComponentTranslations = {
     common: ["no_entries"],
   },
   "data-catalogue/hansard/bubble.tsx": {
-    catalogue: ["download", "csv"],
+    catalogue: ["draft", "final", "pdf_page"],
   },
   "data-catalogue/folder-open.tsx": {
     enum: ["penggal_full", "mesyuarat_full"],
