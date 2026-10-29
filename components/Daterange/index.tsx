@@ -128,14 +128,6 @@ const Daterange = ({
   return (
     <Popover className="relative">
       <Popover.Button
-        onClick={() => {
-          setFromValue(
-            selected?.from ? format(selected.from, "yyyy-MM-dd") : ""
-          );
-          setToValue(selected?.to ? format(selected.to, "yyyy-MM-dd") : "");
-          setInvalidFromValue("");
-          setInvalidToValue("");
-        }}
         className={cn(
           "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-txt-black-900 shadow-button",
           "select-none bg-bg-white hover:bg-bg-white-hover",
@@ -171,6 +163,14 @@ const Daterange = ({
       </Popover.Button>
       <Transition
         as={"div"}
+        beforeEnter={() => {
+          setFromValue(
+            selected?.from ? format(selected.from, "yyyy-MM-dd") : ""
+          );
+          setToValue(selected?.to ? format(selected.to, "yyyy-MM-dd") : "");
+          setInvalidFromValue("");
+          setInvalidToValue("");
+        }}
         leave="transition ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"

@@ -84,7 +84,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       } = query;
 
       // The API otherwise limits word frequencies to speeches from 2008 onward.
-      const startDate = tarikh_mula || (uid ? "1900-01-01" : undefined);
+      const startDate = tarikh_mula || (uid ? "1959-08-11" : undefined);
 
       const results = await Promise.allSettled([
         get("api/search-mp-doc/", {
