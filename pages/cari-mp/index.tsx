@@ -83,6 +83,9 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         page_size,
       } = query;
 
+      // The API otherwise limits word frequencies to speeches from 2008 onward.
+      const startDate = tarikh_mula || (uid ? "1900-01-01" : undefined);
+
       const results = await Promise.allSettled([
         get("api/search-mp-doc/", {
           uid: uid,
@@ -90,7 +93,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           window_size: 150,
           page: page ?? 1,
           page_size: page_size ?? 10,
-          start_date: tarikh_mula,
+          start_date: startDate,
           end_date: tarikh_akhir,
           age_group: umur,
           ethnicity: etnik,
@@ -100,7 +103,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         get("api/search-plot/", {
           uid: uid,
           house: dewan,
-          start_date: tarikh_mula,
+          start_date: startDate,
           end_date: tarikh_akhir,
           age_group: umur,
           ethnicity: etnik,
