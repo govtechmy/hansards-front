@@ -17,6 +17,11 @@ import { ParsedUrlQuery } from "querystring";
 // import { ALL_AGES, ALL_ETHNICITIES, ALL_PARTIES, BOTH_SEXES, } from "../filter-options";
 import Excerpts, { ExcerptsProps } from "../excerpts";
 import { Speaker } from "@lib/types";
+import {
+  Callout,
+  CalloutContent,
+  CalloutTitle,
+} from "@govtechmy/myds-react/callout";
 
 /**
  * MP
@@ -270,6 +275,14 @@ const MP = ({
                     : "",
                 })}
               </h3>
+
+              <Callout variant="info" className="p-4">
+                <CalloutTitle>{t("disclaimer_title")}</CalloutTitle>
+                <CalloutContent className="mr-2 pb-2">
+                  {t("disclaimer_bubble")}
+                </CalloutContent>
+              </Callout>
+
               <BubbleCloud
                 className="h-[350px] w-full sm:h-[700px]"
                 data={Object.entries(top_word_freq).map(([word, freq]) => ({

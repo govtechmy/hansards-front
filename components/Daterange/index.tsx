@@ -3,6 +3,7 @@ import { Transition, Popover } from "@headlessui/react";
 import { ArrowRightIcon, CalendarIcon } from "@heroicons/react/20/solid";
 import { cn } from "@lib/helpers";
 import {
+  addMonths,
   format,
   isAfter,
   isBefore,
@@ -48,10 +49,10 @@ const Daterange = ({
   DEFAULT.setMonth(TODAY.getMonth() - (numberOfMonths === 2 ? 1 : 0));
 
   const [fromValue, setFromValue] = useState<string>(
-    selected?.from ? selected.from.toISOString().slice(0, 10) : ""
+    selected?.from ? format(selected.from, "yyyy-MM-dd") : ""
   );
   const [toValue, setToValue] = useState<string>(
-    selected?.to ? selected.to.toISOString().slice(0, 10) : ""
+    selected?.to ? format(selected.to, "yyyy-MM-dd") : ""
   );
   const [invalidFromValue, setInvalidFromValue] = useState<string>("");
   const [invalidToValue, setInvalidToValue] = useState<string>("");
@@ -162,6 +163,14 @@ const Daterange = ({
       </Popover.Button>
       <Transition
         as={"div"}
+        beforeEnter={() => {
+          setFromValue(
+            selected?.from ? format(selected.from, "yyyy-MM-dd") : ""
+          );
+          setToValue(selected?.to ? format(selected.to, "yyyy-MM-dd") : "");
+          setInvalidFromValue("");
+          setInvalidToValue("");
+        }}
         leave="transition ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
@@ -212,21 +221,26 @@ const Daterange = ({
             </div>
           </form>
 
-          <Calendar
-            locale={i18n.language.startsWith("ms") ? ms : enGB}
-            initialFocus
-            mode="range"
-            defaultMonth={DEFAULT}
-            selected={selected}
-            onSelect={handleRangeSelect}
-            numberOfMonths={numberOfMonths}
-            disabled={[
-              {
-                before: PARLIMEN_START_DATE,
-              },
-              { after: TODAY },
-            ]}
-          />
+          <div className="flex flex-col sm:flex-row">
+            {Array.from({ length: numberOfMonths }, (_, index) => (
+              <Calendar
+                key={index}
+                locale={i18n.language.startsWith("ms") ? ms : enGB}
+                initialFocus={index === 0}
+                mode="range"
+                defaultMonth={
+                  index === 0
+                    ? (selected?.from ?? selected?.to ?? DEFAULT)
+                    : (selected?.to ??
+                      addMonths(selected?.from ?? DEFAULT, index))
+                }
+                selected={selected}
+                onSelect={handleRangeSelect}
+                numberOfMonths={1}
+                disabled={[{ before: PARLIMEN_START_DATE }, { after: TODAY }]}
+              />
+            ))}
+          </div>
         </Popover.Panel>
       </Transition>
     </Popover>
