@@ -131,15 +131,15 @@ const Daterange = ({
         className={cn(
           "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-txt-black-900 shadow-button",
           "select-none bg-bg-white hover:bg-bg-white-hover",
-          "whitespace-nowrap border border-otl-gray-200 hover:border-otl-gray-300",
+          "whitespace-nowrap border border-border hover:border-border-hover",
           disabled &&
             "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-otl-gray-200 disabled:bg-border disabled:text-txt-black-disabled",
           className
         )}
         disabled={disabled}
       >
-        <CalendarIcon className="h-4.5 w-4.5 text-txt-black-900" />
-        <span className="text-txt-black-900">
+        <CalendarIcon className="h-4.5 w-4.5 text-foreground" />
+        <span className="text-foreground">
           {label}
           {(selected || placeholder) && ":"}
         </span>
