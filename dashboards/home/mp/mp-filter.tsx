@@ -411,8 +411,8 @@ const MPFilter = ({
                     handleSearch({ tarikh_mula: from, tarikh_akhir: to });
                 }}
               >
-                <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                <SelectTrigger className="border-border text-foreground hover:border-border-hover focus:border-blue-600 focus:ring-2">
+                  <span className="text-sm font-medium text-foreground">
                     {t("parliament_calendar", { ns: "demografi" }) + ":"}
                   </span>
                   <SelectValue
@@ -780,8 +780,8 @@ const MPFilter = ({
                   });
                 }}
               >
-                <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                <SelectTrigger className="border-border text-foreground hover:border-border-hover focus:border-blue-600 focus:ring-2">
+                  <span className="text-sm font-medium text-foreground">
                     {t("parliament_calendar", { ns: "demografi" }) + ":"}
                   </span>
                   <SelectValue
