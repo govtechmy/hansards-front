@@ -9,7 +9,7 @@ const { format } = require("date-fns");
 
 process.env.TZ = "Asia/Kuala_Lumpur";
 
-function load(file, mocks) {
+function load(file, mocks, globals = {}) {
   const testModule = { exports: {} };
   const code = ts.transpileModule(
     readFileSync(resolve(__dirname, "..", file), "utf8"),
@@ -26,9 +26,140 @@ function load(file, mocks) {
     exports: testModule.exports,
     console,
     require: name => (name in mocks ? mocks[name] : require(name)),
+    ...globals,
   });
   return testModule.exports;
 }
+
+test("slider resets filtered indices, stops playback, and handles short datasets", () => {
+  let draft;
+  let value = [5, 9];
+  let data = Array.from({ length: 10 }, (_, i) => i);
+  let period = "day";
+  let previousDeps = [];
+  let watchIndex = 0;
+  let pending = [];
+  let playing = false;
+  let tick;
+  let cleared = 0;
+  let cleanup;
+  const timer = { current: null };
+  const { default: Slider } = load(
+    "components/Slider/index.tsx",
+    {
+      react: {
+        ...React,
+        useContext: () => ({
+          play: playing,
+          setPlaying: next => {
+            playing = next;
+          },
+        }),
+        useRef: () => timer,
+        useState: initial => {
+          if (draft === undefined) draft = initial;
+          return [
+            draft,
+            next => {
+              draft = next;
+            },
+          ];
+        },
+        useEffect: effect => {
+          cleanup = effect();
+        },
+      },
+      "@hooks/useWatch": {
+        useWatch(effect, deps) {
+          const index = watchIndex++;
+          const previous = previousDeps[index];
+          if (previous && deps.some((dep, i) => dep !== previous[i]))
+            pending.push(effect);
+          previousDeps[index] = deps;
+        },
+      },
+      "@hooks/useTranslation": {
+        useTranslation: () => ({ t: key => key, i18n: { language: "ms" } }),
+      },
+      "@lib/helpers": {
+        cn: () => "",
+        toDate: value => {
+          assert.notEqual(value, undefined);
+          return String(value);
+        },
+      },
+      "@lib/contexts/slider": { SliderContext: {} },
+      "@radix-ui/react-slider": {
+        Root: "slider",
+        Track: "track",
+        Range: "range",
+        Thumb: "thumb",
+      },
+    },
+    {
+      setInterval: callback => {
+        tick = callback;
+        return 1;
+      },
+      clearInterval: () => {
+        cleared++;
+        tick = undefined;
+      },
+    }
+  );
+  function render() {
+    watchIndex = 0;
+    const tree = Slider({
+      type: "range",
+      value,
+      data,
+      period,
+      onChange: next => {
+        value = next;
+      },
+    });
+    const effects = pending;
+    pending = [];
+    effects.forEach(effect => effect());
+    return tree;
+  }
+  const indices = tree => Array.from(findAll(tree, "slider")[0].value);
+  let tree = render();
+  findAll(tree, "button")[0].onClick();
+  assert.equal(playing, true);
+  tick();
+  render();
+  data = [100, 101, 102];
+  render();
+  tree = render();
+  assert.deepEqual(indices(tree), [0, 2]);
+  assert.deepEqual(Array.from(value), [0, 2]);
+  assert.equal(playing, false);
+  assert.equal(cleared, 1);
+  assert.equal(tick, undefined);
+
+  findAll(tree, "slider")[0].onValueChange([1, 2]);
+  findAll(tree, "slider")[0].onValueCommit([1, 2]);
+  assert.deepEqual(indices(render()), [1, 2]);
+  period = "month";
+  render();
+  assert.deepEqual(indices(render()), [0, 2]);
+  for (const dates of [[200], []]) {
+    data = dates;
+    render();
+    tree = render();
+    assert.deepEqual(indices(tree), [0, 0]);
+    assert.equal(findAll(tree, "slider")[0].disabled, true);
+    assert.equal(findAll(tree, "slider")[0].max, 0);
+    assert.equal(findAll(tree, "button")[0].disabled, true);
+  }
+  data = [300, 301];
+  render();
+  tree = render();
+  findAll(tree, "button")[0].onClick();
+  cleanup();
+  assert.equal(tick, undefined);
+});
 
 function findAll(node, type) {
   if (!React.isValidElement(node)) return [];
