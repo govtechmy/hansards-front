@@ -252,7 +252,7 @@ const select_trigger_cva = cva(
       variant: {
         outline: [
           "bg-bg-white border border-border shadow-button",
-          "hover:bg-bg-white-hover hover:border-border-hover",
+          "hover:bg-bg-white-hover hover:border-border-hover dark:hover:border-gray-400",
         ],
         ghost: [
           "bg-transparent border border-transparent",

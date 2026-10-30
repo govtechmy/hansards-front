@@ -131,7 +131,7 @@ const Daterange = ({
         className={cn(
           "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-txt-black-900 shadow-button",
           "select-none bg-bg-white hover:bg-bg-white-hover",
-          "whitespace-nowrap border border-border hover:border-border-hover",
+          "whitespace-nowrap border border-border hover:border-border-hover dark:hover:border-gray-400",
           disabled &&
             "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-otl-gray-200 disabled:bg-border disabled:text-txt-black-disabled",
           className
