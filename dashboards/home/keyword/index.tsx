@@ -191,6 +191,7 @@ const Keyword = ({
           setSuggestion={setSuggestion}
           dewan_counts={dewan_counts}
           takwim={takwim}
+          relatedSearch={relatedSearch}
         />
 
         {/* Time-series of "keyword" in Parliament */}
