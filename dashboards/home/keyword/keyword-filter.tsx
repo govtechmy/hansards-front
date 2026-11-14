@@ -33,6 +33,7 @@ import { PARTIES } from "@lib/options";
 import { OptionType } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
 import {
+  useEffect,
   useRef,
   useState,
   useMemo,
@@ -205,16 +206,33 @@ const KeywordFilter = ({
     gender: jantina ? String(jantina) : BOTH_GENDERS,
   });
 
-  const [selectedDateRange, setSelectedDateRange] = useState<
-    DateRange | undefined
-  >(
+  /**
+   * Baca julat tarikh daripada parameter URL. Dikongsi antara semaian awal dan
+   * effect penyelarasan di bawah supaya kedua-duanya tidak boleh terpisah.
+   */
+  const dateRangeFromQuery = (): DateRange | undefined =>
     tarikh_mula || tarikh_akhir
       ? {
           from: tarikh_mula ? new Date(tarikh_mula.toString()) : undefined,
           to: tarikh_akhir ? new Date(tarikh_akhir.toString()) : undefined,
         }
-      : undefined
-  );
+      : undefined;
+
+  const [selectedDateRange, setSelectedDateRange] = useState<
+    DateRange | undefined
+  >(dateRangeFromQuery);
+
+  /**
+   * Selaraskan pemilih tarikh apabila `tarikh_mula` atau `tarikh_akhir` dalam
+   * URL berubah tanpa komponen ini dimount semula.
+   *
+   * `useState` di atas hanya menyemai sekali, jadi tanpa effect ini chip tarikh
+   * tertinggal menunjukkan julat lama. Ia kelihatan apabila klik bar graf
+   * menetapkan julat baharu, dan juga pada butang Back atau Forward.
+   */
+  useEffect(() => {
+    setSelectedDateRange(dateRangeFromQuery());
+  }, [tarikh_mula, tarikh_akhir]);
 
   const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
     label: t(key.replace("-", "_"), { ns: "common" }),
