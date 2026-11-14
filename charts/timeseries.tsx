@@ -325,17 +325,17 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
             tooltipFormat: tooltipFormat
               ? tooltipFormat
               : ["year", "month", "quarter", "day", "minute", "hour"].includes(
-                  interval as string
-                )
-              ? {
-                  quarter: "qQ yyyy",
-                  month: "MMM yyyy",
-                  year: "yyyy",
-                  day: "dd MMM yyyy",
-                  minute: "dd MMM yyyy HH:mm",
-                  hour: "dd MMM yyyy HH:mm",
-                }[interval as string]
-              : "dd MMM yyyy",
+                    interval as string
+                  )
+                ? {
+                    quarter: "qQ yyyy",
+                    month: "MMM yyyy",
+                    year: "yyyy",
+                    day: "dd MMM yyyy",
+                    minute: "dd MMM yyyy HH:mm",
+                    hour: "dd MMM yyyy HH:mm",
+                  }[interval as string]
+                : "dd MMM yyyy",
           },
           grid: {
             offset: gridOffsetX,
