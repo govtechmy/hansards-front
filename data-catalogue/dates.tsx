@@ -82,26 +82,22 @@ export const MesyuaratDates = ({
       <div className="flex items-center gap-x-4.5 rounded-lg border bg-background p-3 shadow-button dark:border-zinc-800">
         <DateCard date={date} size="sm" />
         <div className="flex flex-col gap-y-1.5">
-          {(!IS_KK || IS_OATH) && (
-            <div className="flex flex-wrap items-center gap-1.5">
-              {!IS_KK &&
-                (is_final ? (
-                  <span className="inline-flex w-fit items-center rounded-sm border border-green-500 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-700 dark:bg-opacity-20 dark:text-green-300">
-                    <CheckCircleFillIcon className="size-4" />
-                    &nbsp; {t("final")}
-                  </span>
-                ) : (
-                  <span className="inline-flex w-fit items-center rounded-sm border border-orange-500 bg-orange-100 bg-opacity-40 px-2.5 py-0.5 text-xs font-medium text-orange-900 dark:bg-orange-500 dark:bg-opacity-10 dark:text-orange-200">
-                    <DocumentFilledIcon className="size-4" />
-                    &nbsp; {t("draft")}
-                  </span>
-                ))}
-              {IS_OATH && (
-                <Tag variant="primary" mode="pill" size="small">
-                  {t("tag.oath_ceremony")}
-                </Tag>
-              )}
-            </div>
+          {!IS_KK &&
+            (is_final ? (
+              <span className="me-2 inline-flex w-fit items-center rounded-sm border border-green-500 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-700 dark:bg-opacity-20 dark:text-green-300">
+                <CheckCircleFillIcon className="size-4" />
+                &nbsp; {t("final")}
+              </span>
+            ) : (
+              <span className="me-2 inline-flex w-fit items-center rounded-sm border border-orange-500 bg-orange-100 bg-opacity-40 px-2.5 py-0.5 text-xs font-medium text-orange-900 dark:bg-orange-500 dark:bg-opacity-10 dark:text-orange-200">
+                <DocumentFilledIcon className="size-4" />
+                &nbsp; {t("draft")}
+              </span>
+            ))}
+          {IS_OATH && (
+            <Tag variant="primary" mode="pill" size="small" className="w-fit">
+              {t("tag.oath_ceremony")}
+            </Tag>
           )}
           {
             <NextLink
