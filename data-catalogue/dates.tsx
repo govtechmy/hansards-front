@@ -34,7 +34,9 @@ import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { copyClipboard } from "@lib/helpers";
 import { routes } from "@lib/routes";
+import { isOathCeremony } from "@lib/sitting-tags";
 import { Sitting } from "@lib/types";
+import { Tag } from "@components/Tag";
 import NextLink from "next/link";
 import { useState } from "react";
 import CiteButton from "./cite";
@@ -65,6 +67,7 @@ export const MesyuaratDates = ({
 
   const MesyuaratDateRow = ({ sitting }: { sitting: Sitting }) => {
     const { filename, date, is_final } = sitting;
+    const IS_OATH = isOathCeremony(sitting);
     const IS_KK = filename.startsWith("kk");
     const IS_DR = filename.startsWith("dr");
     const hansard_id = `${
@@ -91,6 +94,11 @@ export const MesyuaratDates = ({
                 &nbsp; {t("draft")}
               </span>
             ))}
+          {IS_OATH && (
+            <Tag variant="primary" mode="pill" size="small" className="w-fit">
+              {t("tag.oath_ceremony")}
+            </Tag>
+          )}
           {
             <NextLink
               href={hansard_id}
