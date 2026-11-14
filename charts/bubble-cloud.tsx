@@ -52,14 +52,14 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                     ? node.radius > 100
                       ? "1px"
                       : node.radius > 60
-                      ? "0.6px"
-                      : node.radius > 40
-                      ? "0.4px"
-                      : node.radius > 30
-                      ? "0.3px"
-                      : node.radius > 25
-                      ? "0.25px"
-                      : "0.2px"
+                        ? "0.6px"
+                        : node.radius > 40
+                          ? "0.4px"
+                          : node.radius > 30
+                            ? "0.3px"
+                            : node.radius > 25
+                              ? "0.25px"
+                              : "0.2px"
                     : 0
                 }
                 className={cn(
@@ -67,18 +67,18 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                   node.radius > 100
                     ? "text-[32px]"
                     : node.radius > 60
-                    ? "text-[22px]"
-                    : node.radius > 40
-                    ? "text-[18px]"
-                    : node.radius > 35
-                    ? "text-[16px]"
-                    : node.radius > 30
-                    ? "text-[12px]"
-                    : node.radius > 25
-                    ? "text-[10px]"
-                    : node.radius > 20
-                    ? "text-[9px]"
-                    : "text-[8px]"
+                      ? "text-[22px]"
+                      : node.radius > 40
+                        ? "text-[18px]"
+                        : node.radius > 35
+                          ? "text-[16px]"
+                          : node.radius > 30
+                            ? "text-[12px]"
+                            : node.radius > 25
+                              ? "text-[10px]"
+                              : node.radius > 20
+                                ? "text-[9px]"
+                                : "text-[8px]"
                 )}
               >
                 {label}
@@ -92,27 +92,27 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                   node.radius > 100
                     ? 32
                     : node.radius > 60
-                    ? 24
-                    : node.radius > 40
-                    ? 20
-                    : node.radius > 30
-                    ? 16
-                    : node.radius > 25
-                    ? 12
-                    : 10
+                      ? 24
+                      : node.radius > 40
+                        ? 20
+                        : node.radius > 30
+                          ? 16
+                          : node.radius > 25
+                            ? 12
+                            : 10
                 }
                 className={cn(
                   node.radius > 100
                     ? "text-[16px]"
                     : node.radius > 60
-                    ? "text-[12px]"
-                    : node.radius > 40
-                    ? "text-[10px]"
-                    : node.radius > 30
-                    ? "text-[9px]"
-                    : node.radius > 25
-                    ? "text-[8px]"
-                    : "text-[6px]"
+                      ? "text-[12px]"
+                      : node.radius > 40
+                        ? "text-[10px]"
+                        : node.radius > 30
+                          ? "text-[9px]"
+                          : node.radius > 25
+                            ? "text-[8px]"
+                            : "text-[6px]"
                 )}
                 fill="#71717A"
               >
