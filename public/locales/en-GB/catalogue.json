@@ -13,5 +13,6 @@
   "csv": "Full Dataset (CSV)",
   "draft": "Draft",
   "final": "Verified",
+  "pdf_page": "Page {{page}}",
   "no_entries": "No entries found"
 }

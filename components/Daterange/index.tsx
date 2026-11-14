@@ -3,6 +3,7 @@ import { Transition, Popover } from "@headlessui/react";
 import { ArrowRightIcon, CalendarIcon } from "@heroicons/react/20/solid";
 import { cn } from "@lib/helpers";
 import {
+  addMonths,
   format,
   isAfter,
   isBefore,
@@ -48,10 +49,10 @@ const Daterange = ({
   DEFAULT.setMonth(TODAY.getMonth() - (numberOfMonths === 2 ? 1 : 0));
 
   const [fromValue, setFromValue] = useState<string>(
-    selected?.from ? selected.from.toISOString().slice(0, 10) : ""
+    selected?.from ? format(selected.from, "yyyy-MM-dd") : ""
   );
   const [toValue, setToValue] = useState<string>(
-    selected?.to ? selected.to.toISOString().slice(0, 10) : ""
+    selected?.to ? format(selected.to, "yyyy-MM-dd") : ""
   );
   const [invalidFromValue, setInvalidFromValue] = useState<string>("");
   const [invalidToValue, setInvalidToValue] = useState<string>("");
@@ -130,15 +131,15 @@ const Daterange = ({
         className={cn(
           "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-start text-sm font-medium text-txt-black-900 shadow-button",
           "select-none bg-bg-white hover:bg-bg-white-hover",
-          "whitespace-nowrap border border-otl-gray-200 hover:border-otl-gray-300",
+          "whitespace-nowrap border border-border hover:border-border-hover dark:hover:border-gray-400",
           disabled &&
             "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-otl-gray-200 disabled:bg-border disabled:text-txt-black-disabled",
           className
         )}
         disabled={disabled}
       >
-        <CalendarIcon className="h-4.5 w-4.5 text-txt-black-900" />
-        <span className="text-txt-black-900">
+        <CalendarIcon className="h-4.5 w-4.5 text-foreground" />
+        <span className="text-foreground">
           {label}
           {(selected || placeholder) && ":"}
         </span>
@@ -162,6 +163,14 @@ const Daterange = ({
       </Popover.Button>
       <Transition
         as={"div"}
+        beforeEnter={() => {
+          setFromValue(
+            selected?.from ? format(selected.from, "yyyy-MM-dd") : ""
+          );
+          setToValue(selected?.to ? format(selected.to, "yyyy-MM-dd") : "");
+          setInvalidFromValue("");
+          setInvalidToValue("");
+        }}
         leave="transition ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
@@ -212,21 +221,26 @@ const Daterange = ({
             </div>
           </form>
 
-          <Calendar
-            locale={i18n.language.startsWith("ms") ? ms : enGB}
-            initialFocus
-            mode="range"
-            defaultMonth={DEFAULT}
-            selected={selected}
-            onSelect={handleRangeSelect}
-            numberOfMonths={numberOfMonths}
-            disabled={[
-              {
-                before: PARLIMEN_START_DATE,
-              },
-              { after: TODAY },
-            ]}
-          />
+          <div className="flex flex-col sm:flex-row">
+            {Array.from({ length: numberOfMonths }, (_, index) => (
+              <Calendar
+                key={index}
+                locale={i18n.language.startsWith("ms") ? ms : enGB}
+                initialFocus={index === 0}
+                mode="range"
+                defaultMonth={
+                  index === 0
+                    ? (selected?.from ?? selected?.to ?? DEFAULT)
+                    : (selected?.to ??
+                      addMonths(selected?.from ?? DEFAULT, index))
+                }
+                selected={selected}
+                onSelect={handleRangeSelect}
+                numberOfMonths={1}
+                disabled={[{ before: PARLIMEN_START_DATE }, { after: TODAY }]}
+              />
+            ))}
+          </div>
         </Popover.Panel>
       </Transition>
     </Popover>

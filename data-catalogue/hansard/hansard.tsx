@@ -126,6 +126,10 @@ const Hansard = ({
           index,
           speech,
           timestamp,
+          pdf_page_start,
+          pdf_page_end,
+          source_page_start,
+          source_page_end,
         } = s;
         const speech_id = `${sidebar_id}_${i}`;
 
@@ -214,6 +218,10 @@ const Hansard = ({
                 uid={author_id}
                 author={author}
                 is_final={is_final}
+                pdf_page_start={pdf_page_start}
+                pdf_page_end={pdf_page_end}
+                source_page_start={source_page_start}
+                source_page_end={source_page_end}
               >
                 {highlightKeywordMarkdown(speech, speech_id)}
               </SpeechBubble>
@@ -374,7 +382,7 @@ const Hansard = ({
                         count: view,
                       })}`}</span>
                       •
-                      <span>{`${numFormat(share, "compact")} ${t("shares", {
+                      <span>{`${numFormat(share, "compact")} ${t("share", {
                         count: share,
                       })}`}</span>
                       •

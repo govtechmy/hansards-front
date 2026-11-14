@@ -30,7 +30,7 @@ import {
 import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
-import { OptionType } from "@lib/types";
+import { OptionType, RelatedSearch } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
 import {
   useRef,
@@ -56,6 +56,7 @@ import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { flushSync } from "react-dom";
+import RelatedSearchChip from "./related-search-chip";
 
 const MONTHS: Record<string, string[]> = {
   "ms-MY": [
@@ -162,6 +163,7 @@ export interface KeywordFilterProps {
   setSuggestion: Dispatch<SetStateAction<string>>;
   dewan_counts?: Record<string, number>;
   takwim?: TakwimTerm[] | null;
+  relatedSearch?: RelatedSearch | null;
 }
 
 const KeywordFilter = ({
@@ -173,6 +175,7 @@ const KeywordFilter = ({
   setSuggestion,
   dewan_counts,
   takwim,
+  relatedSearch,
 }: KeywordFilterProps) => {
   const { t, i18n } = useTranslation([
     "home",
@@ -291,6 +294,24 @@ const KeywordFilter = ({
     router.push(`${routes.CARI}${setSearchParams(router.asPath, params)}`);
   };
 
+  // Chip arrow: put the suggestion in the search box. No new search; the
+  // results stay and the user presses Enter (or Cari) when ready
+  const handleAcceptSuggestion = () => {
+    if (!relatedSearch) return;
+    setKeywordQuery(relatedSearch.corrected);
+    inputRef.current && inputRef.current.focus();
+  };
+
+  // Chip x: search again for exactly what the user typed. `q` is already in
+  // the URL, so only `tepat=1` is added and the page is reset. The server then
+  // returns no suggestion, which is why the chip disappears
+  const handleRejectSuggestion = () => {
+    if (!relatedSearch) return;
+    setKeywordQuery(relatedSearch.original);
+    inputRef.current && inputRef.current.focus();
+    handleSearch({ tepat: "1", page: "" });
+  };
+
   const handleClear = () => {
     if (keywordQuery) {
       handleSearch({
@@ -314,7 +335,7 @@ const KeywordFilter = ({
     <>
       <div className="space-y-6 pb-6 sm:pt-6">
         {/* Dewan Selector */}
-        <div className="mx-auto hidden w-fit rounded-full border border-slate-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-900 sm:block">
+        <div className="mx-auto hidden w-fit rounded-full border border-slate-200 bg-white p-1 dark:border-zinc-700 dark:bg-zinc-900 sm:block">
           <Tabs
             value={data.dewan}
             onValueChange={dewan => {
@@ -368,6 +389,7 @@ const KeywordFilter = ({
                     handleSearch({
                       dewan: data.dewan,
                       q: keywordQuery,
+                      tepat: "",
                       parti: data.party !== ALL_PARTIES ? data.party : "",
                       jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                       umur: data.age !== ALL_AGES ? data.age : "",
@@ -432,6 +454,7 @@ const KeywordFilter = ({
                 handleSearch({
                   dewan: data.dewan,
                   q: keywordQuery,
+                  tepat: "",
                   parti: data.party !== ALL_PARTIES ? data.party : "",
                   jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
@@ -468,6 +491,17 @@ const KeywordFilter = ({
             </div>
           )}
         </div>
+
+        {/* Related search chip */}
+        {relatedSearch && (
+          <div className="flex justify-center">
+            <RelatedSearchChip
+              relatedSearch={relatedSearch}
+              onAccept={handleAcceptSuggestion}
+              onReject={handleRejectSuggestion}
+            />
+          </div>
+        )}
       </div>
 
       {/* Desktop Bar */}
@@ -486,8 +520,8 @@ const KeywordFilter = ({
             }
           }}
         >
-          <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+          <SelectTrigger className="border-border text-foreground hover:border-border-hover focus:border-blue-600 focus:ring-2">
+            <span className="text-sm font-medium text-foreground">
               {t("parliament_calendar", { ns: "demografi" }) + ":"}
             </span>
             <SelectValue
@@ -615,7 +649,8 @@ const KeywordFilter = ({
               });
           }}
         />
-        <Dropdown
+        {/* Temporary disabled age filter */}
+        {/* <Dropdown
           sublabel={t("age_group", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
@@ -629,7 +664,7 @@ const KeywordFilter = ({
                 umur: e.value !== ALL_AGES ? e.value : "",
               });
           }}
-        />
+        /> */}
         {/* <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"

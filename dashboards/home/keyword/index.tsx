@@ -17,8 +17,13 @@ import { ParsedUrlQuery } from "querystring";
 import { useEffect, useMemo, useRef, useState } from "react";
 import KeywordFilter, { TakwimTerm } from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
-import { Speaker } from "@lib/types";
+import { RelatedSearch, Speaker } from "@lib/types";
 import { get } from "@lib/api";
+import {
+  Callout,
+  CalloutContent,
+  CalloutTitle,
+} from "@govtechmy/myds-react/callout";
 
 /**
  * Keyword
@@ -46,6 +51,7 @@ export interface KeywordProps extends ExcerptsProps {
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
   takwim?: TakwimTerm[] | null;
+  relatedSearch?: RelatedSearch | null;
 }
 
 const Keyword = ({
@@ -58,6 +64,7 @@ const Keyword = ({
   top_speakers,
   top_word_freq,
   takwim,
+  relatedSearch,
 }: KeywordProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
   const router = useRouter();
@@ -66,6 +73,12 @@ const Keyword = ({
 
   const { q, dewan, tarikh_mula, tarikh_akhir } = query;
   const keyword = q ? String(q) : undefined;
+  // The word that is really searched: the backend's correction when there is
+  // one, otherwise what the user typed. `keyword` stays the typed word because
+  // the search box must keep showing it (see `keywordQuery` below).
+  const usedKeyword = relatedSearch?.corrected ?? keyword;
+  // Check if the keyword is an exact match (enclosed in double quotes)
+  const isExactMatch = typeof q === "string" && /^\".+\"$/.test(q.trim());
   const [keywordQuery, setKeywordQuery] = useState(keyword ?? "");
   const [suggestion, setSuggestion] = useState<string>("");
 
@@ -178,6 +191,7 @@ const Keyword = ({
           setSuggestion={setSuggestion}
           dewan_counts={dewan_counts}
           takwim={takwim}
+          relatedSearch={relatedSearch}
         />
 
         {/* Time-series of "keyword" in Parliament */}
@@ -186,13 +200,13 @@ const Keyword = ({
             {keyword &&
               house !== "semua" &&
               t("timeseries_title", {
-                keyword: keyword,
+                keyword: usedKeyword,
                 house: t(house.replace("-", "_"), { ns: "common" }),
               })}
 
             {house === "semua" &&
               t("all_timeseries_title", {
-                keyword: keyword,
+                keyword: usedKeyword,
                 house: t(house.replace("-", "_"), { ns: "common" }),
               })}
           </h3>
@@ -213,7 +227,7 @@ const Keyword = ({
                       {
                         type: "bar",
                         data: chartEmpty ? dummyFreq : coordinate.freq,
-                        label: keyword,
+                        label: usedKeyword,
                         backgroundColor:
                           theme === "light"
                             ? COLOR.PRIMARY_H
@@ -236,7 +250,7 @@ const Keyword = ({
                 {!loading && chartEmpty && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="flex items-center gap-2 rounded-md bg-border px-3 py-1.5">
-                      {keyword ? (
+                      {usedKeyword ? (
                         <>
                           <FaceFrownIcon className="size-6" />
                           {t("placeholder.no_results", { ns: "common" })}
@@ -258,13 +272,27 @@ const Keyword = ({
 
       {count > 0 && (
         <>
-          <Excerpts count={count} excerpts={excerpts} query={query} />
+          {/* Excerpts document based on the keyword */}
+          <Excerpts
+            count={count}
+            excerpts={excerpts}
+            query={query}
+            isExactMatch={isExactMatch}
+            keyword={usedKeyword}
+          />
           {/* Words related to {{ keyword }} */}
           {top_word_freq && (
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
-                {t("words_related", { keyword: `"${query.q}"` })}
+                {t("words_related", { keyword: `"${usedKeyword}"` })}
               </h3>
+
+              <Callout variant="info" className="p-4">
+                <CalloutTitle>{t("disclaimer_title")}</CalloutTitle>
+                <CalloutContent className="mr-2 pb-2">
+                  {t("disclaimer_bubble")}
+                </CalloutContent>
+              </Callout>
 
               <BubbleCloud
                 className="h-[350px] w-full sm:h-[700px]"
@@ -280,7 +308,7 @@ const Keyword = ({
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
                 {t("most_spoken_by", {
-                  keyword: `"${capitalize(String(query.q))}"`,
+                  keyword: `"${capitalize(String(usedKeyword))}"`,
                 })}
               </h3>
 

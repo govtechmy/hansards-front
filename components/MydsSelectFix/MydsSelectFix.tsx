@@ -251,8 +251,8 @@ const select_trigger_cva = cva(
     variants: {
       variant: {
         outline: [
-          "bg-bg-white border border-otl-gray-200 shadow-button",
-          "hover:bg-bg-white-hover hover:border-otl-gray-300",
+          "bg-bg-white border border-border shadow-button",
+          "hover:bg-bg-white-hover hover:border-border-hover dark:hover:border-gray-400",
         ],
         ghost: [
           "bg-transparent border border-transparent",
@@ -468,7 +468,7 @@ const SelectItem: React.ForwardRefExoticComponent<
               />
             </SelectPrimitive.ItemIndicator>
           </span>
-          <SelectPrimitive.ItemText asChild>
+          <SelectPrimitive.ItemText className="text-inherit">
             {children}
           </SelectPrimitive.ItemText>
         </SelectPrimitive.Item>

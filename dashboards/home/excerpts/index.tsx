@@ -30,6 +30,9 @@ export interface ExcerptsProps {
   name?: string;
   query: ParsedUrlQuery;
   variant?: "compact" | "default";
+  isExactMatch?: boolean;
+  /** The word that was really searched. Defaults to `query.q` when omitted */
+  keyword?: string;
 }
 
 interface FlatSitting {
@@ -46,9 +49,14 @@ const Excerpts = ({
   name,
   query,
   variant = "default",
+  isExactMatch = false,
+  keyword,
 }: ExcerptsProps) => {
   const { t, i18n } = useTranslation(["enum", "home"]);
   const { q, dewan, page, page_size } = query;
+  // The links below must carry the word that was really searched, which can
+  // differ from `q` when the backend corrected a misspelling
+  const searchedKeyword = keyword ?? String(q);
   const router = useRouter();
   const ITEMS_PER_PAGE = 10;
   const ROWS_PER_PAGE = [ITEMS_PER_PAGE, 25, 50].map(String);
@@ -100,7 +108,7 @@ const Excerpts = ({
                 <li key={sitting.date} className="h-full">
                   <div className="flex h-full items-center rounded-xl border border-otl-gray-200 p-4.5 shadow-card">
                     <Link
-                      href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
+                      href={`hansard/${dewanKey}/${sitting.date}?search=${searchedKeyword}`}
                       className="group flex gap-3 sm:gap-4.5"
                     >
                       <DateCard
@@ -216,7 +224,7 @@ const Excerpts = ({
                 >
                   <div className="top-16 flex shrink-0 items-center lg:sticky lg:h-24 lg:max-w-md">
                     <Link
-                      href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
+                      href={`hansard/${dewanKey}/${sitting.date}?search=${searchedKeyword}`}
                       className="group flex items-center gap-3 sm:gap-4.5"
                     >
                       <DateCard date={date} size="sm" />
@@ -237,23 +245,23 @@ const Excerpts = ({
                         </p>
                         <div>
                           {/* <Tag
-                        size="medium"
-                        variant="default"
-                        mode="pill"
-                        className="border-[#134960]/20 bg-[#134960]/10 text-[#134960]"
-                      >
-                        <DewanRakyatIcon className="size-5" />
-                        {t("dewan_rakyat")}
-                      </Tag>
-                      <Tag
-                        size="medium"
-                        variant="default"
-                        mode="pill"
-                        className="border-[#66222A]/20 bg-[#66222A]/10 text-[#66222A]"
-                      >
-                        <DewanNegaraIcon className="size-5" />
-                        {t("dewan_negara")}
-                      </Tag> */}
+                          size="medium"
+                          variant="default"
+                          mode="pill"
+                          className="border-[#134960]/20 bg-[#134960]/10 text-[#134960]"
+                          >
+                            <DewanRakyatIcon className="size-5" />
+                            {t("dewan_rakyat")}
+                          </Tag>
+                          <Tag
+                            size="medium"
+                            variant="default"
+                            mode="pill"
+                            className="border-[#66222A]/20 bg-[#66222A]/10 text-[#66222A]"
+                          >
+                          <DewanNegaraIcon className="size-5" />
+                          {t("dewan_negara")}
+                        </Tag> */}
                         </div>
                         <p className="flex gap-1 text-body-xs text-txt-black-700 sm:text-body-sm">
                           {`${t("parlimen", {
@@ -282,7 +290,7 @@ const Excerpts = ({
                       </div>
                     </Link>
                   </div>
-                  <div className="flex max-h-fit w-full flex-col divide-y divide-otl-gray-200 rounded-xl border border-otl-gray-200">
+                  <div className="flex max-h-fit w-full flex-col divide-y divide-otl-gray-200 rounded-xl border border-otl-gray-200 dark:divide-zinc-700 dark:border-zinc-700">
                     {excerpt
                       .sort((a, b) => a.index - b.index)
                       .map((excerpt, i) => (
@@ -290,7 +298,8 @@ const Excerpts = ({
                           key={i}
                           dewan={(dewan ?? "dewan-rakyat") as Dewan}
                           excerpt={excerpt}
-                          keyword={String(q)}
+                          keyword={searchedKeyword}
+                          isExactMatch={isExactMatch}
                         />
                       ))}
                   </div>
@@ -299,6 +308,7 @@ const Excerpts = ({
             })}
           </ul>
 
+          {/* Paginator */}
           <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
             <div className="flex items-center gap-3">
               <span className="text-dim-500 whitespace-nowrap text-sm">

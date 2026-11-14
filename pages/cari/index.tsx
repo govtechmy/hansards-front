@@ -4,6 +4,7 @@ import SearchKeyword from "@dashboards/home/keyword";
 import HomeLayout from "@dashboards/home/layout";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
+import { buildRelatedSearch } from "@lib/related-search";
 import { Page } from "@lib/types";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { NextResponse } from "next/server";
@@ -23,6 +24,7 @@ const Home: Page = ({
   top_word_freq,
   top_speakers,
   takwim,
+  relatedSearch,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
@@ -38,6 +40,7 @@ const Home: Page = ({
           top_word_freq={top_word_freq}
           top_speakers={top_speakers}
           takwim={takwim}
+          relatedSearch={relatedSearch}
         />
       </HomeLayout>
     </>
@@ -66,7 +69,15 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       etnik,
       parti,
       jantina,
+      tepat,
     } = query;
+
+    // "Search exactly what I typed" (the user rejected the suggestion).
+    // Only `tepat=1` counts: `0`, empty, `true` or a repeated `?tepat=1&tepat=1`
+    // (which Next.js gives us as an array) do not.
+    const exactSearch = tepat === "1";
+    // Axios skips params that are `undefined`, so `exact` is only sent when active
+    const exact = exactSearch ? true : undefined;
 
     const results = await Promise.allSettled([
       get("api/search/", {
@@ -81,6 +92,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         ethnicity: etnik,
         party: parti,
         sex: jantina,
+        exact: exact,
       }),
       get("api/search-plot/", {
         q: q,
@@ -91,6 +103,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         ethnicity: etnik,
         party: parti,
         sex: jantina,
+        exact: exact,
       }),
       get("api/author/"),
       get("api/search/counter", {
@@ -101,6 +114,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         ethnicity: etnik,
         party: parti,
         sex: jantina,
+        exact: exact,
       }),
       get(
         `api/sitting/list?house=dewan-rakyat&house=dewan-negara&house=kamar-khas`
@@ -111,6 +125,14 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       if (e.status === "rejected") return {};
       else return e.value.data;
     });
+
+    // The suggestion is only read from `api/search/`; the other responses are
+    // ignored on purpose. The rules live in lib/related-search.ts
+    const relatedSearch = buildRelatedSearch(
+      q,
+      excerpt.corrected_query,
+      exactSearch
+    );
 
     const rawHouseCounts =
       counter && typeof counter === "object" && counter.house_counts
@@ -147,6 +169,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         top_word_freq: data.top_word_freq ?? null,
         top_speakers: data.top_speakers ?? null,
         takwim: Array.isArray(takwim) ? takwim : null,
+        relatedSearch,
       },
     };
   }

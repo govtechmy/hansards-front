@@ -2,6 +2,7 @@ import {
   FunctionComponent,
   ReactNode,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -55,6 +56,15 @@ const Slider: FunctionComponent<SliderProps> = ({
   const { play, setPlaying } = useContext(SliderContext);
   const timer = useRef<NodeJS.Timeout | null>(null);
   const [minmax, setMinmax] = useState(value);
+  const max = Math.max(0, data.length - 1);
+  const disabled = data.length < 2;
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearInterval(timer.current);
+    },
+    []
+  );
 
   const dateFormat: Record<typeof period, string> = {
     auto: "dd MMM yyyy",
@@ -67,32 +77,29 @@ const Slider: FunctionComponent<SliderProps> = ({
 
   useWatch(() => {
     if (type === "single") return;
-    if (timer.current) cancelTimer();
-  }, [data]);
-
-  useWatch(() => {
-    if (type === "single") return;
     setMinmax(value);
   }, [value]);
 
-  // Auto-resets slider if period changes
+  // Date filters replace the index domain, so discard the previous selection.
   useWatch(() => {
-    if (data) {
-      setMinmax([0, data.length - 1]);
-      onChange([0, data.length - 1] as number[] & number);
-    }
-  }, [period]);
+    if (type === "single") return;
+    cancelTimer();
+    setMinmax([0, max]);
+    onChange([0, max]);
+  }, [data, period]);
 
   if (type === "single")
     return (
       <div className={cn("group flex w-full items-center gap-x-3", className)}>
         <p className="text-sm text-txt-black-500">
-          {parseAsDate ? toDate(data[0], "yyyy", i18n.language) : data[0]}
+          {data.length > 0 &&
+            (parseAsDate ? toDate(data[0], "yyyy", i18n.language) : data[0])}
         </p>
         <Root
           className="group relative flex h-5 w-full touch-none select-none items-center"
           value={[minmax as number]}
-          max={data.length - 1}
+          max={max}
+          disabled={disabled}
           step={step}
           onValueChange={e => setMinmax(e)}
           onValueCommit={(e: number[] & number) => onChange(e)}
@@ -102,23 +109,29 @@ const Slider: FunctionComponent<SliderProps> = ({
           </Track>
           <Thumb className="max-lg:group-focus-within:border-otl-primary-600 max-lg:group-focus-within:ring-primary group-hover:border-otl-primary-600 group-hover:ring-primary block h-5 w-5 cursor-pointer rounded-full border-2 border-[#A1A1AA] bg-white shadow-button group-hover:ring-4 max-lg:group-focus-within:ring-4">
             <SliderTooltip>
-              {parseAsDate
-                ? toDate(
-                    data[minmax as number],
-                    dateFormat[period],
-                    i18n.language
-                  )
-                : data[minmax as number]}
+              {data.length > 0 &&
+                (parseAsDate
+                  ? toDate(
+                      data[minmax as number],
+                      dateFormat[period],
+                      i18n.language
+                    )
+                  : data[minmax as number])}
             </SliderTooltip>
           </Thumb>
         </Root>
         <p className="text-sm text-txt-black-500">
-          {parseAsDate
-            ? toDate(data[data.length - 1], "yyyy", i18n.language)
-            : data[data.length - 1]}
+          {data.length > 0 &&
+            (parseAsDate
+              ? toDate(data[data.length - 1], "yyyy", i18n.language)
+              : data[data.length - 1])}
         </p>
       </div>
     );
+
+  const selectedRange = (minmax as number[]).map(index =>
+    Math.max(0, Math.min(index, max))
+  );
 
   const startTimer = () => {
     setPlaying(true);
@@ -148,6 +161,7 @@ const Slider: FunctionComponent<SliderProps> = ({
           aria-label={play ? t("pause") : t("play")}
           title={play ? t("pause") : t("play")}
           className="w-fit"
+          disabled={disabled}
           onClick={togglePlayPause}
         >
           {play ? (
@@ -158,13 +172,15 @@ const Slider: FunctionComponent<SliderProps> = ({
         </button>
       )}
       <p className="text-sm text-txt-black-500">
-        {parseAsDate ? toDate(data[0], "yyyy", i18n.language) : data[0]}
+        {data.length > 0 &&
+          (parseAsDate ? toDate(data[0], "yyyy", i18n.language) : data[0])}
       </p>
       <Root
         className="group relative flex h-5 w-full touch-none select-none items-center"
-        value={minmax as number[]}
+        value={selectedRange}
         min={0}
-        max={data.length - 1}
+        max={max}
+        disabled={disabled}
         onValueChange={e => {
           if (timer.current) cancelTimer();
           setMinmax(e);
@@ -180,31 +196,34 @@ const Slider: FunctionComponent<SliderProps> = ({
         </Track>
         <Thumb className="max-lg:group-focus-within:border-otl-primary-600 max-lg:group-focus-within:ring-primary group-hover:border-otl-primary-600 group-hover:ring-primary block h-5 w-5 cursor-col-resize rounded-full border-2 border-[#A1A1AA] bg-white shadow-button group-hover:ring-4 max-lg:group-focus-within:ring-4">
           <SliderTooltip play={play}>
-            {parseAsDate
-              ? toDate(
-                  data[Math.max(0, (minmax as number[])[0])],
-                  dateFormat[period],
-                  i18n.language
-                )
-              : data[(minmax as number[])[0]]}
+            {data.length > 0 &&
+              (parseAsDate
+                ? toDate(
+                    data[selectedRange[0]],
+                    dateFormat[period],
+                    i18n.language
+                  )
+                : data[selectedRange[0]])}
           </SliderTooltip>
         </Thumb>
         <Thumb className="max-lg:group-focus-within:border-otl-primary-600 max-lg:group-focus-within:ring-primary group-hover:border-otl-primary-600 group-hover:ring-primary block h-5 w-5 cursor-col-resize rounded-full border-2 border-[#A1A1AA] bg-white shadow-button group-hover:ring-4 max-lg:group-focus-within:ring-4">
           <SliderTooltip play={play}>
-            {parseAsDate
-              ? toDate(
-                  data[Math.min((minmax as number[])[1], data.length - 1)],
-                  dateFormat[period],
-                  i18n.language
-                )
-              : data[(minmax as number[])[1]]}
+            {data.length > 0 &&
+              (parseAsDate
+                ? toDate(
+                    data[selectedRange[1]],
+                    dateFormat[period],
+                    i18n.language
+                  )
+                : data[selectedRange[1]])}
           </SliderTooltip>
         </Thumb>
       </Root>
       <p className="text-sm text-txt-black-500">
-        {parseAsDate
-          ? toDate(data[data.length - 1], "yyyy", i18n.language)
-          : data[data.length - 1]}
+        {data.length > 0 &&
+          (parseAsDate
+            ? toDate(data[data.length - 1], "yyyy", i18n.language)
+            : data[data.length - 1])}
       </p>
     </div>
   );

@@ -12,7 +12,7 @@ const COMPONENTS: ComponentTranslations = {
     catalogue: ["final", "draft", "cite", "download", "share"],
   },
   "data-catalogue/hansard/hansard.tsx": {
-    hansard: ["archive", "header", "shares", "cite", "download"],
+    hansard: ["archive", "header", "share", "cite", "download"],
     enum: ["parlimen", "penggal_full", "mesyuarat_full"],
     common: ["views", "downloads"],
     catalogue: ["download"],
@@ -51,6 +51,8 @@ const COMPONENTS: ComponentTranslations = {
       "timeseries_title",
       "start_search",
       "words_related",
+      "disclaimer_title",
+      "disclaimer_bubble",
       "most_spoken_by",
     ],
     common: ["placeholder.no_results"],
@@ -98,6 +100,9 @@ const COMPONENTS: ComponentTranslations = {
       "ethnicity",
     ],
   },
+  "dashboards/home/keyword/related-search-chip.tsx": {
+    home: ["did_you_mean", "did_you_mean_accept", "search_exact_instead"],
+  },
   "components/Search/index.tsx": {
     common: ["placeholder.search"],
   },
@@ -114,7 +119,7 @@ const COMPONENTS: ComponentTranslations = {
     error: ["404.title"],
   },
   "data-catalogue/share.tsx": {
-    hansard: ["email", "shares", "share_hansard"],
+    hansard: ["email", "share", "share_hansard"],
     demografi: ["other"],
     common: ["copy", "copied"],
   },
@@ -130,7 +135,7 @@ const COMPONENTS: ComponentTranslations = {
     common: ["no_entries"],
   },
   "data-catalogue/hansard/bubble.tsx": {
-    catalogue: ["download", "csv"],
+    catalogue: ["draft", "final", "pdf_page"],
   },
   "data-catalogue/folder-open.tsx": {
     enum: ["penggal_full", "mesyuarat_full"],

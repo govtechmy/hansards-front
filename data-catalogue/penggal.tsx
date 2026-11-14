@@ -83,7 +83,7 @@ const CataloguePenggal = forwardRef(
                 })}
                 {yearRange}
               </h3>
-              <span className="hidden h-0.5 w-full border border-dashed border-otl-gray-200 sm:block" />
+              <span className="hidden h-0.5 w-full border border-dashed border-otl-gray-200 dark:border-zinc-700 sm:block" />
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-[54px] pb-6 pt-12 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
               {meetings.map(id => (
