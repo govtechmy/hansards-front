@@ -6,10 +6,18 @@ import { useMemo } from "react";
 interface BubbleCloudProps {
   className?: string;
   data: Array<{ id: string; value: number }>;
+  /**
+   * Bila diberi, setiap gelembung boleh diklik dan menerima perkataan
+   * gelembung itu. Bila tiada, gelembung kekal tidak boleh diklik seperti
+   * sebelum ini (contohnya di `/cari-mp`, kerana `/cari` tiada penapis author
+   * untuk mengekalkan konteks MP).
+   */
+  onBubbleClick?: (word: string) => void;
 }
 
-const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
+const BubbleCloud = ({ className, data, onBubbleClick }: BubbleCloudProps) => {
   const { resolvedTheme } = useTheme();
+  const isClickable = typeof onBubbleClick === "function";
   const _data = useMemo(() => {
     let chart_data = {
       id: "root",
@@ -20,9 +28,26 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
 
   return (
     <>
-      <div className={cn(className)}>
+      <div
+        className={cn(
+          className,
+          // Isyarat boleh klik. Label sudah `pointerEvents: "none"`, jadi klik
+          // sampai ke bulatan di bawahnya.
+          isClickable &&
+            "[&_circle:hover]:opacity-75 [&_circle]:cursor-pointer [&_circle]:transition-opacity"
+        )}
+      >
         <ResponsiveCirclePacking
           data={_data}
+          onClick={
+            isClickable
+              ? node => {
+                  // `leavesOnly` menapis paparan, bukan peristiwa, jadi
+                  // tolak nod akar supaya klik latar tak mencetus carian.
+                  if (node.depth > 0 && node.id) onBubbleClick(node.id);
+                }
+              : undefined
+          }
           colors={data => {
             if (data.radius > 100) return "#DDD6B0";
             if (data.radius > 60) return "#E4DFC3";
