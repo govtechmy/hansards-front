@@ -114,9 +114,14 @@ const Keyword = ({
    * mengekalkan mod Carian Tepat akan menghasilkan carian frasa tepat yang
    * pengguna tidak minta. Kunci itu belum wujud di staging (ia datang bersama
    * tugasan A) dan memadam kunci yang tiada adalah selamat.
+   *
+   * `keywordQuery` ditetapkan terus kerana `router.push` ke halaman yang sama
+   * tidak mount semula komponen ini, jadi pengawal `useState` di atas tidak
+   * berjalan lagi dan kotak carian akan tertinggal dengan kata kunci lama.
    */
   const handleBubbleSearch = (word: string) => {
     setLoading(true);
+    setKeywordQuery(word);
     router.push(
       `${routes.CARI}${setSearchParams(router.asPath, { q: word, tepat: "" })}`
     );
