@@ -109,9 +109,12 @@ const Keyword = ({
    * pengguna tidak minta. Kunci itu belum wujud di staging (ia datang bersama
    * tugasan A) dan memadam kunci yang tiada adalah selamat.
    *
-   * `keywordQuery` ditetapkan terus kerana `router.push` ke halaman yang sama
-   * tidak mount semula komponen ini, jadi pengawal `useState` di atas tidak
-   * berjalan lagi dan kotak carian akan tertinggal dengan kata kunci lama.
+   * `keywordQuery` ditetapkan terus di sini, walaupun effect penyelarasan di
+   * bawah akan menetapkannya juga apabila `q` tiba. Ini bukan pertindihan yang
+   * sia-sia: `getServerSideProps` perlu satu pusingan ke pelayan, jadi tanpa
+   * baris ini kotak kekal menunjukkan kata kunci lama sepanjang tempoh menunggu.
+   * Effect itu menguruskan Back dan Forward; baris ini memberi maklum balas
+   * serta-merta pada klik.
    */
   const handleBubbleSearch = (word: string) => {
     setLoading(true);
@@ -167,6 +170,19 @@ const Keyword = ({
       ref.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [timeseries]);
+
+  /**
+   * Selaraskan kotak carian bila `q` dalam URL berubah tanpa komponen ini
+   * dimount semula. `useState` di atas hanya menyemai `keywordQuery` sekali,
+   * jadi tanpa effect ini kotak tertinggal dengan kata kunci lama apabila
+   * pengguna menekan Back atau Forward.
+   *
+   * Hanya bergantung pada `keyword`, jadi ia tidak mengganggu taipan pengguna:
+   * ia berjalan hanya apabila URL benar-benar bertukar.
+   */
+  useEffect(() => {
+    setKeywordQuery(keyword ?? "");
+  }, [keyword]);
 
   useEffect(() => {
     if (!keywordQuery) {
