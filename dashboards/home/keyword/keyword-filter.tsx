@@ -314,7 +314,7 @@ const KeywordFilter = ({
     <>
       <div className="space-y-6 pb-6 sm:pt-6">
         {/* Dewan Selector */}
-        <div className="mx-auto hidden w-fit rounded-full border border-slate-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-900 sm:block">
+        <div className="mx-auto hidden w-fit rounded-full border border-slate-200 bg-white p-1 dark:border-zinc-700 dark:bg-zinc-900 sm:block">
           <Tabs
             value={data.dewan}
             onValueChange={dewan => {
@@ -486,8 +486,8 @@ const KeywordFilter = ({
             }
           }}
         >
-          <SelectTrigger className="text-blue-600 focus:border-blue-600 focus:ring-2 dark:text-primary-dark">
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+          <SelectTrigger className="border-border text-foreground hover:border-border-hover focus:border-blue-600 focus:ring-2">
+            <span className="text-sm font-medium text-foreground">
               {t("parliament_calendar", { ns: "demografi" }) + ":"}
             </span>
             <SelectValue
@@ -615,7 +615,8 @@ const KeywordFilter = ({
               });
           }}
         />
-        <Dropdown
+        {/* Temporary disabled age filter */}
+        {/* <Dropdown
           sublabel={t("age_group", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"
           width="w-fit"
@@ -629,7 +630,7 @@ const KeywordFilter = ({
                 umur: e.value !== ALL_AGES ? e.value : "",
               });
           }}
-        />
+        /> */}
         {/* <Dropdown
           sublabel={t("ethnicity", { ns: "demografi" })}
           className="text-blue-600 dark:text-primary-dark"

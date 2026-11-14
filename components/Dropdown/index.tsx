@@ -201,7 +201,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
               "flex min-w-full items-center gap-1.5 rounded-md px-3 py-1.5 shadow-button",
               "text-start text-sm font-medium text-foreground",
               "select-none bg-background active:bg-slate-100 hover:dark:bg-zinc-800/50 active:dark:bg-zinc-800",
-              "border border-border hover:border-border-hover",
+              "border border-border hover:border-border-hover dark:hover:border-gray-400",
               disabled &&
                 "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-200 disabled:text-slate-400 dark:disabled:border-zinc-800 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-700",
               width,

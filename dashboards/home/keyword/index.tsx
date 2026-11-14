@@ -19,6 +19,11 @@ import KeywordFilter, { TakwimTerm } from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
 import { Speaker } from "@lib/types";
 import { get } from "@lib/api";
+import {
+  Callout,
+  CalloutContent,
+  CalloutTitle,
+} from "@govtechmy/myds-react/callout";
 
 /**
  * Keyword
@@ -66,6 +71,8 @@ const Keyword = ({
 
   const { q, dewan, tarikh_mula, tarikh_akhir } = query;
   const keyword = q ? String(q) : undefined;
+  // Check if the keyword is an exact match (enclosed in double quotes)
+  const isExactMatch = typeof q === "string" && /^\".+\"$/.test(q.trim());
   const [keywordQuery, setKeywordQuery] = useState(keyword ?? "");
   const [suggestion, setSuggestion] = useState<string>("");
 
@@ -258,13 +265,26 @@ const Keyword = ({
 
       {count > 0 && (
         <>
-          <Excerpts count={count} excerpts={excerpts} query={query} />
+          {/* Excerpts document based on the keyword */}
+          <Excerpts
+            count={count}
+            excerpts={excerpts}
+            query={query}
+            isExactMatch={isExactMatch}
+          />
           {/* Words related to {{ keyword }} */}
           {top_word_freq && (
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
                 {t("words_related", { keyword: `"${query.q}"` })}
               </h3>
+
+              <Callout variant="info" className="p-4">
+                <CalloutTitle>{t("disclaimer_title")}</CalloutTitle>
+                <CalloutContent className="mr-2 pb-2">
+                  {t("disclaimer_bubble")}
+                </CalloutContent>
+              </Callout>
 
               <BubbleCloud
                 className="h-[350px] w-full sm:h-[700px]"

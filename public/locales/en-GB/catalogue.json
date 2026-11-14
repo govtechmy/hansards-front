@@ -13,5 +13,9 @@
   "csv": "Full Dataset (CSV)",
   "draft": "Draft",
   "final": "Verified",
-  "no_entries": "No entries found"
+  "pdf_page": "Page {{page}}",
+  "no_entries": "No entries found",
+  "tag": {
+    "oath_ceremony": "Oath-Taking Ceremony"
+  }
 }

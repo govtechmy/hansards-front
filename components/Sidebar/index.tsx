@@ -131,7 +131,7 @@ export default function Sidebar({ children, data, onClick }: SidebarProps) {
       <div className="hidden w-full lg:flex">
         <div
           className={cn(
-            "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-otl-gray-200",
+            "sticky top-28 h-[calc(100dvh-112px)] w-14 shrink-0 border-r border-r-otl-gray-200 bg-background dark:border-zinc-700",
             "transform-gpu ease-in-out [transition-property:width] motion-reduce:transition-none",
             showSidebar ? "duration-300 lg:w-60" : "hide-scrollbar duration-500"
           )}

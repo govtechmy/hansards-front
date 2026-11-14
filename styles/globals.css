@@ -65,7 +65,7 @@
     --muted: 217.2 32.6% 17.5%; /* Slate 800 */
     --muted-foreground: 215 20.2% 65.1%; /* Slate 400 */
     --accent: 217.2 32.6% 17.5%; /* Slate 800 */
-    --border: 240 3.7% 15.88%; /* Zinc 800 */
+    --border: 240 9.7% 30.88%; /* Zinc 800 */
     --border-hover: 240 5.26% 26.08%; /* Zinc 700 */
     --bg-hover: 240 3.7% 15.88%; /* Zinc 800 */
     --input: 217.2 32.6% 17.5%; /* Slate 800 */
@@ -107,7 +107,7 @@
   }
 
   .btn-border {
-    @apply border-slate-200 hover:border-slate-400 dark:border-zinc-800 hover:dark:border-zinc-700;
+    @apply border-slate-200 hover:border-slate-400 dark:border-zinc-700 hover:dark:border-zinc-700;
   }
 
   .btn-disabled {

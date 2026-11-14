@@ -82,7 +82,20 @@ export type Sitting = {
   view_count: number;
   cite_count: number;
   is_final: boolean;
+  /**
+   * KONTRAK SEMENTARA (tugasan B, Majlis Angkat Sumpah).
+   * API tagging Fid belum mendarat, jadi medan ini opsional dan bentuknya
+   * diandaikan. Jangan baca terus: guna helper dalam `@lib/sitting-tags`.
+   */
+  tags?: SittingTag;
 };
+
+/**
+ * Bentuk tag yang kita terima daripada `api/catalogue/`. Union ini sengaja
+ * longgar supaya kita tidak perlu ubah banyak tempat bila Fid tetapkan kontrak
+ * sebenar; penyeragaman dibuat dalam `@lib/sitting-tags`.
+ */
+export type SittingTag = string | string[] | null;
 
 export type Mesyuarat = Period & {
   sitting_list: Sitting[];
@@ -108,6 +121,10 @@ export type Speech = {
   is_annotation: boolean;
   index: number;
   avatar: string;
+  pdf_page_start: number;
+  pdf_page_end: number;
+  source_page_start: number;
+  source_page_end: number;
 };
 
 export type NestedSpeech = { [key: string]: Array<Speech | NestedSpeech> };
