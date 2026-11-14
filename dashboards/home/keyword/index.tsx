@@ -8,7 +8,8 @@ import { useTranslation } from "@hooks/useTranslation";
 import { COLOR } from "@lib/constants";
 import { SliderProvider } from "@lib/contexts/slider";
 import { cn } from "@lib/helpers";
-import { capitalize } from "@lib/utils";
+import { capitalize, setSearchParams } from "@lib/utils";
+import { routes } from "@lib/routes";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
@@ -104,6 +105,31 @@ const Keyword = ({
     []
   );
 
+  /**
+   * Klik gelembung mencari perkataan itu, mengekalkan semua penapis semasa
+   * (dewan, tarikh, umur, parti dan lain-lain) kerana `setSearchParams`
+   * menggabungkan ke dalam URL sedia ada dan hanya menukar kunci yang diberi.
+   *
+   * `tepat` dikosongkan dengan sengaja: gelembung ialah satu perkataan, jadi
+   * mengekalkan mod Carian Tepat akan menghasilkan carian frasa tepat yang
+   * pengguna tidak minta. Kunci itu belum wujud di staging (ia datang bersama
+   * tugasan A) dan memadam kunci yang tiada adalah selamat.
+   *
+   * `keywordQuery` ditetapkan terus di sini, walaupun effect penyelarasan di
+   * bawah akan menetapkannya juga apabila `q` tiba. Ini bukan pertindihan yang
+   * sia-sia: `getServerSideProps` perlu satu pusingan ke pelayan, jadi tanpa
+   * baris ini kotak kekal menunjukkan kata kunci lama sepanjang tempoh menunggu.
+   * Effect itu menguruskan Back dan Forward; baris ini memberi maklum balas
+   * serta-merta pada klik.
+   */
+  const handleBubbleSearch = (word: string) => {
+    setLoading(true);
+    setKeywordQuery(word);
+    router.push(
+      `${routes.CARI}${setSearchParams(router.asPath, { q: word, tepat: "" })}`
+    );
+  };
+
   const getAutocomplete = async (query: string) => {
     try {
       const response = await get("/api/autocomplete", { q: query }, "app");
@@ -150,6 +176,19 @@ const Keyword = ({
       ref.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [timeseries]);
+
+  /**
+   * Selaraskan kotak carian bila `q` dalam URL berubah tanpa komponen ini
+   * dimount semula. `useState` di atas hanya menyemai `keywordQuery` sekali,
+   * jadi tanpa effect ini kotak tertinggal dengan kata kunci lama apabila
+   * pengguna menekan Back atau Forward.
+   *
+   * Hanya bergantung pada `keyword`, jadi ia tidak mengganggu taipan pengguna:
+   * ia berjalan hanya apabila URL benar-benar bertukar.
+   */
+  useEffect(() => {
+    setKeywordQuery(keyword ?? "");
+  }, [keyword]);
 
   useEffect(() => {
     if (!keywordQuery) {
@@ -300,6 +339,7 @@ const Keyword = ({
                   id: word,
                   value: freq,
                 }))}
+                onBubbleClick={handleBubbleSearch}
               />
             </section>
           )}
