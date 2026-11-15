@@ -146,6 +146,10 @@ const Keyword = ({
         graf_akhir: format(to, "yyyy-MM-dd"),
         page: "",
       })}`
+    );
+  };
+
+  /**
    * Klik gelembung mencari perkataan itu, mengekalkan semua penapis semasa
    * (dewan, tarikh, umur, parti dan lain-lain) kerana `setSearchParams`
    * menggabungkan ke dalam URL sedia ada dan hanya menukar kunci yang diberi.
