@@ -30,7 +30,7 @@ import {
 import { useData } from "@hooks/useData";
 import { useTranslation } from "@hooks/useTranslation";
 import { PARTIES } from "@lib/options";
-import { OptionType } from "@lib/types";
+import { OptionType, RelatedSearch } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
 import {
   useRef,
@@ -56,6 +56,7 @@ import { routes } from "@lib/routes";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { flushSync } from "react-dom";
+import RelatedSearchChip from "./related-search-chip";
 
 const MONTHS: Record<string, string[]> = {
   "ms-MY": [
@@ -162,6 +163,7 @@ export interface KeywordFilterProps {
   setSuggestion: Dispatch<SetStateAction<string>>;
   dewan_counts?: Record<string, number>;
   takwim?: TakwimTerm[] | null;
+  relatedSearch?: RelatedSearch | null;
 }
 
 const KeywordFilter = ({
@@ -173,6 +175,7 @@ const KeywordFilter = ({
   setSuggestion,
   dewan_counts,
   takwim,
+  relatedSearch,
 }: KeywordFilterProps) => {
   const { t, i18n } = useTranslation([
     "home",
@@ -302,6 +305,24 @@ const KeywordFilter = ({
     );
   };
 
+  // Chip arrow: put the suggestion in the search box. No new search; the
+  // results stay and the user presses Enter (or Cari) when ready
+  const handleAcceptSuggestion = () => {
+    if (!relatedSearch) return;
+    setKeywordQuery(relatedSearch.corrected);
+    inputRef.current && inputRef.current.focus();
+  };
+
+  // Chip x: search again for exactly what the user typed. `q` is already in
+  // the URL, so only `tepat=1` is added and the page is reset. The server then
+  // returns no suggestion, which is why the chip disappears
+  const handleRejectSuggestion = () => {
+    if (!relatedSearch) return;
+    setKeywordQuery(relatedSearch.original);
+    inputRef.current && inputRef.current.focus();
+    handleSearch({ tepat: "1", page: "" });
+  };
+
   const handleClear = () => {
     if (keywordQuery) {
       handleSearch({
@@ -379,6 +400,7 @@ const KeywordFilter = ({
                     handleSearch({
                       dewan: data.dewan,
                       q: keywordQuery,
+                      tepat: "",
                       parti: data.party !== ALL_PARTIES ? data.party : "",
                       jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                       umur: data.age !== ALL_AGES ? data.age : "",
@@ -443,6 +465,7 @@ const KeywordFilter = ({
                 handleSearch({
                   dewan: data.dewan,
                   q: keywordQuery,
+                  tepat: "",
                   parti: data.party !== ALL_PARTIES ? data.party : "",
                   jantina: data.gender !== BOTH_GENDERS ? data.gender : "",
                   umur: data.age !== ALL_AGES ? data.age : "",
@@ -479,6 +502,17 @@ const KeywordFilter = ({
             </div>
           )}
         </div>
+
+        {/* Related search chip */}
+        {relatedSearch && (
+          <div className="flex justify-center">
+            <RelatedSearchChip
+              relatedSearch={relatedSearch}
+              onAccept={handleAcceptSuggestion}
+              onReject={handleRejectSuggestion}
+            />
+          </div>
+        )}
       </div>
 
       {/* Desktop Bar */}

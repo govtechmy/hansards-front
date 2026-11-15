@@ -38,5 +38,8 @@
   "search_tips": "Tips membuat carian",
   "search_tip_keyword": "Carian kata kunci, contohnya",
   "search_tip_exact": "Carian kata kunci secara tepat, contohnya",
-  "search_tip_mp": "Carian kata kunci dengan MP, contohnya"
+  "search_tip_mp": "Carian kata kunci dengan MP, contohnya",
+  "did_you_mean": "Adakah anda maksudkan:",
+  "did_you_mean_accept": "Masukkan cadangan ke kotak carian",
+  "search_exact_instead": "Cari kata yang ditaip secara tepat"
 }

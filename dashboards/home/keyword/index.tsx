@@ -24,7 +24,7 @@ import { ParsedUrlQuery } from "querystring";
 import { useEffect, useMemo, useRef, useState } from "react";
 import KeywordFilter, { TakwimTerm } from "./keyword-filter";
 import Excerpts, { ExcerptsProps } from "../excerpts";
-import { Speaker } from "@lib/types";
+import { RelatedSearch, Speaker } from "@lib/types";
 import { get } from "@lib/api";
 import {
   Callout,
@@ -58,6 +58,7 @@ export interface KeywordProps extends ExcerptsProps {
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
   takwim?: TakwimTerm[] | null;
+  relatedSearch?: RelatedSearch | null;
 }
 
 const Keyword = ({
@@ -70,6 +71,7 @@ const Keyword = ({
   top_speakers,
   top_word_freq,
   takwim,
+  relatedSearch,
 }: KeywordProps) => {
   const { t } = useTranslation(["home", "demografi", "party"]);
   const router = useRouter();
@@ -78,6 +80,10 @@ const Keyword = ({
 
   const { q, dewan, tarikh_mula, tarikh_akhir } = query;
   const keyword = q ? String(q) : undefined;
+  // The word that is really searched: the backend's correction when there is
+  // one, otherwise what the user typed. `keyword` stays the typed word because
+  // the search box must keep showing it (see `keywordQuery` below).
+  const usedKeyword = relatedSearch?.corrected ?? keyword;
   // Check if the keyword is an exact match (enclosed in double quotes)
   const isExactMatch = typeof q === "string" && /^\".+\"$/.test(q.trim());
   const [keywordQuery, setKeywordQuery] = useState(keyword ?? "");
@@ -140,6 +146,27 @@ const Keyword = ({
         graf_akhir: format(to, "yyyy-MM-dd"),
         page: "",
       })}`
+   * Klik gelembung mencari perkataan itu, mengekalkan semua penapis semasa
+   * (dewan, tarikh, umur, parti dan lain-lain) kerana `setSearchParams`
+   * menggabungkan ke dalam URL sedia ada dan hanya menukar kunci yang diberi.
+   *
+   * `tepat` dikosongkan dengan sengaja: gelembung ialah satu perkataan, jadi
+   * mengekalkan mod Carian Tepat akan menghasilkan carian frasa tepat yang
+   * pengguna tidak minta. Kunci itu belum wujud di staging (ia datang bersama
+   * tugasan A) dan memadam kunci yang tiada adalah selamat.
+   *
+   * `keywordQuery` ditetapkan terus di sini, walaupun effect penyelarasan di
+   * bawah akan menetapkannya juga apabila `q` tiba. Ini bukan pertindihan yang
+   * sia-sia: `getServerSideProps` perlu satu pusingan ke pelayan, jadi tanpa
+   * baris ini kotak kekal menunjukkan kata kunci lama sepanjang tempoh menunggu.
+   * Effect itu menguruskan Back dan Forward; baris ini memberi maklum balas
+   * serta-merta pada klik.
+   */
+  const handleBubbleSearch = (word: string) => {
+    setLoading(true);
+    setKeywordQuery(word);
+    router.push(
+      `${routes.CARI}${setSearchParams(router.asPath, { q: word, tepat: "" })}`
     );
   };
 
@@ -190,6 +217,19 @@ const Keyword = ({
     }
   }, [timeseries]);
 
+  /**
+   * Selaraskan kotak carian bila `q` dalam URL berubah tanpa komponen ini
+   * dimount semula. `useState` di atas hanya menyemai `keywordQuery` sekali,
+   * jadi tanpa effect ini kotak tertinggal dengan kata kunci lama apabila
+   * pengguna menekan Back atau Forward.
+   *
+   * Hanya bergantung pada `keyword`, jadi ia tidak mengganggu taipan pengguna:
+   * ia berjalan hanya apabila URL benar-benar bertukar.
+   */
+  useEffect(() => {
+    setKeywordQuery(keyword ?? "");
+  }, [keyword]);
+
   useEffect(() => {
     if (!keywordQuery) {
       setSuggestion("");
@@ -230,6 +270,7 @@ const Keyword = ({
           setSuggestion={setSuggestion}
           dewan_counts={dewan_counts}
           takwim={takwim}
+          relatedSearch={relatedSearch}
         />
 
         {/* Time-series of "keyword" in Parliament */}
@@ -238,13 +279,13 @@ const Keyword = ({
             {keyword &&
               house !== "semua" &&
               t("timeseries_title", {
-                keyword: keyword,
+                keyword: usedKeyword,
                 house: t(house.replace("-", "_"), { ns: "common" }),
               })}
 
             {house === "semua" &&
               t("all_timeseries_title", {
-                keyword: keyword,
+                keyword: usedKeyword,
                 house: t(house.replace("-", "_"), { ns: "common" }),
               })}
           </h3>
@@ -266,7 +307,7 @@ const Keyword = ({
                       {
                         type: "bar",
                         data: chartEmpty ? dummyFreq : coordinate.freq,
-                        label: keyword,
+                        label: usedKeyword,
                         backgroundColor:
                           theme === "light"
                             ? COLOR.PRIMARY_H
@@ -289,7 +330,7 @@ const Keyword = ({
                 {!loading && chartEmpty && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="flex items-center gap-2 rounded-md bg-border px-3 py-1.5">
-                      {keyword ? (
+                      {usedKeyword ? (
                         <>
                           <FaceFrownIcon className="size-6" />
                           {t("placeholder.no_results", { ns: "common" })}
@@ -317,12 +358,13 @@ const Keyword = ({
             excerpts={excerpts}
             query={query}
             isExactMatch={isExactMatch}
+            keyword={usedKeyword}
           />
           {/* Words related to {{ keyword }} */}
           {top_word_freq && (
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
-                {t("words_related", { keyword: `"${query.q}"` })}
+                {t("words_related", { keyword: `"${usedKeyword}"` })}
               </h3>
 
               <Callout variant="info" className="p-4">
@@ -338,6 +380,7 @@ const Keyword = ({
                   id: word,
                   value: freq,
                 }))}
+                onBubbleClick={handleBubbleSearch}
               />
             </section>
           )}
@@ -346,7 +389,7 @@ const Keyword = ({
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
               <h3 className="header text-center">
                 {t("most_spoken_by", {
-                  keyword: `"${capitalize(String(query.q))}"`,
+                  keyword: `"${capitalize(String(usedKeyword))}"`,
                 })}
               </h3>
 
