@@ -65,6 +65,8 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       dewan,
       tarikh_mula,
       tarikh_akhir,
+      graf_mula,
+      graf_akhir,
       umur,
       etnik,
       parti,
@@ -72,6 +74,17 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       tepat,
     } = query;
 
+    /**
+     * Tempoh bar graf yang diklik pengguna (tugasan E). Ia menyempitkan
+     * **senarai dokumen sahaja**, jadi ia digunakan hanya pada `api/search/`
+     * di bawah dan bukan pada `api/search-plot/` atau `api/search/counter`.
+     *
+     * Kalau ia disuap ke graf juga, graf akan membina semula dirinya kepada
+     * tempoh yang baru diklik, dan reka bentuk Naincie menunjukkan graf serta
+     * baris penapis kekal tidak berubah.
+     */
+    const listStartDate = graf_mula ?? tarikh_mula;
+    const listEndDate = graf_akhir ?? tarikh_akhir;
     // "Search exactly what I typed" (the user rejected the suggestion).
     // Only `tepat=1` counts: `0`, empty, `true` or a repeated `?tepat=1&tepat=1`
     // (which Next.js gives us as an array) do not.
@@ -86,8 +99,8 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         window_size: 100,
         page: page ?? 1,
         page_size: page_size ?? 10,
-        start_date: tarikh_mula,
-        end_date: tarikh_akhir,
+        start_date: listStartDate,
+        end_date: listEndDate,
         age_group: umur,
         ethnicity: etnik,
         party: parti,

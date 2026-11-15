@@ -10,7 +10,13 @@ import { SliderProvider } from "@lib/contexts/slider";
 import { cn } from "@lib/helpers";
 import { capitalize, setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
-import { differenceInCalendarDays, parseISO } from "date-fns";
+import {
+  differenceInCalendarDays,
+  endOfMonth,
+  format,
+  parseISO,
+  startOfMonth,
+} from "date-fns";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -106,6 +112,40 @@ const Keyword = ({
   );
 
   /**
+   * Klik bar menyempitkan **senarai dokumen di bawah graf sahaja**, mengikut
+   * reka bentuk Naincie: "Clickable bar and link directly to related list hasil
+   * carian". Dalam reka bentuk itu baris penapis kekal "Semua" dan graf tidak
+   * berubah; hanya senarai di bawah yang mengecil.
+   *
+   * Sebab itu ia **tidak** menulis `tarikh_mula` dan `tarikh_akhir`. Kedua-dua
+   * parameter itu menyuap keempat-empat permintaan dalam `pages/cari`, jadi
+   * menulisnya akan membina semula graf dan menukar chip penapis. `graf_mula`
+   * dan `graf_akhir` pula hanya digunakan pada permintaan `api/search/`.
+   *
+   * Satu bar mewakili satu bulan apabila julat melebihi 1095 hari, dan satu
+   * hari jika tidak. Keputusan Liza (14 Nov): julat meliputi keseluruhan
+   * tempoh bar, walaupun reka bentuk tidak menyatakannya.
+   *
+   * Pengiraan memakai waktu tempatan dengan sengaja. Carta memuat
+   * `chartjs-adapter-date-fns` tanpa opsyen zon waktu, jadi ia memaparkan label
+   * dalam waktu tempatan. Mengira dalam UTC akan membuatkan senarai tidak
+   * sepadan dengan label yang pengguna klik.
+   */
+  const handleBarClick = (label: string | number) => {
+    const clicked = new Date(Number(label));
+    if (Number.isNaN(clicked.getTime())) return;
+
+    const isMonthly = diff > 1095;
+    const from = isMonthly ? startOfMonth(clicked) : clicked;
+    const to = isMonthly ? endOfMonth(clicked) : clicked;
+
+    setLoading(true);
+    router.push(
+      `${routes.CARI}${setSearchParams(router.asPath, {
+        graf_mula: format(from, "yyyy-MM-dd"),
+        graf_akhir: format(to, "yyyy-MM-dd"),
+        page: "",
+      })}`
    * Klik gelembung mencari perkataan itu, mengekalkan semua penapis semasa
    * (dewan, tarikh, umur, parti dan lain-lain) kerana `setSearchParams`
    * menggabungkan ke dalam URL sedia ada dan hanya menukar kunci yang diberi.
@@ -259,6 +299,7 @@ const Keyword = ({
                   )}
                   isLoading={loading}
                   enableAnimation={!play}
+                  onClick={handleBarClick}
                   interval={diff > 1095 ? "month" : "day"}
                   data={{
                     labels: coordinate.date,
