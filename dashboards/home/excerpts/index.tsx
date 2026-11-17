@@ -7,9 +7,7 @@ import { ParsedUrlQuery } from "querystring";
 import { Dewan } from "@lib/types";
 import groupBy from "lodash/groupBy";
 import Link from "next/link";
-import Paginator from "@components/Paginator";
-import { setSearchParams } from "@lib/utils";
-import { useRouter } from "next/router";
+import { cn } from "@lib/helpers";
 import {
   Select,
   SelectContent,
@@ -18,65 +16,209 @@ import {
   SelectValue,
 } from "@components/MydsSelectFix/MydsSelectFix";
 import { Tag } from "@components/Tag";
-
-/**
- * Excerpts
- * @overview Status: In-development
- */
+import { useEffect, useState, useRef } from "react";
 
 export interface ExcerptsProps {
   count: number;
-  excerpts: Excerpt[] | FlatSitting[];
+  excerpts: Excerpt[];
   name?: string;
   query: ParsedUrlQuery;
-  variant?: "compact" | "default";
-}
-
-interface FlatSitting {
-  date: string;
-  term: number;
-  session: number;
-  meeting: number;
-  house: number;
+  variant?: "default";
 }
 
 const Excerpts = ({
-  count,
+  count: initialCount,
   excerpts,
   name,
   query,
-  variant = "default",
 }: ExcerptsProps) => {
   const { t, i18n } = useTranslation(["enum", "home"]);
-  const { q, dewan, page, page_size } = query;
-  const router = useRouter();
-  const ITEMS_PER_PAGE = 10;
-  const ROWS_PER_PAGE = [ITEMS_PER_PAGE, 25, 50].map(String);
+  const { q, dewan } = query;
 
-  const DEWAN_TAG: Record<
-    string,
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // ✅ NEW: store data per page
+  const [pageDataMap, setPageDataMap] = useState<{ [page: number]: Excerpt[] }>(
     {
-      variant: "primary" | "warning" | "success";
-      className: string;
-      label: string;
+      1: excerpts ?? [],
     }
-  > = {
-    "dewan-rakyat": {
-      variant: "primary",
-      className: "!text-body-xs font-normal text-[#2563EB]",
-      label: t("enum:dewan-rakyat"),
-    },
-    "dewan-negara": {
-      variant: "warning",
-      className: "border-[#A1620733] !text-body-xs font-normal text-[#A16207]",
-      label: t("enum:dewan-negara"),
-    },
-    "kamar-khas": {
-      variant: "success",
-      className: "border-[#15803D33] !text-body-xs font-normal text-[#15803D]",
-      label: t("enum:kamar-khas"),
-    },
+  );
+
+  // cursor per page
+  const [cursorMap, setCursorMap] = useState<{ [page: number]: string | null }>(
+    {
+      1: null,
+    }
+  );
+
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [count, setCount] = useState(initialCount ?? 0);
+  const [loading, setLoading] = useState(false);
+
+  const hasInitialized = useRef(false);
+
+  // ✅ CURRENT PAGE DATA
+  const data = pageDataMap[currentPage] || [];
+
+  // --------------------------
+  // FETCH SINGLE PAGE
+  // --------------------------
+  const fetchPage = async (page: number) => {
+    setLoading(true);
+
+    try {
+      const params = new URLSearchParams();
+      if (q) params.append("q", String(q));
+
+      const cursor = cursorMap[page];
+      if (cursor) params.append("cursor", cursor);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/search?${params.toString()}`
+      );
+
+      const json = await res.json();
+
+      // ✅ store per page
+      setPageDataMap(prev => ({
+        ...prev,
+        [page]: json.results,
+      }));
+
+      if (json.next_cursor) {
+        setCursorMap(prev => ({
+          ...prev,
+          [page + 1]: json.next_cursor,
+        }));
+      }
+
+      setNextCursor(json.next_cursor ?? null);
+
+      if (typeof json.count === "number") {
+        setCount(json.count);
+      }
+
+      setCurrentPage(page);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // --------------------------
+  // NAVIGATION
+  // --------------------------
+
+  const prefetchNextBatch = async (startPage: number) => {
+    let cursor = cursorMap[startPage];
+
+    for (let i = startPage; i < startPage + 5; i++) {
+      if (!cursor) break;
+
+      const params = new URLSearchParams();
+      if (q) params.append("q", String(q));
+      params.append("cursor", cursor);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/search?${params.toString()}`
+      );
+
+      if (!res.ok) break;
+
+      const json = await res.json();
+
+      setPageDataMap(prev => ({
+        ...prev,
+        [i]: json.results,
+      }));
+
+      setCursorMap(prev => ({
+        ...prev,
+        [i]: cursor,
+        [i + 1]: json.next_cursor,
+      }));
+
+      cursor = json.next_cursor;
+
+      setNextCursor(cursor);
+
+      if (!cursor) break;
+    }
+  };
+
+  const goToPage = async (page: number) => {
+    // if already cached → instant
+    if (pageDataMap[page]) {
+      setCurrentPage(page);
+
+      // 🔥 trigger next batch if at boundary (5, 10, 15...)
+      if (page % 5 === 0) {
+        prefetchNextBatch(page + 1);
+      }
+
+      return;
+    }
+
+    // fallback fetch
+    if (cursorMap[page] !== undefined) {
+      await fetchPage(page);
+
+      // 🔥 also trigger batch after fetch
+      if (page % 5 === 0) {
+        prefetchNextBatch(page + 1);
+      }
+    }
+  };
+
+  // --------------------------
+  // INIT BATCH (1–5 pages)
+  // --------------------------
+  useEffect(() => {
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
+    const init = async () => {
+      let cursor: string | null = null;
+
+      for (let i = 1; i <= 5; i++) {
+        const params = new URLSearchParams();
+        if (q) params.append("q", String(q));
+        if (cursor) params.append("cursor", cursor);
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/search?${params.toString()}`
+        );
+
+        const json = await res.json();
+
+        // ✅ store each page
+        setPageDataMap(prev => ({
+          ...prev,
+          [i]: json.results,
+        }));
+
+        setCursorMap(prev => ({
+          ...prev,
+          [i]: cursor,
+          [i + 1]: json.next_cursor,
+        }));
+
+        cursor = json.next_cursor;
+        setNextCursor(cursor);
+
+        if (typeof json.count === "number") {
+          setCount(json.count);
+        }
+
+        if (!cursor) break;
+      }
+    };
+
+    init();
+  }, []);
+
+  // pagination window
+  const startPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
+  const pages = Array.from({ length: 5 }, (_, i) => startPage + i);
 
   const HOUSE_TO_DEWAN: Record<number, string> = {
     0: "dewan-rakyat",
@@ -84,267 +226,120 @@ const Excerpts = ({
     2: "kamar-khas",
   };
 
-  if (variant === "compact") {
-    const flatExcerpts = (excerpts ?? []) as FlatSitting[];
+  const excerptsByDate = groupBy(data, "sitting.date");
 
-    return (
-      <>
-        <Section className="space-y-6 lg:space-y-8">
-          <h2 className="header">{t("home:excerpts", { count: count })}</h2>
-          <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {flatExcerpts.map(sitting => {
-              const dewanKey =
-                HOUSE_TO_DEWAN[sitting.house] ?? (dewan as string);
+  return (
+    <Section className="space-y-6 lg:space-y-8">
+      <h2 className="header">{t("home:excerpts", { count })}</h2>
 
-              return (
-                <li key={sitting.date} className="h-full">
-                  <div className="flex h-full items-center rounded-xl border border-otl-gray-200 p-4.5 shadow-card">
-                    <Link
-                      href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
-                      className="group flex gap-3 sm:gap-4.5"
-                    >
-                      <DateCard
-                        date={sitting.date}
-                        size="sm"
-                        className="min-h-[72px] min-w-[60px]"
-                      />
+      {loading && <div className="py-4 text-center">Loading...</div>}
 
-                      <div className="relative flex flex-col justify-center gap-2">
-                        <p className="font-semibold sm:group-hover:underline">
-                          {`${t("parlimen", {
-                            ordinal: true,
-                            count: sitting.term,
-                          })} / ${t("penggal", {
-                            ordinal: true,
-                            count: sitting.session,
-                          })} / ${t("mesyuarat_full", {
-                            ordinal: true,
-                            n: sitting.meeting,
-                          })}`}
-                        </p>
+      <ul className="flex flex-col divide-otl-gray-200 sm:divide-y">
+        {Object.keys(excerptsByDate).map(date => {
+          const excerpt = excerptsByDate[date];
+          const sitting = excerpt[0].sitting;
 
-                        {name && (
-                          <p className="flex gap-1 text-body-xs font-light text-zinc-500 sm:text-body-sm">
-                            {name
-                              .toLowerCase()
-                              .replace(/\b\w/g, c => c.toUpperCase())}
-                          </p>
-                        )}
+          const dewanKey =
+            HOUSE_TO_DEWAN[sitting.house ?? 0] ?? (dewan as string);
 
-                        {dewanKey && DEWAN_TAG[dewanKey] && (
-                          <div>
-                            <Tag
-                              variant={DEWAN_TAG[dewanKey].variant}
-                              className={DEWAN_TAG[dewanKey].className}
-                              mode="pill"
-                              size="small"
-                            >
-                              {DEWAN_TAG[dewanKey].label}
-                            </Tag>
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-            <div className="flex items-center gap-3">
-              <span className="text-dim-500 whitespace-nowrap text-sm">
-                {t("home:results_per_page")}
-              </span>
-              <Select
-                multiple={false}
-                variant="outline"
-                size="medium"
-                value={page_size ? String(page_size) : ROWS_PER_PAGE[0]}
-                onValueChange={size => {
-                  const url = setSearchParams(router.asPath, {
-                    page: "1",
-                    page_size: size,
-                  });
-                  router.push(url);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ROWS_PER_PAGE.map(rows => (
-                    <SelectItem key={rows} value={rows}>
-                      {rows}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Paginator
-              count={count}
-              currentPage={page ? Number(page) : 1}
-              onPageChange={page => {
-                const url = setSearchParams(router.asPath, {
-                  page: page.toString(),
-                });
-                router.push(url);
-              }}
-              limit={page_size ? Number(page_size) : ITEMS_PER_PAGE}
-            />
-          </div>
-        </Section>
-      </>
-    );
-  } else {
-    const excerptsByDate = groupBy(excerpts as Excerpt[], "sitting.date");
-
-    return (
-      <>
-        <Section className="space-y-6 lg:space-y-8">
-          <h2 className="header">{t("home:excerpts", { count: count })}</h2>
-          <ul className="flex flex-col divide-otl-gray-200 sm:divide-y">
-            {Object.keys(excerptsByDate).map(date => {
-              const excerpt = excerptsByDate[date];
-              const sitting = excerpt[0].sitting;
-              const dewanKey =
-                HOUSE_TO_DEWAN[sitting.house ?? 0] ?? (dewan as string);
-              return (
-                <li
-                  key={date}
-                  className="flex flex-col gap-3 py-4.5 first:pt-0 sm:gap-6 sm:py-6 lg:flex-row"
+          return (
+            <li key={date} className="flex flex-col gap-3 py-4.5 lg:flex-row">
+              <div className="flex items-center">
+                <Link
+                  href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
+                  className="flex items-center gap-3"
                 >
-                  <div className="top-16 flex shrink-0 items-center lg:sticky lg:h-24 lg:max-w-md">
-                    <Link
-                      href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
-                      className="group flex items-center gap-3 sm:gap-4.5"
-                    >
-                      <DateCard date={date} size="sm" />
+                  <DateCard date={date} size="sm" />
+                </Link>
+              </div>
 
-                      <div className="relative flex flex-col justify-center gap-0.5">
-                        <p className="font-semibold sm:group-hover:underline">
-                          {new Date(date).toLocaleDateString(i18n.language, {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                          {`, ${new Date(date).toLocaleDateString(
-                            i18n.language,
-                            {
-                              weekday: "long",
-                            }
-                          )}`}
-                        </p>
-                        <div>
-                          {/* <Tag
-                        size="medium"
-                        variant="default"
-                        mode="pill"
-                        className="border-[#134960]/20 bg-[#134960]/10 text-[#134960]"
-                      >
-                        <DewanRakyatIcon className="size-5" />
-                        {t("dewan_rakyat")}
-                      </Tag>
-                      <Tag
-                        size="medium"
-                        variant="default"
-                        mode="pill"
-                        className="border-[#66222A]/20 bg-[#66222A]/10 text-[#66222A]"
-                      >
-                        <DewanNegaraIcon className="size-5" />
-                        {t("dewan_negara")}
-                      </Tag> */}
-                        </div>
-                        <p className="flex gap-1 text-body-xs text-txt-black-700 sm:text-body-sm">
-                          {`${t("parlimen", {
-                            ordinal: true,
-                            count: sitting.term,
-                          })} / ${t("penggal", {
-                            ordinal: true,
-                            count: sitting.session,
-                          })} / ${t("mesyuarat_full", {
-                            ordinal: true,
-                            n: sitting.meeting,
-                          })}`}
-                        </p>
-                        {dewanKey && DEWAN_TAG[dewanKey] && (
-                          <div>
-                            <Tag
-                              variant={DEWAN_TAG[dewanKey].variant}
-                              className={DEWAN_TAG[dewanKey].className}
-                              mode="pill"
-                              size="small"
-                            >
-                              {DEWAN_TAG[dewanKey].label}
-                            </Tag>
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                  </div>
-                  <div className="flex max-h-fit w-full flex-col divide-y divide-otl-gray-200 rounded-xl border border-otl-gray-200">
-                    {excerpt
-                      .sort((a, b) => a.index - b.index)
-                      .map((excerpt, i) => (
-                        <ExcerptList
-                          key={i}
-                          dewan={(dewan ?? "dewan-rakyat") as Dewan}
-                          excerpt={excerpt}
-                          keyword={String(q)}
-                        />
-                      ))}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-            <div className="flex items-center gap-3">
-              <span className="text-dim-500 whitespace-nowrap text-sm">
-                {t("home:results_per_page")}
-              </span>
-              <Select
-                multiple={false}
-                variant="outline"
-                size="medium"
-                value={page_size ? String(page_size) : ROWS_PER_PAGE[0]}
-                onValueChange={size => {
-                  const url = setSearchParams(router.asPath, {
-                    page: "1",
-                    page_size: size,
-                  });
-                  router.push(url);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ROWS_PER_PAGE.map(rows => (
-                    <SelectItem key={rows} value={rows}>
-                      {rows}
-                    </SelectItem>
+              <div className="flex w-full flex-col divide-y rounded-xl border">
+                {excerpt
+                  .sort((a, b) => a.index - b.index)
+                  .map((ex, i) => (
+                    <ExcerptList
+                      key={i}
+                      dewan={(dewan ?? "dewan-rakyat") as Dewan}
+                      excerpt={ex}
+                      keyword={String(q)}
+                    />
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Paginator
-              count={count}
-              currentPage={page ? Number(page) : 1}
-              onPageChange={page => {
-                const url = setSearchParams(router.asPath, {
-                  page: page.toString(),
-                });
-                router.push(url);
-              }}
-              limit={page_size ? Number(page_size) : ITEMS_PER_PAGE}
-            />
-          </div>
-        </Section>
-      </>
-    );
-  }
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* PAGINATION */}
+      {/* PAGINATION */}
+      <div className="text-sm text-gray-500">
+        About {count.toLocaleString()} results • Page {currentPage} of ~
+        {Math.ceil(count / 10)}
+      </div>
+      <div className="shadow-sm flex items-center gap-2 rounded-lg border border-otl-gray-200 bg-white p-2">
+        {/* Previous */}
+        <button
+          className={cn(
+            "rounded-md border px-3 py-2 text-sm font-medium transition",
+            currentPage === 1 || loading
+              ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+              : "border-otl-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+          )}
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 1 || loading}
+        >
+          Previous
+        </button>
+
+        {/* Page numbers */}
+        <div className="flex items-center gap-2">
+          {pages.map(page => {
+            const isKnown = page in cursorMap;
+
+            return (
+              <button
+                key={page}
+                className={cn(
+                  "flex h-9 min-w-[36px] items-center justify-center rounded-md border text-sm font-medium transition",
+
+                  // ACTIVE
+                  page === currentPage &&
+                    "shadow-sm border-[#DDD6B0] bg-[#DDD6B0] text-black",
+
+                  // CLICKABLE
+                  page !== currentPage &&
+                    isKnown &&
+                    "border-otl-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-100",
+
+                  // DISABLED
+                  !isKnown &&
+                    "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                )}
+                onClick={() => goToPage(page)}
+                disabled={!isKnown || loading}
+              >
+                {page}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Next */}
+        <button
+          className={cn(
+            "rounded-md border px-3 py-2 text-sm font-medium transition",
+            loading || nextCursor === null
+              ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+              : "border-otl-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+          )}
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={loading || nextCursor === null}
+        >
+          Next
+        </button>
+      </div>
+    </Section>
+  );
 };
 
 export default Excerpts;

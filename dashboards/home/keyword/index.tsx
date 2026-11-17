@@ -258,7 +258,12 @@ const Keyword = ({
 
       {count > 0 && (
         <>
-          <Excerpts count={count} excerpts={excerpts} query={query} />
+          <Excerpts
+            variant="compact"
+            count={count}
+            excerpts={excerpts}
+            query={query}
+          />
           {/* Words related to {{ keyword }} */}
           {top_word_freq && (
             <section className="space-y-6 py-8 lg:space-y-8 lg:py-12">
