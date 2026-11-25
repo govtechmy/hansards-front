@@ -32,6 +32,99 @@ test("PDF viewer renders one page until View all is selected", () => {
   assert.match(source, /pageNumbers\.map/);
   assert.match(source, /setShowAll\(value => !value\)/);
   assert.match(source, /disableAutoFetch: true/);
+  assert.match(source, /disableStream: true/);
+  assert.match(source, /export const prefetchPdfPage/);
+  assert.match(source, /LazyPdfPage/);
+});
+
+test("split view prefetches the hash-linked PDF page", () => {
+  const source = readFileSync(
+    resolve(__dirname, "../data-catalogue/hansard/hansard.tsx"),
+    "utf8"
+  );
+  assert.match(source, /import\("\.\/pdf-viewer"\)/);
+  assert.match(source, /prefetchPdfPage\(filename, page, session\)/);
+  assert.match(source, /requestIdleCallback/);
+});
+
+test("PDF session shares pending work and cancels it on disposal", async () => {
+  const { createPdfSession } = load(
+    "data-catalogue/hansard/pdf-session.ts",
+    {}
+  );
+  let starts = 0;
+  let destroys = 0;
+  let resolvePdf;
+  const promise = new Promise(resolve => {
+    resolvePdf = resolve;
+  });
+  const session = createPdfSession();
+  const start = () => {
+    starts++;
+    return {
+      promise,
+      destroy: async () => {
+        destroys++;
+      },
+    };
+  };
+  const first = session.load(start);
+  assert.equal(session.load(start), first);
+  resolvePdf({ numPages: 183 });
+  await first;
+  assert.equal(session.load(start), first);
+  assert.equal(starts, 1);
+  session.dispose();
+  assert.equal(destroys, 1);
+  await assert.rejects(session.load(start), /closed/);
+  const pending = createPdfSession();
+  pending.load(() => ({
+    promise: new Promise(() => {}),
+    destroy: async () => {
+      destroys++;
+    },
+  }));
+  pending.dispose();
+  assert.equal(destroys, 2);
+});
+
+test("a failed PDF load is released and reopening can retry", async () => {
+  const { createPdfSession } = load(
+    "data-catalogue/hansard/pdf-session.ts",
+    {}
+  );
+  const session = createPdfSession();
+  let destroyed = 0;
+  await assert.rejects(
+    session.load(() => ({
+      promise: Promise.reject(new Error("Network failed")),
+      destroy: async () => {
+        destroyed++;
+      },
+    })),
+    /Network failed/
+  );
+  assert.equal(destroyed, 1);
+  const document = { numPages: 183 };
+  assert.equal(
+    await session.load(() => ({
+      promise: Promise.resolve(document),
+      destroy: async () => {},
+    })),
+    document
+  );
+  session.dispose();
+});
+
+test("PDF load errors direct users to the download action", () => {
+  for (const locale of ["en-GB", "ms-MY"]) {
+    const translations = readFileSync(
+      resolve(__dirname, `../public/locales/${locale}/hansard.json`),
+      "utf8"
+    );
+    assert.match(translations, /Download|Muat turun/);
+    assert.doesNotMatch(translations, /link above|pautan di atas/);
+  }
 });
 
 test("speech clicks preserve the inner transcript position", () => {
