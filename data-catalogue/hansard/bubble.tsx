@@ -173,13 +173,14 @@ const SpeechBubble = ({
               <>{is_final ? t("final") : t("draft")} • </>
             )}
             {timeString}
-            {pdf_page_start != null && (
+            {source_page_start != null && (
               <>
                 {" • "}
-                {t("pdf_page", { page: pdf_page_start })}
-                {pdf_page_end != null && pdf_page_end !== pdf_page_start && (
-                  <> - {pdf_page_end}</>
-                )}
+                {t("pdf_page", { page: source_page_start })}
+                {source_page_end != null &&
+                  source_page_end !== source_page_start && (
+                    <> - {source_page_end}</>
+                  )}
                 {/* <>=</>{pdf_page_end} */}
               </>
             )}
