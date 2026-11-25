@@ -139,6 +139,7 @@ test("PDF route rejects arbitrary paths and methods, and streams byte ranges", a
 test("opening follows the hash and conversation clicks update the controlled PDF page", () => {
   const React = require("react");
   const updates = [];
+  let resetCalls = 0;
   let desktop = true;
   let stateIndex = 0;
   const target = { closest: () => ({ dataset: { pdfPage: "62" } }) };
@@ -153,6 +154,7 @@ test("opening follows the hash and conversation clicks update the controlled PDF
         ...React,
         useRef: () => ({ current: null }),
         useEffect: () => {},
+        useContext: () => ({ onResetSearch: () => resetCalls++ }),
         useState: initial => {
           const index = stateIndex++;
           return [initial, value => updates.push([index, value])];
@@ -171,6 +173,11 @@ test("opening follows the hash and conversation clicks update the controlled PDF
         isSpeech: value => "speech" in value,
         isYDP: () => false,
         formatTimestamp: String,
+      },
+      "./search/context": {
+        SearchEventContext: React.createContext({
+          onResetSearch: () => resetCalls++,
+        }),
       },
       "./search/highlight": {
         highlightKeyword: text => text,
@@ -241,6 +248,7 @@ test("opening follows the hash and conversation clicks update the controlled PDF
     [1, 62],
     [0, true],
   ]);
+  assert.equal(resetCalls, 1);
   const transcript = nodes.find(
     node => node.type === "div" && node.props.onClick
   );

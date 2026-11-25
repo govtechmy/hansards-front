@@ -33,6 +33,7 @@ interface IState {
 
 interface EventContextProps {
   onSearchChange: (searchValue: string) => void;
+  onResetSearch: () => void;
   onNext: (data: any) => void;
   onPrev: (data: any) => void;
   onUpdateMatchList: (matchedList: MatchObjectProps[]) => void;
@@ -111,6 +112,7 @@ const defaultStore: IState = {
 
 const searchEventStore: EventContextProps = {
   onSearchChange: () => {},
+  onResetSearch: () => {},
   onPrev: () => {},
   onNext: () => {},
   onUpdateMatchList: () => {},
@@ -154,6 +156,17 @@ export const SearchProvider = (props: SearchProviderProps) => {
     }, 500),
     []
   );
+
+  const onResetSearch = useCallback(() => {
+    const firstMatch = store.matchedList[0];
+    dispatch({
+      type: IActionTypes.setActiveMatch,
+      payload: {
+        activeId: firstMatch?.id ?? "",
+        activeCount: firstMatch ? 1 : 0,
+      },
+    });
+  }, [store.matchedList]);
 
   // Calculate previous match text
   const onPrev = useCallback(
@@ -281,6 +294,7 @@ export const SearchProvider = (props: SearchProviderProps) => {
       <SearchEventContext.Provider
         value={{
           onSearchChange,
+          onResetSearch,
           onUpdateMatchList,
           onPrev,
           onNext,

@@ -9,13 +9,14 @@ import { cn, numFormat } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { Speeches } from "@lib/types";
 import Link from "next/link";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import SpeechBubble from "./bubble";
 import { highlightKeyword, highlightKeywordMarkdown } from "./search/highlight";
 import CiteButton from "../cite";
 import ShareButton from "../share";
 import HansardSearchBar from "./search-bar";
+import { SearchEventContext } from "./search/context";
 import Sidebar from "./sidebar";
 import { formatTimestamp, isSpeech, isYDP } from "@lib/utils";
 import { CiteIcon } from "@icons/index";
@@ -73,6 +74,7 @@ const Hansard = ({
   is_final,
 }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
+  const { onResetSearch } = useContext(SearchEventContext);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const sidebarRef = useRef<SidebarOpen>(null);
@@ -96,6 +98,7 @@ const Hansard = ({
       savedScroll.current = window.scrollY;
       const hash = window.location.hash.slice(1);
       const target = document.getElementById(hash);
+      onResetSearch();
       setPdfPage(
         Number(
           target?.closest<HTMLElement>("[data-pdf-page]")?.dataset.pdfPage
