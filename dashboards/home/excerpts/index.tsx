@@ -34,6 +34,7 @@ export interface ExcerptsProps {
 }
 
 interface FlatSitting {
+  index: number;
   date: string;
   term: number;
   session: number;
@@ -88,6 +89,15 @@ const Excerpts = ({
 
   if (variant === "compact") {
     const flatExcerpts = (excerpts ?? []) as FlatSitting[];
+    const formattedName = name
+      ?.toLowerCase()
+      .replace(
+        /\b(?:yang (?:amat )?berhormat|yang berbahagia|tan sri|toh puan|tun|tunku|tuanku|tengku|raja|ungku|engku|datuk(?:\s+paduka)?|dato(?:['’]|k)?|datin|paduka|seri|sri|sari|haji|hajah|hj|hjh|dr|prof(?:esor)?|ir|ts|puan|encik|cik|tuan|yb|yab|ybhg)\.?(?=\s|$)/g,
+        ""
+      )
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\b\w/g, c => c.toUpperCase());
 
     return (
       <>
@@ -98,11 +108,12 @@ const Excerpts = ({
               const dewanKey =
                 HOUSE_TO_DEWAN[sitting.house] ?? (dewan as string);
 
+              // MP (Member of Parliament) excerpt
               return (
                 <li key={sitting.date} className="h-full">
                   <div className="flex h-full items-center rounded-xl border border-otl-gray-200 p-4.5 shadow-card">
                     <Link
-                      href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
+                      href={`hansard/${dewanKey}/${sitting.date}?q=${encodeURIComponent(formattedName ?? "")}#${sitting.index}`}
                       className="group flex gap-3 sm:gap-4.5"
                     >
                       <DateCard
