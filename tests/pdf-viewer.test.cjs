@@ -31,6 +31,15 @@ test("speech clicks preserve the inner transcript position", () => {
   assert.match(source, /transcript\.scrollTop = scrollTop/);
 });
 
+test("search navigation scrolls the nearest overflow container", () => {
+  const source = readFileSync(
+    resolve(__dirname, "../data-catalogue/hansard/search/context.tsx"),
+    "utf8"
+  );
+  assert.match(source, /window\.getComputedStyle\(parent\)/);
+  assert.match(source, /parent\.scrollTo\(\{/);
+});
+
 function load(file, mocks) {
   const module = { exports: {} };
   const code = ts.transpileModule(
