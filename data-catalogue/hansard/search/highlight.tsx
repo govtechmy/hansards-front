@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from "react";
+import { Fragment, useContext, useEffect, useMemo } from "react";
 import { SearchContext, SearchEventContext } from "./context";
 import { getMatchText } from "./match-text";
 import { Remarkable } from "remarkable";
@@ -35,23 +35,22 @@ export function highlightKeyword(text: string, id: string) {
           const matchId = `${id}_${i}`;
           const isHighlighted = matchId === activeId;
 
-          return i < matchData.slices.length ? (
-            <>
+          return (
+            <Fragment key={matchId}>
               {speech}
-              <mark
-                key={i}
-                id={matchId}
-                className={
-                  isHighlighted
-                    ? "bg-bg-primary-500 text-white"
-                    : "bg-[#DDD6B0] text-black"
-                }
-              >
-                {matchData.matches[i]}
-              </mark>
-            </>
-          ) : (
-            speech
+              {i < matchData.matches.length && (
+                <mark
+                  id={matchId}
+                  className={
+                    isHighlighted
+                      ? "bg-bg-primary-500 text-white"
+                      : "bg-[#DDD6B0] text-black"
+                  }
+                >
+                  {matchData.matches[i]}
+                </mark>
+              )}
+            </Fragment>
           );
         })}
       </>
