@@ -286,7 +286,9 @@ const Hansard = ({
             <div
               title={heading}
               className={cn(
-                "top-28 z-10 text-balance bg-background py-3 text-center text-foreground lg:sticky",
+                "z-10 bg-background py-3 text-center text-foreground lg:sticky",
+                splitOpen ? "top-0" : "top-28",
+                splitOpen ? "truncate whitespace-nowrap px-3" : "text-balance",
                 // !s[heading].some((e) => !isSpeech(e)) && "lg:sticky"
                 isFirstLevel ? "font-bold" : "font-medium"
               )}
@@ -454,20 +456,6 @@ const Hansard = ({
 
           <div className="sticky top-14 z-20 flex w-full flex-wrap items-center justify-between gap-1 border-b border-b-border bg-background pr-3 sm:flex-nowrap lg:gap-3 lg:px-8">
             <HansardSearchBar />
-            {isDesktop && (
-              <Button
-                variant="default-outline"
-                onClick={togglePdf}
-                disabled={!filename}
-                aria-expanded={pdfOpen}
-                aria-controls="hansard-pdf"
-                className="shrink-0 whitespace-nowrap"
-              >
-                <PdfFileIcon className="size-4" />
-                {t(pdfOpen ? "pdf_viewer.hide" : "pdf_viewer.open")}
-              </Button>
-            )}
-
             <Dropdown>
               <DropdownTrigger asChild>
                 <Button
@@ -573,6 +561,19 @@ const Hansard = ({
                 )}
               />
             </div>
+            {isDesktop && (
+              <Button
+                variant="default-outline"
+                onClick={togglePdf}
+                disabled={!filename}
+                aria-expanded={pdfOpen}
+                aria-controls="hansard-pdf"
+                className="shrink-0 whitespace-nowrap"
+              >
+                <PdfFileIcon className="size-4" />
+                {t(pdfOpen ? "pdf_viewer.hide" : "pdf_viewer.open")}
+              </Button>
+            )}
           </div>
 
           <div
@@ -589,18 +590,25 @@ const Hansard = ({
               <div
                 ref={transcriptRef}
                 onClick={event => {
+                  const transcript = transcriptRef.current;
+                  const scrollTop = transcript?.scrollTop ?? 0;
                   const page = Number(
                     (event.target as HTMLElement).closest<HTMLElement>(
                       "[data-pdf-page]"
                     )?.dataset.pdfPage
                   );
-                  if (page > 0) setPdfPage(page);
+                  if (page > 0) {
+                    setPdfPage(page);
+                    requestAnimationFrame(() => {
+                      if (transcript) transcript.scrollTop = scrollTop;
+                    });
+                  }
                 }}
                 className={cn(
                   "relative flex h-full flex-col gap-y-6 bg-background px-3 pb-8 pt-3 md:px-4.5 lg:max-w-[1048px] lg:px-6 lg:py-12",
                   open && "mx-auto",
                   splitOpen &&
-                    "hidden min-h-0 w-full overflow-y-auto overscroll-contain lg:flex lg:max-w-none lg:py-4"
+                    "hidden min-h-0 w-full overflow-y-auto overscroll-contain lg:flex lg:max-w-none lg:py-0"
                 )}
               >
                 <MobileButton onClick={handleClick} />
