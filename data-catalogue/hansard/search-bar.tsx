@@ -47,9 +47,9 @@ export default function HansardSearchBar() {
   // }, [asPath]);
 
   return (
-    <div className="flex w-full items-center gap-3 py-1.5">
+    <div className="flex min-w-0 flex-1 items-center gap-2 py-1.5 lg:gap-3">
       <Search
-        className="w-full border-none py-[3.5px]"
+        className="min-w-0 flex-1 border-none py-[3.5px]"
         query={query}
         onChange={e => {
           setQuery(e.target.value);

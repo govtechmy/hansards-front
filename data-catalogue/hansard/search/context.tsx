@@ -33,6 +33,7 @@ interface IState {
 
 interface EventContextProps {
   onSearchChange: (searchValue: string) => void;
+  onResetSearch: () => void;
   onNext: (data: any) => void;
   onPrev: (data: any) => void;
   onUpdateMatchList: (matchedList: MatchObjectProps[]) => void;
@@ -71,6 +72,26 @@ interface SearchProviderProps {
 const scrollToView = (id: string, fixHeaderHeight: number = 0) => {
   const dom = document.getElementById(id);
   if (dom) {
+    let parent = dom.parentElement;
+    while (parent && parent !== document.body) {
+      const { overflowY } = window.getComputedStyle(parent);
+      if (
+        /(auto|scroll|overlay)/.test(overflowY) &&
+        parent.scrollHeight > parent.clientHeight
+      ) {
+        parent.scrollTo({
+          top:
+            dom.getBoundingClientRect().top -
+            parent.getBoundingClientRect().top +
+            parent.scrollTop -
+            64,
+          behavior: "smooth",
+        });
+        return;
+      }
+      parent = parent.parentElement;
+    }
+
     const topOfElement =
       dom.getBoundingClientRect().bottom + window.pageYOffset - fixHeaderHeight;
     window.scroll({
@@ -91,6 +112,7 @@ const defaultStore: IState = {
 
 const searchEventStore: EventContextProps = {
   onSearchChange: () => {},
+  onResetSearch: () => {},
   onPrev: () => {},
   onNext: () => {},
   onUpdateMatchList: () => {},
@@ -134,6 +156,17 @@ export const SearchProvider = (props: SearchProviderProps) => {
     }, 500),
     []
   );
+
+  const onResetSearch = useCallback(() => {
+    const firstMatch = store.matchedList[0];
+    dispatch({
+      type: IActionTypes.setActiveMatch,
+      payload: {
+        activeId: firstMatch?.id ?? "",
+        activeCount: firstMatch ? 1 : 0,
+      },
+    });
+  }, [store.matchedList]);
 
   // Calculate previous match text
   const onPrev = useCallback(
@@ -261,6 +294,7 @@ export const SearchProvider = (props: SearchProviderProps) => {
       <SearchEventContext.Provider
         value={{
           onSearchChange,
+          onResetSearch,
           onUpdateMatchList,
           onPrev,
           onNext,

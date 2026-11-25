@@ -1,5 +1,6 @@
 import Nexti18NextConfig from "../next-i18next.config";
 import "../styles/globals.css";
+import "react-pdf/dist/Page/TextLayer.css";
 import Layout from "@components/Layout";
 import Progress from "@components/Progress";
 import { cn } from "@lib/helpers";
