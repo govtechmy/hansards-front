@@ -22,6 +22,9 @@ const nextConfig = {
   reactStrictMode: true,
 
   webpack: config => {
+    // PDF.js's unminified bundle conflicts with webpack's development eval scope.
+    config.resolve.alias["pdfjs-dist$"] =
+      require.resolve("pdfjs-dist/build/pdf.min.mjs");
     config.module.rules.push({
       test: /components|hooks\/index.ts/i,
       sideEffects: false,
