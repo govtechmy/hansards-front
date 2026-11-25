@@ -1,11 +1,15 @@
 import { useTranslation } from "@hooks/useTranslation";
 import { buildDownloadPath } from "@lib/downloads";
+import { cn } from "@lib/helpers";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Button } from "@govtechmy/myds-react/button";
 
 // Keep this local worker matched to react-pdf's pinned PDF.js version.
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+
+const singlePageOptions = { disableAutoFetch: true };
+const allPagesOptions = { disableAutoFetch: false };
 
 interface PdfViewerProps {
   filename: string;
@@ -24,7 +28,16 @@ export default function PdfViewer({
   const [width, setWidth] = useState(0);
   const [pages, setPages] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const [showAll, setShowAll] = useState(false);
   const currentPage = Math.min(page, pages || page);
+  const pageNumbers = showAll
+    ? Array.from({ length: pages }, (_, index) => index + 1)
+    : [currentPage];
+  const viewKey = cn(
+    showAll && "pdf_viewer.view_one",
+    !showAll && "pdf_viewer.view_all"
+  );
+  const viewLabel = t(viewKey);
 
   useEffect(() => {
     if (!container.current) return;
@@ -47,7 +60,7 @@ export default function PdfViewer({
         viewer.scrollTop,
       behavior: "smooth",
     });
-  }, [page, pages]);
+  }, [page, pages, showAll]);
 
   return (
     <section
@@ -105,6 +118,16 @@ export default function PdfViewer({
         >
           +
         </Button>
+        <Button
+          variant="default-outline"
+          disabled={!pages}
+          onClick={() => setShowAll(value => !value)}
+          aria-pressed={showAll}
+          aria-label={viewLabel}
+          className="whitespace-nowrap"
+        >
+          {viewLabel}
+        </Button>
         {/* <a
           href={buildDownloadPath(filename, "pdf")}
           target="_blank"
@@ -120,6 +143,7 @@ export default function PdfViewer({
       >
         <Document
           file={`/api/pdf?filename=${encodeURIComponent(filename)}`}
+          options={showAll ? allPagesOptions : singlePageOptions}
           onLoadSuccess={({ numPages }) => setPages(numPages)}
           loading={
             <p role="status" className="p-4">
@@ -133,8 +157,7 @@ export default function PdfViewer({
           }
         >
           {width > 0 &&
-            Array.from({ length: pages }, (_, index) => {
-              const pageNumber = index + 1;
+            pageNumbers.map(pageNumber => {
               return (
                 <div
                   key={pageNumber}

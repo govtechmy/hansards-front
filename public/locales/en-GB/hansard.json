@@ -10,6 +10,8 @@
     "page": "PDF page",
     "zoom_in": "Zoom in",
     "zoom_out": "Zoom out",
+    "view_all": "View all",
+    "view_one": "View one",
     "error": "Unable to load PDF. Open it in a new tab using the link above."
   },
   "summary": {

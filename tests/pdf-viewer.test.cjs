@@ -22,6 +22,18 @@ test("changing PDF pages scrolls only the PDF container", () => {
   assert.match(source, /viewer\.scrollTo\(/);
 });
 
+test("PDF viewer renders one page until View all is selected", () => {
+  const source = readFileSync(
+    resolve(__dirname, "../data-catalogue/hansard/pdf-viewer.tsx"),
+    "utf8"
+  );
+  assert.match(source, /const \[showAll, setShowAll\] = useState\(false\)/);
+  assert.match(source, /const pageNumbers = showAll/);
+  assert.match(source, /pageNumbers\.map/);
+  assert.match(source, /setShowAll\(value => !value\)/);
+  assert.match(source, /disableAutoFetch: true/);
+});
+
 test("speech clicks preserve the inner transcript position", () => {
   const source = readFileSync(
     resolve(__dirname, "../data-catalogue/hansard/hansard.tsx"),
@@ -119,6 +131,7 @@ test("PDF route rejects arbitrary paths and methods, and streams byte ranges", a
   assert.equal(call[1].headers.Range, "bytes=0-3");
   assert.equal(res.statusCode, 206);
   assert.equal(res.headers["content-range"], "bytes 0-3/100");
+  assert.equal(res.headers["Accept-Ranges"], "bytes");
   assert.equal(res.headers["Content-Disposition"], "inline");
   stream.end("%PDF");
 });

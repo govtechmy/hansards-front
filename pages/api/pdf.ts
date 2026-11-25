@@ -32,6 +32,8 @@ export default async function handler(
       if (upstream.headers[header])
         res.setHeader(header, upstream.headers[header]);
     }
+    if (upstream.status === 206 || upstream.headers["content-range"])
+      res.setHeader("Accept-Ranges", "bytes");
     upstream.data.on("error", () => res.destroy());
     res.on("close", () => upstream.data.destroy());
     upstream.data.pipe(res);
