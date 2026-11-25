@@ -340,6 +340,7 @@ test("opening follows the hash and conversation clicks update the controlled PDF
   assert.deepEqual(updates, [
     [1, 62],
     [0, true],
+    [2, "dr_2026-11-12"],
   ]);
   assert.equal(resetCalls, 1);
   const transcript = nodes.find(

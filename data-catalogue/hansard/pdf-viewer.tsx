@@ -1,6 +1,6 @@
 import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/helpers";
-import { useEffect, useRef, useState } from "react";
+import { ComponentProps, useEffect, useRef, useState } from "react";
 import { Page, pdfjs } from "react-pdf";
 import type { PdfSession } from "./pdf-session";
 import { Button } from "@govtechmy/myds-react/button";
@@ -85,9 +85,11 @@ export default function PdfViewer({
 
   useEffect(() => {
     if (!container.current) return;
-    const observer = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width)
-    );
+    const observer = new ResizeObserver(([entry]) => {
+      // Preserve the rendered canvas while the closed viewer is hidden.
+      if (entry.contentRect.width > 0)
+        setWidth(Math.floor(entry.contentRect.width));
+    });
     observer.observe(container.current);
     return () => observer.disconnect();
   }, []);
@@ -95,14 +97,14 @@ export default function PdfViewer({
   useEffect(() => {
     const viewer = container.current;
     const target = pageRefs.current[page];
-    if (!viewer || !target) return;
+    if (!viewer || !target || !showAll) return;
 
     viewer.scrollTo({
       top:
         target.getBoundingClientRect().top -
         viewer.getBoundingClientRect().top +
         viewer.scrollTop,
-      behavior: "smooth",
+      behavior: "instant",
     });
   }, [page, pages, showAll]);
 
@@ -126,7 +128,7 @@ export default function PdfViewer({
             zoom={zoom}
           >
             {setRatio => (
-              <Page
+              <BufferedPage
                 pdf={pdf}
                 pageNumber={pageNumber}
                 width={Math.max(1, width - 16)}
@@ -230,7 +232,7 @@ export default function PdfViewer({
       </div>
       <div
         ref={container}
-        className="min-h-0 flex-1 overflow-auto overscroll-contain bg-gray-100 dark:bg-gray-900"
+        className="min-h-0 flex-1 overflow-auto overscroll-contain bg-gray-100 [overflow-anchor:none] [scrollbar-gutter:stable] dark:bg-gray-900"
       >
         {pdf ? (
           renderPages(pdf)
@@ -241,6 +243,48 @@ export default function PdfViewer({
         )}
       </div>
     </section>
+  );
+}
+
+/** Keeps the last canvas visible until its replacement finishes rendering. */
+function BufferedPage(props: ComponentProps<typeof Page>) {
+  const [ratio, setRatio] = useState(1.414);
+  const width = Number(props.width) * (props.scale ?? 1);
+  const key = `${props.pageNumber}-${props.width}-${props.scale}`;
+  const [rendered, setRendered] = useState<{
+    key: string;
+    props: ComponentProps<typeof Page>;
+  }>();
+  const replacing = rendered && rendered.key !== key;
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{ width, height: width * ratio }}
+    >
+      {replacing && (
+        <div key={rendered.key} className="absolute left-0 top-0">
+          <Page {...rendered.props} />
+        </div>
+      )}
+      <div
+        key={key}
+        className={cn("absolute left-0 top-0", replacing && "opacity-0")}
+      >
+        <Page
+          {...props}
+          onLoadSuccess={page => {
+            const viewport = page.getViewport({ scale: 1 });
+            setRatio(viewport.height / viewport.width);
+            props.onLoadSuccess?.(page);
+          }}
+          onRenderSuccess={() => {
+            setRendered(previous =>
+              previous?.key === key ? previous : { key, props }
+            );
+          }}
+        />
+      </div>
+    </div>
   );
 }
 

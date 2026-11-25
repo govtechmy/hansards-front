@@ -84,6 +84,7 @@ const Hansard = ({
   const savedScroll = useRef(0);
   const [pdfOpen, setPdfOpen] = useState(false);
   const [pdfPage, setPdfPage] = useState(1);
+  const [openedPdf, setOpenedPdf] = useState<string | null>(null);
   const [pdfSession, setPdfSession] = useState<PdfSession | null>(null);
   const splitOpen = isDesktop && pdfOpen;
 
@@ -150,6 +151,7 @@ const Hansard = ({
         ) || 1
       );
       setPdfOpen(true);
+      setOpenedPdf(filename);
       requestAnimationFrame(() => {
         readingRef.current?.scrollIntoView({ block: "start" });
         const target = document.getElementById(hash);
@@ -662,14 +664,21 @@ const Hansard = ({
                 <MobileButton onClick={handleClick} />
                 {recurSpeech(speeches, undefined, is_final)}
               </div>
-              {splitOpen && pdfSession && (
-                <PdfViewer
-                  key={filename}
-                  filename={filename}
-                  page={pdfPage}
-                  onPageChange={setPdfPage}
-                  session={pdfSession}
-                />
+              {isDesktop && openedPdf === filename && pdfSession && (
+                <div
+                  className={cn(
+                    "h-full min-h-0 min-w-0",
+                    !splitOpen && "hidden"
+                  )}
+                >
+                  <PdfViewer
+                    key={filename}
+                    filename={filename}
+                    page={pdfPage}
+                    onPageChange={setPdfPage}
+                    session={pdfSession}
+                  />
+                </div>
               )}
             </div>
           </div>
