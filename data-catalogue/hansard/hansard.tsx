@@ -571,7 +571,7 @@ const Hansard = ({
                 disabled={!filename}
                 aria-expanded={pdfOpen}
                 aria-controls="hansard-pdf"
-                className="shrink-0 whitespace-nowrap"
+                className="shrink-0 whitespace-nowrap border-border hover:border-border-hover dark:hover:border-gray-400"
               >
                 <PdfFileIcon className="size-4" />
                 {t(pdfOpen ? "pdf_viewer.hide" : "pdf_viewer.open")}

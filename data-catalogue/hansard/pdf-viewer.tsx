@@ -10,6 +10,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 const singlePageOptions = { disableAutoFetch: true };
 const allPagesOptions = { disableAutoFetch: false };
+const pdfControlClassName =
+  "border-border hover:border-border-hover dark:hover:border-gray-400";
 
 interface PdfViewerProps {
   filename: string;
@@ -71,6 +73,7 @@ export default function PdfViewer({
       <div className="flex flex-wrap items-center gap-2 border-b p-2 text-sm">
         <Button
           variant="default-outline"
+          className={pdfControlClassName}
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
           aria-label={t("pdf_viewer.previous")}
@@ -84,7 +87,10 @@ export default function PdfViewer({
             min={1}
             max={pages || 1}
             value={currentPage}
-            className="w-14 rounded border bg-background p-1 text-center"
+            className={cn(
+              "w-14 rounded border bg-background p-1 text-center",
+              pdfControlClassName
+            )}
             onChange={event => {
               const value = Number(event.target.value);
               if (Number.isInteger(value) && value >= 1 && value <= pages)
@@ -95,6 +101,7 @@ export default function PdfViewer({
         </label>
         <Button
           variant="default-outline"
+          className={pdfControlClassName}
           disabled={!pages || currentPage >= pages}
           onClick={() => onPageChange(currentPage + 1)}
           aria-label={t("pdf_viewer.next")}
@@ -103,6 +110,7 @@ export default function PdfViewer({
         </Button>
         <Button
           variant="default-outline"
+          className={pdfControlClassName}
           disabled={zoom <= 0.5}
           onClick={() => setZoom(zoom - 0.25)}
           aria-label={t("pdf_viewer.zoom_out")}
@@ -112,6 +120,7 @@ export default function PdfViewer({
         <span>{Math.round(zoom * 100)}%</span>
         <Button
           variant="default-outline"
+          className={pdfControlClassName}
           disabled={zoom >= 2}
           onClick={() => setZoom(zoom + 0.25)}
           aria-label={t("pdf_viewer.zoom_in")}
@@ -124,7 +133,7 @@ export default function PdfViewer({
           onClick={() => setShowAll(value => !value)}
           aria-pressed={showAll}
           aria-label={viewLabel}
-          className="whitespace-nowrap"
+          className={cn(pdfControlClassName, "whitespace-nowrap")}
         >
           {viewLabel}
         </Button>
