@@ -11,6 +11,7 @@ import { Speeches } from "@lib/types";
 import Link from "next/link";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { createPdfSession, PdfSession } from "./pdf-session";
 import SpeechBubble from "./bubble";
 import { highlightKeyword, highlightKeywordMarkdown } from "./search/highlight";
 import CiteButton from "../cite";
@@ -83,11 +84,55 @@ const Hansard = ({
   const savedScroll = useRef(0);
   const [pdfOpen, setPdfOpen] = useState(false);
   const [pdfPage, setPdfPage] = useState(1);
+  const [pdfSession, setPdfSession] = useState<PdfSession | null>(null);
   const splitOpen = isDesktop && pdfOpen;
 
   useEffect(() => {
     if (!isDesktop) setPdfOpen(false);
   }, [isDesktop]);
+
+  useEffect(() => {
+    const session = createPdfSession();
+    setPdfSession(session);
+    if (!isDesktop || !filename) return;
+
+    const hash = window.location.hash.slice(1);
+    const target = document.getElementById(hash);
+    const page = Number(
+      target?.closest<HTMLElement>("[data-pdf-page]")?.dataset.pdfPage
+    );
+    if (!Number.isInteger(page) || page < 1) return () => session.dispose();
+
+    let cancelled = false;
+    const idleWindow = window as unknown as {
+      requestIdleCallback?: (callback: () => void) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    // Prepare the hash-linked page during idle time using the viewer's shared session.
+    const prefetch = () => {
+      import("./pdf-viewer")
+        .then(({ prefetchPdfPage }) => {
+          if (!cancelled) return prefetchPdfPage(filename, page, session);
+        })
+        .catch(() => undefined);
+    };
+    const usesIdleCallback = Boolean(
+      idleWindow.requestIdleCallback && idleWindow.cancelIdleCallback
+    );
+    const idleHandle = usesIdleCallback
+      ? idleWindow.requestIdleCallback!(prefetch)
+      : window.setTimeout(prefetch, 0);
+
+    return () => {
+      cancelled = true;
+      if (usesIdleCallback && idleWindow.cancelIdleCallback) {
+        idleWindow.cancelIdleCallback(idleHandle);
+      } else {
+        window.clearTimeout(idleHandle);
+      }
+      session.dispose();
+    };
+  }, [filename, isDesktop]);
 
   function togglePdf() {
     if (!isDesktop) return;
@@ -617,12 +662,13 @@ const Hansard = ({
                 <MobileButton onClick={handleClick} />
                 {recurSpeech(speeches, undefined, is_final)}
               </div>
-              {splitOpen && (
+              {splitOpen && pdfSession && (
                 <PdfViewer
                   key={filename}
                   filename={filename}
                   page={pdfPage}
                   onPageChange={setPdfPage}
+                  session={pdfSession}
                 />
               )}
             </div>

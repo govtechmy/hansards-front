@@ -8,6 +8,7 @@ const analyzer = require("@next/bundle-analyzer")({
 });
 const pwa = require("next-pwa")({
   dest: "public",
+  disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
   buildExcludes: [/dynamic-css-manifest\.json$/],
