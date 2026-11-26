@@ -1,4 +1,18 @@
 {
+  "pdf_viewer": {
+    "title": "Paparan PDF",
+    "open": "Buka PDF",
+    "hide": "Sembunyi PDF",
+    "loading": "Memuatkan PDF…",
+    "previous": "Halaman PDF sebelumnya",
+    "next": "Halaman PDF seterusnya",
+    "page": "Halaman PDF",
+    "zoom_in": "Zum masuk",
+    "zoom_out": "Zum keluar",
+    "view_all": "Lihat semua",
+    "view_one": "Lihat satu",
+    "error": "PDF tidak dapat dimuatkan. Sila gunakan ‘Muat turun’ untuk memuat turun fail PDF."
+  },
   "summary": {
     "title": "Ringkasan AI",
     "button": "Ringkasan AI",

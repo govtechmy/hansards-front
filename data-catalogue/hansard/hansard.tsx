@@ -3,17 +3,21 @@ import { SidebarOpen } from "@data-catalogue/hansard/sidebar";
 import MobileButton from "@data-catalogue/hansard/mobile-button";
 import { useAnalytics } from "@hooks/useAnalytics";
 import { useDownload } from "@hooks/useDownload";
+import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn, numFormat } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { Speeches } from "@lib/types";
 import Link from "next/link";
-import { ReactNode, useRef } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { createPdfSession, PdfSession } from "./pdf-session";
 import SpeechBubble from "./bubble";
 import { highlightKeyword, highlightKeywordMarkdown } from "./search/highlight";
 import CiteButton from "../cite";
 import ShareButton from "../share";
 import HansardSearchBar from "./search-bar";
+import { SearchEventContext } from "./search/context";
 import Sidebar from "./sidebar";
 import { formatTimestamp, isSpeech, isYDP } from "@lib/utils";
 import { CiteIcon } from "@icons/index";
@@ -40,6 +44,8 @@ import {
   BreadcrumbSeparator,
 } from "@govtechmy/myds-react/breadcrumb";
 import { Tag } from "@components/Tag";
+
+const PdfViewer = dynamic(() => import("./pdf-viewer"), { ssr: false });
 
 /**
  * Hansard
@@ -69,8 +75,78 @@ const Hansard = ({
   is_final,
 }: HansardProps) => {
   const { t } = useTranslation(["hansard", "enum", "common"]);
+  const { onResetSearch } = useContext(SearchEventContext);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const sidebarRef = useRef<SidebarOpen>(null);
+  const readingRef = useRef<HTMLDivElement>(null);
+  const transcriptRef = useRef<HTMLDivElement>(null);
+  const savedScroll = useRef(0);
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [pdfPage, setPdfPage] = useState(1);
+  const [openedPdf, setOpenedPdf] = useState<string | null>(null);
+  const [pdfSession, setPdfSession] = useState<PdfSession | null>(null);
+  const splitOpen = isDesktop && pdfOpen;
+
+  useEffect(() => {
+    if (!isDesktop) setPdfOpen(false);
+  }, [isDesktop]);
+
+  useEffect(() => {
+    // A different Hansard starts in transcript view with its own document session.
+    setPdfOpen(false);
+    setOpenedPdf(null);
+    setPdfPage(1);
+    const session = createPdfSession();
+    setPdfSession(session);
+    return () => session.dispose();
+  }, [filename, isDesktop]);
+
+  // Prepare the linked page only after the user shows intent to open the PDF.
+  function prefetchPdf() {
+    if (!isDesktop || !filename || !pdfSession || pdfOpen) return;
+    const hash = window.location.hash.slice(1);
+    const target = document.getElementById(hash);
+    const page = Number(
+      target?.closest<HTMLElement>("[data-pdf-page]")?.dataset.pdfPage
+    );
+    if (!Number.isInteger(page) || page < 1) return;
+    import("./pdf-viewer")
+      .then(({ prefetchPdfPage }) =>
+        prefetchPdfPage(filename, page, pdfSession)
+      )
+      .catch(() => undefined);
+  }
+
+  function togglePdf() {
+    if (!isDesktop) return;
+    if (pdfOpen) {
+      setPdfOpen(false);
+      requestAnimationFrame(() => window.scrollTo(0, savedScroll.current));
+    } else {
+      savedScroll.current = window.scrollY;
+      const hash = window.location.hash.slice(1);
+      const target = document.getElementById(hash);
+      onResetSearch();
+      setPdfPage(
+        Number(
+          target?.closest<HTMLElement>("[data-pdf-page]")?.dataset.pdfPage
+        ) || 1
+      );
+      setPdfOpen(true);
+      setOpenedPdf(filename);
+      requestAnimationFrame(() => {
+        readingRef.current?.scrollIntoView({ block: "start" });
+        const target = document.getElementById(hash);
+        const transcript = transcriptRef.current;
+        if (target && transcript) {
+          transcript.scrollTop +=
+            target.getBoundingClientRect().top -
+            transcript.getBoundingClientRect().top;
+        }
+      });
+    }
+  }
   function handleClick() {
     if (sidebarRef.current) sidebarRef.current.open();
   }
@@ -193,7 +269,14 @@ const Hansard = ({
           );
 
         return (
-          <div key={i}>
+          <div
+            key={i}
+            data-pdf-page={
+              Number.isInteger(pdf_page_start) && pdf_page_start > 0
+                ? pdf_page_start
+                : undefined
+            }
+          >
             {index === 0 || timeChanged ? (
               <time className="t">{time}</time>
             ) : (
@@ -236,8 +319,10 @@ const Hansard = ({
             <div
               title={heading}
               className={cn(
-                "top-28 z-10 text-balance bg-background py-3 text-center text-foreground lg:sticky",
-                // !s[heading].some((e) => !isSpeech(e)) && "lg:sticky",
+                "z-10 bg-background py-3 text-center text-foreground lg:sticky",
+                splitOpen ? "top-0" : "top-28",
+                splitOpen ? "truncate whitespace-nowrap px-3" : "text-balance",
+                // !s[heading].some((e) => !isSpeech(e)) && "lg:sticky"
                 isFirstLevel ? "font-bold" : "font-medium"
               )}
             >
@@ -402,9 +487,8 @@ const Hansard = ({
             </div>
           </Hero>
 
-          <div className="sticky top-14 z-20 flex w-full items-center justify-between gap-1 border-b border-b-border bg-background pr-3 lg:gap-3 lg:px-8">
+          <div className="sticky top-14 z-20 flex w-full flex-wrap items-center justify-between gap-1 border-b border-b-border bg-background pr-3 sm:flex-nowrap lg:gap-3 lg:px-8">
             <HansardSearchBar />
-
             <Dropdown>
               <DropdownTrigger asChild>
                 <Button
@@ -510,16 +594,79 @@ const Hansard = ({
                 )}
               />
             </div>
+            {isDesktop && (
+              <Button
+                variant="default-outline"
+                onClick={togglePdf}
+                onMouseEnter={prefetchPdf}
+                onFocus={prefetchPdf}
+                disabled={!filename}
+                aria-expanded={pdfOpen}
+                aria-controls="hansard-pdf"
+                className="shrink-0 whitespace-nowrap border-border hover:border-border-hover dark:hover:border-gray-400"
+              >
+                <PdfFileIcon className="size-4" />
+                {t(pdfOpen ? "pdf_viewer.hide" : "pdf_viewer.open")}
+              </Button>
+            )}
           </div>
 
           <div
-            className={cn(
-              "relative flex h-full flex-col gap-y-6 bg-background px-3 pb-8 pt-3 md:px-4.5 lg:max-w-[1048px] lg:px-6 lg:py-12",
-              open && "mx-auto"
-            )}
+            ref={readingRef}
+            className="relative w-full scroll-mt-40 sm:scroll-mt-28"
           >
-            <MobileButton onClick={handleClick} />
-            {recurSpeech(speeches, undefined, is_final)}
+            <div
+              className={cn(
+                "w-full",
+                splitOpen &&
+                  "grid h-[calc(100dvh-10rem)] min-h-[320px] grid-cols-1 sm:h-[calc(100dvh-7rem)] lg:grid-cols-2"
+              )}
+            >
+              <div
+                ref={transcriptRef}
+                onClick={event => {
+                  const transcript = transcriptRef.current;
+                  const scrollTop = transcript?.scrollTop ?? 0;
+                  const page = Number(
+                    (event.target as HTMLElement).closest<HTMLElement>(
+                      "[data-pdf-page]"
+                    )?.dataset.pdfPage
+                  );
+                  if (page > 0) {
+                    setPdfPage(page);
+                    requestAnimationFrame(() => {
+                      if (transcript) transcript.scrollTop = scrollTop;
+                    });
+                  }
+                }}
+                className={cn(
+                  "relative flex h-full flex-col gap-y-6 bg-background px-3 pb-8 pt-3 md:px-4.5 lg:max-w-[1048px] lg:px-6 lg:py-12",
+                  open && "mx-auto",
+                  splitOpen &&
+                    "hidden min-h-0 w-full overflow-y-auto overscroll-contain lg:flex lg:max-w-none lg:py-0"
+                )}
+              >
+                <MobileButton onClick={handleClick} />
+                {recurSpeech(speeches, undefined, is_final)}
+              </div>
+              {isDesktop && openedPdf === filename && pdfSession && (
+                <div
+                  className={cn(
+                    "h-full min-h-0 min-w-0",
+                    !splitOpen && "hidden"
+                  )}
+                >
+                  <PdfViewer
+                    key={filename}
+                    filename={filename}
+                    page={pdfPage}
+                    onPageChange={setPdfPage}
+                    session={pdfSession}
+                    open={splitOpen}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

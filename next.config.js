@@ -8,6 +8,7 @@ const analyzer = require("@next/bundle-analyzer")({
 });
 const pwa = require("next-pwa")({
   dest: "public",
+  disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
   buildExcludes: [/dynamic-css-manifest\.json$/],
@@ -22,6 +23,9 @@ const nextConfig = {
   reactStrictMode: true,
 
   webpack: config => {
+    // PDF.js's unminified bundle conflicts with webpack's development eval scope.
+    config.resolve.alias["pdfjs-dist$"] =
+      require.resolve("pdfjs-dist/build/pdf.min.mjs");
     config.module.rules.push({
       test: /components|hooks\/index.ts/i,
       sideEffects: false,
