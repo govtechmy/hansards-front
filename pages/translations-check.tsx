@@ -100,6 +100,9 @@ const COMPONENTS: ComponentTranslations = {
       "ethnicity",
     ],
   },
+  "dashboards/home/keyword/related-search-chip.tsx": {
+    home: ["did_you_mean", "did_you_mean_accept", "search_exact_instead"],
+  },
   "components/Search/index.tsx": {
     common: ["placeholder.search"],
   },

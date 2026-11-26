@@ -38,5 +38,8 @@
   "search_tips": "Search tips",
   "search_tip_keyword": "Keyword search, e.g.",
   "search_tip_exact": "Exact keyword search, e.g.",
-  "search_tip_mp": "Keyword search with MP, e.g."
+  "search_tip_mp": "Keyword search with MP, e.g.",
+  "did_you_mean": "Did you mean:",
+  "did_you_mean_accept": "Put the suggestion in the search box",
+  "search_exact_instead": "Search for the typed word exactly"
 }

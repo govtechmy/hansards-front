@@ -39,16 +39,18 @@ const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
  * @param {string} route Endpoint URL
  * @param {Record<string, string>} params Queries
  * @param {"api" | "app"} base api | app
+ * @param {AxiosRequestConfig} config Optional extra Axios config, e.g. `{ timeout }`
  * @returns {Promise<AxiosResponse>} Promised response
  */
 export const get = (
   route: string,
   params?: Record<string, any>,
-  base: BaseURL = "api"
+  base: BaseURL = "api",
+  config?: AxiosRequestConfig
 ): Promise<AxiosResponse> => {
   return new Promise((resolve, reject) => {
     instance(base)
-      .get(route, { params })
+      .get(route, { ...config, params })
       .then((response: AxiosResponse) => resolve(response))
       .catch(err => reject(err));
   });
