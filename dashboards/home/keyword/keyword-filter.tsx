@@ -291,7 +291,18 @@ const KeywordFilter = ({
 
   const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
-    router.push(`${routes.CARI}${setSearchParams(router.asPath, params)}`);
+    router.push(
+      `${routes.CARI}${setSearchParams(router.asPath, {
+        // Pilihan bar graf (tugasan E) menyempitkan senarai dokumen kepada satu
+        // tempoh. Ia milik carian sebelum ini, jadi apa-apa carian atau
+        // penapisan baharu mesti mengosongkannya. Tanpa ini senarai kekal
+        // tersempit kepada tempoh lama sedangkan graf menunjukkan julat baharu,
+        // dan pengguna tiada petunjuk mengapa.
+        graf_mula: "",
+        graf_akhir: "",
+        ...params,
+      })}`
+    );
   };
 
   // Chip arrow: put the suggestion in the search box. No new search; the

@@ -70,6 +70,8 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       dewan,
       tarikh_mula,
       tarikh_akhir,
+      graf_mula,
+      graf_akhir,
       umur,
       etnik,
       parti,
@@ -77,6 +79,13 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       tepat,
     } = query;
 
+    /**
+     * graf yang diklik pengguna show selected dokumen mengikut tarikh pada bar graf yang di klik
+     * , jadi ia digunakan hanya pada `api/search/`.  `api/search-plot/` dan `api/search/counter`.
+     * tidak berubah. Filter asal kekal juga.
+     */
+    const listStartDate = graf_mula ?? tarikh_mula;
+    const listEndDate = graf_akhir ?? tarikh_akhir;
     // "Search exactly what I typed".
     // Only `tepat=1` counts: `0`, empty, `true` or a repeated `?tepat=1&tepat=1`
     // do not.
@@ -101,8 +110,8 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         window_size: 100,
         page: page ?? 1,
         page_size: page_size ?? 10,
-        start_date: tarikh_mula,
-        end_date: tarikh_akhir,
+        start_date: listStartDate,
+        end_date: listEndDate,
         age_group: umur,
         ethnicity: etnik,
         party: parti,

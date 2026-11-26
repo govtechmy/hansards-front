@@ -83,6 +83,14 @@ export interface TimeseriesProps extends ChartHeaderProps {
     ticks: Tick[]
   ) => string | string[] | number | number[] | null | undefined;
   gridOffsetX?: boolean;
+  /**
+   * Dipanggil apabila satu titik data diklik, dengan label pada paksi-x dan
+   * indeksnya. Tandatangan ini sama seperti `charts/bar.tsx` supaya kedua-dua
+   * carta konsisten, tetapi dalamannya memakai `options.onClick` Chart.js dan
+   * bukan `getElementAtEvent`, supaya ia tetap berfungsi walaupun induk
+   * menghantar `_ref` sendiri.
+   */
+  onClick?: (label: string | number, index: number) => void;
   tooltipCallback?: (item: TooltipItem<"line">) => string | string[];
   stats?: Array<StatProps> | null;
   tooltipItemSort?: (a: TooltipItem<"line">, b: TooltipItem<"line">) => number;
@@ -128,6 +136,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
   enableAnimation = true,
   enableTooltip = true,
   gridOffsetX = true,
+  onClick,
   tooltipCallback,
   tooltipItemSort,
   generateLabels,
@@ -176,6 +185,29 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
       animation: {
         duration: enableAnimation ? 1000 : 0,
       },
+      // Klik memilih bar yang sama seperti tooltip (`mode: "index"`,
+      // `intersect: false` di bawah), jadi klik di celah bar yang rapat tetap
+      // memilih bar terdekat. Tetapan lalai Chart.js (`intersect: true`)
+      // memerlukan klik tepat kena bar, dan bila bar kurang 1px lebar
+      // pengguna nampak tarikh dalam tooltip tetapi klik tidak berbuat apa-apa.
+      onClick: onClick
+        ? (event, _elements, chart) => {
+            if (!event.native) return;
+            const elements = chart.getElementsAtEventForMode(
+              event.native,
+              "index",
+              { intersect: false },
+              false
+            );
+            if (!elements.length) return;
+            const { index } = elements[0];
+            const label = data.labels?.[index];
+            // Label paksi-x boleh jadi apa-apa jenis mengikut tipa ChartData,
+            // jadi sempitkan dahulu daripada menghantar nilai yang tak berguna.
+            if (typeof label === "string" || typeof label === "number")
+              onClick(label, index);
+          }
+        : undefined,
       elements: {
         point: {
           borderWidth: 0,
@@ -325,17 +357,17 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
             tooltipFormat: tooltipFormat
               ? tooltipFormat
               : ["year", "month", "quarter", "day", "minute", "hour"].includes(
-                  interval as string
-                )
-              ? {
-                  quarter: "qQ yyyy",
-                  month: "MMM yyyy",
-                  year: "yyyy",
-                  day: "dd MMM yyyy",
-                  minute: "dd MMM yyyy HH:mm",
-                  hour: "dd MMM yyyy HH:mm",
-                }[interval as string]
-              : "dd MMM yyyy",
+                    interval as string
+                  )
+                ? {
+                    quarter: "qQ yyyy",
+                    month: "MMM yyyy",
+                    year: "yyyy",
+                    day: "dd MMM yyyy",
+                    minute: "dd MMM yyyy HH:mm",
+                    hour: "dd MMM yyyy HH:mm",
+                  }[interval as string]
+                : "dd MMM yyyy",
           },
           grid: {
             offset: gridOffsetX,
@@ -408,7 +440,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
         ...axisY,
       },
     };
-  }, [data, interval, resolvedTheme]);
+  }, [data, interval, resolvedTheme, onClick]);
 
   const autoScale = useMemo(
     () => (data.labels!.length > 200 ? "month" : "day"),
@@ -434,7 +466,7 @@ const Timeseries: FunctionComponent<TimeseriesProps> = ({
               {subheader && <div>{subheader}</div>}
             </div>
           )}
-          <div className={className}>
+          <div className={cn(className, onClick && "cursor-pointer")}>
             <Chart
               data-testid={id || title}
               ref={_ref}
