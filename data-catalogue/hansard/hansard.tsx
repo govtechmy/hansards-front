@@ -127,6 +127,7 @@ const Hansard = ({
       savedScroll.current = window.scrollY;
       const hash = window.location.hash.slice(1);
       const target = document.getElementById(hash);
+      const targetTop = target?.getBoundingClientRect().top;
       onResetSearch();
       setPdfPage(
         Number(
@@ -137,12 +138,10 @@ const Hansard = ({
       setOpenedPdf(filename);
       requestAnimationFrame(() => {
         readingRef.current?.scrollIntoView({ block: "start" });
-        const target = document.getElementById(hash);
         const transcript = transcriptRef.current;
-        if (target && transcript) {
+        if (target && transcript && targetTop != null) {
           transcript.scrollTop +=
-            target.getBoundingClientRect().top -
-            transcript.getBoundingClientRect().top;
+            target.getBoundingClientRect().top - targetTop;
         }
       });
     }

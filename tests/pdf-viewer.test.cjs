@@ -139,6 +139,18 @@ test("speech clicks preserve the inner transcript position", () => {
   assert.match(source, /transcript\.scrollTop = scrollTop/);
 });
 
+test("opening split view preserves the hash target position", () => {
+  const source = readFileSync(
+    resolve(__dirname, "../data-catalogue/hansard/hansard.tsx"),
+    "utf8"
+  );
+  assert.match(
+    source,
+    /const targetTop = target\?\.getBoundingClientRect\(\)\.top/
+  );
+  assert.match(source, /target\.getBoundingClientRect\(\)\.top - targetTop/);
+});
+
 test("search navigation scrolls the nearest overflow container", () => {
   const source = readFileSync(
     resolve(__dirname, "../data-catalogue/hansard/search/context.tsx"),
@@ -314,7 +326,10 @@ test("opening follows the hash and conversation clicks update the controlled PDF
   let resetCalls = 0;
   let desktop = true;
   let stateIndex = 0;
-  const target = { closest: () => ({ dataset: { pdfPage: "62" } }) };
+  const target = {
+    closest: () => ({ dataset: { pdfPage: "62" } }),
+    getBoundingClientRect: () => ({ top: 100 }),
+  };
   const stub = new Proxy(
     {},
     { get: (_, name) => (name === "__esModule" ? true : String(name)) }
