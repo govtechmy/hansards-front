@@ -31,6 +31,8 @@ export interface ExcerptsProps {
   query: ParsedUrlQuery;
   variant?: "compact" | "default";
   isExactMatch?: boolean;
+  /** The word that was really searched. Defaults to `query.q` when omitted */
+  keyword?: string;
 }
 
 interface FlatSitting {
@@ -49,9 +51,13 @@ const Excerpts = ({
   query,
   variant = "default",
   isExactMatch = false,
+  keyword,
 }: ExcerptsProps) => {
   const { t, i18n } = useTranslation(["enum", "home"]);
   const { q, dewan, page, page_size } = query;
+  // The links below must carry the word that was really searched, which can
+  // differ from `q` when the backend corrected a misspelling
+  const searchedKeyword = keyword ?? String(q);
   const router = useRouter();
   const ITEMS_PER_PAGE = 10;
   const ROWS_PER_PAGE = [ITEMS_PER_PAGE, 25, 50].map(String);
@@ -229,7 +235,7 @@ const Excerpts = ({
                 >
                   <div className="top-16 flex shrink-0 items-center lg:sticky lg:h-24 lg:max-w-md">
                     <Link
-                      href={`hansard/${dewanKey}/${sitting.date}?search=${q}`}
+                      href={`hansard/${dewanKey}/${sitting.date}?search=${encodeURIComponent(searchedKeyword)}`}
                       className="group flex items-center gap-3 sm:gap-4.5"
                     >
                       <DateCard date={date} size="sm" />
@@ -303,7 +309,7 @@ const Excerpts = ({
                           key={i}
                           dewan={(dewan ?? "dewan-rakyat") as Dewan}
                           excerpt={excerpt}
-                          keyword={String(q)}
+                          keyword={searchedKeyword}
                           isExactMatch={isExactMatch}
                         />
                       ))}

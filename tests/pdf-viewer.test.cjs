@@ -31,6 +31,7 @@ test("PDF viewer renders one page until View all is selected", () => {
   assert.match(source, /const pageNumbers = showAll/);
   assert.match(source, /pageNumbers\.map/);
   assert.match(source, /setShowAll\(value => !value\)/);
+  assert.match(source, /\{showAll && <span aria-live="polite">/);
   assert.match(source, /disableAutoFetch: true/);
   assert.match(source, /disableStream: true/);
   assert.match(source, /export const prefetchPdfPage/);
@@ -196,6 +197,10 @@ test("failed PDF loads retry on reopening and redraw errors become visible", asy
       "@lib/helpers": { cn: (...values) => values.filter(Boolean).join(" ") },
       "react-pdf": { Page: "page", pdfjs: { GlobalWorkerOptions: {} } },
       "@govtechmy/myds-react/button": { Button: "button" },
+      "@govtechmy/myds-react/icon": {
+        ZoomInIcon: "zoom-in",
+        ZoomOutIcon: "zoom-out",
+      },
     },
     "\nexport { BufferedPage };"
   );

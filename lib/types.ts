@@ -51,6 +51,16 @@ export type OptionType = {
   value: string;
 };
 
+/**
+ * "Did you mean" suggestion for the keyword search (/cari).
+ * original: what the user typed (the `q` in the URL)
+ * corrected: the word the backend thinks the user meant
+ */
+export type RelatedSearch = {
+  original: string;
+  corrected: string;
+};
+
 export type Geotype = "state" | "parlimen" | "dun" | "district";
 
 export type Precision = {
