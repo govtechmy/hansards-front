@@ -20,6 +20,9 @@ const COMPONENTS: ComponentTranslations = {
   "pages/katalog/kamar-khas/index.tsx": {
     catalogue: ["hero.header", "hero.description"],
   },
+  "pages/katalog/majlis-mengangkat-sumpah/index.tsx": {
+    catalogue: ["hero.header", "hero.description"],
+  },
   "pages/katalog/dewan-rakyat/index.tsx": {
     catalogue: ["hero.header", "hero.description"],
   },
@@ -28,7 +31,12 @@ const COMPONENTS: ComponentTranslations = {
   },
   "data-catalogue/layout.tsx": {
     catalogue: ["hero.category", "hero.header", "hero.description"],
-    common: ["dewan_negara", "dewan_rakyat", "kamar_khas"],
+    common: [
+      "dewan_negara",
+      "dewan_rakyat",
+      "kamar_khas",
+      "majlis_mengangkat_sumpah",
+    ],
   },
   "data-catalogue/folder.tsx": {
     enum: ["mesyuarat_full"],

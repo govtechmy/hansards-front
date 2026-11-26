@@ -1,5 +1,4 @@
 import { At, Hero } from "@components/index";
-import { BuildingLibraryIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "@hooks/useTranslation";
 import { DewanNegaraIcon } from "@icons/dewan/dewan-negara";
 import { DewanRakyatIcon } from "@icons/dewan/dewan-rakyat";
@@ -24,12 +23,17 @@ const CatalogIndexLayout = ({ children }: { children: ReactNode }) => {
       path: routes.KATALOG_DN,
     },
     {
+      icon: DewanNegaraIcon,
+      name: "majlis_mengangkat_sumpah",
+      path: routes.KATALOG_MMS,
+    },
+    {
       icon: DewanRakyatIcon,
       name: "dewan_rakyat",
       path: routes.KATALOG_DR,
     },
     {
-      icon: BuildingLibraryIcon,
+      icon: DewanRakyatIcon,
       name: "kamar_khas",
       path: routes.KATALOG_KK,
     },
