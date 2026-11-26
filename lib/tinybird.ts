@@ -53,13 +53,10 @@ export async function recordView(req: NextRequest) {
     },
   })
     .then(async res => {
-      if (!res.ok) {
-        console.warn(`Tinybird view recording failed (${res.status})`);
-        return;
-      }
-      return await res.json();
+      if (!res.ok) return;
+      return res.json().catch(() => undefined);
     })
-    .catch(() => {
-      console.warn("Tinybird view recording unavailable");
-    });
+    // Analytics is non-critical; do not turn an upstream outage into a log
+    // entry for every request handled by middleware.
+    .catch(() => undefined);
 }
