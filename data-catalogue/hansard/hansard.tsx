@@ -11,6 +11,7 @@ import { Speeches } from "@lib/types";
 import Link from "next/link";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { createPdfSession, PdfSession } from "./pdf-session";
 import SpeechBubble from "./bubble";
 import { highlightKeyword, highlightKeywordMarkdown } from "./search/highlight";
 import CiteButton from "../cite";
@@ -83,11 +84,39 @@ const Hansard = ({
   const savedScroll = useRef(0);
   const [pdfOpen, setPdfOpen] = useState(false);
   const [pdfPage, setPdfPage] = useState(1);
+  const [openedPdf, setOpenedPdf] = useState<string | null>(null);
+  const [pdfSession, setPdfSession] = useState<PdfSession | null>(null);
   const splitOpen = isDesktop && pdfOpen;
 
   useEffect(() => {
     if (!isDesktop) setPdfOpen(false);
   }, [isDesktop]);
+
+  useEffect(() => {
+    // A different Hansard starts in transcript view with its own document session.
+    setPdfOpen(false);
+    setOpenedPdf(null);
+    setPdfPage(1);
+    const session = createPdfSession();
+    setPdfSession(session);
+    return () => session.dispose();
+  }, [filename, isDesktop]);
+
+  // Prepare the linked page only after the user shows intent to open the PDF.
+  function prefetchPdf() {
+    if (!isDesktop || !filename || !pdfSession || pdfOpen) return;
+    const hash = window.location.hash.slice(1);
+    const target = document.getElementById(hash);
+    const page = Number(
+      target?.closest<HTMLElement>("[data-pdf-page]")?.dataset.pdfPage
+    );
+    if (!Number.isInteger(page) || page < 1) return;
+    import("./pdf-viewer")
+      .then(({ prefetchPdfPage }) =>
+        prefetchPdfPage(filename, page, pdfSession)
+      )
+      .catch(() => undefined);
+  }
 
   function togglePdf() {
     if (!isDesktop) return;
@@ -105,6 +134,7 @@ const Hansard = ({
         ) || 1
       );
       setPdfOpen(true);
+      setOpenedPdf(filename);
       requestAnimationFrame(() => {
         readingRef.current?.scrollIntoView({ block: "start" });
         const target = document.getElementById(hash);
@@ -568,6 +598,8 @@ const Hansard = ({
               <Button
                 variant="default-outline"
                 onClick={togglePdf}
+                onMouseEnter={prefetchPdf}
+                onFocus={prefetchPdf}
                 disabled={!filename}
                 aria-expanded={pdfOpen}
                 aria-controls="hansard-pdf"
@@ -617,13 +649,22 @@ const Hansard = ({
                 <MobileButton onClick={handleClick} />
                 {recurSpeech(speeches, undefined, is_final)}
               </div>
-              {splitOpen && (
-                <PdfViewer
-                  key={filename}
-                  filename={filename}
-                  page={pdfPage}
-                  onPageChange={setPdfPage}
-                />
+              {isDesktop && openedPdf === filename && pdfSession && (
+                <div
+                  className={cn(
+                    "h-full min-h-0 min-w-0",
+                    !splitOpen && "hidden"
+                  )}
+                >
+                  <PdfViewer
+                    key={filename}
+                    filename={filename}
+                    page={pdfPage}
+                    onPageChange={setPdfPage}
+                    session={pdfSession}
+                    open={splitOpen}
+                  />
+                </div>
               )}
             </div>
           </div>

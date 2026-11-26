@@ -32,6 +32,101 @@ test("PDF viewer renders one page until View all is selected", () => {
   assert.match(source, /pageNumbers\.map/);
   assert.match(source, /setShowAll\(value => !value\)/);
   assert.match(source, /disableAutoFetch: true/);
+  assert.match(source, /disableStream: true/);
+  assert.match(source, /export const prefetchPdfPage/);
+  assert.match(source, /LazyPdfPage/);
+});
+
+test("split view prefetches the hash-linked PDF page only on hover or focus", () => {
+  const source = readFileSync(
+    resolve(__dirname, "../data-catalogue/hansard/hansard.tsx"),
+    "utf8"
+  );
+  assert.match(source, /import\("\.\/pdf-viewer"\)/);
+  assert.match(source, /prefetchPdfPage\(filename, page, pdfSession\)/);
+  assert.match(source, /onMouseEnter=\{prefetchPdf\}/);
+  assert.match(source, /onFocus=\{prefetchPdf\}/);
+  assert.doesNotMatch(source, /requestIdleCallback/);
+});
+
+test("PDF session shares pending work and cancels it on disposal", async () => {
+  const { createPdfSession } = load(
+    "data-catalogue/hansard/pdf-session.ts",
+    {}
+  );
+  let starts = 0;
+  let destroys = 0;
+  let resolvePdf;
+  const promise = new Promise(resolve => {
+    resolvePdf = resolve;
+  });
+  const session = createPdfSession();
+  const start = () => {
+    starts++;
+    return {
+      promise,
+      destroy: async () => {
+        destroys++;
+      },
+    };
+  };
+  const first = session.load(start);
+  assert.equal(session.load(start), first);
+  resolvePdf({ numPages: 183 });
+  await first;
+  assert.equal(session.load(start), first);
+  assert.equal(starts, 1);
+  session.dispose();
+  assert.equal(destroys, 1);
+  await assert.rejects(session.load(start), /closed/);
+  const pending = createPdfSession();
+  pending.load(() => ({
+    promise: new Promise(() => {}),
+    destroy: async () => {
+      destroys++;
+    },
+  }));
+  pending.dispose();
+  assert.equal(destroys, 2);
+});
+
+test("a failed PDF load is released and reopening can retry", async () => {
+  const { createPdfSession } = load(
+    "data-catalogue/hansard/pdf-session.ts",
+    {}
+  );
+  const session = createPdfSession();
+  let destroyed = 0;
+  await assert.rejects(
+    session.load(() => ({
+      promise: Promise.reject(new Error("Network failed")),
+      destroy: async () => {
+        destroyed++;
+      },
+    })),
+    /Network failed/
+  );
+  assert.equal(destroyed, 1);
+  const document = { numPages: 183 };
+  assert.equal(
+    await session.load(() => ({
+      promise: Promise.resolve(document),
+      destroy: async () => {},
+    })),
+    document
+  );
+  session.dispose();
+});
+
+test("PDF load errors direct users to the download action", () => {
+  for (const locale of ["en-GB", "ms-MY"]) {
+    const translations = readFileSync(
+      resolve(__dirname, `../public/locales/${locale}/hansard.json`),
+      "utf8"
+    );
+    assert.match(translations, /Download|Muat turun/);
+    assert.doesNotMatch(translations, /link above|pautan di atas/);
+  }
 });
 
 test("speech clicks preserve the inner transcript position", () => {
@@ -52,10 +147,10 @@ test("search navigation scrolls the nearest overflow container", () => {
   assert.match(source, /parent\.scrollTo\(\{/);
 });
 
-function load(file, mocks) {
+function load(file, mocks, extra = "") {
   const module = { exports: {} };
   const code = ts.transpileModule(
-    readFileSync(resolve(__dirname, "..", file), "utf8"),
+    readFileSync(resolve(__dirname, "..", file), "utf8") + extra,
     {
       compilerOptions: {
         module: ts.ModuleKind.CommonJS,
@@ -71,6 +166,78 @@ function load(file, mocks) {
   });
   return module.exports;
 }
+
+test("failed PDF loads retry on reopening and redraw errors become visible", async () => {
+  const React = require("react");
+  const states = [];
+  let index = 0;
+  let effects = [];
+  const { default: Viewer, BufferedPage } = load(
+    "data-catalogue/hansard/pdf-viewer.tsx",
+    {
+      "react/jsx-runtime": require("react/jsx-runtime"),
+      react: {
+        ...React,
+        useRef: () => ({ current: null }),
+        useEffect: effect => effects.push(effect),
+        useState: initial => {
+          const slot = index++;
+          if (!(slot in states)) states[slot] = initial;
+          return [
+            states[slot],
+            value => {
+              states[slot] =
+                typeof value === "function" ? value(states[slot]) : value;
+            },
+          ];
+        },
+      },
+      "@hooks/useTranslation": { useTranslation: () => ({ t: key => key }) },
+      "@lib/helpers": { cn: (...values) => values.filter(Boolean).join(" ") },
+      "react-pdf": { Page: "page", pdfjs: { GlobalWorkerOptions: {} } },
+      "@govtechmy/myds-react/button": { Button: "button" },
+    },
+    "\nexport { BufferedPage };"
+  );
+  let attempts = 0;
+  const session = {
+    load: () => {
+      attempts++;
+      return attempts === 1
+        ? Promise.reject(new Error("offline"))
+        : Promise.resolve({ numPages: 10 });
+    },
+  };
+  const render = open => {
+    index = 0;
+    effects = [];
+    Viewer({ filename: "dr_2026-11-12", page: 1, session, open });
+    return effects[0]();
+  };
+  const cleanup = render(true);
+  await new Promise(resolve => setImmediate(resolve));
+  cleanup();
+  render(false);
+  render(true);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(attempts, 2);
+  assert.equal(states[5], false);
+
+  states.length = 0;
+  index = 0;
+  const first = BufferedPage({ pageNumber: 1, width: 500 });
+  first.props.children[1].props.children.props.onRenderSuccess();
+  index = 0;
+  const replacement = BufferedPage({ pageNumber: 1, width: 600 });
+  assert.match(replacement.props.children[1].props.className, /opacity-0/);
+  replacement.props.children[1].props.children.props.onRenderError(
+    new Error("render failed")
+  );
+  index = 0;
+  const failed = BufferedPage({ pageNumber: 1, width: 600 });
+  assert.equal(failed.props.children[0], false);
+  assert.doesNotMatch(failed.props.children[1].props.className, /opacity-0/);
+});
 
 test("PDF route rejects arbitrary paths and methods, and streams byte ranges", async () => {
   let call;
@@ -247,6 +414,7 @@ test("opening follows the hash and conversation clicks update the controlled PDF
   assert.deepEqual(updates, [
     [1, 62],
     [0, true],
+    [2, "dr_2026-11-12"],
   ]);
   assert.equal(resetCalls, 1);
   const transcript = nodes.find(
