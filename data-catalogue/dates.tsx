@@ -34,7 +34,6 @@ import { useMediaQuery } from "@hooks/useMediaQuery";
 import { useTranslation } from "@hooks/useTranslation";
 import { copyClipboard } from "@lib/helpers";
 import { routes } from "@lib/routes";
-import { isOathCeremony } from "@lib/sitting-tags";
 import { Sitting } from "@lib/types";
 import { Tag } from "@components/Tag";
 import NextLink from "next/link";
@@ -71,7 +70,7 @@ export const MesyuaratDates = ({
   const MesyuaratDateRow = ({ sitting }: { sitting: Sitting }) => {
     const { filename, date, is_final } = sitting;
     const IS_MMS = house === "mms";
-    const IS_OATH = IS_MMS || isOathCeremony(sitting);
+    const IS_OATH = IS_MMS;
     const IS_KK = !IS_MMS && filename.startsWith("kk");
     const IS_DR = !IS_MMS && filename.startsWith("dr");
     const hansard_id = `${
