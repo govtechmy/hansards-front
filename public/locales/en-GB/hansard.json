@@ -9,8 +9,8 @@
     "page": "PDF page",
     "zoom_in": "Zoom in",
     "zoom_out": "Zoom out",
-    "view_all": "View all",
-    "view_one": "View one",
+    "view_all": "View All Pages",
+    "view_one": "View One Page",
     "error": "Unable to load the PDF. Use ‘Download’ to download the PDF file."
   },
   "summary": {
