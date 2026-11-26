@@ -1,6 +1,12 @@
 import { get, post } from "@lib/api";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
+function reportAnalyticsError(message: string, error: unknown) {
+  const status = (error as { response?: { status?: number } })?.response
+    ?.status;
+  if (status !== 503) console.error(message, JSON.stringify(error));
+}
+
 /**
  * Analytics
  * @returns {counts, post_events}
@@ -33,9 +39,7 @@ export function AnalyticsProvider({
   useEffect(() => {
     get("/api/count", { id }, "app")
       .then(({ data }) => setCounts(data))
-      .catch(e =>
-        console.error("Error fetching analytics counts:", JSON.stringify(e))
-      );
+      .catch(e => reportAnalyticsError("Error fetching analytics counts:", e));
   }, [id]);
 
   const post_events = (
@@ -68,17 +72,12 @@ export function AnalyticsProvider({
             get("/api/count", { id }, "app")
               .then(({ data }) => setCounts(data))
               .catch(e =>
-                console.error(
-                  "Error fetching analytics counts:",
-                  JSON.stringify(e)
-                )
+                reportAnalyticsError("Error fetching analytics counts:", e)
               );
           }
         }
       )
-      .catch(e =>
-        console.error("Error posting analytics event:", JSON.stringify(e))
-      );
+      .catch(e => reportAnalyticsError("Error posting analytics event:", e));
   };
 
   return (

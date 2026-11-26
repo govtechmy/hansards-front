@@ -5,6 +5,7 @@ import { capitalize, getDomainWithoutWWW } from "./utils";
  * Recording views with geo, ua, referer and timestamp data
  **/
 export async function recordView(req: NextRequest) {
+  if (!process.env.POST_TOKEN || !process.env.POST_VIEW) return;
   const LOCALHOST_GEO_DATA = {
     city: "Localhost",
     region: "XO",
@@ -50,5 +51,12 @@ export async function recordView(req: NextRequest) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.POST_TOKEN}`,
     },
-  }).then(res => res.json());
+  })
+    .then(async res => {
+      if (!res.ok) return;
+      return res.json().catch(() => undefined);
+    })
+    // Analytics is non-critical; do not turn an upstream outage into a log
+    // entry for every request handled by middleware.
+    .catch(() => undefined);
 }

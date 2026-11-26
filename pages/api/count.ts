@@ -18,13 +18,9 @@ export default async function handler(
   const { GET_COUNTS, GET_TOKEN, POST_DL, POST_SHARE, POST_TOKEN } =
     process.env;
 
-  if (!POST_TOKEN) {
-    return res
-      .status(400)
-      .json({ message: "Tinybird POST_TOKEN was not configured" });
-  }
-
   if (req.method === "POST") {
+    if (!POST_TOKEN)
+      return res.status(503).json({ message: "Analytics unavailable" });
     const { event } = req.query;
     const name =
       event === "download" ? POST_DL : event === "share" ? POST_SHARE : "";
@@ -38,8 +34,10 @@ export default async function handler(
       }
     )
       .then(({ data }) => res.status(200).json(data))
-      .catch(error => res.status(500).json(error));
+      .catch(() => res.status(503).json({ message: "Analytics unavailable" }));
   } else if (req.method === "GET") {
+    if (!GET_TOKEN || !GET_COUNTS)
+      return res.status(503).json({ message: "Analytics unavailable" });
     return await get(
       `/pipes/${GET_COUNTS}.json`,
       {
@@ -60,7 +58,7 @@ export default async function handler(
             )
           )
       )
-      .catch(() => res.status(500).json({ message: "GET request failed" }));
+      .catch(() => res.status(503).json({ message: "Analytics unavailable" }));
   } else {
     res.setHeader("Allow", ["GET", "POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
