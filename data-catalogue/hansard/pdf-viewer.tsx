@@ -53,6 +53,8 @@ export default function PdfViewer({
   const { t } = useTranslation("hansard");
   const container = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const currentPageRef = useRef(page);
+  const scrollDrivenPageRef = useRef<number | null>(null);
   const [width, setWidth] = useState(0);
   const [pages, setPages] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -60,6 +62,7 @@ export default function PdfViewer({
   const [pdf, setPdf] = useState<PDFDocumentProxy>();
   const [failed, setFailed] = useState(false);
   const currentPage = Math.min(page, pages || page);
+  currentPageRef.current = currentPage;
   const pageNumbers = showAll
     ? Array.from({ length: pages }, (_, index) => index + 1)
     : [currentPage];
@@ -104,6 +107,11 @@ export default function PdfViewer({
     const target = pageRefs.current[page];
     if (!viewer || !target || !showAll) return;
 
+    if (scrollDrivenPageRef.current === page) {
+      scrollDrivenPageRef.current = null;
+      return;
+    }
+
     viewer.scrollTo({
       top:
         target.getBoundingClientRect().top -
@@ -112,6 +120,43 @@ export default function PdfViewer({
       behavior: "instant",
     });
   }, [page, pages, showAll]);
+
+  useEffect(() => {
+    const viewer = container.current;
+    if (!viewer || !showAll || !pages || !width) return;
+
+    const visiblePages = new Set<number>();
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const pageNumber = Number((entry.target as HTMLElement).dataset.page);
+          if (!pageNumber) return;
+
+          if (entry.isIntersecting) visiblePages.add(pageNumber);
+          else visiblePages.delete(pageNumber);
+        });
+
+        const nextPage = [...visiblePages].sort((a, b) => a - b)[0];
+        if (nextPage && nextPage !== currentPageRef.current) {
+          currentPageRef.current = nextPage;
+          scrollDrivenPageRef.current = nextPage;
+          onPageChange(nextPage);
+        }
+      },
+      {
+        root: viewer,
+        // Track the page crossing a narrow band near the top of the viewer.
+        rootMargin: "-10% 0px -70% 0px",
+        threshold: [0, 0.5, 1],
+      }
+    );
+
+    Object.values(pageRefs.current).forEach(element => {
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [pages, showAll, width, onPageChange]);
 
   /** Keeps scroll targets for every page while limiting nearby canvas rendering. */
   const renderPages = (pdf?: PDFDocumentProxy) =>
