@@ -4,7 +4,6 @@
     "open": "Open PDF",
     "hide": "Hide PDF",
     "loading": "Loading PDF…",
-    "open_tab": "Open PDF in new tab",
     "previous": "Previous PDF page",
     "next": "Next PDF page",
     "page": "PDF page",
@@ -12,7 +11,7 @@
     "zoom_out": "Zoom out",
     "view_all": "View all",
     "view_one": "View one",
-    "error": "Unable to load PDF. Open it in a new tab using the link above."
+    "error": "Unable to load the PDF. Use ‘Download’ to download the PDF file."
   },
   "summary": {
     "title": "AI Summary",
