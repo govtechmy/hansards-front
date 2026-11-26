@@ -47,6 +47,11 @@ const Home: Page = ({
   );
 };
 
+/**
+ * Had masa panggilan `api/search/suggestion` .
+ */
+const SUGGESTION_TIMEOUT_MS = 1500;
+
 export const getServerSideProps: GetServerSideProps = withi18n(
   ["demografi", "enum", "home", "kehadiran", "party"],
   async ({ query }) => {
@@ -72,32 +77,17 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       tepat,
     } = query;
 
-    // "Search exactly what I typed" (the user rejected the suggestion).
+    // "Search exactly what I typed".
     // Only `tepat=1` counts: `0`, empty, `true` or a repeated `?tepat=1&tepat=1`
-    // (which Next.js gives us as an array) do not.
+    // do not.
     const exactSearch = tepat === "1";
 
-    /**
-     * Carian berkaitan (tugasan A), ikut API sebenar hansard-mod-api.
-     *
-     * Backend tidak membetulkan kata dalam `api/search/` dan tiada parameter
-     * `exact`. Cadangan datang daripada titik akhir berasingan
-     * `api/search/suggestion`, yang memulangkan `{ query, suggestions,
-     * did_you_mean }`. Jadi aliran di sini berurutan:
-     *
-     * 1. Minta cadangan dahulu (hanya jika `suggestableQuery` membenarkan,
-     *    supaya `tepat=1`, frasa bertanda petikan dan sintaks `:` tidak
-     *    menambah masa menunggu).
-     * 2. Jika ada cadangan, ketiga-tiga carian guna kata dibetulkan. Jika
-     *    tidak, atau panggilan cadangan gagal, guna `q` seperti ditaip.
-     *
-     * `tepat=1` cukup dengan tidak meminta cadangan: `q` dihantar seperti
-     * ditaip. Ia tidak membalut `q` dengan tanda petikan, kerana itu mod frasa
-     * tepat backend (SSD-1160), maksudnya lain.
-     */
+    //Carian dicadangkan
     const typed = suggestableQuery(q, exactSearch);
     const suggestion = typed
-      ? await get("api/search/suggestion", { q: typed })
+      ? await get("api/search/suggestion", { q: typed }, "api", {
+          timeout: SUGGESTION_TIMEOUT_MS,
+        })
           .then(res => res.data?.did_you_mean)
           .catch(() => null)
       : null;

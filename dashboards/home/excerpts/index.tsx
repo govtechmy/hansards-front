@@ -235,7 +235,7 @@ const Excerpts = ({
                 >
                   <div className="top-16 flex shrink-0 items-center lg:sticky lg:h-24 lg:max-w-md">
                     <Link
-                      href={`hansard/${dewanKey}/${sitting.date}?search=${searchedKeyword}`}
+                      href={`hansard/${dewanKey}/${sitting.date}?search=${encodeURIComponent(searchedKeyword)}`}
                       className="group flex items-center gap-3 sm:gap-4.5"
                     >
                       <DateCard date={date} size="sm" />
