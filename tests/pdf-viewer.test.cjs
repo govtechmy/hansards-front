@@ -37,14 +37,16 @@ test("PDF viewer renders one page until View all is selected", () => {
   assert.match(source, /LazyPdfPage/);
 });
 
-test("split view prefetches the hash-linked PDF page", () => {
+test("split view prefetches the hash-linked PDF page only on hover or focus", () => {
   const source = readFileSync(
     resolve(__dirname, "../data-catalogue/hansard/hansard.tsx"),
     "utf8"
   );
   assert.match(source, /import\("\.\/pdf-viewer"\)/);
-  assert.match(source, /prefetchPdfPage\(filename, page, session\)/);
-  assert.match(source, /requestIdleCallback/);
+  assert.match(source, /prefetchPdfPage\(filename, page, pdfSession\)/);
+  assert.match(source, /onMouseEnter=\{prefetchPdf\}/);
+  assert.match(source, /onFocus=\{prefetchPdf\}/);
+  assert.doesNotMatch(source, /requestIdleCallback/);
 });
 
 test("PDF session shares pending work and cancels it on disposal", async () => {

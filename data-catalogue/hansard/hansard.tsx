@@ -99,45 +99,24 @@ const Hansard = ({
     setPdfPage(1);
     const session = createPdfSession();
     setPdfSession(session);
-    if (!isDesktop || !filename) return;
+    return () => session.dispose();
+  }, [filename, isDesktop]);
 
+  // Prepare the linked page only after the user shows intent to open the PDF.
+  function prefetchPdf() {
+    if (!isDesktop || !filename || !pdfSession || pdfOpen) return;
     const hash = window.location.hash.slice(1);
     const target = document.getElementById(hash);
     const page = Number(
       target?.closest<HTMLElement>("[data-pdf-page]")?.dataset.pdfPage
     );
-    if (!Number.isInteger(page) || page < 1) return () => session.dispose();
-
-    let cancelled = false;
-    const idleWindow = window as unknown as {
-      requestIdleCallback?: (callback: () => void) => number;
-      cancelIdleCallback?: (handle: number) => void;
-    };
-    // Prepare the hash-linked page during idle time using the viewer's shared session.
-    const prefetch = () => {
-      import("./pdf-viewer")
-        .then(({ prefetchPdfPage }) => {
-          if (!cancelled) return prefetchPdfPage(filename, page, session);
-        })
-        .catch(() => undefined);
-    };
-    const usesIdleCallback = Boolean(
-      idleWindow.requestIdleCallback && idleWindow.cancelIdleCallback
-    );
-    const idleHandle = usesIdleCallback
-      ? idleWindow.requestIdleCallback!(prefetch)
-      : window.setTimeout(prefetch, 0);
-
-    return () => {
-      cancelled = true;
-      if (usesIdleCallback && idleWindow.cancelIdleCallback) {
-        idleWindow.cancelIdleCallback(idleHandle);
-      } else {
-        window.clearTimeout(idleHandle);
-      }
-      session.dispose();
-    };
-  }, [filename, isDesktop]);
+    if (!Number.isInteger(page) || page < 1) return;
+    import("./pdf-viewer")
+      .then(({ prefetchPdfPage }) =>
+        prefetchPdfPage(filename, page, pdfSession)
+      )
+      .catch(() => undefined);
+  }
 
   function togglePdf() {
     if (!isDesktop) return;
@@ -619,6 +598,8 @@ const Hansard = ({
               <Button
                 variant="default-outline"
                 onClick={togglePdf}
+                onMouseEnter={prefetchPdf}
+                onFocus={prefetchPdf}
                 disabled={!filename}
                 aria-expanded={pdfOpen}
                 aria-controls="hansard-pdf"
