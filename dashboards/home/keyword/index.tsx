@@ -10,7 +10,8 @@ import { SliderProvider } from "@lib/contexts/slider";
 import { cn } from "@lib/helpers";
 import { capitalize, setSearchParams } from "@lib/utils";
 import { routes } from "@lib/routes";
-import { differenceInCalendarDays, parseISO } from "date-fns";
+import { barPeriod, isMonthlySeries } from "@lib/bar-period";
+import { format } from "date-fns";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -48,7 +49,7 @@ export interface KeywordProps extends ExcerptsProps {
   query: ParsedUrlQuery;
   dewan_counts: Record<string, number>;
   speakers: Array<Speaker>;
-  timeseries: Record<"date" | "freq", number[]>;
+  timeseries: { date: Array<number | string>; freq: number[] };
   top_speakers?: Array<Record<string, number>>;
   top_word_freq?: Record<string, number>;
   takwim?: TakwimTerm[] | null;
@@ -84,26 +85,59 @@ const Keyword = ({
   const [suggestion, setSuggestion] = useState<string>("");
 
   const house = dewan ? String(dewan) : "";
-  const start =
-    tarikh_mula && !Array.isArray(tarikh_mula)
-      ? parseISO(tarikh_mula)
-      : undefined;
-  const end =
-    tarikh_akhir && !Array.isArray(tarikh_akhir)
-      ? parseISO(tarikh_akhir)
-      : undefined;
-  const diff =
-    start && end ? Math.abs(differenceInCalendarDays(start, end)) : 0;
-
   const [loading, setLoading] = useState<boolean>(false);
   const [range, setRange] = useState<number[]>([0, timeseries.date.length - 1]);
   const { coordinate } = useSlice(timeseries, range as [number, number]);
 
   const chartEmpty = coordinate.freq.length === 0;
+  // Paksi carta dan slider ikut bentuk data sebenar, bukan `diff`: tanpa
+  // tarikh dalam URL `diff` ialah 0 walaupun backend menghantar bar bulanan
+  const monthly = isMonthlySeries(timeseries.date);
   const dummyFreq = useMemo(
     () => Array.from({ length: 365 }, () => Math.random() * 25 + 25),
     []
   );
+
+  /**
+   * Klik bar menyempitkan **senarai dokumen di bawah graf sahaja**, mengikut
+   * reka bentuk Naincie: "Clickable bar and link directly to related list hasil
+   * carian". Dalam reka bentuk itu baris penapis kekal "Semua" dan graf tidak
+   * berubah; hanya senarai di bawah yang mengecil.
+   *
+   * Sebab itu ia **tidak** menulis `tarikh_mula` dan `tarikh_akhir`. Kedua-dua
+   * parameter itu menyuap keempat-empat permintaan dalam `pages/cari`, jadi
+   * menulisnya akan membina semula graf dan menukar chip penapis. `graf_mula`
+   * dan `graf_akhir` pula hanya digunakan pada permintaan `api/search/`.
+   *
+   * Keputusan Liza (14 Nov): julat meliputi keseluruhan tempoh bar, walaupun
+   * reka bentuk tidak menyatakannya.
+   *
+   * Tempoh bar dibaca daripada label itu sendiri (`barPeriod` dalam
+   * `lib/bar-period.ts`). API sebenar (hansard-mod-api) menghantar label
+   * sebagai rentetan, `"yyyy-MM"` untuk bar bulanan dan `"yyyy-MM-dd"` untuk
+   * bar harian. Versi awal menganggap label ialah milisaat epoch (bentuk Mock
+   * API lama) dan meneka bulanan daripada `diff > 1095`, jadi dengan API
+   * sebenar klik bar tidak berbuat apa-apa.
+   *
+   * Pengiraan memakai waktu tempatan dengan sengaja. Carta memuat
+   * `chartjs-adapter-date-fns` tanpa opsyen zon waktu, jadi ia memaparkan label
+   * dalam waktu tempatan. Mengira dalam UTC akan membuatkan senarai tidak
+   * sepadan dengan label yang pengguna klik.
+   */
+  const handleBarClick = (label: string | number) => {
+    const period = barPeriod(label);
+    if (!period) return;
+    const { from, to } = period;
+
+    setLoading(true);
+    router.push(
+      `${routes.CARI}${setSearchParams(router.asPath, {
+        graf_mula: format(from, "yyyy-MM-dd"),
+        graf_akhir: format(to, "yyyy-MM-dd"),
+        page: "",
+      })}`
+    );
+  };
 
   /**
    * Klik gelembung mencari perkataan itu, mengekalkan semua penapis semasa
@@ -259,7 +293,8 @@ const Keyword = ({
                   )}
                   isLoading={loading}
                   enableAnimation={!play}
-                  interval={diff > 1095 ? "month" : "day"}
+                  onClick={handleBarClick}
+                  interval={monthly ? "month" : "day"}
                   data={{
                     labels: coordinate.date,
                     datasets: [
@@ -281,7 +316,7 @@ const Keyword = ({
                 <Slider
                   className={cn(chartEmpty && "opacity-10", "pt-8")}
                   type="range"
-                  period={diff > 1095 ? "month" : "day"}
+                  period={monthly ? "month" : "day"}
                   value={range}
                   data={timeseries.date}
                   onChange={e => setRange(e)}
