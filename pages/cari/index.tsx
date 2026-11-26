@@ -4,7 +4,7 @@ import SearchKeyword from "@dashboards/home/keyword";
 import HomeLayout from "@dashboards/home/layout";
 import { get } from "@lib/api";
 import { withi18n } from "@lib/decorators";
-import { buildRelatedSearch } from "@lib/related-search";
+import { buildRelatedSearch, suggestableQuery } from "@lib/related-search";
 import { Page } from "@lib/types";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { NextResponse } from "next/server";
@@ -76,12 +76,37 @@ export const getServerSideProps: GetServerSideProps = withi18n(
     // Only `tepat=1` counts: `0`, empty, `true` or a repeated `?tepat=1&tepat=1`
     // (which Next.js gives us as an array) do not.
     const exactSearch = tepat === "1";
-    // Axios skips params that are `undefined`, so `exact` is only sent when active
-    const exact = exactSearch ? true : undefined;
+
+    /**
+     * Carian berkaitan (tugasan A), ikut API sebenar hansard-mod-api.
+     *
+     * Backend tidak membetulkan kata dalam `api/search/` dan tiada parameter
+     * `exact`. Cadangan datang daripada titik akhir berasingan
+     * `api/search/suggestion`, yang memulangkan `{ query, suggestions,
+     * did_you_mean }`. Jadi aliran di sini berurutan:
+     *
+     * 1. Minta cadangan dahulu (hanya jika `suggestableQuery` membenarkan,
+     *    supaya `tepat=1`, frasa bertanda petikan dan sintaks `:` tidak
+     *    menambah masa menunggu).
+     * 2. Jika ada cadangan, ketiga-tiga carian guna kata dibetulkan. Jika
+     *    tidak, atau panggilan cadangan gagal, guna `q` seperti ditaip.
+     *
+     * `tepat=1` cukup dengan tidak meminta cadangan: `q` dihantar seperti
+     * ditaip. Ia tidak membalut `q` dengan tanda petikan, kerana itu mod frasa
+     * tepat backend (SSD-1160), maksudnya lain.
+     */
+    const typed = suggestableQuery(q, exactSearch);
+    const suggestion = typed
+      ? await get("api/search/suggestion", { q: typed })
+          .then(res => res.data?.did_you_mean)
+          .catch(() => null)
+      : null;
+    const relatedSearch = buildRelatedSearch(q, suggestion, exactSearch);
+    const searchQ = relatedSearch?.corrected ?? q;
 
     const results = await Promise.allSettled([
       get("api/search/", {
-        q: q,
+        q: searchQ,
         house: dewan,
         window_size: 100,
         page: page ?? 1,
@@ -92,10 +117,9 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         ethnicity: etnik,
         party: parti,
         sex: jantina,
-        exact: exact,
       }),
       get("api/search-plot/", {
-        q: q,
+        q: searchQ,
         house: dewan,
         start_date: tarikh_mula,
         end_date: tarikh_akhir,
@@ -103,18 +127,16 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         ethnicity: etnik,
         party: parti,
         sex: jantina,
-        exact: exact,
       }),
       get("api/author/"),
       get("api/search/counter", {
-        q: q,
+        q: searchQ,
         start_date: tarikh_mula,
         end_date: tarikh_akhir,
         age_group: umur,
         ethnicity: etnik,
         party: parti,
         sex: jantina,
-        exact: exact,
       }),
       get(
         `api/sitting/list?house=dewan-rakyat&house=dewan-negara&house=kamar-khas`
@@ -126,13 +148,10 @@ export const getServerSideProps: GetServerSideProps = withi18n(
       else return e.value.data;
     });
 
-    // The suggestion is only read from `api/search/`; the other responses are
-    // ignored on purpose. The rules live in lib/related-search.ts
-    const relatedSearch = buildRelatedSearch(
-      q,
-      excerpt.corrected_query,
-      exactSearch
-    );
+    // Carian gagal (Requirement 9, peraturan 7): jangan paparkan chip walaupun
+    // cadangan berjaya, kerana tiada hasil untuk kata dibetulkan itu.
+    const shownRelatedSearch =
+      results[0].status === "rejected" ? null : relatedSearch;
 
     const rawHouseCounts =
       counter && typeof counter === "object" && counter.house_counts
@@ -169,7 +188,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         top_word_freq: data.top_word_freq ?? null,
         top_speakers: data.top_speakers ?? null,
         takwim: Array.isArray(takwim) ? takwim : null,
-        relatedSearch,
+        relatedSearch: shownRelatedSearch,
       },
     };
   }
