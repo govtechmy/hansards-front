@@ -4,6 +4,7 @@ import { ComponentProps, useEffect, useRef, useState } from "react";
 import { Page, pdfjs } from "react-pdf";
 import type { PdfSession } from "./pdf-session";
 import { Button } from "@govtechmy/myds-react/button";
+import { ZoomInIcon, ZoomOutIcon } from "@govtechmy/myds-react/icon";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 
 // Keep this local worker matched to react-pdf's pinned PDF.js version.
@@ -11,7 +12,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 const singlePageOptions = { disableAutoFetch: true, disableStream: true };
 const pdfControlClassName =
-  "border-border hover:border-border-hover dark:hover:border-gray-400";
+  "border-border hover:border-border-hover dark:hover:border-gray-400 text-center";
 
 /** Uses the same-origin proxy so PDF.js can request document byte ranges. */
 const getPdfUrl = (filename: string) =>
@@ -166,63 +167,47 @@ export default function PdfViewer({
       aria-label={t("pdf_viewer.title")}
       className="flex h-full min-h-0 min-w-0 flex-col border-l border-otl-gray-200 bg-background"
     >
-      <div className="flex flex-wrap items-center gap-2 border-b p-2 text-sm">
-        <Button
-          variant="default-outline"
-          className={pdfControlClassName}
-          disabled={currentPage <= 1}
-          onClick={() => onPageChange(currentPage - 1)}
-          aria-label={t("pdf_viewer.previous")}
-        >
-          ‹
-        </Button>
-        <label className="flex items-center gap-1">
-          <span className="sr-only">{t("pdf_viewer.page")}</span>
-          <input
-            type="number"
-            min={1}
-            max={pages || 1}
-            value={currentPage}
-            className={cn(
-              "w-14 rounded border bg-background p-1 text-center",
-              pdfControlClassName
-            )}
-            onChange={event => {
-              const value = Number(event.target.value);
-              if (Number.isInteger(value) && value >= 1 && value <= pages)
-                onPageChange(value);
-            }}
-          />
-          <span aria-live="polite">/ {pages || "…"}</span>
-        </label>
-        <Button
-          variant="default-outline"
-          className={pdfControlClassName}
-          disabled={!pages || currentPage >= pages}
-          onClick={() => onPageChange(currentPage + 1)}
-          aria-label={t("pdf_viewer.next")}
-        >
-          ›
-        </Button>
-        <Button
-          variant="default-outline"
-          className={pdfControlClassName}
-          disabled={zoom <= 0.5}
-          onClick={() => setZoom(zoom - 0.25)}
-          aria-label={t("pdf_viewer.zoom_out")}
-        >
-          −
-        </Button>
-        <span>{Math.round(zoom * 100)}%</span>
-        <Button
-          variant="default-outline"
-          className={pdfControlClassName}
-          disabled={zoom >= 2}
-          onClick={() => setZoom(zoom + 0.25)}
-          aria-label={t("pdf_viewer.zoom_in")}
-        >
-          +
-        </Button>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b p-2 text-sm">
+        <div className="flex min-w-0 items-center gap-2">
+          <Button
+            variant="default-outline"
+            className={pdfControlClassName}
+            disabled={currentPage <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            aria-label={t("pdf_viewer.previous")}
+          >
+            ‹
+          </Button>
+          <label className="flex items-center gap-1">
+            <span className="sr-only">{t("pdf_viewer.page")}</span>
+            <input
+              type="number"
+              min={1}
+              max={pages || 1}
+              value={currentPage}
+              className={cn(
+                "w-12 appearance-none rounded border bg-background p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+                pdfControlClassName
+              )}
+              onChange={event => {
+                const value = Number(event.target.value);
+                if (Number.isInteger(value) && value >= 1 && value <= pages)
+                  onPageChange(value);
+              }}
+            />
+            {showAll && <span aria-live="polite">/ {pages || "…"}</span>}
+          </label>
+          <Button
+            variant="default-outline"
+            className={pdfControlClassName}
+            disabled={!pages || currentPage >= pages}
+            onClick={() => onPageChange(currentPage + 1)}
+            aria-label={t("pdf_viewer.next")}
+          >
+            ›
+          </Button>
+        </div>
+        {/* View Pages */}
         <Button
           variant="default-outline"
           disabled={!pages}
@@ -233,6 +218,28 @@ export default function PdfViewer({
         >
           {viewLabel}
         </Button>
+        {/* Zoom Controls */}
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            variant="default-outline"
+            className={pdfControlClassName}
+            disabled={zoom <= 0.5}
+            onClick={() => setZoom(zoom - 0.25)}
+            aria-label={t("pdf_viewer.zoom_out")}
+          >
+            <ZoomOutIcon className="size-5" aria-hidden="true" />
+          </Button>
+          <span>{Math.round(zoom * 100)}%</span>
+          <Button
+            variant="default-outline"
+            className={pdfControlClassName}
+            disabled={zoom >= 2}
+            onClick={() => setZoom(zoom + 0.25)}
+            aria-label={t("pdf_viewer.zoom_in")}
+          >
+            <ZoomInIcon className="size-5" aria-hidden="true" />
+          </Button>
+        </div>
       </div>
       <div
         ref={container}
