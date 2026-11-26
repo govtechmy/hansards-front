@@ -145,10 +145,10 @@ test("search navigation scrolls the nearest overflow container", () => {
   assert.match(source, /parent\.scrollTo\(\{/);
 });
 
-function load(file, mocks) {
+function load(file, mocks, extra = "") {
   const module = { exports: {} };
   const code = ts.transpileModule(
-    readFileSync(resolve(__dirname, "..", file), "utf8"),
+    readFileSync(resolve(__dirname, "..", file), "utf8") + extra,
     {
       compilerOptions: {
         module: ts.ModuleKind.CommonJS,
@@ -164,6 +164,78 @@ function load(file, mocks) {
   });
   return module.exports;
 }
+
+test("failed PDF loads retry on reopening and redraw errors become visible", async () => {
+  const React = require("react");
+  const states = [];
+  let index = 0;
+  let effects = [];
+  const { default: Viewer, BufferedPage } = load(
+    "data-catalogue/hansard/pdf-viewer.tsx",
+    {
+      "react/jsx-runtime": require("react/jsx-runtime"),
+      react: {
+        ...React,
+        useRef: () => ({ current: null }),
+        useEffect: effect => effects.push(effect),
+        useState: initial => {
+          const slot = index++;
+          if (!(slot in states)) states[slot] = initial;
+          return [
+            states[slot],
+            value => {
+              states[slot] =
+                typeof value === "function" ? value(states[slot]) : value;
+            },
+          ];
+        },
+      },
+      "@hooks/useTranslation": { useTranslation: () => ({ t: key => key }) },
+      "@lib/helpers": { cn: (...values) => values.filter(Boolean).join(" ") },
+      "react-pdf": { Page: "page", pdfjs: { GlobalWorkerOptions: {} } },
+      "@govtechmy/myds-react/button": { Button: "button" },
+    },
+    "\nexport { BufferedPage };"
+  );
+  let attempts = 0;
+  const session = {
+    load: () => {
+      attempts++;
+      return attempts === 1
+        ? Promise.reject(new Error("offline"))
+        : Promise.resolve({ numPages: 10 });
+    },
+  };
+  const render = open => {
+    index = 0;
+    effects = [];
+    Viewer({ filename: "dr_2026-11-12", page: 1, session, open });
+    return effects[0]();
+  };
+  const cleanup = render(true);
+  await new Promise(resolve => setImmediate(resolve));
+  cleanup();
+  render(false);
+  render(true);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(attempts, 2);
+  assert.equal(states[5], false);
+
+  states.length = 0;
+  index = 0;
+  const first = BufferedPage({ pageNumber: 1, width: 500 });
+  first.props.children[1].props.children.props.onRenderSuccess();
+  index = 0;
+  const replacement = BufferedPage({ pageNumber: 1, width: 600 });
+  assert.match(replacement.props.children[1].props.className, /opacity-0/);
+  replacement.props.children[1].props.children.props.onRenderError(
+    new Error("render failed")
+  );
+  index = 0;
+  const failed = BufferedPage({ pageNumber: 1, width: 600 });
+  assert.equal(failed.props.children[0], false);
+  assert.doesNotMatch(failed.props.children[1].props.className, /opacity-0/);
+});
 
 test("PDF route rejects arbitrary paths and methods, and streams byte ranges", async () => {
   let call;

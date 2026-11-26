@@ -38,6 +38,7 @@ interface PdfViewerProps {
   page: number;
   onPageChange: (page: number) => void;
   session: PdfSession;
+  open: boolean;
 }
 
 /** Displays the shared document with page navigation, zoom, and lazy page rendering. */
@@ -46,6 +47,7 @@ export default function PdfViewer({
   page,
   onPageChange,
   session,
+  open,
 }: PdfViewerProps) {
   const { t } = useTranslation("hansard");
   const container = useRef<HTMLDivElement>(null);
@@ -67,7 +69,9 @@ export default function PdfViewer({
   const viewLabel = t(viewKey);
 
   useEffect(() => {
+    if (!open || pdf) return;
     let active = true;
+    setFailed(false);
     loadPdf(filename, session)
       .then(document => {
         if (active) {
@@ -81,7 +85,7 @@ export default function PdfViewer({
     return () => {
       active = false;
     };
-  }, [filename, session]);
+  }, [filename, session, open, pdf]);
 
   useEffect(() => {
     if (!container.current) return;
@@ -118,7 +122,7 @@ export default function PdfViewer({
           ref={element => {
             pageRefs.current[pageNumber] = element;
           }}
-          className="flex justify-center pb-4 first:pt-2"
+          className="flex min-w-max justify-center pb-4 first:pt-2"
           data-page={pageNumber}
         >
           <LazyPdfPage
@@ -256,22 +260,35 @@ function BufferedPage(props: ComponentProps<typeof Page>) {
     props: ComponentProps<typeof Page>;
   }>();
   const replacing = rendered && rendered.key !== key;
+  const [failedKey, setFailedKey] = useState<string>();
+  const failed = failedKey === key;
   return (
     <div
       className="relative overflow-hidden"
       style={{ width, height: width * ratio }}
     >
-      {replacing && (
+      {replacing && !failed && (
         <div key={rendered.key} className="absolute left-0 top-0">
           <Page {...rendered.props} />
         </div>
       )}
       <div
         key={key}
-        className={cn("absolute left-0 top-0", replacing && "opacity-0")}
+        className={cn(
+          "absolute left-0 top-0",
+          replacing && !failed && "opacity-0"
+        )}
       >
         <Page
           {...props}
+          onLoadError={error => {
+            setFailedKey(key);
+            props.onLoadError?.(error);
+          }}
+          onRenderError={error => {
+            setFailedKey(key);
+            props.onRenderError?.(error);
+          }}
           onLoadSuccess={page => {
             const viewport = page.getViewport({ scale: 1 });
             setRatio(viewport.height / viewport.width);

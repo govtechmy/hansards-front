@@ -93,6 +93,10 @@ const Hansard = ({
   }, [isDesktop]);
 
   useEffect(() => {
+    // A different Hansard starts in transcript view with its own document session.
+    setPdfOpen(false);
+    setOpenedPdf(null);
+    setPdfPage(1);
     const session = createPdfSession();
     setPdfSession(session);
     if (!isDesktop || !filename) return;
@@ -677,6 +681,7 @@ const Hansard = ({
                     page={pdfPage}
                     onPageChange={setPdfPage}
                     session={pdfSession}
+                    open={splitOpen}
                   />
                 </div>
               )}
