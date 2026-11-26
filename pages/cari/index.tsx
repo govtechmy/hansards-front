@@ -80,13 +80,9 @@ export const getServerSideProps: GetServerSideProps = withi18n(
     } = query;
 
     /**
-     * Tempoh bar graf yang diklik pengguna (tugasan E). Ia menyempitkan
-     * **senarai dokumen sahaja**, jadi ia digunakan hanya pada `api/search/`
-     * di bawah dan bukan pada `api/search-plot/` atau `api/search/counter`.
-     *
-     * Kalau ia disuap ke graf juga, graf akan membina semula dirinya kepada
-     * tempoh yang baru diklik, dan reka bentuk Naincie menunjukkan graf serta
-     * baris penapis kekal tidak berubah.
+     * graf yang diklik pengguna show selected dokumen mengikut tarikh pada bar graf yang di klik
+     * , jadi ia digunakan hanya pada `api/search/`.  `api/search-plot/` dan `api/search/counter`.
+     * tidak berubah. Filter asal kekal juga.
      */
     const listStartDate = graf_mula ?? tarikh_mula;
     const listEndDate = graf_akhir ?? tarikh_akhir;
