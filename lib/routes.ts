@@ -22,6 +22,7 @@ export const hansard_routes = [
   routes.HANSARD_DR,
   routes.HANSARD_DN,
   routes.HANSARD_KK,
+  routes.HANSARD_MMS,
 ];
 export const katalog_routes = [
   routes.KATALOG_DR,

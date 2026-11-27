@@ -6,7 +6,8 @@ import { appConfig } from "src/config/app.config";
  */
 export const getHansardPrefix = (
   filename: string
-): "dewanrakyat" | "kamarkhas" | "dewannegara" => {
+): "dewanrakyat" | "kamarkhas" | "dewannegara" | "majlismengangkatsumpah" => {
+  if (filename.startsWith("mms")) return "majlismengangkatsumpah";
   if (filename.startsWith("dr")) return "dewanrakyat";
   if (filename.startsWith("kk")) return "kamarkhas";
   return "dewannegara"; // default (DN)

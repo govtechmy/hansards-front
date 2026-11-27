@@ -54,11 +54,12 @@ export const ShareDialogDrawer = ({
     "dewan-rakyat": t("enum:dewan-rakyat"),
     "dewan-negara": t("enum:dewan-negara"),
     "kamar-khas": t("enum:kamar-khas"),
+    "majlis-mengangkat-sumpah": t("enum:majlis-mengangkat-sumpah"),
   };
 
   const heroHeader = t("enum:header");
   const houseKey = hansard_id.match(
-    /\/(dewan-rakyat|dewan-negara|kamar-khas)(?:\/|$)/
+    /\/(dewan-rakyat|dewan-negara|kamar-khas|majlis-mengangkat-sumpah)(?:\/|$)/
   )?.[1];
   const dewanLabel = houseKey ? DEWAN_LABELS[houseKey] : "";
   const title = `${heroHeader}, ${dewanLabel ?? ""}, ${date ?? ""}`;

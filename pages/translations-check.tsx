@@ -120,6 +120,9 @@ const COMPONENTS: ComponentTranslations = {
   "pages/hansard/kamar-khas/[...date].tsx": {
     hansard: ["header"],
   },
+  "pages/hansard/majlis-mengangkat-sumpah/[...date].tsx": {
+    hansard: ["header"],
+  },
   "pages/hansard/dewan-rakyat/[...date].tsx": {
     hansard: ["header"],
   },

@@ -51,7 +51,7 @@ interface HansardProps {
     house: number;
     term: number;
     session: number;
-    meeting: number;
+    meeting: number | null;
   };
   date: string;
   filename: string;
@@ -102,6 +102,11 @@ const Hansard = ({
       variant: "success",
       className: "border-[#15803D33] !text-body-xs font-normal text-[#15803D]",
       label: t("enum:kamar-khas"),
+    },
+    "majlis-mengangkat-sumpah": {
+      variant: "warning",
+      className: "border-[#A1620733] !text-body-xs font-normal text-[#A16207]",
+      label: t("enum:majlis-mengangkat-sumpah"),
     },
   };
 
@@ -256,19 +261,23 @@ const Hansard = ({
 
   const IS_DR = cycle.house === 0;
   const IS_KK = cycle.house === 2;
+  const IS_MMS = cycle.house === 3;
 
   const HOUSE_TO_DEWAN: Record<number, string> = {
     0: "dewan-rakyat",
     1: "dewan-negara",
     2: "kamar-khas",
+    3: "majlis-mengangkat-sumpah",
   };
   const dewanKey = HOUSE_TO_DEWAN[cycle.house];
 
-  const dewan_route = IS_KK
-    ? routes.KATALOG_KK
-    : IS_DR
-      ? routes.KATALOG_DR
-      : routes.KATALOG_DN;
+  const dewan_route = IS_MMS
+    ? routes.KATALOG_MMS
+    : IS_KK
+      ? routes.KATALOG_KK
+      : IS_DR
+        ? routes.KATALOG_DR
+        : routes.KATALOG_DN;
 
   const parlimen_link = `${dewan_route}#parlimen-${cycle.term}`;
   const penggal_link = `${parlimen_link}-penggal-${cycle.session}`;
@@ -276,7 +285,13 @@ const Hansard = ({
 
   // Legacy direct URL retained for props expecting a base path; actual downloads now proxy via /downloads.
   const hansard_url = `${process.env.NEXT_PUBLIC_DOWNLOAD_URL}${
-    IS_KK ? "kamarkhas" : IS_DR ? "dewanrakyat" : "dewannegara"
+    IS_MMS
+      ? "majlismengangkatsumpah"
+      : IS_KK
+        ? "kamarkhas"
+        : IS_DR
+          ? "dewanrakyat"
+          : "dewannegara"
   }/${filename}`;
 
   // Unified download handler (no old CSV restrictions per current requirement).
@@ -305,7 +320,13 @@ const Hansard = ({
                   <BreadcrumbLink asChild>
                     <Link href={dewan_route} prefetch={false}>
                       {t("archive", {
-                        context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
+                        context: IS_MMS
+                          ? "mms"
+                          : IS_KK
+                            ? "kk"
+                            : IS_DR
+                              ? "dr"
+                              : "dn",
                       })}
                     </Link>
                   </BreadcrumbLink>
@@ -326,14 +347,21 @@ const Hansard = ({
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href={mesyuarat_link} prefetch={false}>
-                      {t("mesyuarat_full", { ns: "enum", n: cycle.meeting })}
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
+                {!IS_MMS && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink asChild>
+                        <Link href={mesyuarat_link} prefetch={false}>
+                          {t("mesyuarat_full", {
+                            ns: "enum",
+                            n: cycle.meeting,
+                          })}
+                        </Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </>
+                )}
               </Breadcrumb>
 
               <div className="flex items-center justify-between gap-3 lg:gap-6">
@@ -344,7 +372,13 @@ const Hansard = ({
                     data-testid="hero-header"
                   >
                     {t("header", {
-                      context: IS_KK ? "kk" : IS_DR ? "dr" : "dn",
+                      context: IS_MMS
+                        ? "mms"
+                        : IS_KK
+                          ? "kk"
+                          : IS_DR
+                            ? "dr"
+                            : "dn",
                     })}
                   </h1>
                   <div className="flex items-center gap-x-2">
@@ -420,7 +454,7 @@ const Hansard = ({
                   <CiteButton
                     date={date}
                     hansard_id={hansard_id}
-                    dewan={IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
+                    dewan={IS_MMS ? "MMS" : IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
                     trigger={onClick => (
                       <Button
                         variant="default-ghost"
@@ -465,7 +499,7 @@ const Hansard = ({
               <CiteButton
                 date={date}
                 hansard_id={hansard_id}
-                dewan={IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
+                dewan={IS_MMS ? "MMS" : IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
                 trigger={onClick => (
                   <Button variant="primary-ghost" onClick={onClick}>
                     <CiteIcon className="size-5" />
