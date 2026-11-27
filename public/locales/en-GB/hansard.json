@@ -1,4 +1,18 @@
 {
+  "pdf_viewer": {
+    "title": "PDF viewer",
+    "open": "Open PDF",
+    "hide": "Hide PDF",
+    "loading": "Loading PDF…",
+    "previous": "Previous PDF page",
+    "next": "Next PDF page",
+    "page": "PDF page",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "view_all": "View All Pages",
+    "view_one": "View One Page",
+    "error": "Unable to load the PDF. Use ‘Download’ to download the PDF file."
+  },
   "summary": {
     "title": "AI Summary",
     "button": "AI Summary",

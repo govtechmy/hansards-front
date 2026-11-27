@@ -67,6 +67,7 @@
     "react-i18next": "^13.5.0",
     "react-leaflet": "^4.1.0",
     "react-markdown": "^8.0.7",
+    "react-pdf": "10.4.1",
     "react-virtual": "2.10.4",
     "rehype-raw": "^6.1.1",
     "remark-gfm": "3.0.1",

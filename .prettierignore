@@ -19,6 +19,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Generated PDF.js worker
+public/pdf.worker.min.mjs
+
 # local env files
 .env
 .env.development
