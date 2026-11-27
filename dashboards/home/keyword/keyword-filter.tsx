@@ -33,6 +33,7 @@ import { PARTIES } from "@lib/options";
 import { OptionType, RelatedSearch } from "@lib/types";
 import { ParsedUrlQuery } from "querystring";
 import {
+  useEffect,
   useRef,
   useState,
   useMemo,
@@ -208,16 +209,33 @@ const KeywordFilter = ({
     gender: jantina ? String(jantina) : BOTH_GENDERS,
   });
 
-  const [selectedDateRange, setSelectedDateRange] = useState<
-    DateRange | undefined
-  >(
+  /**
+   * Baca julat tarikh daripada parameter URL. Dikongsi antara semaian awal dan
+   * effect penyelarasan di bawah supaya kedua-duanya tidak boleh terpisah.
+   */
+  const dateRangeFromQuery = (): DateRange | undefined =>
     tarikh_mula || tarikh_akhir
       ? {
           from: tarikh_mula ? new Date(tarikh_mula.toString()) : undefined,
           to: tarikh_akhir ? new Date(tarikh_akhir.toString()) : undefined,
         }
-      : undefined
-  );
+      : undefined;
+
+  const [selectedDateRange, setSelectedDateRange] = useState<
+    DateRange | undefined
+  >(dateRangeFromQuery);
+
+  /**
+   * Selaraskan pemilih tarikh apabila `tarikh_mula` atau `tarikh_akhir` dalam
+   * URL berubah tanpa komponen ini dimount semula.
+   *
+   * `useState` di atas hanya menyemai sekali, jadi tanpa effect ini chip tarikh
+   * tertinggal menunjukkan julat lama. Ia kelihatan apabila klik bar graf
+   * menetapkan julat baharu, dan juga pada butang Back atau Forward.
+   */
+  useEffect(() => {
+    setSelectedDateRange(dateRangeFromQuery());
+  }, [tarikh_mula, tarikh_akhir]);
 
   const DEWAN_OPTIONS: OptionType[] = DEWANS.map((key: string) => ({
     label: t(key.replace("-", "_"), { ns: "common" }),
@@ -291,7 +309,18 @@ const KeywordFilter = ({
 
   const handleSearch = (params: Record<string, string | null>) => {
     onLoad();
-    router.push(`${routes.CARI}${setSearchParams(router.asPath, params)}`);
+    router.push(
+      `${routes.CARI}${setSearchParams(router.asPath, {
+        // Pilihan bar graf (tugasan E) menyempitkan senarai dokumen kepada satu
+        // tempoh. Ia milik carian sebelum ini, jadi apa-apa carian atau
+        // penapisan baharu mesti mengosongkannya. Tanpa ini senarai kekal
+        // tersempit kepada tempoh lama sedangkan graf menunjukkan julat baharu,
+        // dan pengguna tiada petunjuk mengapa.
+        graf_mula: "",
+        graf_akhir: "",
+        ...params,
+      })}`
+    );
   };
 
   // Chip arrow: put the suggestion in the search box. No new search; the

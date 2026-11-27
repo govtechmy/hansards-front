@@ -6,10 +6,18 @@ import { useMemo } from "react";
 interface BubbleCloudProps {
   className?: string;
   data: Array<{ id: string; value: number }>;
+  /**
+   * Bila diberi, setiap gelembung boleh diklik dan menerima perkataan
+   * gelembung itu. Bila tiada, gelembung kekal tidak boleh diklik seperti
+   * sebelum ini (contohnya di `/cari-mp`, kerana `/cari` tiada penapis author
+   * untuk mengekalkan konteks MP).
+   */
+  onBubbleClick?: (word: string) => void;
 }
 
-const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
+const BubbleCloud = ({ className, data, onBubbleClick }: BubbleCloudProps) => {
   const { resolvedTheme } = useTheme();
+  const isClickable = typeof onBubbleClick === "function";
   const _data = useMemo(() => {
     let chart_data = {
       id: "root",
@@ -20,9 +28,26 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
 
   return (
     <>
-      <div className={cn(className)}>
+      <div
+        className={cn(
+          className,
+          // Isyarat boleh klik. Label sudah `pointerEvents: "none"`, jadi klik
+          // sampai ke bulatan di bawahnya.
+          isClickable &&
+            "[&_circle:hover]:opacity-75 [&_circle]:cursor-pointer [&_circle]:transition-opacity"
+        )}
+      >
         <ResponsiveCirclePacking
           data={_data}
+          onClick={
+            isClickable
+              ? node => {
+                  // `leavesOnly` menapis paparan, bukan peristiwa, jadi
+                  // tolak nod akar supaya klik latar tak mencetus carian.
+                  if (node.depth > 0 && node.id) onBubbleClick(node.id);
+                }
+              : undefined
+          }
           colors={data => {
             if (data.radius > 100) return "#DDD6B0";
             if (data.radius > 60) return "#E4DFC3";
@@ -52,14 +77,14 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                     ? node.radius > 100
                       ? "1px"
                       : node.radius > 60
-                      ? "0.6px"
-                      : node.radius > 40
-                      ? "0.4px"
-                      : node.radius > 30
-                      ? "0.3px"
-                      : node.radius > 25
-                      ? "0.25px"
-                      : "0.2px"
+                        ? "0.6px"
+                        : node.radius > 40
+                          ? "0.4px"
+                          : node.radius > 30
+                            ? "0.3px"
+                            : node.radius > 25
+                              ? "0.25px"
+                              : "0.2px"
                     : 0
                 }
                 className={cn(
@@ -67,18 +92,18 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                   node.radius > 100
                     ? "text-[32px]"
                     : node.radius > 60
-                    ? "text-[22px]"
-                    : node.radius > 40
-                    ? "text-[18px]"
-                    : node.radius > 35
-                    ? "text-[16px]"
-                    : node.radius > 30
-                    ? "text-[12px]"
-                    : node.radius > 25
-                    ? "text-[10px]"
-                    : node.radius > 20
-                    ? "text-[9px]"
-                    : "text-[8px]"
+                      ? "text-[22px]"
+                      : node.radius > 40
+                        ? "text-[18px]"
+                        : node.radius > 35
+                          ? "text-[16px]"
+                          : node.radius > 30
+                            ? "text-[12px]"
+                            : node.radius > 25
+                              ? "text-[10px]"
+                              : node.radius > 20
+                                ? "text-[9px]"
+                                : "text-[8px]"
                 )}
               >
                 {label}
@@ -92,27 +117,27 @@ const BubbleCloud = ({ className, data }: BubbleCloudProps) => {
                   node.radius > 100
                     ? 32
                     : node.radius > 60
-                    ? 24
-                    : node.radius > 40
-                    ? 20
-                    : node.radius > 30
-                    ? 16
-                    : node.radius > 25
-                    ? 12
-                    : 10
+                      ? 24
+                      : node.radius > 40
+                        ? 20
+                        : node.radius > 30
+                          ? 16
+                          : node.radius > 25
+                            ? 12
+                            : 10
                 }
                 className={cn(
                   node.radius > 100
                     ? "text-[16px]"
                     : node.radius > 60
-                    ? "text-[12px]"
-                    : node.radius > 40
-                    ? "text-[10px]"
-                    : node.radius > 30
-                    ? "text-[9px]"
-                    : node.radius > 25
-                    ? "text-[8px]"
-                    : "text-[6px]"
+                      ? "text-[12px]"
+                      : node.radius > 40
+                        ? "text-[10px]"
+                        : node.radius > 30
+                          ? "text-[9px]"
+                          : node.radius > 25
+                            ? "text-[8px]"
+                            : "text-[6px]"
                 )}
                 fill="#71717A"
               >

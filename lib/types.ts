@@ -106,6 +106,21 @@ export type Parlimen = Period & {
   [key: string]: Penggal;
 };
 
+/** Majlis Mengangkat Sumpah: tiada mesyuarat dan tiada tarikh pada penggal, sitting terus di bawah penggal. */
+export type PenggalMMS = {
+  start_date: string | null;
+  end_date: string | null;
+  sitting_list?: Sitting[];
+};
+
+export type ParlimenMMS = {
+  start_date: string | null;
+  end_date: string | null;
+  [session: string]: PenggalMMS | string | null;
+};
+
+export type ArchiveMMS = Record<string, ParlimenMMS>;
+
 export type Archive = {
   [key in string]: Parlimen;
 };

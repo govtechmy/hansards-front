@@ -14,5 +14,8 @@
   "draft": "Draf",
   "final": "Telah disemak",
   "pdf_page": "Muka Surat {{page}}",
-  "no_entries": "Tiada entri ditemui"
+  "no_entries": "Tiada entri ditemui",
+  "tag": {
+    "oath_ceremony": "Majlis Angkat Sumpah"
+  }
 }

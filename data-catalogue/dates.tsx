@@ -35,6 +35,7 @@ import { useTranslation } from "@hooks/useTranslation";
 import { copyClipboard } from "@lib/helpers";
 import { routes } from "@lib/routes";
 import { Sitting } from "@lib/types";
+import { Tag } from "@components/Tag";
 import NextLink from "next/link";
 import { useState } from "react";
 import CiteButton from "./cite";
@@ -51,11 +52,14 @@ import { useDownload } from "@hooks/useDownload";
 interface MesyuaratDatesProps {
   onClick?: () => void;
   sitting_list: Sitting[];
+  /** "mms" untuk tab Majlis Mengangkat Sumpah; awalan fail MMS belum diketahui, jadi dewan tidak boleh ditentukan daripada nama fail */
+  house?: "mms";
 }
 
 export const MesyuaratDates = ({
   onClick,
   sitting_list,
+  house,
 }: MesyuaratDatesProps) => {
   const { t, i18n } = useTranslation(["catalogue", "enum", "hansard"]);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -65,10 +69,18 @@ export const MesyuaratDates = ({
 
   const MesyuaratDateRow = ({ sitting }: { sitting: Sitting }) => {
     const { filename, date, is_final } = sitting;
-    const IS_KK = filename.startsWith("kk");
-    const IS_DR = filename.startsWith("dr");
+    const IS_MMS = house === "mms";
+    const IS_OATH = IS_MMS;
+    const IS_KK = !IS_MMS && filename.startsWith("kk");
+    const IS_DR = !IS_MMS && filename.startsWith("dr");
     const hansard_id = `${
-      IS_KK ? routes.HANSARD_KK : IS_DR ? routes.HANSARD_DR : routes.HANSARD_DN
+      IS_MMS
+        ? routes.HANSARD_MMS
+        : IS_KK
+          ? routes.HANSARD_KK
+          : IS_DR
+            ? routes.HANSARD_DR
+            : routes.HANSARD_DN
     }/${date}`;
     const { download: handleDownload } = useDownload({
       filename,
@@ -91,6 +103,11 @@ export const MesyuaratDates = ({
                 &nbsp; {t("draft")}
               </span>
             ))}
+          {IS_OATH && (
+            <Tag variant="primary" mode="pill" size="small" className="w-fit">
+              {t("tag.oath_ceremony")}
+            </Tag>
+          )}
           {
             <NextLink
               href={hansard_id}
@@ -113,7 +130,7 @@ export const MesyuaratDates = ({
               <CiteButton
                 date={date}
                 hansard_id={hansard_id}
-                dewan={IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
+                dewan={IS_MMS ? "MMS" : IS_KK ? "KK" : IS_DR ? "DR" : "DN"}
                 trigger={onClick => (
                   <Link
                     primary
